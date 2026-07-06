@@ -1,0 +1,20 @@
+# Statik analiz ayarları — CLAUDE.md kural 7 gereği `flutter analyze`
+# her session sonunda sıfır hata vermelidir.
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    - prefer_single_quotes
+    - always_declare_return_types
+    - prefer_final_locals
+    - unnecessary_lambdas
+    - require_trailing_commas
+    - directives_ordering
+    - public_member_api_docs
