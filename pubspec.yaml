@@ -12,6 +12,10 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
+  # ONAY NOTU: crypto, luck_engine'in deterministik SHA-256 seed'i için
+  # eklendi (plan Session 1, madde 2). Saf Dart paketidir, Flutter
+  # bağımlılığı yoktur. Onaylamıyorsan söyle, elle SHA-256 yazayım.
+  crypto: ^3.0.6
   flutter_riverpod: ^2.6.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
