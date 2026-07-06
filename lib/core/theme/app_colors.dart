@@ -14,6 +14,9 @@ abstract final class AppColors {
   /// Altın vurgu rengi — skor halkası, CTA butonları.
   static const Color gold = Color(0xFFF4C95D);
 
+  /// Altının açık tonu — skor halkası gradient'inin bitiş rengi.
+  static const Color goldAcik = Color(0xFFFFE9B8);
+
   /// Soft mor ikincil vurgu — modifiyer etiketleri, ikincil butonlar.
   static const Color purple = Color(0xFF8B7EC8);
 
