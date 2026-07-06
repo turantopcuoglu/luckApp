@@ -1,0 +1,22 @@
+<!-- Ana ekran arka plan deseni: soluk (opacity 0.06) altın yıldız ve
+     parçacıklar. 200x200 karo; yan yana döşendiğinde tekrar edebilir —
+     kenarlara taşan öğe yok. Renk sabittir (tema zaten koyu). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <g fill="#F4C95D" opacity="0.06">
+    <!-- Dört uçlu yıldızlar: elmas eğrili yol, farklı boylar. -->
+    <path d="M30 14 C31 19 33 21 38 22 C33 23 31 25 30 30 C29 25 27 23 22 22 C27 21 29 19 30 14 Z"/>
+    <path d="M160 40 C161.5 47 164.5 50 171.5 51.5 C164.5 53 161.5 56 160 63 C158.5 56 155.5 53 148.5 51.5 C155.5 50 158.5 47 160 40 Z"/>
+    <path d="M64 112 C65 116 66.6 117.6 70.6 118.6 C66.6 119.6 65 121.2 64 125.2 C63 121.2 61.4 119.6 57.4 118.6 C61.4 117.6 63 116 64 112 Z"/>
+    <path d="M140 150 C141 155 143 157 148 158 C143 159 141 161 140 166 C139 161 137 159 132 158 C137 157 139 155 140 150 Z"/>
+    <path d="M100 66 C100.8 69.2 102 70.4 105.2 71.2 C102 72 100.8 73.2 100 76.4 C99.2 73.2 98 72 94.8 71.2 C98 70.4 99.2 69.2 100 66 Z"/>
+    <!-- Parçacık noktaları. -->
+    <circle cx="52" cy="58" r="1.4"/>
+    <circle cx="120" cy="24" r="1"/>
+    <circle cx="182" cy="96" r="1.4"/>
+    <circle cx="18" cy="150" r="1"/>
+    <circle cx="96" cy="178" r="1.4"/>
+    <circle cx="170" cy="182" r="1"/>
+    <circle cx="88" cy="120" r="0.9"/>
+    <circle cx="34" cy="92" r="1.1"/>
+  </g>
+</svg>

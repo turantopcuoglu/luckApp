@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import '../../../core/luck_engine/luck_engine.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
+import '../../../shared/widgets/app_icons.dart';
 import '../daily_luck_config.dart';
 
-/// Tek bir kategorinin mini kartı: ad, skor ve ince ilerleme barı.
-///
-/// Kategori ikonları Session 4'te (SVG üretimi) eklenecek.
+/// Tek bir kategorinin mini kartı: ikon + ad, skor ve ince ilerleme barı.
 class CategoryCard extends StatelessWidget {
   /// [kategori] ve 0-100 arası [skor] ile kart oluşturur.
   const CategoryCard({required this.kategori, required this.skor, super.key});
@@ -30,11 +29,26 @@ class CategoryCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                kategori.etiket,
-                style: yaziTemasi.labelMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+              Row(
+                children: <Widget>[
+                  AppIcons.kategori(
+                    kategori,
+                    boyut: DailyLuckConfig.kategoriIkonBoyutu,
+                    renk: AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  // Uzun etiketler (ör. "Sağlık") kart genişliğini
+                  // aşabilir; Expanded + ellipsis taşmayı önler.
+                  Expanded(
+                    child: Text(
+                      kategori.etiket,
+                      overflow: TextOverflow.ellipsis,
+                      style: yaziTemasi.labelMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const Spacer(),
               Text(

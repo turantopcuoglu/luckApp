@@ -1,0 +1,5 @@
+<!-- Aşk kategorisi ikonu: kalp. 2px stroke, yuvarlak uçlar,
+     currentColor ile tema rengine boyanır, 24x24 viewBox. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 20 C6.2 15.2 3 11.6 3 8.6 C3 6 5 4 7.5 4 C9.4 4 11 5 12 6.8 C13 5 14.6 4 16.5 4 C19 4 21 6 21 8.6 C21 11.6 17.8 15.2 12 20 Z"/>
+</svg>

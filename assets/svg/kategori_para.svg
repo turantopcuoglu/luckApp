@@ -1,0 +1,9 @@
+<!-- Para kategorisi ikonu: para kesesi, içinde ₺ işareti. 2px stroke,
+     yuvarlak uçlar, currentColor, 24x24 viewBox. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M9 5.5 L7.5 3 H16.5 L15 5.5"/>
+  <path d="M9.3 5.5 H14.7 C18.2 8.4 20 11.3 20 14.3 C20 18.2 16.8 21 12 21 C7.2 21 4 18.2 4 14.3 C4 11.3 5.8 8.4 9.3 5.5 Z"/>
+  <path d="M11 9.5 V17.5"/>
+  <path d="M9.5 13.6 L14 11.4"/>
+  <path d="M9.5 16.4 L14 14.2"/>
+</svg>

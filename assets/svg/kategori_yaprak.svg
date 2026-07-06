@@ -1,0 +1,6 @@
+<!-- Sağlık kategorisi ikonu: yaprak ve orta damarı. 2px stroke,
+     yuvarlak uçlar, currentColor, 24x24 viewBox. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M20 4 C12.5 4 5 8 5 15.5 C5 18 6.5 20 9 20 C16.5 20 20 11.5 20 4 Z"/>
+  <path d="M4.5 19.5 C8.5 14.5 13 10 18.5 5.8"/>
+</svg>

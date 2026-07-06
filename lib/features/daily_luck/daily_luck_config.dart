@@ -10,13 +10,16 @@ abstract final class DailyLuckConfig {
   static const double halkaKalinligi = 18;
 
   /// Kategori mini kartının genişliği.
-  static const double kategoriKartGenisligi = 108;
+  static const double kategoriKartGenisligi = 116;
 
   /// Yatay kategori listesinin yüksekliği.
   static const double kategoriListeYuksekligi = 116;
 
   /// Kategori kartındaki skor barının kalınlığı.
   static const double kategoriBarYuksekligi = 4;
+
+  /// Kategori kartındaki ikonun kenar uzunluğu.
+  static const double kategoriIkonBoyutu = 16;
 
   /// Yorumda kullanılacak en fazla modifiyer cümlesi sayısı
   /// (açılış cümlesiyle birlikte toplam 2-3 cümle hedefi).

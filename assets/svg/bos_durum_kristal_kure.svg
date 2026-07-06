@@ -1,0 +1,13 @@
+<!-- Boş durum illüstrasyonu: kristal küre, minimal line-art.
+     2px stroke, currentColor ile tema rengine boyanır, 120x120 viewBox. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Küre -->
+  <circle cx="60" cy="52" r="34"/>
+  <!-- Sol üstte parlama yayı -->
+  <path d="M38 38 C42 30 50 25 58 24.5"/>
+  <!-- Küre içinde küçük dört uçlu yıldız -->
+  <path d="M66 48 C67 52.5 69 54.5 73.5 55.5 C69 56.5 67 58.5 66 63 C65 58.5 63 56.5 58.5 55.5 C63 54.5 65 52.5 66 48 Z"/>
+  <!-- Kaide -->
+  <path d="M40 92 L44 82 H76 L80 92"/>
+  <path d="M34 92 H86"/>
+</svg>
