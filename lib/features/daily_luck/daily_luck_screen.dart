@@ -5,6 +5,7 @@ import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/hero_tags.dart';
 import 'comment_builder.dart';
 import 'daily_luck_config.dart';
 import 'daily_luck_providers.dart';
@@ -102,8 +103,15 @@ class _Icerik extends ConsumerWidget {
           Text(TrStrings.selamlama(isim), style: yaziTemasi.headlineMedium),
           const SizedBox(height: AppSpacing.xl),
 
-          // Orta blok: count-up animasyonlu skor göstergesi.
-          Center(child: AnimatedScoreRing(skor: sonuc.genelSkor)),
+          // Orta blok: count-up animasyonlu skor göstergesi. Hero:
+          // onboarding'in hesaplama ekranındaki küçük halka buraya
+          // büyüyerek uçar (Session 6, madde 3).
+          Center(
+            child: Hero(
+              tag: HeroTags.skorHalkasi,
+              child: AnimatedScoreRing(skor: sonuc.genelSkor),
+            ),
+          ),
           const SizedBox(height: AppSpacing.xl),
 
           // Yorum kartı: dokununca 3D flip ile açılır.

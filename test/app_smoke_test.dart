@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/storage_keys.dart';
+import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
 import 'package:kader/main.dart';
@@ -23,6 +24,16 @@ void main() {
     );
     kayitKutusu = await Hive.openBox<Map<dynamic, dynamic>>(
       StorageKeys.dailyRecordsBox,
+    );
+    // Onboarding tamamlanmış profil: uygulama doğrudan ana ekrana
+    // açılmalı (onboarding akışının kendi testi ayrı dosyada).
+    await profilKutusu.put(
+      StorageKeys.profilKaydi,
+      UserProfile(
+        isim: 'Turan',
+        dogumTarihi: DateTime(1990, 5, 15),
+        onboardingTamam: true,
+      ).toMap(),
     );
   });
 

@@ -5,6 +5,7 @@ import 'core/storage/app_storage.dart';
 import 'core/storage/providers.dart';
 import 'core/theme/app_theme.dart';
 import 'features/daily_luck/daily_luck_screen.dart';
+import 'features/onboarding/welcome_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,21 +23,25 @@ Future<void> main() async {
   );
 }
 
-/// Uygulamanın kök widget'ı: temayı bağlar ve ana ekranı açar.
+/// Uygulamanın kök widget'ı: temayı bağlar ve açılış ekranını seçer.
 ///
-/// Onboarding akışı (Session 6) gelene kadar uygulama doğrudan
-/// [DailyLuckScreen] ile başlar.
-class KaderApp extends StatelessWidget {
+/// Onboarding tamamlanmışsa doğrudan ana ekran, değilse karşılama
+/// açılır (onboarding bir kez gösterilir — Session 6).
+class KaderApp extends ConsumerWidget {
   /// Varsayılan kurucu.
   const KaderApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool onboardingTamam =
+        ref.watch(userRepositoryProvider).onboardingTamamlandiMi;
     return MaterialApp(
       title: 'Kader',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
-      home: const DailyLuckScreen(),
+      home: onboardingTamam
+          ? const DailyLuckScreen()
+          : const WelcomeScreen(),
     );
   }
 }
