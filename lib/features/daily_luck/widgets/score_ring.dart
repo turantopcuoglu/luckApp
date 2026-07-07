@@ -37,7 +37,7 @@ class ScoreRing extends StatelessWidget {
       width: boyut,
       height: boyut,
       child: CustomPaint(
-        painter: _ScoreRingPainter(
+        painter: ScoreRingPainter(
           oran: skor / EngineConfig.skorMaks,
           kalinlik: kalinlik,
         ),
@@ -68,8 +68,12 @@ class ScoreRing extends StatelessWidget {
 
 /// Halkayı çizen painter: tam daire arka halka ve üstten (saat 12)
 /// başlayıp skor oranı kadar süpüren gradient yay.
-class _ScoreRingPainter extends CustomPainter {
-  const _ScoreRingPainter({required this.oran, required this.kalinlik});
+///
+/// Public'tir: story kartı (features/share) aynı halkayı farklı
+/// boyutta yeniden çizer.
+class ScoreRingPainter extends CustomPainter {
+  /// [oran] (0-1) ve çizgi [kalinlik]'ı ile painter oluşturur.
+  const ScoreRingPainter({required this.oran, required this.kalinlik});
 
   /// Halkanın dolu kısmının oranı (0.0 - 1.0).
   final double oran;
@@ -113,6 +117,6 @@ class _ScoreRingPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ScoreRingPainter onceki) =>
+  bool shouldRepaint(ScoreRingPainter onceki) =>
       onceki.oran != oran || onceki.kalinlik != kalinlik;
 }

@@ -21,6 +21,10 @@ dependencies:
   hive_flutter: ^1.1.0
   flutter_svg: ^2.0.17
   google_fonts: ^6.2.1
+  # ONAY NOTU: share_plus, story kartının sistem paylaşım menüsüne
+  # verilmesi için eklendi (plan Session 7, madde 3). Onaylamıyorsan
+  # söyle, kaldırıp yalnızca PNG üretimini bırakayım.
+  share_plus: ^10.1.4
 
 dev_dependencies:
   flutter_test:

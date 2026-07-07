@@ -13,6 +13,8 @@ import 'package:kader/features/daily_luck/daily_luck_screen.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
 import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 import 'package:kader/features/daily_luck/widgets/score_ring.dart';
+import 'package:kader/features/share/share_button.dart';
+import 'package:kader/features/share/share_service.dart';
 
 void main() {
   late Directory geciciDizin;
@@ -124,11 +126,41 @@ void main() {
 
     await kartiAc(tester);
 
-    // Açılış sonrası: 5 etiket + yorum cümleleri ekranda.
+    // Açılış sonrası: 5 etiket + yorum cümleleri + paylaş butonu.
     for (final LuckCategory kategori in LuckCategory.values) {
       expect(find.text(kategori.etiket), findsOneWidget);
     }
     expect(find.textContaining('skorunu'), findsWidgets);
+    expect(find.byType(ShareButton), findsOneWidget);
+  });
+
+  testWidgets('Paylaş butonu servisi günün sonucuyla çağırır',
+      (WidgetTester tester) async {
+    final _SahteShareService sahte = _SahteShareService();
+
+    await tester.runAsync(() async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: <Override>[
+            userProfileBoxProvider.overrideWithValue(profilKutusu),
+            dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
+            bugunProvider.overrideWithValue(sabitGun),
+            shareServiceProvider.overrideWithValue(sahte),
+          ],
+          child: const MaterialApp(home: DailyLuckScreen()),
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    });
+    await tester.pump();
+    await kartiAc(tester);
+
+    await tester.ensureVisible(find.byType(ShareButton));
+    await tester.tap(find.byType(ShareButton));
+    await tester.pump();
+
+    expect(sahte.paylasilanlar, hasLength(1));
+    expect(sahte.paylasilanlar.single.gun, sabitGun);
   });
 
   testWidgets('kayıtlı profil varsa selamlama onun ismiyle yapılır',
@@ -150,4 +182,15 @@ void main() {
 
     expect(find.text(TrStrings.selamlama('Turan')), findsOneWidget);
   });
+}
+
+/// Paylaşımı kaydeden sahte servis (gerçek plugin çağrısı yapılmaz).
+class _SahteShareService extends ShareService {
+  /// paylas ile gelen sonuçlar.
+  final List<LuckResult> paylasilanlar = <LuckResult>[];
+
+  @override
+  Future<void> paylas({required LuckResult sonuc}) async {
+    paylasilanlar.add(sonuc);
+  }
 }

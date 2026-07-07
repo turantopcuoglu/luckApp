@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../shared/widgets/app_icons.dart';
 import '../../shared/widgets/hero_tags.dart';
+import '../share/share_button.dart';
 import 'comment_builder.dart';
 import 'daily_luck_config.dart';
 import 'daily_luck_providers.dart';
@@ -181,10 +182,16 @@ class _IcerikState extends ConsumerState<_Icerik>
           ),
           const SizedBox(height: AppSpacing.lg),
 
-          // Yorum: kutular açıldıktan sonra belirir.
+          // Yorum + paylaş: kutular açıldıktan sonra birlikte belirir.
           FadeTransition(
             opacity: _yorumOpakligi,
-            child: CommentCard(metin: gunYorumu(widget.sonuc)),
+            child: Column(
+              children: <Widget>[
+                CommentCard(metin: gunYorumu(widget.sonuc)),
+                const SizedBox(height: AppSpacing.md),
+                Center(child: ShareButton(sonuc: widget.sonuc)),
+              ],
+            ),
           ),
         ],
       ),
