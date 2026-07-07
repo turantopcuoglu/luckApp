@@ -5,7 +5,12 @@ import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/hero_tags.dart';
+import '../categories/category_detail_screen.dart';
+import '../categories/entitlement.dart';
+import '../categories/paywall_screen.dart';
+import '../categories/widgets/premium_gate.dart';
 import '../share/share_button.dart';
 import 'comment_builder.dart';
 import 'daily_luck_config.dart';
@@ -167,14 +172,30 @@ class _IcerikState extends ConsumerState<_Icerik>
                   const SizedBox(width: AppSpacing.sm),
               itemBuilder: (BuildContext context, int i) {
                 final LuckCategory kategori = LuckCategory.values[i];
-                return KutuAcilisi(
-                  animasyon: _kutuKontrol,
-                  kontrolSuresi: _kutuKontrolSuresi,
-                  indeks: i,
-                  kapali: KapaliKategoriKutusu(kategori: kategori),
-                  acik: CategoryCard(
-                    kategori: kategori,
-                    skor: widget.sonuc.kategoriSkorlari[kategori]!,
+                final bool kilitli =
+                    ref.watch(kategoriKilitliProvider(kategori));
+                // Gate görseli tüm kutuyu (kapalı/açık yüz) sarar;
+                // dokunuş kilide göre paywall'a ya da detaya gider.
+                return GestureDetector(
+                  onTap: () => Navigator.of(context).push(
+                    fadeThroughRoute<void>(
+                      kilitli
+                          ? const PaywallScreen()
+                          : CategoryDetailScreen(kategori: kategori),
+                    ),
+                  ),
+                  child: PremiumGate(
+                    kilitli: kilitli,
+                    child: KutuAcilisi(
+                      animasyon: _kutuKontrol,
+                      kontrolSuresi: _kutuKontrolSuresi,
+                      indeks: i,
+                      kapali: KapaliKategoriKutusu(kategori: kategori),
+                      acik: CategoryCard(
+                        kategori: kategori,
+                        skor: widget.sonuc.kategoriSkorlari[kategori]!,
+                      ),
+                    ),
                   ),
                 );
               },

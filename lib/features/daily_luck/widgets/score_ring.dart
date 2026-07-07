@@ -18,11 +18,16 @@ class ScoreRing extends StatelessWidget {
     required this.skor,
     this.boyut = DailyLuckConfig.halkaCapi,
     this.kalinlik = DailyLuckConfig.halkaKalinligi,
+    this.etiket = TrStrings.genelSkorEtiketi,
     super.key,
   });
 
   /// Gösterilecek genel skor.
   final int skor;
+
+  /// Skorun altındaki etiket (varsayılan "GENEL SKOR"; kategori
+  /// detayında kategori adı kullanılır).
+  final String etiket;
 
   /// Halkanın dış çapı.
   final double boyut;
@@ -52,7 +57,7 @@ class ScoreRing extends StatelessWidget {
                 ),
               ),
               Text(
-                TrStrings.genelSkorEtiketi,
+                etiket,
                 style: yaziTemasi.labelSmall?.copyWith(
                   color: AppColors.textSecondary,
                   letterSpacing: 2,

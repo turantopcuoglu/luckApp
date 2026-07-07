@@ -20,6 +20,7 @@ import 'luck_category.dart';
 import 'luck_modifier.dart';
 import 'luck_result.dart';
 import 'modifiers.dart';
+import 'sansli_saat.dart';
 import 'score_transform.dart';
 import 'user_seed.dart';
 
@@ -28,6 +29,7 @@ export 'luck_category.dart';
 export 'luck_modifier.dart';
 export 'luck_result.dart';
 export 'modifiers.dart';
+export 'sansli_saat.dart';
 export 'score_transform.dart';
 export 'user_seed.dart';
 
@@ -96,14 +98,43 @@ class LuckEngine {
     );
   }
 
+  /// [kullanici] için [gun] gününde [kategori]ye özgü şanslı saat
+  /// aralığını üretir (plan Session 9, madde 1).
+  ///
+  /// Skor tohumundan ':saat:' ayrıştırıcısı ve kategori adıyla ayrışan
+  /// bağımsız bir tohum kullanır; aynı üçlü her zaman aynı aralığı
+  /// verir (CLAUDE.md kural 8).
+  SansliSaat sansliSaat({
+    required UserSeed kullanici,
+    required DateTime gun,
+    required LuckCategory kategori,
+  }) {
+    final DateTime tarih = DateTime(gun.year, gun.month, gun.day);
+    final Random rnd = Random(
+      _seedUret(kullanici, tarih, ek: ':saat:${kategori.name}'),
+    );
+    final int aralik = EngineConfig.sansliSaatEnGecBaslangic -
+        EngineConfig.sansliSaatEnErken +
+        1;
+    final int baslangic =
+        EngineConfig.sansliSaatEnErken + rnd.nextInt(aralik);
+    return SansliSaat(
+      baslangicSaati: baslangic,
+      bitisSaati: baslangic + EngineConfig.sansliSaatSuresi,
+    );
+  }
+
   /// (kullanıcı, gün) çiftinden deterministik RNG tohumu üretir.
   ///
-  /// Girdi dizgisi: isimHash + doğum tarihi ISO-8601 + gün yyyy-MM-dd.
-  /// SHA-256 özetinin ilk 8 baytı big-endian int'e çevrilir.
-  int _seedUret(UserSeed kullanici, DateTime gun) {
+  /// Girdi dizgisi: isimHash + doğum tarihi ISO-8601 + gün yyyy-MM-dd
+  /// (+ opsiyonel [ek] ayrıştırıcı: farklı amaçlar — skor, şanslı saat —
+  /// aynı günden farklı tohum türetebilsin). SHA-256 özetinin ilk 8
+  /// baytı big-endian int'e çevrilir.
+  int _seedUret(UserSeed kullanici, DateTime gun, {String ek = ''}) {
     final String girdi = kullanici.isimHash +
         kullanici.dogumTarihi.toIso8601String() +
-        _gunAnahtari(gun);
+        _gunAnahtari(gun) +
+        ek;
     final List<int> ozet = sha256.convert(utf8.encode(girdi)).bytes;
 
     int seed = 0;

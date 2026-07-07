@@ -38,4 +38,13 @@ abstract final class EngineConfig {
 
   /// Ortalama sinodik ay uzunluğu (gün) — ay evresi hesabında kullanılır.
   static const double sinodikAyGun = 29.530588853;
+
+  /// Şanslı saat aralığının başlayabileceği en erken saat.
+  static const int sansliSaatEnErken = 8;
+
+  /// Şanslı saat aralığının başlayabileceği en geç saat.
+  static const int sansliSaatEnGecBaslangic = 20;
+
+  /// Şanslı saat aralığının uzunluğu (saat).
+  static const int sansliSaatSuresi = 2;
 }
