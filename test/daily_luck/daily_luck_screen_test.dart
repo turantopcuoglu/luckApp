@@ -58,6 +58,8 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 100));
     });
     await tester.pump();
+    // Giriş animasyonlarının (count-up, stagger) bitmesini bekle.
+    await tester.pump(const Duration(seconds: 2));
   }
 
   testWidgets('tarih, misafir selamlaması ve skor halkası görünür',
@@ -103,9 +105,17 @@ void main() {
     for (final LuckCategory kategori in LuckCategory.values) {
       expect(find.text(kategori.etiket), findsOneWidget);
     }
-    // Yorum açılış cümlelerinden biri ekranda olmalı (skora bağlı).
-    final Finder yorum = find.textContaining('skorunu');
-    expect(yorum, findsWidgets);
+
+    // Yorum kartı kapalı başlar: davet metni görünür, yorum görünmez
+    // (Session 5 flip davranışı).
+    expect(find.text(TrStrings.kartArkaYuzMetni), findsOneWidget);
+    expect(find.textContaining('skorunu'), findsNothing);
+
+    // Dokununca flip tamamlanır ve yorum cümleleri açılır.
+    await tester.tap(find.text(TrStrings.kartArkaYuzMetni));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.textContaining('skorunu'), findsWidgets);
   });
 
   testWidgets('kayıtlı profil varsa selamlama onun ismiyle yapılır',

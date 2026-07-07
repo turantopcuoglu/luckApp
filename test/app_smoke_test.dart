@@ -63,6 +63,8 @@ void main() {
     );
     await tester.pump();
     await tester.pump();
+    // Count-up animasyonunun hedefe ulaşmasını bekle (1.2 sn + pay).
+    await tester.pump(const Duration(seconds: 2));
 
     expect(find.byType(DailyLuckScreen), findsOneWidget);
     expect(find.text('${sabitSonuc.genelSkor}'), findsWidgets);
