@@ -41,8 +41,8 @@ abstract final class TrStrings {
   /// Skor yüklenirken gösterilen metin.
   static const String yukleniyor = 'Kaderin hesaplanıyor...';
 
-  /// Kapalı yorum kartının (flip arka yüzü) üzerindeki çağrı metni.
-  static const String kartArkaYuzMetni = 'Bugünün kaderini gör';
+  /// Kapalı kader kartının altındaki dokunma ipucu.
+  static const String kartIpucu = 'Bugünün kaderini görmek için kartına dokun';
 
   /// Beklenmeyen hata metni.
   static const String hataMetni =

@@ -9,6 +9,7 @@ import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
+import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 import 'package:kader/main.dart';
 
 void main() {
@@ -74,10 +75,16 @@ void main() {
     );
     await tester.pump();
     await tester.pump();
-    // Count-up animasyonunun hedefe ulaşmasını bekle (1.2 sn + pay).
-    await tester.pump(const Duration(seconds: 2));
 
+    // Ana ekran kapalı kader kartıyla açılır; karta dokununca
+    // flip + iniş + count-up sonrası skor görünür.
     expect(find.byType(DailyLuckScreen), findsOneWidget);
+    expect(find.byType(FortuneRevealCard), findsOneWidget);
+
+    await tester.tap(find.byType(FortuneRevealCard));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1200));
+    await tester.pump(const Duration(seconds: 2));
     expect(find.text('${sabitSonuc.genelSkor}'), findsWidgets);
   });
 }

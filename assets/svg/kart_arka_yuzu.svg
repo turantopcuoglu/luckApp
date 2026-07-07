@@ -1,0 +1,67 @@
+<!-- Kader kartının kapalı (arka) yüzü: mor zemin üzerine altın
+     işlemeler — çift çerçeve, köşe kıvrımları, ortada çift halka
+     içinde dört uçlu yıldız, çevresinde nokta dizisi, üst/alt eksende
+     elmas aksanlar. 240x360 viewBox, kart oranı 2:3. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 360">
+  <defs>
+    <linearGradient id="zemin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#342A6E"/>
+      <stop offset="1" stop-color="#231C4E"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="360" rx="16" fill="url(#zemin)"/>
+
+  <!-- Çift çerçeve -->
+  <rect x="10" y="10" width="220" height="340" rx="10" fill="none"
+        stroke="#F4C95D" stroke-width="2.5"/>
+  <rect x="18" y="18" width="204" height="324" rx="6" fill="none"
+        stroke="#F4C95D" stroke-width="1" opacity="0.55"/>
+
+  <!-- Köşe kıvrımları + noktaları -->
+  <g fill="none" stroke="#F4C95D" stroke-width="1.5" stroke-linecap="round">
+    <path d="M28 46 Q28 28 46 28"/>
+    <path d="M212 46 Q212 28 194 28"/>
+    <path d="M28 314 Q28 332 46 332"/>
+    <path d="M212 314 Q212 332 194 332"/>
+  </g>
+  <g fill="#F4C95D">
+    <circle cx="36" cy="36" r="2"/>
+    <circle cx="204" cy="36" r="2"/>
+    <circle cx="36" cy="324" r="2"/>
+    <circle cx="204" cy="324" r="2"/>
+  </g>
+
+  <!-- Üst ve alt eksen aksanları: elmas + yan çizgiler -->
+  <g fill="#F4C95D">
+    <path d="M120 44 L126 52 L120 60 L114 52 Z"/>
+    <path d="M120 300 L126 308 L120 316 L114 308 Z"/>
+  </g>
+  <g stroke="#F4C95D" stroke-width="1" opacity="0.7" stroke-linecap="round">
+    <line x1="72" y1="52" x2="106" y2="52"/>
+    <line x1="134" y1="52" x2="168" y2="52"/>
+    <line x1="72" y1="308" x2="106" y2="308"/>
+    <line x1="134" y1="308" x2="168" y2="308"/>
+  </g>
+
+  <!-- Merkez: çift halka içinde dört uçlu yıldız -->
+  <circle cx="120" cy="180" r="54" fill="none" stroke="#F4C95D"
+          stroke-width="2.5"/>
+  <circle cx="120" cy="180" r="46" fill="none" stroke="#F4C95D"
+          stroke-width="1" opacity="0.55"/>
+  <path fill="#F4C95D" d="M120 148 C123 168 132 177 152 180
+           C132 183 123 192 120 212 C117 192 108 183 88 180
+           C108 177 117 168 120 148 Z"/>
+  <circle cx="120" cy="180" r="3" fill="#231C4E"/>
+
+  <!-- Halka çevresinde 8 nokta -->
+  <g fill="#F4C95D" opacity="0.8">
+    <circle cx="182" cy="180" r="1.8"/>
+    <circle cx="163.8" cy="223.8" r="1.8"/>
+    <circle cx="120" cy="242" r="1.8"/>
+    <circle cx="76.2" cy="223.8" r="1.8"/>
+    <circle cx="58" cy="180" r="1.8"/>
+    <circle cx="76.2" cy="136.2" r="1.8"/>
+    <circle cx="120" cy="118" r="1.8"/>
+    <circle cx="163.8" cy="136.2" r="1.8"/>
+  </g>
+</svg>

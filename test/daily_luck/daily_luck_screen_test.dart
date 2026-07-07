@@ -11,6 +11,7 @@ import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
+import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 import 'package:kader/features/daily_luck/widgets/score_ring.dart';
 
 void main() {
@@ -41,7 +42,7 @@ void main() {
   ///
   /// Hive'ın disk yazması gerçek async I/O'dur; widget testinin
   /// FakeAsync bölgesinde tamamlanmaz. runAsync ile gerçek event
-  /// loop'a izin verilir, ardından tek pump veri durumunu çizer.
+  /// loop'a izin verilir, ardından pump veri durumunu çizer.
   Future<void> ekraniAc(WidgetTester tester) async {
     await tester.runAsync(() async {
       await tester.pumpWidget(
@@ -58,11 +59,19 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 100));
     });
     await tester.pump();
-    // Giriş animasyonlarının (count-up, stagger) bitmesini bekle.
-    await tester.pump(const Duration(seconds: 2));
   }
 
-  testWidgets('tarih, misafir selamlaması ve skor halkası görünür',
+  /// Kader kartına dokunur ve tüm açılış zincirini pompalar:
+  /// flip+iniş (1.1sn) → count-up (1.2sn) + kutu açılışları + yorum.
+  Future<void> kartiAc(WidgetTester tester) async {
+    await tester.tap(find.byType(FortuneRevealCard));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1200)); // flip + iniş
+    await tester.pump(const Duration(milliseconds: 1500)); // sayaç+kutular
+    await tester.pump(const Duration(milliseconds: 500)); // yorum fade
+  }
+
+  testWidgets('tarih, misafir selamlaması ve kapalı kart görünür',
       (WidgetTester tester) async {
     await ekraniAc(tester);
 
@@ -71,11 +80,14 @@ void main() {
       find.text(TrStrings.selamlama(TrStrings.misafirIsmi)),
       findsOneWidget,
     );
-    expect(find.byType(ScoreRing), findsOneWidget);
-    expect(find.text(TrStrings.genelSkorEtiketi), findsOneWidget);
+    expect(find.byType(FortuneRevealCard), findsOneWidget);
+    expect(find.text(TrStrings.kartIpucu), findsOneWidget);
+    // Kart kapalı: skor halkası ve skor etiketi henüz yok.
+    expect(find.byType(ScoreRing), findsNothing);
+    expect(find.text(TrStrings.genelSkorEtiketi), findsNothing);
   });
 
-  testWidgets('motorun ürettiği genel skor halkada yazar',
+  testWidgets('karta dokununca motorun ürettiği skor halkada yazar',
       (WidgetTester tester) async {
     // Ekranın göstermesi beklenen deterministik skoru motordan hesapla.
     final UserProfile misafir = UserProfile(
@@ -88,7 +100,9 @@ void main() {
     );
 
     await ekraniAc(tester);
+    await kartiAc(tester);
 
+    expect(find.byType(ScoreRing), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(ScoreRing),
@@ -98,23 +112,22 @@ void main() {
     );
   });
 
-  testWidgets('5 kategori kartı ve yorum kartı listelenir',
+  testWidgets(
+      'kutular kapalı başlar; kart açılınca etiketler ve yorum belirir',
       (WidgetTester tester) async {
     await ekraniAc(tester);
 
+    // Kapalı durumda kategori etiketleri görünmez (yalnız ikonlar).
+    for (final LuckCategory kategori in LuckCategory.values) {
+      expect(find.text(kategori.etiket), findsNothing);
+    }
+
+    await kartiAc(tester);
+
+    // Açılış sonrası: 5 etiket + yorum cümleleri ekranda.
     for (final LuckCategory kategori in LuckCategory.values) {
       expect(find.text(kategori.etiket), findsOneWidget);
     }
-
-    // Yorum kartı kapalı başlar: davet metni görünür, yorum görünmez
-    // (Session 5 flip davranışı).
-    expect(find.text(TrStrings.kartArkaYuzMetni), findsOneWidget);
-    expect(find.textContaining('skorunu'), findsNothing);
-
-    // Dokununca flip tamamlanır ve yorum cümleleri açılır.
-    await tester.tap(find.text(TrStrings.kartArkaYuzMetni));
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
     expect(find.textContaining('skorunu'), findsWidgets);
   });
 

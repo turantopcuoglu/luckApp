@@ -65,6 +65,45 @@ abstract final class DailyLuckConfig {
   /// Kategori kartının başladığı dikey ofset (yükseklik oranı).
   static const double kategoriSlideOrani = 0.35;
 
+  // ---- Kader kartı (kapalı kart açılış akışı) ----
+
+  /// Kader kartının genişliği (deste kartı oranı: 2:3).
+  static const double kartGenisligi = 220;
+
+  /// Kader kartının yüksekliği.
+  static const double kartYuksekligi = 330;
+
+  /// Kart ön yüzündeki skor halkasının çapı.
+  static const double kartHalkaCapi = 170;
+
+  /// Kart ön yüzündeki skor halkasının çizgi kalınlığı.
+  static const double kartHalkaKalinligi = 12;
+
+  /// Kartın "ekrana yaklaşma + düşme" (iniş) efektinin süresi;
+  /// flip süresi [kartFlipSuresi]'dir, toplam açılış ikisinin toplamı.
+  static const Duration kartInisSuresi = Duration(milliseconds: 600);
+
+  /// Yaklaşma anındaki azami ölçek (karta "ekrana geliyor" hissi).
+  static const double kartYaklasmaOlcegi = 1.30;
+
+  /// Ekrana "düşme" anındaki sıkışma ölçeği (çarpma hissi).
+  static const double kartCarpmaOlcegi = 0.965;
+
+  /// Kapalı kategori kutusundaki büyük ikonun boyutu.
+  static const double kapaliKutuIkonBoyutu = 32;
+
+  /// Kutunun açılış (mini flip) süresi.
+  static const Duration kutuAcilisSuresi = Duration(milliseconds: 350);
+
+  /// Ardışık kutu açılışları arasındaki gecikme.
+  static const Duration kutuGecikmesi = Duration(milliseconds: 120);
+
+  /// Yorum kartının kutulardan sonra belirme (fade) süresi.
+  static const Duration yorumBelirmeSuresi = Duration(milliseconds: 400);
+
+  /// Kart ile "Kartına dokun" ipucu metni arasındaki dikey boşluk.
+  static const double ipucuBoslugu = 12;
+
   // ---- Arka plan yıldız deseni yerleşimi ----
 
   /// Köşelere yerleştirilen yıldız desen karosunun boyutu.

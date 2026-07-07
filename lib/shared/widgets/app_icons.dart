@@ -79,4 +79,18 @@ abstract final class AppIllustrations {
       height: boyut,
     );
   }
+
+  /// Kader kartının kapalı yüzü: mor zemin, altın işlemeler
+  /// (ana ekran kart açılışı). Renkleri SVG içinde sabittir.
+  static Widget kartArkaYuzu({
+    required double genislik,
+    required double yukseklik,
+  }) {
+    return SvgPicture.asset(
+      'assets/svg/kart_arka_yuzu.svg',
+      width: genislik,
+      height: yukseklik,
+      fit: BoxFit.cover,
+    );
+  }
 }

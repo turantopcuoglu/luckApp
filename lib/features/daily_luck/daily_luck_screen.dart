@@ -13,12 +13,14 @@ import 'tr_strings.dart';
 import 'widgets/animated_score_ring.dart';
 import 'widgets/category_card.dart';
 import 'widgets/comment_card.dart';
-import 'widgets/flip_reveal_card.dart';
-import 'widgets/staggered_entrance.dart';
+import 'widgets/fortune_reveal_card.dart';
+import 'widgets/kutu_acilisi.dart';
 
-/// Ana ekran: tarih + selamlama, animasyonlu skor halkası, flip ile
-/// açılan yorum kartı ve staggered giren kategori mini kartları
-/// (plan Session 3 düzeni + Session 5 animasyon katmanı).
+/// Ana ekran: üstte tarih + selamlama, ortada (hafif yukarıda) kapalı
+/// kader kartı, altında kapalı kategori kutuları.
+///
+/// Akış: karta dokun → 3D flip → ekrana yaklaşıp "düşme" → skor
+/// count-up → kutular tek tek flip'le açılır → yorum belirir.
 class DailyLuckScreen extends ConsumerWidget {
   /// Varsayılan kurucu.
   const DailyLuckScreen({super.key});
@@ -27,9 +29,6 @@ class DailyLuckScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<LuckResult> sonuc = ref.watch(gununSansiProvider);
     return Scaffold(
-      // Stack: en altta köşelere yerleşen soluk yıldız deseni,
-      // üstte asıl içerik. Desen dokunuşları yutmasın diye
-      // IgnorePointer ile sarılıdır.
       body: Stack(
         children: <Widget>[
           const _YildizArkaPlani(),
@@ -75,14 +74,53 @@ class _YildizArkaPlani extends StatelessWidget {
   }
 }
 
-/// Başarılı durumda ekranın tam içeriği.
-class _Icerik extends ConsumerWidget {
+/// Başarılı durumda ekranın tam içeriği ve açılış orkestrasyonu.
+///
+/// Kutu/yorum açılış controller'ı burada yaşar; kart açılışı bitince
+/// (onAcilisTamam) tetiklenir. setState kullanılmaz — controller'ı
+/// dinleyen alt widget'lar kendi kendini boyar (kural 5).
+class _Icerik extends ConsumerStatefulWidget {
   const _Icerik({required this.sonuc});
 
   final LuckResult sonuc;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Icerik> createState() => _IcerikState();
+}
+
+class _IcerikState extends ConsumerState<_Icerik>
+    with SingleTickerProviderStateMixin {
+  /// Kutu açılışları + yorum belirmesinin toplam süresi.
+  static final Duration _kutuKontrolSuresi =
+      DailyLuckConfig.kutuGecikmesi * (LuckCategory.values.length - 1) +
+          DailyLuckConfig.kutuAcilisSuresi +
+          DailyLuckConfig.yorumBelirmeSuresi;
+
+  late final AnimationController _kutuKontrol = AnimationController(
+    vsync: this,
+    duration: _kutuKontrolSuresi,
+  );
+
+  /// Yorumun belirme dilimi: sürenin sonundaki fade parçası.
+  late final Animation<double> _yorumOpakligi = CurvedAnimation(
+    parent: _kutuKontrol,
+    curve: Interval(
+      1 -
+          DailyLuckConfig.yorumBelirmeSuresi.inMilliseconds /
+              _kutuKontrolSuresi.inMilliseconds,
+      1,
+      curve: Curves.easeOut,
+    ),
+  );
+
+  @override
+  void dispose() {
+    _kutuKontrol.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final DateTime bugun = ref.watch(bugunProvider);
     final String isim = ref.watch(aktifProfilProvider).isim;
@@ -101,108 +139,98 @@ class _Icerik extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(TrStrings.selamlama(isim), style: yaziTemasi.headlineMedium),
-          const SizedBox(height: AppSpacing.xl),
+          const SizedBox(height: AppSpacing.lg),
 
-          // Orta blok: count-up animasyonlu skor göstergesi. Hero:
-          // onboarding'in hesaplama ekranındaki küçük halka buraya
-          // büyüyerek uçar (Session 6, madde 3).
+          // Orta blok: kapalı kader kartı (deste kartı oranında).
+          // Hero: onboarding'deki küçük halka bu karta uçar.
           Center(
             child: Hero(
               tag: HeroTags.skorHalkasi,
-              child: AnimatedScoreRing(skor: sonuc.genelSkor),
+              child: FortuneRevealCard(
+                arkaYuz: const _KapaliKartYuzu(),
+                onYuz: _AcikKartYuzu(skor: widget.sonuc.genelSkor),
+                onAcilisTamam: _kutuKontrol.forward,
+              ),
             ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
-
-          // Yorum kartı: dokununca 3D flip ile açılır.
-          FlipRevealCard(
-            onYuz: CommentCard(metin: gunYorumu(sonuc)),
-            arkaYuz: const _KapaliYorumKarti(),
           ),
           const SizedBox(height: AppSpacing.lg),
 
-          // Alt blok: kategori kartları staggered girişle.
-          _KategoriListesi(sonuc: sonuc),
+          // Alt blok: kategori kutuları — kapalı (yalnız ikon) başlar,
+          // kart açılınca tek tek flip'le açılır.
+          SizedBox(
+            height: DailyLuckConfig.kategoriListeYuksekligi,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: LuckCategory.values.length,
+              separatorBuilder: (BuildContext context, int i) =>
+                  const SizedBox(width: AppSpacing.sm),
+              itemBuilder: (BuildContext context, int i) {
+                final LuckCategory kategori = LuckCategory.values[i];
+                return KutuAcilisi(
+                  animasyon: _kutuKontrol,
+                  kontrolSuresi: _kutuKontrolSuresi,
+                  indeks: i,
+                  kapali: KapaliKategoriKutusu(kategori: kategori),
+                  acik: CategoryCard(
+                    kategori: kategori,
+                    skor: widget.sonuc.kategoriSkorlari[kategori]!,
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+
+          // Yorum: kutular açıldıktan sonra belirir.
+          FadeTransition(
+            opacity: _yorumOpakligi,
+            child: CommentCard(metin: gunYorumu(widget.sonuc)),
+          ),
         ],
       ),
     );
   }
 }
 
-/// Flip kartının kapalı yüzü: davet metni.
-class _KapaliYorumKarti extends StatelessWidget {
-  const _KapaliYorumKarti();
+/// Kader kartının kapalı yüzü: mor zemin, altın işlemeler (SVG).
+class _KapaliKartYuzu extends StatelessWidget {
+  const _KapaliKartYuzu();
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Center(
-          child: Text(
-            TrStrings.kartArkaYuzMetni,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.gold,
-                ),
-          ),
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: AppIllustrations.kartArkaYuzu(
+        genislik: DailyLuckConfig.kartGenisligi,
+        yukseklik: DailyLuckConfig.kartYuksekligi,
       ),
     );
   }
 }
 
-/// Kategori kartlarını tek controller'dan beslenen staggered
-/// girişle listeler (öğe başına 80ms gecikme).
-class _KategoriListesi extends StatefulWidget {
-  const _KategoriListesi({required this.sonuc});
+/// Kader kartının açık yüzü: skor halkası (count-up kart açılırken
+/// başlar, kart inişiyle birlikte sayar).
+class _AcikKartYuzu extends StatelessWidget {
+  const _AcikKartYuzu({required this.skor});
 
-  final LuckResult sonuc;
-
-  @override
-  State<_KategoriListesi> createState() => _KategoriListesiState();
-}
-
-class _KategoriListesiState extends State<_KategoriListesi>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _kontrol = AnimationController(
-    vsync: this,
-    duration: StaggeredEntrance.toplamSure(LuckCategory.values.length),
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    _kontrol.forward();
-  }
-
-  @override
-  void dispose() {
-    _kontrol.dispose();
-    super.dispose();
-  }
+  final int skor;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: DailyLuckConfig.kategoriListeYuksekligi,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: LuckCategory.values.length,
-        separatorBuilder: (BuildContext context, int i) =>
-            const SizedBox(width: AppSpacing.sm),
-        itemBuilder: (BuildContext context, int i) {
-          final LuckCategory kategori = LuckCategory.values[i];
-          return StaggeredEntrance(
-            animasyon: _kontrol,
-            indeks: i,
-            toplam: LuckCategory.values.length,
-            child: CategoryCard(
-              kategori: kategori,
-              skor: widget.sonuc.kategoriSkorlari[kategori]!,
-            ),
-          );
-        },
+    return Container(
+      width: DailyLuckConfig.kartGenisligi,
+      height: DailyLuckConfig.kartYuksekligi,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.gold),
+      ),
+      child: Center(
+        child: AnimatedScoreRing(
+          skor: skor,
+          boyut: DailyLuckConfig.kartHalkaCapi,
+          kalinlik: DailyLuckConfig.kartHalkaKalinligi,
+        ),
       ),
     );
   }

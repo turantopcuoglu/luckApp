@@ -10,23 +10,37 @@ import '../tr_strings.dart';
 /// Dairesel skor göstergesi: arka halka + skor oranında dolan
 /// altın gradient halka, ortasında skor sayısı ve etiketi.
 ///
-/// Statik çizimdir; count-up ve dolum animasyonu Session 5'te bu
-/// widget sarmalanarak eklenecek.
+/// [boyut] ve [kalinlik] ile ölçeklenebilir (kart içinde küçük,
+/// tek başına büyük kullanım için).
 class ScoreRing extends StatelessWidget {
   /// 0-100 arası [skor] ile gösterge oluşturur.
-  const ScoreRing({required this.skor, super.key});
+  const ScoreRing({
+    required this.skor,
+    this.boyut = DailyLuckConfig.halkaCapi,
+    this.kalinlik = DailyLuckConfig.halkaKalinligi,
+    super.key,
+  });
 
   /// Gösterilecek genel skor.
   final int skor;
+
+  /// Halkanın dış çapı.
+  final double boyut;
+
+  /// Halkanın çizgi kalınlığı.
+  final double kalinlik;
 
   @override
   Widget build(BuildContext context) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     return SizedBox(
-      width: DailyLuckConfig.halkaCapi,
-      height: DailyLuckConfig.halkaCapi,
+      width: boyut,
+      height: boyut,
       child: CustomPaint(
-        painter: _ScoreRingPainter(oran: skor / EngineConfig.skorMaks),
+        painter: _ScoreRingPainter(
+          oran: skor / EngineConfig.skorMaks,
+          kalinlik: kalinlik,
+        ),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -55,10 +69,13 @@ class ScoreRing extends StatelessWidget {
 /// Halkayı çizen painter: tam daire arka halka ve üstten (saat 12)
 /// başlayıp skor oranı kadar süpüren gradient yay.
 class _ScoreRingPainter extends CustomPainter {
-  const _ScoreRingPainter({required this.oran});
+  const _ScoreRingPainter({required this.oran, required this.kalinlik});
 
   /// Halkanın dolu kısmının oranı (0.0 - 1.0).
   final double oran;
+
+  /// Çizgi kalınlığı.
+  final double kalinlik;
 
   /// Yayın başlangıç açısı: saat 12 yönü.
   static const double _baslangicAcisi = -pi / 2;
@@ -67,13 +84,12 @@ class _ScoreRingPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final Offset merkez = size.center(Offset.zero);
     // Çizgi kalınlığının yarısı içeri alınır ki halka kutuya sığsın.
-    final double yaricap =
-        (size.shortestSide - DailyLuckConfig.halkaKalinligi) / 2;
+    final double yaricap = (size.shortestSide - kalinlik) / 2;
     final Rect cerceve = Rect.fromCircle(center: merkez, radius: yaricap);
 
     final Paint arkaHalka = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = DailyLuckConfig.halkaKalinligi
+      ..strokeWidth = kalinlik
       ..color = AppColors.surface;
     canvas.drawCircle(merkez, yaricap, arkaHalka);
 
@@ -83,7 +99,7 @@ class _ScoreRingPainter extends CustomPainter {
 
     final Paint dolum = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = DailyLuckConfig.halkaKalinligi
+      ..strokeWidth = kalinlik
       ..strokeCap = StrokeCap.round
       // Gradient yayın başladığı açıdan itibaren döndürülür ki renk
       // geçişi her zaman dolumun başından sonuna doğru aksın.
@@ -97,5 +113,6 @@ class _ScoreRingPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ScoreRingPainter onceki) => onceki.oran != oran;
+  bool shouldRepaint(_ScoreRingPainter onceki) =>
+      onceki.oran != oran || onceki.kalinlik != kalinlik;
 }

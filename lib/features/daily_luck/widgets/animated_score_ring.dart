@@ -10,10 +10,21 @@ import 'score_ring.dart';
 /// kendiliğinden senkrondur. Statik [ScoreRing] hiç değiştirilmedi.
 class AnimatedScoreRing extends StatefulWidget {
   /// Hedef [skor] ile animasyonlu gösterge oluşturur.
-  const AnimatedScoreRing({required this.skor, super.key});
+  const AnimatedScoreRing({
+    required this.skor,
+    this.boyut = DailyLuckConfig.halkaCapi,
+    this.kalinlik = DailyLuckConfig.halkaKalinligi,
+    super.key,
+  });
 
   /// Count-up'ın ulaşacağı genel skor.
   final int skor;
+
+  /// Halkanın dış çapı ([ScoreRing.boyut]).
+  final double boyut;
+
+  /// Halkanın çizgi kalınlığı ([ScoreRing.kalinlik]).
+  final double kalinlik;
 
   @override
   State<AnimatedScoreRing> createState() => _AnimatedScoreRingState();
@@ -54,8 +65,11 @@ class _AnimatedScoreRingState extends State<AnimatedScoreRing>
         // tick'te değişen şey ScoreRing'in kendisidir (sayı + yay).
         // ScoreRing alt ağacı zaten küçüktür ve RepaintBoundary ile
         // izole edilmiştir; jank ölçülürse painter'a inilebilir.
-        builder: (BuildContext context, Widget? child) =>
-            ScoreRing(skor: (_egri.value * widget.skor).round()),
+        builder: (BuildContext context, Widget? child) => ScoreRing(
+          skor: (_egri.value * widget.skor).round(),
+          boyut: widget.boyut,
+          kalinlik: widget.kalinlik,
+        ),
       ),
     );
   }

@@ -6,6 +6,33 @@ import '../../../core/theme/app_dimens.dart';
 import '../../../shared/widgets/app_icons.dart';
 import '../daily_luck_config.dart';
 
+/// Kapalı kategori kutusu: yalnızca ortada büyük kategori ikonu,
+/// metin yok. Kart açılışından sonra [CategoryCard]'a flip'lenir.
+class KapaliKategoriKutusu extends StatelessWidget {
+  /// [kategori] ikonu ile kapalı kutu oluşturur.
+  const KapaliKategoriKutusu({required this.kategori, super.key});
+
+  /// Kutunun temsil ettiği kategori.
+  final LuckCategory kategori;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: DailyLuckConfig.kategoriKartGenisligi,
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: Center(
+          child: AppIcons.kategori(
+            kategori,
+            boyut: DailyLuckConfig.kapaliKutuIkonBoyutu,
+            renk: AppColors.gold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Tek bir kategorinin mini kartı: ikon + ad, skor ve ince ilerleme barı.
 class CategoryCard extends StatelessWidget {
   /// [kategori] ve 0-100 arası [skor] ile kart oluşturur.

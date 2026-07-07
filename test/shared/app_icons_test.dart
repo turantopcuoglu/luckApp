@@ -17,6 +17,7 @@ void main() {
     'assets/svg/arka_plan_yildizlar.svg',
     'assets/svg/bos_durum_kristal_kure.svg',
     'assets/svg/app_icon_yonca.svg',
+    'assets/svg/kart_arka_yuzu.svg',
   ];
 
   test('her SVG dosyası mevcut ve açıklama yorumuyla başlıyor', () {
