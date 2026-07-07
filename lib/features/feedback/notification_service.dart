@@ -1,0 +1,191 @@
+import 'dart:math';
+
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timezone/data/latest.dart' as tz_veri;
+import 'package:timezone/timezone.dart' as tz;
+
+import '../daily_luck/tr_strings.dart';
+import 'feedback_config.dart';
+import 'feedback_strings.dart';
+
+/// [NotificationService] örneğini sağlar (testte sahtesiyle override
+/// edilebilir).
+final Provider<NotificationService> notificationServiceProvider =
+    Provider<NotificationService>((Ref ref) => NotificationService());
+
+/// Lokal bildirimlerin kurulumu, izni ve planlaması.
+///
+/// Tüm plugin çağrıları [PlatformException]/[MissingPluginException]'a
+/// karşı korunur: bildirim alt yapısı olmayan ortamlarda (testler)
+/// uygulama davranışı bozulmaz, çağrılar sessizce false döner.
+class NotificationService {
+  /// Varsayılan kurucu.
+  NotificationService();
+
+  final FlutterLocalNotificationsPlugin _eklenti =
+      FlutterLocalNotificationsPlugin();
+
+  /// Eklentiyi başlatır; uygulama bir bildirime dokunularak mı
+  /// açıldı bilgisini döndürür. [bildirimeDokunuldu] uygulama
+  /// açıkken akşam bildirimine dokunulunca çağrılır.
+  Future<bool> baslat({required void Function() bildirimeDokunuldu}) async {
+    try {
+      tz_veri.initializeTimeZones();
+
+      const InitializationSettings ayarlar = InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings(
+          // İzin, onboarding sonunda açıkça istenir (izinIste).
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+        ),
+      );
+      await _eklenti.initialize(
+        ayarlar,
+        onDidReceiveNotificationResponse: (NotificationResponse yanit) {
+          if (yanit.payload == FeedbackConfig.feedbackPayload) {
+            bildirimeDokunuldu();
+          }
+        },
+      );
+
+      // Uygulama kapalıyken akşam bildirimine dokunulup açıldıysa
+      // çağıran taraf feedback ekranını göstermelidir.
+      final NotificationAppLaunchDetails? acilis =
+          await _eklenti.getNotificationAppLaunchDetails();
+      return (acilis?.didNotificationLaunchApp ?? false) &&
+          acilis?.notificationResponse?.payload ==
+              FeedbackConfig.feedbackPayload;
+      // ignore: avoid_catches_without_on_clauses - plugin altyapısı
+      // olmayan ortamda Error (LateInitializationError) da fırlar.
+    } catch (_) {
+      return false; // plugin yok (test ortamı) veya platform hatası
+    }
+  }
+
+  /// Bildirim iznini ister; verildiyse true.
+  ///
+  /// Android 13+ çalışma zamanı izni, iOS ilk kurulum izni buradan
+  /// akar (onboarding sonunda çağrılır — plan madde 4).
+  Future<bool> izinIste() async {
+    try {
+      final bool? android = await _eklenti
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestNotificationsPermission();
+      final bool? ios = await _eklenti
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+      // Platformlardan hangisi mevcutsa onun cevabı geçerlidir.
+      return android ?? ios ?? false;
+      // ignore: avoid_catches_without_on_clauses - bkz. baslat.
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Günlük bildirimleri (yeniden) planlar.
+  ///
+  /// - Akşam 21:00: her gün tekrar eden tek bildirim (dokunulunca
+  ///   feedback ekranı açılır).
+  /// - Sabah 08:30: önümüzdeki [FeedbackConfig.sabahGunSayisi] gün
+  ///   için, güne göre değişen metinli tek seferlik bildirimler.
+  ///   Her uygulama açılışında pencere tazelenir.
+  Future<void> gunlukBildirimleriPlanla({required DateTime simdi}) async {
+    try {
+      await _eklenti.cancelAll();
+
+      const NotificationDetails detaylar = NotificationDetails(
+        android: AndroidNotificationDetails(
+          FeedbackConfig.kanalId,
+          FeedbackConfig.kanalAd,
+          channelDescription: FeedbackConfig.kanalAciklama,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      );
+
+      // Not: tz.local kurulmamışsa UTC'dir; TZDateTime.from mutlak ANI
+      // korur, dolayısıyla planlanan ilk tetikleme her zaman doğrudur.
+      // Günlük tekrar (DateTimeComponents.time) o dilimdeki duvar
+      // saatine kilitlenir — Türkiye'de yaz saati uygulanmadığı için
+      // bu, her gün aynı yerel saate denk gelir.
+      final tz.TZDateTime aksam = tz.TZDateTime.from(
+        sonrakiZaman(
+          simdi,
+          saat: FeedbackConfig.aksamSaat,
+          dakika: FeedbackConfig.aksamDakika,
+        ),
+        tz.local,
+      );
+      await _eklenti.zonedSchedule(
+        FeedbackConfig.aksamBildirimId,
+        'Kader',
+        FeedbackStrings.aksamSorusu,
+        aksam,
+        detaylar,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+        payload: FeedbackConfig.feedbackPayload,
+      );
+
+      // Sabahlar: metin güne göre değiştiği için tek tek planlanır.
+      for (int i = 0; i < FeedbackConfig.sabahGunSayisi; i++) {
+        final DateTime hedef = sonrakiZaman(
+          simdi,
+          saat: FeedbackConfig.sabahSaat,
+          dakika: FeedbackConfig.sabahDakika,
+        ).add(Duration(days: i));
+        await _eklenti.zonedSchedule(
+          FeedbackConfig.sabahBildirimBaslangicId + i,
+          'Kader',
+          sabahMetni(hedef),
+          tz.TZDateTime.from(hedef, tz.local),
+          detaylar,
+          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+        );
+      }
+      // ignore: avoid_catches_without_on_clauses - bkz. baslat.
+    } catch (_) {
+      // Plugin yoksa (test) veya platform reddederse sessiz geç.
+    }
+  }
+
+  /// [simdi]den sonraki ilk [saat]:[dakika] anını döndürür.
+  ///
+  /// Saat henüz geçmediyse bugünü, geçtiyse yarını seçer. Saf ve
+  /// statiktir ki tek başına test edilebilsin.
+  static DateTime sonrakiZaman(
+    DateTime simdi, {
+    required int saat,
+    required int dakika,
+  }) {
+    final DateTime bugunku =
+        DateTime(simdi.year, simdi.month, simdi.day, saat, dakika);
+    return bugunku.isAfter(simdi)
+        ? bugunku
+        : bugunku.add(const Duration(days: 1));
+  }
+
+  /// [gun] için sabah bildirim metnini seçer.
+  ///
+  /// Gün sayısından türetilen tohumla rastgele ama deterministik:
+  /// aynı gün hep aynı varyasyon, ardışık günlerde farklı dağılım.
+  static String sabahMetni(DateTime gun) {
+    final int gunNumarasi =
+        DateTime(gun.year, gun.month, gun.day).millisecondsSinceEpoch ~/
+            Duration.millisecondsPerDay;
+    final Random rnd = Random(gunNumarasi);
+    return TrStrings.sabahBildirimVaryasyonlari[
+        rnd.nextInt(TrStrings.sabahBildirimVaryasyonlari.length)];
+  }
+}

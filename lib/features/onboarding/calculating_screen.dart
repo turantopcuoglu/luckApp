@@ -7,10 +7,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../main.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/hero_tags.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/daily_luck_screen.dart';
+import '../feedback/feedback_strings.dart';
+import '../feedback/notification_service.dart';
 import 'onboarding_config.dart';
 import 'onboarding_strings.dart';
 
@@ -41,7 +44,7 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
   @override
   void initState() {
     super.initState();
-    _kontrol.addStatusListener(_animasyonBitti);
+    _kontrol.addStatusListener((AnimationStatus d) => unawaited(_animasyonBitti(d)));
     _kontrol.forward();
   }
 
@@ -51,15 +54,35 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
     super.dispose();
   }
 
-  /// Animasyon tamamlanınca onboarding bayrağı yazılır ve tüm
-  /// onboarding yığını temizlenerek ana ekrana geçilir (geri tuşu
-  /// artık onboarding'e dönemez).
-  void _animasyonBitti(AnimationStatus durum) {
+  /// Animasyon tamamlanınca onboarding bayrağı yazılır, bildirim izni
+  /// istenir ve tüm onboarding yığını temizlenerek ana ekrana geçilir
+  /// (geri tuşu artık onboarding'e dönemez).
+  Future<void> _animasyonBitti(AnimationStatus durum) async {
     if (durum != AnimationStatus.completed || !mounted) {
       return;
     }
     // Hive yazması await edilmez: bellek içi kutu anında günceldir.
     unawaited(ref.read(userRepositoryProvider).onboardingTamamla());
+
+    // Bildirim izni akışı onboarding'in sonundadır (plan S8, madde 4):
+    // sistem diyaloğu bu ekranın üzerinde görünür, cevaba göre ya
+    // bildirimler planlanır ya da nazik bir hatırlatma gösterilir.
+    final NotificationService bildirimler =
+        ref.read(notificationServiceProvider);
+    final bool izinVerildi = await bildirimler.izinIste();
+    if (izinVerildi) {
+      unawaited(
+        bildirimler.gunlukBildirimleriPlanla(simdi: DateTime.now()),
+      );
+    } else {
+      anaMesajciAnahtari.currentState?.showSnackBar(
+        const SnackBar(content: Text(FeedbackStrings.izinReddiMesaji)),
+      );
+    }
+    if (!mounted) {
+      return;
+    }
+
     // Ana ekran provider'ları misafir profiliyle değerlenmiş olabilir;
     // yeni profil okunsun diye tazelenir.
     ref

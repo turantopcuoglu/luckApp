@@ -1,26 +1,74 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/storage/app_storage.dart';
 import 'core/storage/providers.dart';
+import 'core/storage/user_repository.dart';
 import 'core/theme/app_theme.dart';
 import 'features/daily_luck/daily_luck_screen.dart';
+import 'features/feedback/feedback_screen.dart';
+import 'features/feedback/notification_service.dart';
 import 'features/onboarding/welcome_screen.dart';
+import 'shared/widgets/app_route.dart';
+
+/// Kök gezgin anahtarı: bildirim dokunuşları context olmadan
+/// feedback ekranını açabilsin diye globaldir.
+final GlobalKey<NavigatorState> anaGezginAnahtari =
+    GlobalKey<NavigatorState>();
+
+/// Kök mesajcı anahtarı: ekranlar arası geçişlerde SnackBar
+/// gösterebilmek için (örn. bildirim izni reddi mesajı).
+final GlobalKey<ScaffoldMessengerState> anaMesajciAnahtari =
+    GlobalKey<ScaffoldMessengerState>();
+
+/// Akşam bildirimine dokunulunca feedback ekranını açar.
+void _feedbackEkraniniAc() {
+  anaGezginAnahtari.currentState?.push(
+    fadeThroughRoute<void>(const FeedbackScreen()),
+  );
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Hive kutuları açılır ve provider'lara override ile bağlanır;
   // kutu provider'ları bilerek override'sız çalışmaz (bkz. providers.dart).
   await AppStorage.baslat();
+
+  // Bildirim altyapısı: uygulama bir akşam bildirimiyle mi açıldı?
+  final NotificationService bildirimler = NotificationService();
+  final bool bildirimdenAcildi =
+      await bildirimler.baslat(bildirimeDokunuldu: _feedbackEkraniniAc);
+
+  // Onboarding bitmişse bildirim penceresi her açılışta tazelenir
+  // (sabah metin varyasyonları 14 gün ileriye planlanır).
+  final UserRepository kullanicilar =
+      UserRepository(AppStorage.userProfileBox);
+  if (kullanicilar.onboardingTamamlandiMi) {
+    unawaited(
+      bildirimler.gunlukBildirimleriPlanla(simdi: DateTime.now()),
+    );
+  }
+
   runApp(
     ProviderScope(
       overrides: <Override>[
         userProfileBoxProvider.overrideWithValue(AppStorage.userProfileBox),
         dailyRecordsBoxProvider.overrideWithValue(AppStorage.dailyRecordsBox),
+        notificationServiceProvider.overrideWithValue(bildirimler),
       ],
       child: const KaderApp(),
     ),
   );
+
+  // Uygulama kapalıyken bildirime dokunularak açıldıysa ilk kareden
+  // sonra feedback ekranına gidilir.
+  if (bildirimdenAcildi) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _feedbackEkraniniAc(),
+    );
+  }
 }
 
 /// Uygulamanın kök widget'ı: temayı bağlar ve açılış ekranını seçer.
@@ -39,6 +87,8 @@ class KaderApp extends ConsumerWidget {
       title: 'Kader',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
+      navigatorKey: anaGezginAnahtari,
+      scaffoldMessengerKey: anaMesajciAnahtari,
       home: onboardingTamam
           ? const DailyLuckScreen()
           : const WelcomeScreen(),

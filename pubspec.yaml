@@ -25,6 +25,11 @@ dependencies:
   # verilmesi için eklendi (plan Session 7, madde 3). Onaylamıyorsan
   # söyle, kaldırıp yalnızca PNG üretimini bırakayım.
   share_plus: ^10.1.4
+  # ONAY NOTU: flutter_local_notifications + timezone, 21:00 ve 08:30
+  # lokal bildirimleri için eklendi (plan Session 8). timezone,
+  # zamanlanmış bildirimlerin zorunlu bağımlılığıdır.
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.0
 
 dev_dependencies:
   flutter_test:

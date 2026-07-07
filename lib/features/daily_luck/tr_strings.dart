@@ -73,6 +73,24 @@ abstract final class TrStrings {
     return 'Yıldızlar bugün senin için sıralanmış; cesur ol!';
   }
 
+  /// Sabah 08:30 bildiriminin metin varyasyonları (plan Session 8,
+  /// madde 3: en az 10 varyasyon). Günün numarasına göre deterministik
+  /// seçilir ki aynı gün hep aynı metin görünsün.
+  static const List<String> sabahBildirimVaryasyonlari = <String>[
+    'Bugünün kaderi hazır ✨',
+    'Yıldızlar senin için dizildi, gel bak 🌟',
+    'Yeni bir gün, yeni bir şans. Skorun seni bekliyor 🍀',
+    'Kader kartın açılmayı bekliyor 🎴',
+    'Bugün şanslı mısın? Öğrenmenin tek yolu var 👀',
+    'Güne bakmadan çıkma: kaderin hesaplandı ☕',
+    'Evren bugün ne fısıldıyor? Kartına dokun 🔮',
+    'Skorun hazır. Cesaret edebilecek misin? 😏',
+    'Ay evresi işini yaptı, sıra sende 🌙',
+    'Bugünün enerjisi ölçüldü. Sonuç içeride ⚡',
+    'Kaderin kapıda, açmayan bilemez 🚪',
+    'Şans perileri mesaini tamamladı, rapor hazır 🧚',
+  ];
+
   /// Bir modifiyer için açıklama cümlesi üretir.
   ///
   /// Örn. "Ay evresi skorunu +3 puan etkiledi." Etki sıfırsa dengede
