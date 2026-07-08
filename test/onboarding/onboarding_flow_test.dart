@@ -16,6 +16,7 @@ import 'package:kader/features/onboarding/calculating_screen.dart';
 import 'package:kader/features/onboarding/onboarding_strings.dart';
 import 'package:kader/features/onboarding/profile_form_screen.dart';
 import 'package:kader/features/onboarding/welcome_screen.dart';
+import 'package:kader/features/settings/settings_strings.dart';
 
 void main() {
   late Directory geciciDizin;
@@ -61,6 +62,8 @@ void main() {
 
     expect(find.text(OnboardingStrings.slogan), findsOneWidget);
     expect(find.text(OnboardingStrings.basla), findsOneWidget);
+    // Yasal uyum ibaresi karşılama ekranında görünür (store zorunlu).
+    expect(find.text(SettingsStrings.eglenceAmacli), findsOneWidget);
   });
 
   testWidgets('Başla forma götürür; boş isim uyarı verir, geçirmez',

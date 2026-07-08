@@ -42,6 +42,9 @@ abstract final class TrStrings {
   /// Kapalı kader kartının altındaki dokunma ipucu.
   static const String kartIpucu = 'Bugünün kaderini görmek için kartına dokun';
 
+  /// Ana ekrandaki ayarlar dişli ikonunun erişilebilirlik ipucu.
+  static const String ayarlarIpucu = 'Ayarlar';
+
   /// Beklenmeyen hata metni.
   static const String hataMetni =
       'Bir şeyler ters gitti. Uygulamayı yeniden başlatmayı dene.';

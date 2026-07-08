@@ -88,16 +88,47 @@ class NotificationService {
     }
   }
 
-  /// Günlük bildirimleri (yeniden) planlar.
+  /// Planlanmış tüm bildirimleri iptal eder.
   ///
-  /// - Akşam 21:00: her gün tekrar eden tek bildirim (dokunulunca
-  ///   feedback ekranı açılır).
-  /// - Sabah 08:30: önümüzdeki [FeedbackConfig.sabahGunSayisi] gün
-  ///   için, güne göre değişen metinli tek seferlik bildirimler.
-  ///   Her uygulama açılışında pencere tazelenir.
-  Future<void> gunlukBildirimleriPlanla({required DateTime simdi}) async {
+  /// Ayarlar'da bildirimler kapatıldığında çağrılır; hiçbir
+  /// hatırlatma tetiklenmemesini sağlar. Diğer çağrılar gibi plugin
+  /// yoksa sessizce geçer.
+  Future<void> iptalEt() async {
     try {
       await _eklenti.cancelAll();
+      // ignore: avoid_catches_without_on_clauses - bkz. baslat.
+    } catch (_) {
+      // Plugin yok (test) veya platform hatası: sessiz geç.
+    }
+  }
+
+  /// Günlük bildirimleri (yeniden) planlar.
+  ///
+  /// - Akşam (varsayılan 21:00): her gün tekrar eden tek bildirim
+  ///   (dokunulunca feedback ekranı açılır).
+  /// - Sabah (varsayılan 08:30): önümüzdeki
+  ///   [FeedbackConfig.sabahGunSayisi] gün için, güne göre değişen
+  ///   metinli tek seferlik bildirimler. Her açılışta pencere tazelenir.
+  ///
+  /// [aksamDakika]/[sabahDakika] gün-içi dakika (0-1439) olarak özel
+  /// saat verir; `null` ise [FeedbackConfig] varsayılanları kullanılır.
+  /// Böylece mevcut çağrı yerleri değişmeden çalışır.
+  Future<void> gunlukBildirimleriPlanla({
+    required DateTime simdi,
+    int? aksamDakika,
+    int? sabahDakika,
+  }) async {
+    try {
+      await _eklenti.cancelAll();
+
+      // Özel saat verilmişse dakikayı saat:dakikaya böl, yoksa
+      // yapılandırma varsayılanını kullan.
+      final (int aksamSaatDeger, int aksamDakikaDeger) = aksamDakika == null
+          ? (FeedbackConfig.aksamSaat, FeedbackConfig.aksamDakika)
+          : saatDakikaAyir(aksamDakika);
+      final (int sabahSaatDeger, int sabahDakikaDeger) = sabahDakika == null
+          ? (FeedbackConfig.sabahSaat, FeedbackConfig.sabahDakika)
+          : saatDakikaAyir(sabahDakika);
 
       const NotificationDetails detaylar = NotificationDetails(
         android: AndroidNotificationDetails(
@@ -118,8 +149,8 @@ class NotificationService {
       final tz.TZDateTime aksam = tz.TZDateTime.from(
         sonrakiZaman(
           simdi,
-          saat: FeedbackConfig.aksamSaat,
-          dakika: FeedbackConfig.aksamDakika,
+          saat: aksamSaatDeger,
+          dakika: aksamDakikaDeger,
         ),
         tz.local,
       );
@@ -140,8 +171,8 @@ class NotificationService {
       for (int i = 0; i < FeedbackConfig.sabahGunSayisi; i++) {
         final DateTime hedef = sonrakiZaman(
           simdi,
-          saat: FeedbackConfig.sabahSaat,
-          dakika: FeedbackConfig.sabahDakika,
+          saat: sabahSaatDeger,
+          dakika: sabahDakikaDeger,
         ).add(Duration(days: i));
         await _eklenti.zonedSchedule(
           FeedbackConfig.sabahBildirimBaslangicId + i,
@@ -175,6 +206,20 @@ class NotificationService {
         ? bugunku
         : bugunku.add(const Duration(days: 1));
   }
+
+  /// Bir saatteki dakika sayısı (saat ↔ gün-içi dakika dönüşümü).
+  static const int _dakikaBirSaat = 60;
+
+  /// Gün-içi [guniciDakika] (0-1439) değerini (saat, dakika) çiftine
+  /// böler. Saf ve statiktir ki tek başına test edilebilsin.
+  static (int saat, int dakika) saatDakikaAyir(int guniciDakika) {
+    return (guniciDakika ~/ _dakikaBirSaat, guniciDakika % _dakikaBirSaat);
+  }
+
+  /// [saat]:[dakika]yı gün-içi dakikaya (0-1439) çevirir —
+  /// [saatDakikaAyir]'ın tersi.
+  static int dakikayaCevir(int saat, int dakika) =>
+      saat * _dakikaBirSaat + dakika;
 
   /// [gun] için sabah bildirim metnini seçer.
   ///

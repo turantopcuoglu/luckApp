@@ -33,6 +33,35 @@ void main() {
     });
   });
 
+  group('saatDakikaAyir (Phase 1)', () {
+    test('akşam varsayılanı 1260 → (21, 0)', () {
+      expect(NotificationService.saatDakikaAyir(1260), (21, 0));
+    });
+
+    test('sabah varsayılanı 510 → (8, 30)', () {
+      expect(NotificationService.saatDakikaAyir(510), (8, 30));
+    });
+
+    test('gece yarısı 0 → (0, 0)', () {
+      expect(NotificationService.saatDakikaAyir(0), (0, 0));
+    });
+
+    test('günün son dakikası 1439 → (23, 59)', () {
+      expect(NotificationService.saatDakikaAyir(1439), (23, 59));
+    });
+
+    test('dakikayaCevir saatDakikaAyir\'ın tersidir', () {
+      expect(NotificationService.dakikayaCevir(21, 0), 1260);
+      expect(NotificationService.dakikayaCevir(8, 30), 510);
+      expect(NotificationService.dakikayaCevir(0, 0), 0);
+      // Round-trip: her gün-içi dakika kendine döner.
+      for (final int dk in <int>[0, 510, 1260, 1439]) {
+        final (int s, int d) = NotificationService.saatDakikaAyir(dk);
+        expect(NotificationService.dakikayaCevir(s, d), dk);
+      }
+    });
+  });
+
   group('sabahMetni (plan madde 3)', () {
     test('en az 10 varyasyon tanımlı', () {
       expect(

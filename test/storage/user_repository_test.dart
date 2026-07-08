@@ -69,4 +69,64 @@ void main() {
     );
     expect(okunan.seed.isimHash, bosluklu.seed.isimHash);
   });
+
+  group('bildirim tercihleri (Phase 1)', () {
+    test('yeni profil varsayılan olarak bildirimleri açık tutar', () {
+      expect(turan.bildirimlerAcik, isTrue);
+      expect(turan.aksamBildirimDakika, isNull);
+      expect(turan.sabahBildirimDakika, isNull);
+    });
+
+    test('eski map (bildirim anahtarsız) geriye uyumlu okunur', () {
+      // Yeni alanlar eklenmeden önce yazılmış bir kaydı taklit eder.
+      final Map<String, dynamic> eskiMap = <String, dynamic>{
+        'isim': 'Turan',
+        'dogumTarihi': DateTime(1990, 5, 15).toIso8601String(),
+        'onboardingTamam': true,
+      };
+
+      final UserProfile okunan = UserProfile.fromMap(eskiMap);
+      expect(okunan.bildirimlerAcik, isTrue);
+      expect(okunan.aksamBildirimDakika, isNull);
+      expect(okunan.sabahBildirimDakika, isNull);
+    });
+
+    test('toMap→fromMap round-trip bildirim alanlarını korur', () {
+      final UserProfile kapali = turan.copyWith(
+        bildirimlerAcik: false,
+        aksamBildirimDakika: 1290,
+        sabahBildirimDakika: 480,
+      );
+
+      final UserProfile okunan = UserProfile.fromMap(kapali.toMap());
+      expect(okunan.bildirimlerAcik, isFalse);
+      expect(okunan.aksamBildirimDakika, 1290);
+      expect(okunan.sabahBildirimDakika, 480);
+    });
+
+    test('copyWith(isim:) diğer alanlara dokunmaz', () {
+      final UserProfile once = turan.copyWith(
+        bildirimlerAcik: false,
+        aksamBildirimDakika: 1200,
+      );
+      final UserProfile sonra = once.copyWith(isim: 'Elif');
+
+      expect(sonra.isim, 'Elif');
+      expect(sonra.dogumTarihi, once.dogumTarihi);
+      expect(sonra.bildirimlerAcik, isFalse);
+      expect(sonra.aksamBildirimDakika, 1200);
+    });
+
+    test('bildirim alanları seed\'i DEĞİŞTİRMEZ (determinizm koruması)', () {
+      final UserProfile degisik = turan.copyWith(
+        bildirimlerAcik: false,
+        aksamBildirimDakika: 60,
+        sabahBildirimDakika: 900,
+      );
+
+      // Kural 8: aynı (isim, doğum tarihi) → aynı tohum.
+      expect(degisik.seed.isimHash, turan.seed.isimHash);
+      expect(degisik.seed.dogumTarihi, turan.seed.dogumTarihi);
+    });
+  });
 }

@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../shared/widgets/app_icons.dart';
 import '../../shared/widgets/app_route.dart';
+import '../settings/settings_strings.dart';
 import 'onboarding_config.dart';
 import 'onboarding_strings.dart';
 import 'profile_form_screen.dart';
@@ -51,6 +52,15 @@ class WelcomeScreen extends StatelessWidget {
                   fadeThroughRoute<void>(const ProfileFormScreen()),
                 ),
                 child: const Text(OnboardingStrings.basla),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              // Yasal uyum ibaresi (store reddi riskine karşı zorunlu).
+              Text(
+                SettingsStrings.eglenceAmacli,
+                style: yaziTemasi.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
               ),
             ],
           ),

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/storage/app_storage.dart';
 import 'core/storage/providers.dart';
+import 'core/storage/user_profile.dart';
 import 'core/storage/user_repository.dart';
 import 'core/theme/app_theme.dart';
 import 'features/daily_luck/daily_luck_screen.dart';
@@ -41,13 +42,22 @@ Future<void> main() async {
   final bool bildirimdenAcildi =
       await bildirimler.baslat(bildirimeDokunuldu: _feedbackEkraniniAc);
 
-  // Onboarding bitmişse bildirim penceresi her açılışta tazelenir
-  // (sabah metin varyasyonları 14 gün ileriye planlanır).
+  // Onboarding bitmiş VE kullanıcı bildirimleri açık bırakmışsa
+  // bildirim penceresi her açılışta tazelenir (sabah metin
+  // varyasyonları 14 gün ileriye planlanır). Kullanıcı Ayarlar'dan
+  // kapatmışsa hiçbir şey planlanmaz (kapatma anında iptal edilmişti).
   final UserRepository kullanicilar =
       UserRepository(AppStorage.userProfileBox);
-  if (kullanicilar.onboardingTamamlandiMi) {
+  final UserProfile? profil = kullanicilar.profil();
+  if (profil != null &&
+      profil.onboardingTamam &&
+      profil.bildirimlerAcik) {
     unawaited(
-      bildirimler.gunlukBildirimleriPlanla(simdi: DateTime.now()),
+      bildirimler.gunlukBildirimleriPlanla(
+        simdi: DateTime.now(),
+        aksamDakika: profil.aksamBildirimDakika,
+        sabahDakika: profil.sabahBildirimDakika,
+      ),
     );
   }
 

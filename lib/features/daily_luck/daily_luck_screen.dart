@@ -12,6 +12,7 @@ import '../categories/category_detail_screen.dart';
 import '../categories/entitlement.dart';
 import '../categories/paywall_screen.dart';
 import '../categories/widgets/premium_gate.dart';
+import '../settings/settings_screen.dart';
 import '../share/share_button.dart';
 import 'daily_luck_config.dart';
 import 'daily_luck_providers.dart';
@@ -149,15 +150,40 @@ class _IcerikState extends ConsumerState<_Icerik>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // Üst blok: tarih ve selamlama.
-          Text(
-            TrStrings.tarihMetni(bugun),
-            style: yaziTemasi.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+          // Üst blok: tarih + selamlama solda, ayarlar dişlisi sağda.
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      TrStrings.tarihMetni(bugun),
+                      style: yaziTemasi.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      TrStrings.selamlama(isim),
+                      style: yaziTemasi.headlineMedium,
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.settings_rounded,
+                  color: AppColors.textSecondary,
+                ),
+                tooltip: TrStrings.ayarlarIpucu,
+                onPressed: () => Navigator.of(context).push(
+                  fadeThroughRoute<void>(const SettingsScreen()),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(TrStrings.selamlama(isim), style: yaziTemasi.headlineMedium),
           const SizedBox(height: AppSpacing.lg),
 
           // Orta blok: kapalı kader kartı (deste kartı oranında).
