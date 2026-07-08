@@ -41,6 +41,10 @@ abstract final class ShareConfig {
   /// Kategori skor sütunu genişliği.
   static const double kategoriSkorGenisligi = 96;
 
+  /// Kilitli kategori satırında skor yerine çizilen kilit ikonunun
+  /// boyutu (kategori puntosuyla aynı görsel ağırlıkta).
+  static const double kilitIkonBoyutu = 42;
+
   /// Kategori barının kalınlığı.
   static const double barYuksekligi = 18;
 

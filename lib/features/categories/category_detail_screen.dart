@@ -12,6 +12,8 @@ import '../daily_luck/tr_strings.dart';
 import '../daily_luck/widgets/score_ring.dart';
 import 'categories_config.dart';
 import 'categories_strings.dart';
+import 'entitlement.dart';
+import 'paywall_screen.dart';
 
 /// Kategori detay sayfası: kategori skoru, kategoriye özel 2 cümle
 /// yorum ve deterministik "şanslı saat aralığı" (plan Session 9,
@@ -25,6 +27,13 @@ class CategoryDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Savunma derinliği: bu sayfaya hangi yoldan gelinirse gelinsin
+    // kilitli kategori içeriği KURULMAZ; paywall gösterilir. (Ana
+    // ekran yönlendirmesi tek koruma olamaz.)
+    if (ref.watch(kategoriKilitliProvider(kategori))) {
+      return const PaywallScreen();
+    }
+
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final AsyncValue<LuckResult> sonuc = ref.watch(gununSansiProvider);
 

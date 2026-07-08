@@ -22,8 +22,16 @@ class ShareService {
   ShareService();
 
   /// Günün [sonuc]unu story kartı olarak paylaşır.
-  Future<void> paylas({required LuckResult sonuc}) async {
-    final Uint8List png = await kartPngUret(StoryCard(sonuc: sonuc));
+  ///
+  /// [kilitliKategoriler]: premium kilidi altındaki kategoriler;
+  /// skorları karta çizilmez (gizlilik — kilitli içerik sızmaz).
+  Future<void> paylas({
+    required LuckResult sonuc,
+    Set<LuckCategory> kilitliKategoriler = const <LuckCategory>{},
+  }) async {
+    final Uint8List png = await kartPngUret(
+      StoryCard(sonuc: sonuc, kilitliKategoriler: kilitliKategoriler),
+    );
     await Share.shareXFiles(
       <XFile>[
         XFile.fromData(

@@ -16,6 +16,7 @@ import 'package:kader/features/categories/entitlement.dart';
 import 'package:kader/features/categories/paywall_screen.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
+import 'package:kader/features/daily_luck/widgets/category_card.dart';
 import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 
 void main() {
@@ -110,6 +111,33 @@ void main() {
       expect(find.text(CategoriesStrings.sansliSaatBaslik), findsOneWidget);
       expect(find.text(beklenenSaat.etiket), findsOneWidget);
     });
+
+    testWidgets('kilitli kategoriye doğrudan gelinirse paywall gösterilir',
+        (WidgetTester tester) async {
+      // Savunma derinliği: ana ekran yönlendirmesi atlansa bile
+      // (deep link, ileride eklenecek rota vs.) içerik kurulmamalı.
+      await ekraniAc(
+        tester,
+        const CategoryDetailScreen(kategori: LuckCategory.ask),
+      );
+
+      expect(find.byType(PaywallScreen), findsOneWidget);
+      expect(find.text(CategoriesStrings.paywallBaslik), findsOneWidget);
+      expect(find.text(CategoriesStrings.sansliSaatBaslik), findsNothing);
+    });
+
+    testWidgets('premium yetkisiyle kilitli kategori detayı açılır',
+        (WidgetTester tester) async {
+      await ekraniAc(
+        tester,
+        const CategoryDetailScreen(kategori: LuckCategory.ask),
+        premium: true,
+      );
+
+      expect(find.byType(PaywallScreen), findsNothing);
+      expect(find.text('AŞK'), findsOneWidget);
+      expect(find.text(CategoriesStrings.sansliSaatBaslik), findsOneWidget);
+    });
   });
 
   group('premium gate (ana ekran)', () {
@@ -151,6 +179,46 @@ void main() {
 
       expect(find.byType(CategoryDetailScreen), findsOneWidget);
       expect(find.byType(PaywallScreen), findsNothing);
+    });
+
+    testWidgets('kilitli kartta gerçek skor yerine maske gösterilir',
+        (WidgetTester tester) async {
+      final LuckResult sonuc =
+          motor.hesapla(kullanici: misafir.seed, gun: sabitGun);
+
+      await anaEkraniAcVeKartiCevir(tester);
+
+      // İki kilitli kart da maske metni taşır.
+      expect(
+        find.text(CategoriesStrings.kilitliSkor),
+        findsNWidgets(2),
+      );
+
+      // Kilitli skorlar kategori kartlarının İÇİNDE metin olarak yok
+      // (blur'dan bağımsız gerçek gizlilik garantisi). Kilitli skor,
+      // açık bir kategorinin skoruyla çakışıyorsa iddia atlanır.
+      final Set<int> acikSkorlar = <int>{
+        sonuc.kategoriSkorlari[LuckCategory.saglik]!,
+        sonuc.kategoriSkorlari[LuckCategory.risk]!,
+        sonuc.kategoriSkorlari[LuckCategory.sosyal]!,
+      };
+      for (final LuckCategory k in <LuckCategory>[
+        LuckCategory.ask,
+        LuckCategory.para,
+      ]) {
+        final int gizliSkor = sonuc.kategoriSkorlari[k]!;
+        if (acikSkorlar.contains(gizliSkor)) {
+          continue;
+        }
+        expect(
+          find.descendant(
+            of: find.byType(CategoryCard),
+            matching: find.text('$gizliSkor'),
+          ),
+          findsNothing,
+          reason: '${k.etiket} skoru ana ekranda sızdı',
+        );
+      }
     });
 
     testWidgets('premium yetkisi kilidi kaldırır: aşk detaya gider',

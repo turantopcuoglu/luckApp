@@ -3,6 +3,12 @@ abstract final class CategoriesStrings {
   /// Şanslı saat kartının başlığı.
   static const String sansliSaatBaslik = 'Şanslı saat aralığın';
 
+  /// Kilitli kategoride skor yerine gösterilen maske metni.
+  ///
+  /// Gerçek skor kilitliyken widget ağacına HİÇ girmez; blur'a
+  /// güvenilmez (gizlilik: ekran okuyucu/ekran görüntüsü sızıntısı).
+  static const String kilitliSkor = '••';
+
   /// Paywall başlığı.
   static const String paywallBaslik = 'Kader Premium';
 

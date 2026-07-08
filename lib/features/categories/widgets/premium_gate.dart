@@ -36,6 +36,14 @@ class PremiumGate extends StatelessWidget {
           ),
           child: child,
         ),
+        // Scrim: blur'un okunabilir bırakabileceği yüksek kontrastlı
+        // içeriği (ör. skor sayısı) örten yarı saydam karartma.
+        Positioned.fill(
+          child: ColoredBox(
+            color: AppColors.background
+                .withValues(alpha: CategoriesConfig.kilitScrimOpaklik),
+          ),
+        ),
         const Positioned.fill(
           child: Center(
             child: Icon(

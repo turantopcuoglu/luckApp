@@ -42,6 +42,51 @@ void main() {
     expect(find.text(ShareStrings.genelSkor), findsOneWidget);
   });
 
+  testWidgets('kilitli kategorilerin skoru story kartına sızmaz',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = ShareConfig.kartBoyutu;
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    const Set<LuckCategory> kilitliler = <LuckCategory>{
+      LuckCategory.ask,
+      LuckCategory.para,
+    };
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: StoryCard(sonuc: sonuc, kilitliKategoriler: kilitliler),
+      ),
+    );
+
+    // Her kilitli satırda skor yerine kilit ikonu var.
+    expect(
+      find.byIcon(Icons.lock_rounded),
+      findsNWidgets(kilitliler.length),
+    );
+
+    // Kilitsiz içerik hâlâ tam: genel skor ve açık kategori skorları.
+    expect(find.text('${sonuc.genelSkor}'), findsWidgets);
+
+    // Kilitli skor metni kartta YOK. (Aynı sayı, görünür bir skorla
+    // çakışıyorsa bu iddia atlanır; determinist seed ile stabil.)
+    final Set<int> gorunenSkorlar = <int>{
+      sonuc.genelSkor,
+      for (final LuckCategory k in LuckCategory.values)
+        if (!kilitliler.contains(k)) sonuc.kategoriSkorlari[k]!,
+    };
+    for (final LuckCategory k in kilitliler) {
+      final int gizliSkor = sonuc.kategoriSkorlari[k]!;
+      if (!gorunenSkorlar.contains(gizliSkor)) {
+        expect(
+          find.text('$gizliSkor'),
+          findsNothing,
+          reason: '${k.etiket} skoru paylaşım kartına sızdı',
+        );
+      }
+    }
+  });
+
   testWidgets('kartPngUret 1080x1920 boyutunda geçerli PNG üretir',
       (WidgetTester tester) async {
     // toImage ve PNG kodlama gerçek async işlemlerdir → runAsync.

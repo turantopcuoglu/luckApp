@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
+import '../categories/entitlement.dart';
 import 'share_service.dart';
 import 'share_strings.dart';
 
@@ -20,8 +21,21 @@ class ShareButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return OutlinedButton.icon(
-      onPressed: () =>
-          unawaited(ref.read(shareServiceProvider).paylas(sonuc: sonuc)),
+      onPressed: () {
+        // Kilitli kategoriler karta maskeli gider: paylaşılan görsel,
+        // uygulamada kilitli olan skorları sızdırmamalı.
+        final Set<LuckCategory> kilitliler = LuckCategory.values
+            .where(
+              (LuckCategory k) => ref.read(kategoriKilitliProvider(k)),
+            )
+            .toSet();
+        unawaited(
+          ref.read(shareServiceProvider).paylas(
+                sonuc: sonuc,
+                kilitliKategoriler: kilitliler,
+              ),
+        );
+      },
       icon: const Icon(Icons.ios_share, color: AppColors.gold),
       label: Text(
         ShareStrings.paylas,

@@ -206,7 +206,12 @@ class _IcerikState extends ConsumerState<_Icerik>
                       kapali: KapaliKategoriKutusu(kategori: kategori),
                       acik: CategoryCard(
                         kategori: kategori,
-                        skor: widget.sonuc.kategoriSkorlari[kategori]!,
+                        // Kilitliyken gerçek skor karta hiç verilmez;
+                        // kart maske metni ve boş bar çizer.
+                        skor: kilitli
+                            ? 0
+                            : widget.sonuc.kategoriSkorlari[kategori]!,
+                        kilitli: kilitli,
                       ),
                     ),
                   ),

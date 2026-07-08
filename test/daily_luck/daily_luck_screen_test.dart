@@ -10,6 +10,7 @@ import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
+import 'package:kader/features/categories/categories_config.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
@@ -184,6 +185,11 @@ void main() {
 
     expect(sahte.paylasilanlar, hasLength(1));
     expect(sahte.paylasilanlar.single.gun, sabitGun);
+    // Premium yokken kilitli kategoriler karta maskeli gitmeli.
+    expect(
+      sahte.kilitliSetler.single,
+      CategoriesConfig.kilitliKategoriler,
+    );
   });
 
   testWidgets('kayıtlı profil varsa selamlama onun ismiyle yapılır',
@@ -212,8 +218,15 @@ class _SahteShareService extends ShareService {
   /// paylas ile gelen sonuçlar.
   final List<LuckResult> paylasilanlar = <LuckResult>[];
 
+  /// paylas ile gelen kilitli kategori setleri (sızıntı doğrulaması).
+  final List<Set<LuckCategory>> kilitliSetler = <Set<LuckCategory>>[];
+
   @override
-  Future<void> paylas({required LuckResult sonuc}) async {
+  Future<void> paylas({
+    required LuckResult sonuc,
+    Set<LuckCategory> kilitliKategoriler = const <LuckCategory>{},
+  }) async {
     paylasilanlar.add(sonuc);
+    kilitliSetler.add(kilitliKategoriler);
   }
 }

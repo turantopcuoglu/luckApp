@@ -4,6 +4,8 @@ import '../../../core/luck_engine/luck_engine.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../shared/widgets/app_icons.dart';
+import '../../categories/categories_config.dart';
+import '../../categories/categories_strings.dart';
 import '../daily_luck_config.dart';
 
 /// Kapalı kategori kutusu: yalnızca ortada büyük kategori ikonu,
@@ -34,15 +36,27 @@ class KapaliKategoriKutusu extends StatelessWidget {
 }
 
 /// Tek bir kategorinin mini kartı: ikon + ad, skor ve ince ilerleme barı.
+///
+/// [kilitli] ise gerçek skor widget ağacına HİÇ girmez: sayı yerine
+/// maske metni, bar yerine sabit dolgu çizilir. Üstteki blur/scrim
+/// (PremiumGate) yalnızca görsel cila — gizlilik burada sağlanır.
 class CategoryCard extends StatelessWidget {
   /// [kategori] ve 0-100 arası [skor] ile kart oluşturur.
-  const CategoryCard({required this.kategori, required this.skor, super.key});
+  const CategoryCard({
+    required this.kategori,
+    required this.skor,
+    this.kilitli = false,
+    super.key,
+  });
 
   /// Gösterilen kategori.
   final LuckCategory kategori;
 
   /// Kategorinin bugünkü skoru.
   final int skor;
+
+  /// Kart premium kilidi altında mı? (skor maskelenir)
+  final bool kilitli;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +93,7 @@ class CategoryCard extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                '$skor',
+                kilitli ? CategoriesStrings.kilitliSkor : '$skor',
                 style: yaziTemasi.headlineSmall?.copyWith(
                   color: AppColors.gold,
                 ),
@@ -88,7 +102,10 @@ class CategoryCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.full),
                 child: LinearProgressIndicator(
-                  value: skor / EngineConfig.skorMaks,
+                  // Kilitliyken bar dolgusu da skoru sızdırmasın.
+                  value: kilitli
+                      ? CategoriesConfig.kilitliBarOran
+                      : skor / EngineConfig.skorMaks,
                   minHeight: DailyLuckConfig.kategoriBarYuksekligi,
                   color: AppColors.gold,
                   backgroundColor: AppColors.background,
