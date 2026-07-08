@@ -23,21 +23,10 @@ abstract final class DailyLuckConfig {
   /// Kategori kartındaki ikonun kenar uzunluğu.
   static const double kategoriIkonBoyutu = 16;
 
-  /// Yorumda kullanılacak en fazla modifiyer cümlesi sayısı
-  /// (açılış cümlesiyle birlikte toplam 2-3 cümle hedefi).
-  static const int yorumModifiyerSayisi = 2;
+  // ---- Şans ögeleri kartı (renk / sayı / tavsiye) ----
 
-  /// Skor yorum aralıkları: bu eşiğin altı "çok düşük" gündür.
-  static const int cokDusukEsik = 15;
-
-  /// Bu eşiğin altı "düşük", üstü "orta" başlangıcıdır.
-  static const int dusukEsik = 40;
-
-  /// Bu eşiğin üstü "iyi" gündür.
-  static const int ortaEsik = 60;
-
-  /// Bu eşiğin üstü "çok yüksek" gündür.
-  static const int yuksekEsik = 85;
+  /// Şans rengi yuvarlağının çapı.
+  static const double sansRengiCapi = 28;
 
   // ---- Animasyon sabitleri (Session 5) ----
 

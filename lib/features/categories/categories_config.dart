@@ -9,12 +9,6 @@ abstract final class CategoriesConfig {
     LuckCategory.para,
   };
 
-  /// Kategori yorumu için "düşük" eşiği (altı düşük).
-  static const int dusukEsik = 40;
-
-  /// Kategori yorumu için "yüksek" eşiği (üstü yüksek).
-  static const int yuksekEsik = 70;
-
   /// Kilitli kutulardaki blur şiddeti.
   static const double blurSigma = 3;
 

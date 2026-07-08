@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/content/gunun_icerigi.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -12,7 +13,6 @@ import '../categories/entitlement.dart';
 import '../categories/paywall_screen.dart';
 import '../categories/widgets/premium_gate.dart';
 import '../share/share_button.dart';
-import 'comment_builder.dart';
 import 'daily_luck_config.dart';
 import 'daily_luck_providers.dart';
 import 'tr_strings.dart';
@@ -21,6 +21,7 @@ import 'widgets/category_card.dart';
 import 'widgets/comment_card.dart';
 import 'widgets/fortune_reveal_card.dart';
 import 'widgets/kutu_acilisi.dart';
+import 'widgets/lucky_row.dart';
 
 /// Ana ekran: üstte tarih + selamlama, ortada (hafif yukarıda) kapalı
 /// kader kartı, altında kapalı kategori kutuları.
@@ -34,13 +35,22 @@ class DailyLuckScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<LuckResult> sonuc = ref.watch(gununSansiProvider);
+    // İçerik saklanan sonuçtan senkron türetilir; sonuc data olduğunda
+    // bir mikrotask sonra hazırdır. İki provider birlikte beklenir ki
+    // _Icerik null dalı olmadan tam veriyle kurulsun.
+    final AsyncValue<GununIcerigi> icerik = ref.watch(gununIcerigiProvider);
     return Scaffold(
       body: Stack(
         children: <Widget>[
           const _YildizArkaPlani(),
           SafeArea(
             child: sonuc.when(
-              data: (LuckResult veri) => _Icerik(sonuc: veri),
+              data: (LuckResult veri) => icerik.when(
+                data: (GununIcerigi paket) =>
+                    _Icerik(sonuc: veri, icerik: paket),
+                loading: () => const _Yukleniyor(),
+                error: (Object hata, StackTrace iz) => const _Hata(),
+              ),
               loading: () => const _Yukleniyor(),
               error: (Object hata, StackTrace iz) => const _Hata(),
             ),
@@ -86,9 +96,12 @@ class _YildizArkaPlani extends StatelessWidget {
 /// (onAcilisTamam) tetiklenir. setState kullanılmaz — controller'ı
 /// dinleyen alt widget'lar kendi kendini boyar (kural 5).
 class _Icerik extends ConsumerStatefulWidget {
-  const _Icerik({required this.sonuc});
+  const _Icerik({required this.sonuc, required this.icerik});
 
   final LuckResult sonuc;
+
+  /// Günün metinsel içerik paketi (yorum, renk, sayı, tavsiye).
+  final GununIcerigi icerik;
 
   @override
   ConsumerState<_Icerik> createState() => _IcerikState();
@@ -203,12 +216,15 @@ class _IcerikState extends ConsumerState<_Icerik>
           ),
           const SizedBox(height: AppSpacing.lg),
 
-          // Yorum + paylaş: kutular açıldıktan sonra birlikte belirir.
+          // Yorum + şans ögeleri + paylaş: kutular açıldıktan sonra
+          // birlikte belirir.
           FadeTransition(
             opacity: _yorumOpakligi,
             child: Column(
               children: <Widget>[
-                CommentCard(metin: gunYorumu(widget.sonuc)),
+                CommentCard(metin: widget.icerik.yorum),
+                const SizedBox(height: AppSpacing.md),
+                SansOgeleriKarti(icerik: widget.icerik),
                 const SizedBox(height: AppSpacing.md),
                 Center(child: ShareButton(sonuc: widget.sonuc)),
               ],

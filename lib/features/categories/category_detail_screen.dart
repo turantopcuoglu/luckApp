@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/content/fortune_composer.dart' as composer;
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
@@ -61,6 +62,14 @@ class CategoryDetailScreen extends ConsumerWidget {
           ),
           data: (LuckResult veri) {
             final int skor = veri.kategoriSkorlari[kategori] ?? 0;
+            // Yorum, saklanan sonuç + bağımsız içerik tohumundan
+            // deterministik seçilir (şanslı saatle aynı sözleşme).
+            final String yorum = composer.kategoriYorumu(
+              motor: ref.watch(luckEngineProvider),
+              kullanici: ref.watch(aktifProfilProvider).seed,
+              sonuc: veri,
+              kategori: kategori,
+            );
             return SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: Column(
@@ -81,7 +90,7 @@ class CategoryDetailScreen extends ConsumerWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       child: Text(
-                        CategoriesStrings.kategoriYorumu(kategori, skor),
+                        yorum,
                         style: yaziTemasi.bodyMedium,
                       ),
                     ),

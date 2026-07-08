@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/content/fortune_composer.dart';
+import '../../core/content/gunun_icerigi.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
@@ -37,4 +39,19 @@ final FutureProvider<LuckResult> gununSansiProvider =
         kullanici: ref.watch(aktifProfilProvider).seed,
         gun: ref.watch(bugunProvider),
       );
+});
+
+/// Bugünün zenginleştirilmiş içeriği: yorum, şans rengi, şanslı sayı
+/// ve günün tavsiyesi.
+///
+/// Persist edilmez; saklanan [LuckResult] + deterministik içerik
+/// tohumundan her açılışta aynı şekilde yeniden türetilir (kural 8).
+final FutureProvider<GununIcerigi> gununIcerigiProvider =
+    FutureProvider<GununIcerigi>((Ref ref) async {
+  final LuckResult sonuc = await ref.watch(gununSansiProvider.future);
+  return gununIcerigi(
+    motor: ref.watch(luckEngineProvider),
+    kullanici: ref.watch(aktifProfilProvider).seed,
+    sonuc: sonuc,
+  );
 });

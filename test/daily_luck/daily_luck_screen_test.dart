@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:kader/core/content/fortune_composer.dart';
+import 'package:kader/core/content/gunun_icerigi.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/storage_keys.dart';
@@ -115,8 +117,23 @@ void main() {
   });
 
   testWidgets(
-      'kutular kapalı başlar; kart açılınca etiketler ve yorum belirir',
-      (WidgetTester tester) async {
+      'kutular kapalı başlar; kart açılınca etiketler, yorum ve şans '
+      'ögeleri belirir', (WidgetTester tester) async {
+    // Ekranın göstermesi beklenen deterministik içerik: misafir profil
+    // + sabit gün için composer'ın üreteceği paket.
+    final UserProfile misafir = UserProfile(
+      isim: TrStrings.misafirIsmi,
+      dogumTarihi: DateTime(2000),
+    );
+    const LuckEngine motor = LuckEngine();
+    final LuckResult sonuc =
+        motor.hesapla(kullanici: misafir.seed, gun: sabitGun);
+    final GununIcerigi beklenen = gununIcerigi(
+      motor: motor,
+      kullanici: misafir.seed,
+      sonuc: sonuc,
+    );
+
     await ekraniAc(tester);
 
     // Kapalı durumda kategori etiketleri görünmez (yalnız ikonlar).
@@ -126,11 +143,17 @@ void main() {
 
     await kartiAc(tester);
 
-    // Açılış sonrası: 5 etiket + yorum cümleleri + paylaş butonu.
+    // Açılış sonrası: 5 etiket + kompoze yorum + şans ögeleri + paylaş.
     for (final LuckCategory kategori in LuckCategory.values) {
       expect(find.text(kategori.etiket), findsOneWidget);
     }
-    expect(find.textContaining('skorunu'), findsWidgets);
+    expect(find.text(beklenen.yorum), findsOneWidget);
+    expect(find.text(beklenen.sansRengi.ad), findsOneWidget);
+    expect(find.text('${beklenen.sansliSayi}'), findsWidgets);
+    expect(find.text(beklenen.tavsiye), findsOneWidget);
+    expect(find.text(TrStrings.sansRengiEtiketi), findsOneWidget);
+    expect(find.text(TrStrings.sansliSayiEtiketi), findsOneWidget);
+    expect(find.text(TrStrings.tavsiyeEtiketi), findsOneWidget);
     expect(find.byType(ShareButton), findsOneWidget);
   });
 

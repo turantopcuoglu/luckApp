@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:kader/core/content/fortune_composer.dart' as composer;
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/providers.dart';
@@ -97,9 +98,11 @@ void main() {
       expect(find.text('SAĞLIK'), findsOneWidget);
       expect(
         find.text(
-          CategoriesStrings.kategoriYorumu(
-            LuckCategory.saglik,
-            beklenenSkor,
+          composer.kategoriYorumu(
+            motor: motor,
+            kullanici: misafir.seed,
+            sonuc: sonuc,
+            kategori: LuckCategory.saglik,
           ),
         ),
         findsOneWidget,

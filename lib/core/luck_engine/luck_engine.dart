@@ -124,6 +124,35 @@ class LuckEngine {
     );
   }
 
+  /// [kullanici] için [gun] gününde [amac] etiketli bir içerik havuzundan
+  /// deterministik eleman indeksi üretir: `0 <= sonuç < havuzBoyutu`.
+  ///
+  /// Skor tohumundan ':icerik:' ayrıştırıcısıyla ayrışan bağımsız bir
+  /// tohum kullanır; [hesapla] içindeki Random akışına dokunmaz, aynı
+  /// (kullanıcı, gün, amaç) üçlüsü her zaman aynı indeksi verir
+  /// (CLAUDE.md kural 8). Her amaç kendi tek çekimlik Random'ını
+  /// kullandığından bir havuzun boyutunu değiştirmek diğer amaçların
+  /// seçimlerini kaydırmaz.
+  int secimIndeksi({
+    required UserSeed kullanici,
+    required DateTime gun,
+    required String amac,
+    required int havuzBoyutu,
+  }) {
+    if (havuzBoyutu < 1) {
+      throw ArgumentError.value(
+        havuzBoyutu,
+        'havuzBoyutu',
+        'Havuz en az 1 eleman içermelidir',
+      );
+    }
+    final DateTime tarih = DateTime(gun.year, gun.month, gun.day);
+    final Random rnd = Random(
+      _seedUret(kullanici, tarih, ek: ':icerik:$amac'),
+    );
+    return rnd.nextInt(havuzBoyutu);
+  }
+
   /// (kullanıcı, gün) çiftinden deterministik RNG tohumu üretir.
   ///
   /// Girdi dizgisi: isimHash + doğum tarihi ISO-8601 + gün yyyy-MM-dd

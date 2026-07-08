@@ -1,5 +1,3 @@
-import 'daily_luck_config.dart';
-
 /// Ana ekranın Türkçe metinleri ve yorum şablonları.
 ///
 /// Metinler koddan ayrı tutulur (plan Session 3, madde 2); ileride
@@ -56,22 +54,14 @@ abstract final class TrStrings {
   /// [isim] için selamlama metni üretir.
   static String selamlama(String isim) => 'Merhaba, $isim';
 
-  /// [genelSkor] aralığına göre yorumun açılış cümlesini seçer.
-  static String skorAcilisCumlesi(int genelSkor) {
-    if (genelSkor < DailyLuckConfig.cokDusukEsik) {
-      return 'Bugün evren biraz ters esiyor; büyük kararları yarına bırak.';
-    }
-    if (genelSkor < DailyLuckConfig.dusukEsik) {
-      return 'Bugün temkinli bir gün; adımlarını küçük tut.';
-    }
-    if (genelSkor < DailyLuckConfig.ortaEsik) {
-      return 'Dengeli bir gün seni bekliyor; akışına bırak.';
-    }
-    if (genelSkor <= DailyLuckConfig.yuksekEsik) {
-      return 'Rüzgâr arkandan esiyor; fırsatlara açık ol.';
-    }
-    return 'Yıldızlar bugün senin için sıralanmış; cesur ol!';
-  }
+  /// Şans ögeleri kartındaki renk sütununun etiketi.
+  static const String sansRengiEtiketi = 'Şans rengin';
+
+  /// Şans ögeleri kartındaki sayı sütununun etiketi.
+  static const String sansliSayiEtiketi = 'Şanslı sayın';
+
+  /// Şans ögeleri kartındaki tavsiye satırının etiketi.
+  static const String tavsiyeEtiketi = 'Günün tavsiyesi';
 
   /// Sabah 08:30 bildiriminin metin varyasyonları (plan Session 8,
   /// madde 3: en az 10 varyasyon). Günün numarasına göre deterministik
@@ -90,16 +80,4 @@ abstract final class TrStrings {
     'Kaderin kapıda, açmayan bilemez 🚪',
     'Şans perileri mesaini tamamladı, rapor hazır 🧚',
   ];
-
-  /// Bir modifiyer için açıklama cümlesi üretir.
-  ///
-  /// Örn. "Ay evresi skorunu +3 puan etkiledi." Etki sıfırsa dengede
-  /// olduğu söylenir.
-  static String modifiyerCumlesi(String ad, int etki) {
-    if (etki == 0) {
-      return '$ad bugün dengede, skoru etkilemedi.';
-    }
-    final String isaretli = etki > 0 ? '+$etki' : '$etki';
-    return '$ad skorunu $isaretli puan etkiledi.';
-  }
 }
