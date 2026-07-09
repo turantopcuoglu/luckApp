@@ -55,20 +55,29 @@ Future<void> main() async {
   if (profil != null &&
       profil.onboardingTamam &&
       profil.bildirimlerAcik) {
-    // Bugünün sonucunu üret/oku → günün baskın kategorisinin şanslı
-    // saatini bul. (Bugünün kaydını erken üretmek streak'e de yarar.)
-    const LuckEngine motor = LuckEngine();
-    final LuckResult sonuc =
-        await LuckHistoryRepository(AppStorage.dailyRecordsBox).getirVeyaUret(
-      motor: motor,
-      kullanici: profil.seed,
-      gun: DateTime.now(),
-    );
-    final int sansliSaat = gununSansliSaatBaslangici(
-      motor: motor,
-      kullanici: profil.seed,
-      sonuc: sonuc,
-    );
+    // Şanslı saat hesabı OPSİYONEL: hesaplanamazsa (herhangi bir hata)
+    // açılış asla bloklanmaz/çökmez; bildirimler yine planlanır.
+    int? sansliSaat;
+    try {
+      // Bugünün sonucunu üret/oku → günün baskın kategorisinin şanslı
+      // saatini bul. (Bugünün kaydını erken üretmek streak'e de yarar.)
+      const LuckEngine motor = LuckEngine();
+      final LuckResult sonuc =
+          await LuckHistoryRepository(AppStorage.dailyRecordsBox).getirVeyaUret(
+        motor: motor,
+        kullanici: profil.seed,
+        gun: DateTime.now(),
+      );
+      sansliSaat = gununSansliSaatBaslangici(
+        motor: motor,
+        kullanici: profil.seed,
+        sonuc: sonuc,
+      );
+      // ignore: avoid_catches_without_on_clauses - açılış hiçbir koşulda
+      // bu opsiyonel özellik yüzünden bloklanmamalı.
+    } catch (_) {
+      sansliSaat = null;
+    }
     unawaited(
       bildirimler.gunlukBildirimleriPlanla(
         simdi: DateTime.now(),

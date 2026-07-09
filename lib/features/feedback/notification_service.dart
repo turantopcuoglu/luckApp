@@ -244,6 +244,17 @@ class NotificationService {
   static int dakikayaCevir(int saat, int dakika) =>
       saat * _dakikaBirSaat + dakika;
 
+  /// [saat]:[dakika]yı `HH:MM` (24 saat) metnine çevirir.
+  ///
+  /// Lokalizasyon-BAĞIMSIZDIR (BuildContext/MaterialLocalizations
+  /// gerektirmez): Ayarlar gövdesi böylece cihaz diline bağlı kalmaz.
+  /// Saf ve statiktir, tek başına test edilebilir.
+  static String saatMetni(int saat, int dakika) {
+    final String ss = saat.toString().padLeft(2, '0');
+    final String dd = dakika.toString().padLeft(2, '0');
+    return '$ss:$dd';
+  }
+
   /// [gun] için sabah bildirim metnini seçer.
   ///
   /// Gün sayısından türetilen tohumla rastgele ama deterministik:

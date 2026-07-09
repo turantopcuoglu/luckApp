@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/content/fortune_composer.dart';
+import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
@@ -103,16 +105,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     final NotificationService servis = ref.read(notificationServiceProvider);
     if (acik) {
-      final int sansliSaat = await ref.read(gununSansliSaatiProvider.future);
       await servis.gunlukBildirimleriPlanla(
         simdi: DateTime.now(),
         aksamDakika: yeni.aksamBildirimDakika,
         sabahDakika: yeni.sabahBildirimDakika,
-        sansliSaatBaslangiciSaati: sansliSaat,
+        sansliSaatBaslangiciSaati: _sansliSaatSenkron(),
       );
     } else {
       await servis.iptalEt();
     }
+  }
+
+  /// Şanslı saati BLOKLAMADAN, cache'deki bugünkü sonuçtan hesaplar.
+  ///
+  /// Ana ekran bugünün sonucunu zaten çözdüğü için değer genelde
+  /// hazırdır; değilse `null` döner (zararsız — bir sonraki açılışta
+  /// main.dart planlar). UI event handler'ında `await` KULLANMAZ
+  /// (donma/askıda kalma riskini önler).
+  int? _sansliSaatSenkron() {
+    final LuckResult? sonuc = ref.read(gununSansiProvider).valueOrNull;
+    if (sonuc == null) {
+      return null;
+    }
+    return gununSansliSaatBaslangici(
+      motor: ref.read(luckEngineProvider),
+      kullanici: ref.read(aktifProfilProvider).seed,
+      sonuc: sonuc,
+    );
   }
 
   /// Akşam ([aksam] true) veya sabah hatırlatma saatini seçtirir ve
@@ -140,12 +159,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         : profil.copyWith(sabahBildirimDakika: yeniDakika);
     _profilKaydet(yeni);
 
-    final int sansliSaat = await ref.read(gununSansliSaatiProvider.future);
     await ref.read(notificationServiceProvider).gunlukBildirimleriPlanla(
           simdi: DateTime.now(),
           aksamDakika: yeni.aksamBildirimDakika,
           sabahDakika: yeni.sabahBildirimDakika,
-          sansliSaatBaslangiciSaati: sansliSaat,
+          sansliSaatBaslangiciSaati: _sansliSaatSenkron(),
         );
   }
 
@@ -210,7 +228,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 enabled: bildirimlerAcik,
                 title: const Text(SettingsStrings.aksamHatirlatma),
                 trailing: Text(
-                  TimeOfDay(hour: aksamS, minute: aksamD).format(context),
+                  NotificationService.saatMetni(aksamS, aksamD),
                   style: yaziTemasi.titleMedium?.copyWith(
                     color: bildirimlerAcik
                         ? AppColors.gold
@@ -225,7 +243,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 enabled: bildirimlerAcik,
                 title: const Text(SettingsStrings.sabahHatirlatma),
                 trailing: Text(
-                  TimeOfDay(hour: sabahS, minute: sabahD).format(context),
+                  NotificationService.saatMetni(sabahS, sabahD),
                   style: yaziTemasi.titleMedium?.copyWith(
                     color: bildirimlerAcik
                         ? AppColors.gold

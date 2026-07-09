@@ -50,6 +50,14 @@ void main() {
       expect(NotificationService.saatDakikaAyir(1439), (23, 59));
     });
 
+    test('saatMetni HH:MM (24s, lokalizasyon-bağımsız) üretir', () {
+      expect(NotificationService.saatMetni(21, 0), '21:00');
+      expect(NotificationService.saatMetni(8, 30), '08:30');
+      expect(NotificationService.saatMetni(0, 0), '00:00');
+      expect(NotificationService.saatMetni(23, 59), '23:59');
+      expect(NotificationService.saatMetni(9, 5), '09:05');
+    });
+
     test('dakikayaCevir saatDakikaAyir\'ın tersidir', () {
       expect(NotificationService.dakikayaCevir(21, 0), 1260);
       expect(NotificationService.dakikayaCevir(8, 30), 510);

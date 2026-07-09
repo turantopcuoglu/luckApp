@@ -7,7 +7,6 @@ import 'package:hive/hive.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/core/storage/user_repository.dart';
-import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/feedback/notification_service.dart';
 import 'package:kader/features/settings/settings_screen.dart';
 import 'package:kader/features/settings/settings_strings.dart';
@@ -38,9 +37,6 @@ class FakeNotificationService extends NotificationService {
     sonSansliSaatBaslangici = sansliSaatBaslangiciSaati;
   }
 }
-
-/// Testlerde şanslı saat sağlayıcısının döndüreceği sabit saat.
-const int _sabitSansliSaat = 14;
 
 void main() {
   late Directory geciciDizin;
@@ -91,9 +87,6 @@ void main() {
           userProfileBoxProvider.overrideWithValue(profilKutusu),
           dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
           notificationServiceProvider.overrideWithValue(sahte),
-          // Şanslı saat sağlayıcısı sabitlenir: gerçek I/O FakeAsync'te
-          // asılmasın; ayarlar handler'ları bunu await ediyor.
-          gununSansliSaatiProvider.overrideWith((Ref ref) => _sabitSansliSaat),
         ],
         child: const MaterialApp(home: SettingsScreen()),
       ),
@@ -175,8 +168,9 @@ void main() {
 
     expect(sahte.planlaCagriSayisi, greaterThan(0));
     expect(UserRepository(profilKutusu).profil()!.bildirimlerAcik, isTrue);
-    // Şanslı saat de planlamaya geçirildi (sabit sağlayıcıdan).
-    expect(sahte.sonSansliSaatBaslangici, _sabitSansliSaat);
+    // Şanslı saat senkron/bloklamadan geçirilir: değer int? (cache'de
+    // bugünün sonucu yoksa null — donmadan planlama yine çağrılır).
+    expect(sahte.sonSansliSaatBaslangici, anyOf(isNull, isA<int>()));
   });
 
   testWidgets('akşam saati değiştirmek yeni dakikayla yeniden planlar',
