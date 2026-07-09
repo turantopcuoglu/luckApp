@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:kader/core/history/aylik_ozet.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/luck_history_repository.dart';
@@ -12,6 +13,18 @@ import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/history/history_screen.dart';
 import 'package:kader/features/history/history_strings.dart';
 import 'package:kader/features/history/widgets/luck_heatmap.dart';
+import 'package:kader/features/share/recap_strings.dart';
+import 'package:kader/features/share/share_service.dart';
+
+/// Ay raporu paylaşımını yutan sahte servis (gerçek PNG/paylaşım yok).
+class _SahtePaylasim extends ShareService {
+  AylikOzet? sonOzet;
+
+  @override
+  Future<void> aylikOzetPaylas(AylikOzet ozet) async {
+    sonOzet = ozet;
+  }
+}
 
 void main() {
   late Directory geciciDizin;
@@ -56,8 +69,9 @@ void main() {
 
   Future<void> ekraniAc(
     WidgetTester tester,
-    List<DailyRecord> kayitlar,
-  ) async {
+    List<DailyRecord> kayitlar, {
+    List<Override> ekstra = const <Override>[],
+  }) async {
     // Seed yazması gerçek I/O → runAsync (FakeAsync'te asılmasın).
     await tester.runAsync(() async {
       final LuckHistoryRepository repo = LuckHistoryRepository(kayitKutusu);
@@ -72,6 +86,7 @@ void main() {
           userProfileBoxProvider.overrideWithValue(profilKutusu),
           dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
           bugunProvider.overrideWithValue(bugun),
+          ...ekstra,
         ],
         child: const MaterialApp(home: HistoryScreen()),
       ),
@@ -113,5 +128,50 @@ void main() {
 
     expect(find.byType(LuckHeatmap), findsOneWidget);
     expect(find.text(HistoryStrings.kanitYetersizMetni(3, 1)), findsOneWidget);
+  });
+
+  testWidgets('bu ayda kayıt varken ay raporu kartı + paylaş çalışır',
+      (WidgetTester tester) async {
+    final _SahtePaylasim sahte = _SahtePaylasim();
+    // Kayıtlar Temmuz 2026 (bugun ile aynı ay).
+    await ekraniAc(
+      tester,
+      <DailyRecord>[
+        kayitKur(1, 80),
+        kayitKur(2, 95),
+        kayitKur(3, 70),
+      ],
+      ekstra: <Override>[shareServiceProvider.overrideWithValue(sahte)],
+    );
+
+    expect(find.text(RecapStrings.bolumBasligi), findsOneWidget);
+
+    await tester.tap(find.byType(OutlinedButton));
+    await tester.pump();
+
+    expect(sahte.sonOzet, isNotNull);
+    expect(sahte.sonOzet!.ay, 7);
+    expect(sahte.sonOzet!.altinGunSayisi, 1); // 95 ≥ 92
+  });
+
+  testWidgets('bu ay boşken (kayıtlar başka ayda) ay raporu kartı gizli',
+      (WidgetTester tester) async {
+    // Haziran 2026 kaydı → Temmuz (bugun) boş.
+    final LuckResult temel =
+        motor.hesapla(kullanici: turan, gun: DateTime(2026, 6, 10));
+    final DailyRecord haziran = DailyRecord(
+      sonuc: LuckResult(
+        gun: DateTime(2026, 6, 10),
+        genelSkor: 80,
+        kategoriSkorlari: temel.kategoriSkorlari,
+        modifiyerler: temel.modifiyerler,
+      ),
+    );
+
+    await ekraniAc(tester, <DailyRecord>[haziran]);
+
+    // Geçmiş boş değil (heatmap var) ama bu ayın raporu yok.
+    expect(find.byType(LuckHeatmap), findsOneWidget);
+    expect(find.text(RecapStrings.bolumBasligi), findsNothing);
   });
 }

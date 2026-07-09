@@ -6,7 +6,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/history/aylik_ozet.dart';
 import '../../core/luck_engine/luck_engine.dart';
+import 'monthly_recap_card.dart';
+import 'recap_strings.dart';
 import 'share_config.dart';
 import 'share_strings.dart';
 import 'story_card.dart';
@@ -41,6 +44,23 @@ class ShareService {
         ),
       ],
       text: ShareStrings.paylasimMetni,
+    );
+  }
+
+  /// Ay Sonu Şans Raporu'nu ([ozet]) off-screen PNG olarak paylaşır.
+  ///
+  /// [kartPngUret] (public, generic) yeniden kullanılır.
+  Future<void> aylikOzetPaylas(AylikOzet ozet) async {
+    final Uint8List png = await kartPngUret(MonthlyRecapCard(ozet: ozet));
+    await Share.shareXFiles(
+      <XFile>[
+        XFile.fromData(
+          png,
+          mimeType: 'image/png',
+          name: ShareConfig.dosyaAdi,
+        ),
+      ],
+      text: RecapStrings.paylasimMetni,
     );
   }
 

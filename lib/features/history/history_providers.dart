@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/history/aylik_ozet.dart';
 import '../../core/history/gecmis_ozeti.dart';
 import '../../core/storage/daily_record.dart';
 import '../../core/storage/providers.dart';
@@ -24,3 +25,14 @@ final AutoDisposeProvider<GecmisOzeti> gecmisOzetiProvider =
     bugun: ref.watch(bugunProvider),
   ),
 );
+
+/// İçinde bulunulan ayın Şans Raporu özeti (Phase 4).
+final AutoDisposeProvider<AylikOzet> buAyinOzetiProvider =
+    Provider.autoDispose<AylikOzet>((Ref ref) {
+  final DateTime bugun = ref.watch(bugunProvider);
+  return aylikOzet(
+    ref.watch(tumKayitlarProvider),
+    yil: bugun.year,
+    ay: bugun.month,
+  );
+});
