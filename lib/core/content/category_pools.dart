@@ -17,6 +17,7 @@ abstract final class CategoryPools {
         'Bugün duygular kırılgan cam gibi; taşırken iki elinle tut.',
         'Gönül bahçende bugün rüzgâr sert; fidelerini sabırla koru.',
         'Bugün kalbine değil takvime bak; bazı sohbetlerin vakti gelmemiş.',
+        'Aşkta bugün acele düğüm attırır; ipin ucunu yavaş bırak.',
       ],
       KategoriTonu.orta: <String>[
         'Aşk cephesinde dengeli bir gün; küçük jestler büyük kapılar açar.',
@@ -24,6 +25,7 @@ abstract final class CategoryPools {
         'Bugün aşkta ne fırtına ne durgunluk; içten bir söz yeterli rüzgâr.',
         'Gönül işlerinde bugün orta şeker bir gün; tatlandırmak senin elinde.',
         'Bugün duygular dengede; kalbini açan kapıyı da açık bulur.',
+        'Kalbin bugün dingin; nazik bir yaklaşım kapıyı usulca aralar.',
       ],
       KategoriTonu.yuksek: <String>[
         'Kalbin bugün mıknatıs gibi; cesur bir adım karşılık bulabilir.',
@@ -31,6 +33,7 @@ abstract final class CategoryPools {
         'Bugün gönül kapıların ardına kadar açık; güzellik davetsiz gelir.',
         'Kalp işlerinde bugün rüzgâr senden yana; söylenmemiş sözün günü.',
         'Bugün aşk cesaretle geleni ödüllendiriyor; ilk adım senden olsun.',
+        'Aşk yıldızın bugün cömert; içinden geçeni söylemenin tam vakti.',
       ],
     },
     LuckCategory.para: <KategoriTonu, List<String>>{
@@ -40,6 +43,7 @@ abstract final class CategoryPools {
         'Bugün bereket mola vermiş; kesenin ağzını yarına kadar bağlı tut.',
         'Maddi işlerde bugün buzlu yol var; yavaş giden kaymaz.',
         'Bugün alışveriş listeni kısalt; azla yetinen çok kazanır.',
+        'Cebini bugün rüzgâra kapatma; savurgan el sonra üşür.',
       ],
       KategoriTonu.orta: <String>[
         'Para akışın dengede; birikim için fena bir gün değil.',
@@ -47,6 +51,7 @@ abstract final class CategoryPools {
         'Bugün maddi terazi düz; hesap defterine düşen not yarın kıymetlenir.',
         'Para işlerinde bugün ölçülü adımlar tutuyor; büyük sıçramayı bekle.',
         'Bugün bereket ölçüyle dağıtılıyor; payını isteyen alır.',
+        'Maddi işlerde bugün sabırlı ol; ağır giden yükü sağlam taşır.',
       ],
       KategoriTonu.yuksek: <String>[
         'Fırsat kokusu var; gözünü açık tut, kazanç kapıda.',
@@ -54,6 +59,7 @@ abstract final class CategoryPools {
         'Bugün bolluk senin sokaktan geçiyor; kapının önünü boş bırakma.',
         'Maddi işlerde bugün altın saat; ertelenen görüşmenin tam günü.',
         'Bugün cebine doğru tatlı bir rüzgâr esiyor; yelkenini aç.',
+        'Bugün kazanç kapıda bekliyor; niyetini net ve yüksek sesle söyle.',
       ],
     },
     LuckCategory.saglik: <KategoriTonu, List<String>>{
@@ -63,6 +69,7 @@ abstract final class CategoryPools {
         'Sağlık terazin bugün hassas; yükünü paylaş, omzunu koru.',
         'Bugün pilin kısık; şarjı dinlenmekte, telaşta değil.',
         'Beden bugün nazlı; ona sıcak bir mola ve erken bir uyku borçlusun.',
+        'Bedenin bugün yavaş istiyor; temposunu ona uydur.',
       ],
       KategoriTonu.orta: <String>[
         'Enerji dengen yerinde; hafif bir yürüyüş iyi gelir.',
@@ -70,6 +77,7 @@ abstract final class CategoryPools {
         'Sağlığın bugün sakin bir nehir; küçük bir hareket suyu şenlendirir.',
         'Bugün enerjin idareli aktarılıyor; molalarla çoğaltabilirsin.',
         'Beden bugün dengede; su ve uyku bu dengenin bekçileri.',
+        'Enerjin bugün ölçülü; suyunu ve uykunu ihmal etme.',
       ],
       KategoriTonu.yuksek: <String>[
         'Kendini hafif hissedeceksin; formunun tadını çıkar.',
@@ -77,6 +85,7 @@ abstract final class CategoryPools {
         'Sağlık yıldızın bugün parlak; ertelediğin sporun tam günü.',
         'Bugün adımların yaylı, nefesin derin; zor işleri bugüne çek.',
         'Beden bugün senden razı; bu gücü güzel bir alışkanlığa yatır.',
+        'Bugün formun yerinde; bu gücü ertelediğin işe yatır.',
       ],
     },
     LuckCategory.risk: <KategoriTonu, List<String>>{
@@ -86,6 +95,7 @@ abstract final class CategoryPools {
         'Bugün köprüden geçerken korkuluğu bırakma; emniyet erdemdir.',
         'Risk terazisi bugün ters tartıyor; emin olmadığın kapıyı çalma.',
         'Bugün içgüdün bile temkin öneriyor; ona uy, pişman olmazsın.',
+        'Bugün garantiden şaşma; sağlam zemin seni taşır.',
       ],
       KategoriTonu.orta: <String>[
         'Hesaplı riskler alınabilir; içgüdüne biraz pay bırak.',
@@ -93,6 +103,7 @@ abstract final class CategoryPools {
         'Zarlar bugün kararsız; küçük oyna, dersini büyük al.',
         'Bugün cesaret ile temkin el ele; ikisini birden cebinde taşı.',
         'Risk bugün ne dost ne düşman; kapıyı aralık tut, ardına kadar açma.',
+        'Bugün hesaplı adım at; ölçülen cesaret geri tepmez.',
       ],
       KategoriTonu.yuksek: <String>[
         'Cesaret bugün ödüllendiriliyor; o adımı at.',
@@ -100,6 +111,7 @@ abstract final class CategoryPools {
         'Risk yıldızın bugün parlıyor; kalbinin evet dediğine güven.',
         'Bugün atılan cesur tohum bereketli toprağa düşüyor.',
         'Ertelediğin hamlenin günü bugün; rüzgâr tam arkanda.',
+        'Bugün kalbin evet diyorsa dinle; rüzgâr uygun esiyor.',
       ],
     },
     LuckCategory.sosyal: <KategoriTonu, List<String>>{
@@ -109,6 +121,7 @@ abstract final class CategoryPools {
         'Sosyal gökyüzün bugün bulutlu; kendinle geçen saat kazançtır.',
         'Bugün herkese yetişme; bir kişiye tam yetişmek yeter.',
         'Gürültü bugün fikrini bulandırır; sessiz köşen sana iyi gelecek.',
+        'Bugün az ama öz; kalabalıktan çok bir yakınlık iyi gelir.',
       ],
       KategoriTonu.orta: <String>[
         'Sosyal enerjin dengede; eski bir dosta ses ver.',
@@ -116,6 +129,7 @@ abstract final class CategoryPools {
         'İnsanlar bugün seni duymaya hazır; sözünü tane tane söyle.',
         'Bugün küçük bir buluşma beklenmedik güzellik doğurabilir.',
         'Sosyal sularda bugün sakin bir yüzüş var; akıntıya gerek yok.',
+        'Bugün bir selam yeni bir kapı aralayabilir; adımını at.',
       ],
       KategoriTonu.yuksek: <String>[
         'Bugün ortamın yıldızı sensin; davetlere evet de.',
@@ -123,6 +137,7 @@ abstract final class CategoryPools {
         'Bugün sözlerin tatlı, enerjin bulaşıcı; çevrende halka genişler.',
         'Kalabalık bugün sana güç veriyor; sahnenin ortasına yürü.',
         'Bugün kurduğun köprü uzun yıllar ayakta kalacak cinsten.',
+        'Bugün enerjin bulaşıcı; ortama neşe taşıyan sen ol.',
       ],
     },
   };

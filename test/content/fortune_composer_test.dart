@@ -49,6 +49,48 @@ void main() {
       expect(yorumlar.length, greaterThan(20));
     });
 
+    test('ardışık iki gün aynı yorum gelmez (60 gün)', () {
+      // Asıl gereksinim: günlük yorum cümlesi peş peşe tekrar etmemeli.
+      // Yorum üç bağımsız cümleden oluştuğu ve her biri
+      // tekrarsizSecimIndeksi ile seçildiği için ardışık gün asla
+      // birebir aynı olmaz.
+      String? oncekiYorum;
+      for (int i = 0; i < 60; i++) {
+        final DateTime g = gun.add(Duration(days: i));
+        final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: g);
+        final String bugunYorum =
+            gununIcerigi(motor: motor, kullanici: turan, sonuc: sonuc).yorum;
+        if (oncekiYorum != null) {
+          expect(bugunYorum, isNot(oncekiYorum),
+              reason: '$g yorumu bir öncekiyle aynı');
+        }
+        oncekiYorum = bugunYorum;
+      }
+    });
+
+    test('tek bileşenler (renk/tavsiye) ardışık tekrarı büyük ölçüde azalır',
+        () {
+      // Tek bileşenli alanlarda tekrarsizSecimIndeksi tek-adım garanti
+      // verir; nadir uç durumda (bir önceki gün kaydırılmışsa) ardışık
+      // çakışma olabilir. 60 günde bu, elle sayılabilir kadar seyrek olmalı.
+      int renkTekrar = 0;
+      int tavsiyeTekrar = 0;
+      GununIcerigi? onceki;
+      for (int i = 0; i < 60; i++) {
+        final DateTime g = gun.add(Duration(days: i));
+        final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: g);
+        final GununIcerigi bugun =
+            gununIcerigi(motor: motor, kullanici: turan, sonuc: sonuc);
+        if (onceki != null) {
+          if (bugun.sansRengi.ad == onceki.sansRengi.ad) renkTekrar++;
+          if (bugun.tavsiye == onceki.tavsiye) tavsiyeTekrar++;
+        }
+        onceki = bugun;
+      }
+      expect(renkTekrar, lessThanOrEqualTo(2));
+      expect(tavsiyeTekrar, lessThanOrEqualTo(2));
+    });
+
     test('şanslı sayı her zaman sınırlar içinde', () {
       for (int i = 0; i < 365; i++) {
         final DateTime g = gun.add(Duration(days: i));

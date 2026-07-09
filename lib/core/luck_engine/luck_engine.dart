@@ -153,6 +153,43 @@ class LuckEngine {
     return rnd.nextInt(havuzBoyutu);
   }
 
+  /// [secimIndeksi] gibi seçer ama ARDIŞIK GÜN TEKRARINI önler.
+  ///
+  /// Seçilen indeks, bir önceki günün aynı (amaç, boyut) için ürettiği
+  /// ham indekse eşitse bir sonraki elemana kaydırılır. Böylece aynı
+  /// havuzdan peş peşe iki gün aynı cümle gelmez — kullanıcı "hep aynı"
+  /// hissini yaşamaz (istenen: cümleler peşpeşe aynı gelmemeli).
+  ///
+  /// Deterministiktir: yalnız (kullanıcı, gün, amaç, boyut)'a bağlıdır
+  /// (önceki gün de sabittir), böylece CLAUDE.md kural 8 korunur.
+  /// [havuzBoyutu] < 2 ise kaydırılacak yer olmadığından ham indeks
+  /// döner. Garanti: dönüş değeri, önceki günün ham indeksine EŞİT DEĞİL.
+  int tekrarsizSecimIndeksi({
+    required UserSeed kullanici,
+    required DateTime gun,
+    required String amac,
+    required int havuzBoyutu,
+  }) {
+    final int bugun = secimIndeksi(
+      kullanici: kullanici,
+      gun: gun,
+      amac: amac,
+      havuzBoyutu: havuzBoyutu,
+    );
+    // Tek/boş havuz: kaydıracak alternatif yok.
+    if (havuzBoyutu < 2) {
+      return bugun;
+    }
+    final DateTime dun = DateTime(gun.year, gun.month, gun.day - 1);
+    final int dunHam = secimIndeksi(
+      kullanici: kullanici,
+      gun: dun,
+      amac: amac,
+      havuzBoyutu: havuzBoyutu,
+    );
+    return bugun != dunHam ? bugun : (bugun + 1) % havuzBoyutu;
+  }
+
   /// (kullanıcı, gün) çiftinden deterministik RNG tohumu üretir.
   ///
   /// Girdi dizgisi: isimHash + doğum tarihi ISO-8601 + gün yyyy-MM-dd

@@ -27,7 +27,7 @@ GununIcerigi gununIcerigi({
   // Açılış: genel skorun bandından seçilir.
   final List<String> acilisHavuzu =
       FortunePools.acilisCumleleri[SkorBandi.bandiBul(sonuc.genelSkor)]!;
-  final String acilis = acilisHavuzu[motor.secimIndeksi(
+  final String acilis = acilisHavuzu[motor.tekrarsizSecimIndeksi(
     kullanici: kullanici,
     gun: gun,
     amac: ContentConfig.amacAcilis,
@@ -39,7 +39,7 @@ GununIcerigi gununIcerigi({
   final LuckCategory baskin = baskinKategori(sonuc.kategoriSkorlari);
   final List<String> ortaHavuzu = FortunePools.ortaCumleleri[baskin]![
       KategoriTonu.tonuBul(sonuc.kategoriSkorlari[baskin]!)]!;
-  final String orta = ortaHavuzu[motor.secimIndeksi(
+  final String orta = ortaHavuzu[motor.tekrarsizSecimIndeksi(
     kullanici: kullanici,
     gun: gun,
     amac: ContentConfig.amacOrta,
@@ -47,14 +47,16 @@ GununIcerigi gununIcerigi({
   )];
 
   // Kapanış: banttan bağımsız genel havuz.
-  final String kapanis = FortunePools.kapanisCumleleri[motor.secimIndeksi(
+  final String kapanis =
+      FortunePools.kapanisCumleleri[motor.tekrarsizSecimIndeksi(
     kullanici: kullanici,
     gun: gun,
     amac: ContentConfig.amacKapanis,
     havuzBoyutu: FortunePools.kapanisCumleleri.length,
   )];
 
-  final SansRengi renk = FortunePools.sansRenkleri[motor.secimIndeksi(
+  final SansRengi renk =
+      FortunePools.sansRenkleri[motor.tekrarsizSecimIndeksi(
     kullanici: kullanici,
     gun: gun,
     amac: ContentConfig.amacRenk,
@@ -70,7 +72,8 @@ GununIcerigi gununIcerigi({
             ContentConfig.sansliSayiMaks - ContentConfig.sansliSayiMin + 1,
       );
 
-  final String tavsiye = FortunePools.gununTavsiyeleri[motor.secimIndeksi(
+  final String tavsiye =
+      FortunePools.gununTavsiyeleri[motor.tekrarsizSecimIndeksi(
     kullanici: kullanici,
     gun: gun,
     amac: ContentConfig.amacTavsiye,
@@ -98,7 +101,7 @@ String kategoriYorumu({
 
   final List<String> acilisHavuzu = CategoryPools
       .kategoriAcilislari[kategori]![KategoriTonu.tonuBul(skor)]!;
-  final String acilis = acilisHavuzu[motor.secimIndeksi(
+  final String acilis = acilisHavuzu[motor.tekrarsizSecimIndeksi(
     kullanici: kullanici,
     gun: gun,
     amac: ContentConfig.kategoriAmaci(kategori, ContentConfig.amacAcilis),
@@ -107,7 +110,7 @@ String kategoriYorumu({
 
   final List<String> tavsiyeHavuzu =
       CategoryPools.kategoriTavsiyeleri[kategori]!;
-  final String tavsiye = tavsiyeHavuzu[motor.secimIndeksi(
+  final String tavsiye = tavsiyeHavuzu[motor.tekrarsizSecimIndeksi(
     kullanici: kullanici,
     gun: gun,
     amac: ContentConfig.kategoriAmaci(kategori, ContentConfig.amacTavsiye),
