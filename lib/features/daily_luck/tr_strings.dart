@@ -45,6 +45,9 @@ abstract final class TrStrings {
   /// Ana ekrandaki ayarlar dişli ikonunun erişilebilirlik ipucu.
   static const String ayarlarIpucu = 'Ayarlar';
 
+  /// Ana ekrandaki geçmiş takvim ikonunun erişilebilirlik ipucu.
+  static const String gecmisIpucu = 'Geçmiş';
+
   /// Beklenmeyen hata metni.
   static const String hataMetni =
       'Bir şeyler ters gitti. Uygulamayı yeniden başlatmayı dene.';

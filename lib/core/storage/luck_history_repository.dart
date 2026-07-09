@@ -55,6 +55,15 @@ class LuckHistoryRepository {
     return sonuc;
   }
 
+  /// Kutudaki TÜM kayıtları güne göre artan sırada döndürür.
+  ///
+  /// Geçmiş ekranı (heatmap + özet) için kullanılır. Kutu ekleme
+  /// sırasını sakladığından kronolojik heatmap için açık sıralama şart.
+  List<DailyRecord> tumKayitlar() => _box.values
+      .map(DailyRecord.fromMap)
+      .toList()
+    ..sort((DailyRecord a, DailyRecord b) => a.gun.compareTo(b.gun));
+
   /// [gun]den önceki son [biasGunSayisi] günün genel skorlarını döndürür.
   ///
   /// Kaydı olmayan günler atlanır; hiç kayıt yoksa boş liste döner

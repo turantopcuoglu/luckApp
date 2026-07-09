@@ -175,6 +175,44 @@ void main() {
     });
   });
 
+  group('tumKayitlar (Phase 2)', () {
+    test('kayıt yoksa boş liste döner', () {
+      expect(repo.tumKayitlar(), isEmpty);
+    });
+
+    test('kayıtları güne göre artan sırada döndürür (ekleme sırası fark etmez)',
+        () async {
+      // Kasıtlı sırasız ekle: 6, 3, 8 Temmuz.
+      for (final int gunNo in <int>[6, 3, 8]) {
+        final DateTime gun = DateTime(2026, 7, gunNo);
+        final LuckResult temel = motor.hesapla(kullanici: turan, gun: gun);
+        await repo.kaydet(
+          DailyRecord(
+            sonuc: LuckResult(
+              gun: gun,
+              genelSkor: gunNo,
+              kategoriSkorlari: temel.kategoriSkorlari,
+              modifiyerler: temel.modifiyerler,
+            ),
+          ),
+        );
+      }
+
+      final List<DailyRecord> hepsi = repo.tumKayitlar();
+      expect(hepsi.map((DailyRecord k) => k.gun.day), <int>[3, 6, 8]);
+    });
+
+    test('feedback alanları round-trip korunur', () async {
+      final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: bugun);
+      await repo.kaydet(DailyRecord(sonuc: sonuc));
+      await repo.feedbackKaydet(bugun, pozitif: true, emoji: '🍀');
+
+      final DailyRecord tek = repo.tumKayitlar().single;
+      expect(tek.feedbackPozitif, isTrue);
+      expect(tek.feedbackEmoji, '🍀');
+    });
+  });
+
   group('feedbackKaydet', () {
     test('mevcut kayda feedback işler ve sonucu korur', () async {
       final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: bugun);

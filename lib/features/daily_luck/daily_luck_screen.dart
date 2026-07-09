@@ -12,6 +12,7 @@ import '../categories/category_detail_screen.dart';
 import '../categories/entitlement.dart';
 import '../categories/paywall_screen.dart';
 import '../categories/widgets/premium_gate.dart';
+import '../history/history_screen.dart';
 import '../settings/settings_screen.dart';
 import '../share/share_button.dart';
 import 'daily_luck_config.dart';
@@ -170,6 +171,16 @@ class _IcerikState extends ConsumerState<_Icerik>
                       style: yaziTemasi.headlineMedium,
                     ),
                   ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.calendar_month_rounded,
+                  color: AppColors.textSecondary,
+                ),
+                tooltip: TrStrings.gecmisIpucu,
+                onPressed: () => Navigator.of(context).push(
+                  fadeThroughRoute<void>(const HistoryScreen()),
                 ),
               ),
               IconButton(
