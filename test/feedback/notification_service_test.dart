@@ -62,6 +62,51 @@ void main() {
     });
   });
 
+  group('bugunSansliSaatAni (Phase 3)', () {
+    test('saat henüz gelmediyse bugün o saat:00 döner', () {
+      final DateTime? ani = NotificationService.bugunSansliSaatAni(
+        DateTime(2026, 7, 6, 9, 30),
+        14,
+      );
+      expect(ani, DateTime(2026, 7, 6, 14));
+    });
+
+    test('saat geçtiyse null döner (yarına kaydırmaz)', () {
+      final DateTime? ani = NotificationService.bugunSansliSaatAni(
+        DateTime(2026, 7, 6, 15, 0),
+        14,
+      );
+      expect(ani, isNull);
+    });
+
+    test('aynı saat ama dakika geçmişse null döner', () {
+      // 14:30'dayız, şanslı saat 14:00 → başlangıç geçti.
+      final DateTime? ani = NotificationService.bugunSansliSaatAni(
+        DateTime(2026, 7, 6, 14, 30),
+        14,
+      );
+      expect(ani, isNull);
+    });
+  });
+
+  group('sansliSaatMetni (Phase 3)', () {
+    test('deterministik: aynı gün aynı metin', () {
+      final DateTime gun = DateTime(2026, 7, 6);
+      expect(
+        NotificationService.sansliSaatMetni(gun),
+        NotificationService.sansliSaatMetni(gun),
+      );
+    });
+
+    test('seçim her zaman varyasyon listesinden gelir', () {
+      for (int i = 0; i < 30; i++) {
+        final String metin =
+            NotificationService.sansliSaatMetni(DateTime(2026, 7, 1 + i));
+        expect(TrStrings.sansliSaatBildirimVaryasyonlari, contains(metin));
+      }
+    });
+  });
+
   group('sabahMetni (plan madde 3)', () {
     test('en az 10 varyasyon tanımlı', () {
       expect(

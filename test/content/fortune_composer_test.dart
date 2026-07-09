@@ -179,6 +179,42 @@ void main() {
     });
   });
 
+  group('gununSansliSaatBaslangici', () {
+    test('baskın kategorinin şanslı saatinin başlangıcını verir', () {
+      // Para açık ara baskın.
+      final LuckResult sonuc = sonucKur(
+        genelSkor: 70,
+        skorlar: <LuckCategory, int>{
+          LuckCategory.ask: 40,
+          LuckCategory.para: 90,
+          LuckCategory.saglik: 30,
+          LuckCategory.risk: 20,
+          LuckCategory.sosyal: 25,
+        },
+      );
+      final int beklenen = motor
+          .sansliSaat(kullanici: turan, gun: gun, kategori: LuckCategory.para)
+          .baslangicSaati;
+      expect(
+        gununSansliSaatBaslangici(motor: motor, kullanici: turan, sonuc: sonuc),
+        beklenen,
+      );
+    });
+
+    test('deterministik ve 8-20 aralığında', () {
+      for (int i = 0; i < 60; i++) {
+        final DateTime g = gun.add(Duration(days: i));
+        final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: g);
+        final int a = gununSansliSaatBaslangici(
+            motor: motor, kullanici: turan, sonuc: sonuc);
+        final int b = gununSansliSaatBaslangici(
+            motor: motor, kullanici: turan, sonuc: sonuc);
+        expect(a, b);
+        expect(a, inInclusiveRange(8, 20));
+      }
+    });
+  });
+
   group('baskinKategori', () {
     test('en yüksek skorlu kategori seçilir', () {
       final LuckCategory baskin = baskinKategori(<LuckCategory, int>{

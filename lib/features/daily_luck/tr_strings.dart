@@ -60,6 +60,12 @@ abstract final class TrStrings {
   /// [isim] için selamlama metni üretir.
   static String selamlama(String isim) => 'Merhaba, $isim';
 
+  /// Ana ekrandaki şefkatli seri (streak) rozetinin metni.
+  ///
+  /// Suçluluk yaratmaz: yalnız seri > 0 iken gösterilir; "bozuldu"
+  /// gibi bir ifade yoktur. Türkçe'de "1 gündür" de doğru okunur.
+  static String seriEtiketi(int gun) => '$gun gündür buradasın 🔥';
+
   /// Şans ögeleri kartındaki renk sütununun etiketi.
   static const String sansRengiEtiketi = 'Şans rengin';
 
@@ -85,5 +91,16 @@ abstract final class TrStrings {
     'Bugünün enerjisi ölçüldü. Sonuç içeride ⚡',
     'Kaderin kapıda, açmayan bilemez 🚪',
     'Şans perileri mesaini tamamladı, rapor hazır 🧚',
+  ];
+
+  /// Şanslı saat başladığında gösterilen bildirim varyasyonları.
+  ///
+  /// Günün numarasına göre deterministik seçilir. Süreyi bilinçli
+  /// olarak sayı ile yazmaz (magic number kaçınımı) — "bu an/şimdi".
+  static const List<String> sansliSaatBildirimVaryasyonlari = <String>[
+    'Şanslı saatin başladı — bu an senin ✨',
+    'Şansın şimdi zirvede; kapıları çalmanın tam vakti ✨',
+    'Rüzgâr tam arkanda — şanslı saatin başladı 🍃',
+    'Yıldızlar şu an senden yana; anı değerlendir 🌟',
   ];
 }

@@ -117,6 +117,7 @@ class NotificationService {
     required DateTime simdi,
     int? aksamDakika,
     int? sabahDakika,
+    int? sansliSaatBaslangiciSaati,
   }) async {
     try {
       await _eklenti.cancelAll();
@@ -185,6 +186,28 @@ class NotificationService {
               UILocalNotificationDateInterpretation.absoluteTime,
         );
       }
+
+      // Şanslı saat: yalnız BUGÜN, tek seferlik. Saat henüz geçmediyse
+      // planlanır; geçtiyse atlanır (yarının şanslı saati farklı olduğu
+      // için kaydırılmaz — her açılışta yeniden hesaplanır).
+      if (sansliSaatBaslangiciSaati != null) {
+        final DateTime? ani =
+            bugunSansliSaatAni(simdi, sansliSaatBaslangiciSaati);
+        if (ani != null) {
+          await _eklenti.zonedSchedule(
+            FeedbackConfig.sansliSaatBildirimId,
+            'Kader',
+            sansliSaatMetni(ani),
+            tz.TZDateTime.from(ani, tz.local),
+            detaylar,
+            androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+            uiLocalNotificationDateInterpretation:
+                UILocalNotificationDateInterpretation.absoluteTime,
+            // Tek seferlik: matchDateTimeComponents yok. Payload yok —
+            // dokunuş feedback ekranı değil, uygulamayı normal açar.
+          );
+        }
+      }
       // ignore: avoid_catches_without_on_clauses - bkz. baslat.
     } catch (_) {
       // Plugin yoksa (test) veya platform reddederse sessiz geç.
@@ -232,5 +255,28 @@ class NotificationService {
     final Random rnd = Random(gunNumarasi);
     return TrStrings.sabahBildirimVaryasyonlari[
         rnd.nextInt(TrStrings.sabahBildirimVaryasyonlari.length)];
+  }
+
+  /// Bugün [baslangiciSaati]:00 anını döndürür; [simdi]yi geçmişse
+  /// `null` (yarına KAYDIRMAZ — yarının şanslı saati farklıdır).
+  ///
+  /// Saf ve statiktir: tek başına test edilebilir.
+  static DateTime? bugunSansliSaatAni(DateTime simdi, int baslangiciSaati) {
+    final DateTime ani =
+        DateTime(simdi.year, simdi.month, simdi.day, baslangiciSaati);
+    return ani.isAfter(simdi) ? ani : null;
+  }
+
+  /// [gun] için şanslı saat bildirim metnini seçer.
+  ///
+  /// [sabahMetni] ile aynı deterministik desen: gün numarasından türeyen
+  /// tohumla varyasyon seçilir.
+  static String sansliSaatMetni(DateTime gun) {
+    final int gunNumarasi =
+        DateTime(gun.year, gun.month, gun.day).millisecondsSinceEpoch ~/
+            Duration.millisecondsPerDay;
+    final Random rnd = Random(gunNumarasi);
+    return TrStrings.sansliSaatBildirimVaryasyonlari[
+        rnd.nextInt(TrStrings.sansliSaatBildirimVaryasyonlari.length)];
   }
 }

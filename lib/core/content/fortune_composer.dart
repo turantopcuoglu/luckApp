@@ -120,6 +120,23 @@ String kategoriYorumu({
   return '$acilis $tavsiye';
 }
 
+/// Günün "şanslı saatinin" başlangıç saatini (0-23) döndürür.
+///
+/// Günün baskın kategorisi ([baskinKategori]) seçilir, o kategorinin
+/// deterministik şanslı saati ([LuckEngine.sansliSaat]) alınır ve
+/// başlangıç saati döndürülür. Şanslı saat bildirimi bunu kullanır.
+/// Saf ve deterministik: aynı (kullanıcı, saklanan sonuç) aynı saat.
+int gununSansliSaatBaslangici({
+  required LuckEngine motor,
+  required UserSeed kullanici,
+  required LuckResult sonuc,
+}) {
+  final LuckCategory baskin = baskinKategori(sonuc.kategoriSkorlari);
+  return motor
+      .sansliSaat(kullanici: kullanici, gun: sonuc.gun, kategori: baskin)
+      .baslangicSaati;
+}
+
 /// [skorlar] içindeki en yüksek skorlu kategoriyi döndürür.
 ///
 /// Hive round-trip sonrası map'in ekleme sırası garanti olmadığından

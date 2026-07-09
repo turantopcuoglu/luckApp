@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:kader/core/content/fortune_composer.dart';
 import 'package:kader/core/content/gunun_icerigi.dart';
+import 'package:kader/core/history/gecmis_ozeti.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/storage_keys.dart';
@@ -16,6 +17,7 @@ import 'package:kader/features/daily_luck/daily_luck_screen.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
 import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 import 'package:kader/features/daily_luck/widgets/score_ring.dart';
+import 'package:kader/features/history/history_providers.dart';
 import 'package:kader/features/share/share_button.dart';
 import 'package:kader/features/share/share_service.dart';
 
@@ -210,6 +212,50 @@ void main() {
     await ekraniAc(tester);
 
     expect(find.text(TrStrings.selamlama('Turan')), findsOneWidget);
+  });
+
+  group('şefkatli seri rozeti', () {
+    GecmisOzeti ozetSeri(int guncel) => GecmisOzeti(
+          toplamGun: 1,
+          ortalamaSkor: 50,
+          enSansliGun: null,
+          enSansliSkor: null,
+          kanitOrnekSayisi: 0,
+          kanitPozitifSayisi: 0,
+          kanitYuzdesi: null,
+          guncelSeri: guncel,
+          enUzunSeri: guncel,
+        );
+
+    Future<void> ekraniAcSeri(WidgetTester tester, GecmisOzeti ozet) async {
+      await tester.runAsync(() async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: <Override>[
+              userProfileBoxProvider.overrideWithValue(profilKutusu),
+              dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
+              bugunProvider.overrideWithValue(sabitGun),
+              gecmisOzetiProvider.overrideWith((Ref ref) => ozet),
+            ],
+            child: const MaterialApp(home: DailyLuckScreen()),
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pump();
+    }
+
+    testWidgets('güncel seri > 0 iken rozet görünür',
+        (WidgetTester tester) async {
+      await ekraniAcSeri(tester, ozetSeri(3));
+      expect(find.text(TrStrings.seriEtiketi(3)), findsOneWidget);
+    });
+
+    testWidgets('güncel seri 0 iken rozet gösterilmez (suçluluk yok)',
+        (WidgetTester tester) async {
+      await ekraniAcSeri(tester, ozetSeri(0));
+      expect(find.textContaining('gündür buradasın'), findsNothing);
+    });
   });
 }
 

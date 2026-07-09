@@ -30,6 +30,8 @@ void main() {
       expect(ozet.enSansliGun, isNull);
       expect(ozet.kanitYuzdesi, isNull);
       expect(ozet.kanitYeterli, isFalse);
+      expect(ozet.guncelSeri, 0);
+      expect(ozet.enUzunSeri, 0);
     });
 
     test('toplam gün ve ortalama skoru yuvarlar', () {
@@ -128,6 +130,118 @@ void main() {
       final GecmisOzeti ozet = gecmisiOzetle(kayitlar);
       expect(ozet.kanitYeterli, isTrue);
       expect(ozet.kanitYuzdesi, 100);
+    });
+  });
+
+  group('şefkatli seri (streak)', () {
+    // Sabit "bugün" = 6 Temmuz 2026; _kayit(gunNo,...) 2026-07-gunNo.
+    final DateTime bugun = DateTime(2026, 7, 6);
+
+    GecmisOzeti ozetle(List<DailyRecord> k) =>
+        gecmisiOzetle(k, bugun: bugun);
+
+    test('tek gün = bugün → güncel 1, en uzun 1', () {
+      final GecmisOzeti o = ozetle(<DailyRecord>[_kayit(6, 50)]);
+      expect(o.guncelSeri, 1);
+      expect(o.enUzunSeri, 1);
+    });
+
+    test('tek gün = dün, bugün boş → güncel 1 (bugün-toleransı)', () {
+      final GecmisOzeti o = ozetle(<DailyRecord>[_kayit(5, 50)]);
+      expect(o.guncelSeri, 1);
+      expect(o.enUzunSeri, 1);
+    });
+
+    test('tek gün = 2 gün önce → güncel 0 (sönmüş), en uzun 1', () {
+      final GecmisOzeti o = ozetle(<DailyRecord>[_kayit(4, 50)]);
+      expect(o.guncelSeri, 0);
+      expect(o.enUzunSeri, 1);
+    });
+
+    test('3 ardışık gün bugüne kadar → güncel 3', () {
+      final GecmisOzeti o = ozetle(<DailyRecord>[
+        _kayit(4, 50),
+        _kayit(5, 50),
+        _kayit(6, 50),
+      ]);
+      expect(o.guncelSeri, 3);
+      expect(o.enUzunSeri, 3);
+    });
+
+    test('içeride tek gün boşluk affedilir → güncel 3', () {
+      // 3, 5, 6 → farklar 2 (tolere) ve 1.
+      final GecmisOzeti o = ozetle(<DailyRecord>[
+        _kayit(3, 50),
+        _kayit(5, 50),
+        _kayit(6, 50),
+      ]);
+      expect(o.guncelSeri, 3);
+      expect(o.enUzunSeri, 3);
+    });
+
+    test('2 gün boşluk seriyi kırar → güncel 1, en uzun 2', () {
+      // 2, 3 (ardışık) ... 6 (bugün). 6-3 = 3 → kopar.
+      final GecmisOzeti o = ozetle(<DailyRecord>[
+        _kayit(2, 50),
+        _kayit(3, 50),
+        _kayit(6, 50),
+      ]);
+      expect(o.guncelSeri, 1);
+      expect(o.enUzunSeri, 2);
+    });
+
+    test('bugün boş ama arkada zincir → güncel 3', () {
+      // 3, 4, 5 (bugün 6 boş, dün 5 var → canlı).
+      final GecmisOzeti o = ozetle(<DailyRecord>[
+        _kayit(3, 50),
+        _kayit(4, 50),
+        _kayit(5, 50),
+      ]);
+      expect(o.guncelSeri, 3);
+      expect(o.enUzunSeri, 3);
+    });
+
+    test('her iki günde bir deseni seriyi sürdürür', () {
+      // 2, 4, 6 → tüm farklar 2 → tolere.
+      final GecmisOzeti o = ozetle(<DailyRecord>[
+        _kayit(2, 50),
+        _kayit(4, 50),
+        _kayit(6, 50),
+      ]);
+      expect(o.guncelSeri, 3);
+      expect(o.enUzunSeri, 3);
+    });
+
+    test('bugun null → güncel 0, en uzun yine hesaplanır', () {
+      final GecmisOzeti o = gecmisiOzetle(<DailyRecord>[
+        _kayit(4, 50),
+        _kayit(5, 50),
+        _kayit(6, 50),
+      ]);
+      expect(o.guncelSeri, 0);
+      expect(o.enUzunSeri, 3);
+    });
+
+    test('çoklu zincir: en uzun geçmişten, güncel bugüne değen', () {
+      // 1,2,3 (uzun=3) ... 6 (bugün, tek — 6-3=3 kopar).
+      final GecmisOzeti o = ozetle(<DailyRecord>[
+        _kayit(1, 50),
+        _kayit(2, 50),
+        _kayit(3, 50),
+        _kayit(6, 50),
+      ]);
+      expect(o.guncelSeri, 1);
+      expect(o.enUzunSeri, 3);
+    });
+
+    test('sıra bağımsız: karışık eklenen kayıtlar aynı seriyi verir', () {
+      final GecmisOzeti o = ozetle(<DailyRecord>[
+        _kayit(6, 50),
+        _kayit(4, 50),
+        _kayit(5, 50),
+      ]);
+      expect(o.guncelSeri, 3);
+      expect(o.enUzunSeri, 3);
     });
   });
 }

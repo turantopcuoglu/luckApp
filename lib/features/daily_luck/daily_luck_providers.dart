@@ -55,3 +55,18 @@ final FutureProvider<GununIcerigi> gununIcerigiProvider =
     sonuc: sonuc,
   );
 });
+
+/// Bugünün şanslı saatinin başlangıç saati (0-23).
+///
+/// Bildirim planlamasında kullanılır; bugünün sonucu üzerinden baskın
+/// kategorinin deterministik şanslı saatini verir. Testlerde sabit bir
+/// saate override edilebilir (gerçek I/O'ya girmeden).
+final FutureProvider<int> gununSansliSaatiProvider =
+    FutureProvider<int>((Ref ref) async {
+  final LuckResult sonuc = await ref.watch(gununSansiProvider.future);
+  return gununSansliSaatBaslangici(
+    motor: ref.watch(luckEngineProvider),
+    kullanici: ref.watch(aktifProfilProvider).seed,
+    sonuc: sonuc,
+  );
+});

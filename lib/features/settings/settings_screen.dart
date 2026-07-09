@@ -103,10 +103,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     final NotificationService servis = ref.read(notificationServiceProvider);
     if (acik) {
+      final int sansliSaat = await ref.read(gununSansliSaatiProvider.future);
       await servis.gunlukBildirimleriPlanla(
         simdi: DateTime.now(),
         aksamDakika: yeni.aksamBildirimDakika,
         sabahDakika: yeni.sabahBildirimDakika,
+        sansliSaatBaslangiciSaati: sansliSaat,
       );
     } else {
       await servis.iptalEt();
@@ -138,10 +140,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         : profil.copyWith(sabahBildirimDakika: yeniDakika);
     _profilKaydet(yeni);
 
+    final int sansliSaat = await ref.read(gununSansliSaatiProvider.future);
     await ref.read(notificationServiceProvider).gunlukBildirimleriPlanla(
           simdi: DateTime.now(),
           aksamDakika: yeni.aksamBildirimDakika,
           sabahDakika: yeni.sabahBildirimDakika,
+          sansliSaatBaslangiciSaati: sansliSaat,
         );
   }
 

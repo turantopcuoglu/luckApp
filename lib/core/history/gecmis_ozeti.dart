@@ -17,6 +17,8 @@ class GecmisOzeti {
     required this.kanitOrnekSayisi,
     required this.kanitPozitifSayisi,
     required this.kanitYuzdesi,
+    required this.guncelSeri,
+    required this.enUzunSeri,
   });
 
   /// Hiç kayıt olmadığında kullanılan boş özet.
@@ -28,6 +30,8 @@ class GecmisOzeti {
     kanitOrnekSayisi: 0,
     kanitPozitifSayisi: 0,
     kanitYuzdesi: null,
+    guncelSeri: 0,
+    enUzunSeri: 0,
   );
 
   /// Toplam kayıtlı gün sayısı.
@@ -51,6 +55,15 @@ class GecmisOzeti {
   /// Kanıt yüzdesi; örnek sayısı eşiğin altındayken `null`.
   final int? kanitYuzdesi;
 
+  /// Bugüne (veya dün-toleransıyla) uzanan güncel kayıt serisi.
+  ///
+  /// Şefkatli: tek boş gün affedilir; iki ardışık boş gün seriyi bitirir.
+  /// [bugun] verilmediyse hesaplanmaz (0).
+  final int guncelSeri;
+
+  /// Tüm geçmişteki en uzun kayıt serisi (kişisel rekor).
+  final int enUzunSeri;
+
   /// Kanıt yüzdesi anlamlı mı? (yeterli örnek toplandı mı?)
   bool get kanitYeterli => kanitYuzdesi != null;
 }
@@ -64,14 +77,78 @@ bool _tahminiSansli(int skor) {
   return band == SkorBandi.yuksek || band == SkorBandi.cokYuksek;
 }
 
+/// Bir tarihin saatten arındırılmış gün ordinalini döndürür
+/// (`sabahMetni`'deki gün-numarası deseniyle aynı).
+int _gunOrdinali(DateTime gun) =>
+    DateTime(gun.year, gun.month, gun.day).millisecondsSinceEpoch ~/
+    Duration.millisecondsPerDay;
+
+/// İki kayıt arası boşluğun seriyi sürdürüp sürdürmediği: bitişik (1)
+/// ya da tek boş gün (2) tolere edilir; iki+ boş gün (>=3) kırar.
+bool _seriSurer(int fark) => fark <= 2;
+
+/// [ordinaller] (artan, benzersiz) içindeki en uzun grace'li seriyi sayar.
+int _enUzunSeriHesapla(List<int> ordinaller) {
+  if (ordinaller.isEmpty) {
+    return 0;
+  }
+  int enUzun = 1;
+  int guncel = 1;
+  for (int i = 1; i < ordinaller.length; i++) {
+    if (_seriSurer(ordinaller[i] - ordinaller[i - 1])) {
+      guncel++;
+    } else {
+      guncel = 1;
+    }
+    if (guncel > enUzun) {
+      enUzun = guncel;
+    }
+  }
+  return enUzun;
+}
+
+/// Bugüne (veya dün-toleransıyla) uzanan güncel seriyi sayar.
+int _guncelSeriHesapla(List<int> ordinaller, DateTime? bugun) {
+  if (bugun == null || ordinaller.isEmpty) {
+    return 0;
+  }
+  final int bugunOrd = _gunOrdinali(bugun);
+  // Gelecekli kayıtları yok say; bugüne kadar olanları al.
+  final List<int> gecmis =
+      ordinaller.where((int o) => o <= bugunOrd).toList();
+  if (gecmis.isEmpty) {
+    return 0;
+  }
+  final int enSon = gecmis.last;
+  // Bugün-toleransı: en son kayıt bugün ya da dün değilse seri sönmüş.
+  if (bugunOrd - enSon >= 2) {
+    return 0;
+  }
+  int seri = 1;
+  int onceki = enSon;
+  for (int i = gecmis.length - 2; i >= 0; i--) {
+    if (_seriSurer(onceki - gecmis[i])) {
+      seri++;
+      onceki = gecmis[i];
+    } else {
+      break;
+    }
+  }
+  return seri;
+}
+
 /// [kayitlar]dan deterministik geçmiş özeti üretir (saf; I/O yok).
 ///
 /// [enAzKanitGunu]: kanıt yüzdesinin gösterileceği en az örnek sayısı;
 /// altındaysa [GecmisOzeti.kanitYuzdesi] `null` kalır ama örnek sayısı
 /// yine raporlanır ("şu ana kadar n"). Boş liste → [GecmisOzeti.bos].
+///
+/// [bugun]: verilirse [GecmisOzeti.guncelSeri] hesaplanır (bugüne/düne
+/// uzanan seri); verilmezse 0. [GecmisOzeti.enUzunSeri] her zaman üretilir.
 GecmisOzeti gecmisiOzetle(
   List<DailyRecord> kayitlar, {
   int enAzKanitGunu = HistoryAnalizConfig.enAzKanitGunu,
+  DateTime? bugun,
 }) {
   if (kayitlar.isEmpty) {
     return GecmisOzeti.bos;
@@ -109,6 +186,12 @@ GecmisOzeti gecmisiOzetle(
       ? null
       : (kanitPozitif * 100 / kanitOrnek).round();
 
+  // Seri: günleri benzersiz, artan ordinallere indirge (kayıtlar zaten
+  // güne göre sıralı gelir ama savunmacı davranırız).
+  final List<int> ordinaller =
+      kayitlar.map((DailyRecord k) => _gunOrdinali(k.gun)).toSet().toList()
+        ..sort();
+
   return GecmisOzeti(
     toplamGun: kayitlar.length,
     ortalamaSkor: (skorToplami / kayitlar.length).round(),
@@ -117,5 +200,7 @@ GecmisOzeti gecmisiOzetle(
     kanitOrnekSayisi: kanitOrnek,
     kanitPozitifSayisi: kanitPozitif,
     kanitYuzdesi: kanitYuzdesi,
+    guncelSeri: _guncelSeriHesapla(ordinaller, bugun),
+    enUzunSeri: _enUzunSeriHesapla(ordinaller),
   );
 }

@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/content/fortune_composer.dart';
+import 'core/luck_engine/luck_engine.dart';
 import 'core/storage/app_storage.dart';
+import 'core/storage/luck_history_repository.dart';
 import 'core/storage/providers.dart';
 import 'core/storage/user_profile.dart';
 import 'core/storage/user_repository.dart';
@@ -52,11 +55,26 @@ Future<void> main() async {
   if (profil != null &&
       profil.onboardingTamam &&
       profil.bildirimlerAcik) {
+    // Bugünün sonucunu üret/oku → günün baskın kategorisinin şanslı
+    // saatini bul. (Bugünün kaydını erken üretmek streak'e de yarar.)
+    const LuckEngine motor = LuckEngine();
+    final LuckResult sonuc =
+        await LuckHistoryRepository(AppStorage.dailyRecordsBox).getirVeyaUret(
+      motor: motor,
+      kullanici: profil.seed,
+      gun: DateTime.now(),
+    );
+    final int sansliSaat = gununSansliSaatBaslangici(
+      motor: motor,
+      kullanici: profil.seed,
+      sonuc: sonuc,
+    );
     unawaited(
       bildirimler.gunlukBildirimleriPlanla(
         simdi: DateTime.now(),
         aksamDakika: profil.aksamBildirimDakika,
         sabahDakika: profil.sabahBildirimDakika,
+        sansliSaatBaslangiciSaati: sansliSaat,
       ),
     );
   }

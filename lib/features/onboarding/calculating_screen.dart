@@ -70,9 +70,25 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
     final NotificationService bildirimler =
         ref.read(notificationServiceProvider);
     final bool izinVerildi = await bildirimler.izinIste();
+    if (!mounted) {
+      return;
+    }
+
+    // Ana ekran provider'ları misafir profiliyle değerlenmiş olabilir;
+    // ŞANSLI SAATİ okumadan ÖNCE tazelenir ki bugünün kaydı ve şanslı
+    // saat gerçek seed'le hesaplansın (misafir seed'iyle değil).
+    ref
+      ..invalidate(aktifProfilProvider)
+      ..invalidate(gununSansiProvider);
+
     if (izinVerildi) {
+      final int sansliSaat =
+          await ref.read(gununSansliSaatiProvider.future);
       unawaited(
-        bildirimler.gunlukBildirimleriPlanla(simdi: DateTime.now()),
+        bildirimler.gunlukBildirimleriPlanla(
+          simdi: DateTime.now(),
+          sansliSaatBaslangiciSaati: sansliSaat,
+        ),
       );
     } else {
       anaMesajciAnahtari.currentState?.showSnackBar(
@@ -83,11 +99,6 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
       return;
     }
 
-    // Ana ekran provider'ları misafir profiliyle değerlenmiş olabilir;
-    // yeni profil okunsun diye tazelenir.
-    ref
-      ..invalidate(aktifProfilProvider)
-      ..invalidate(gununSansiProvider);
     Navigator.of(context).pushAndRemoveUntil(
       fadeThroughRoute<void>(const DailyLuckScreen()),
       (Route<dynamic> route) => false,

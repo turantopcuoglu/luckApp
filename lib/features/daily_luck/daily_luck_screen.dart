@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/content/gunun_icerigi.dart';
+import '../../core/history/gecmis_ozeti.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -12,6 +13,7 @@ import '../categories/category_detail_screen.dart';
 import '../categories/entitlement.dart';
 import '../categories/paywall_screen.dart';
 import '../categories/widgets/premium_gate.dart';
+import '../history/history_providers.dart';
 import '../history/history_screen.dart';
 import '../settings/settings_screen.dart';
 import '../share/share_button.dart';
@@ -140,6 +142,39 @@ class _IcerikState extends ConsumerState<_Icerik>
     super.dispose();
   }
 
+  /// Şefkatli seri rozeti: yalnız güncel seri > 0 iken görünür.
+  ///
+  /// Suçluluk yok — seri sıfırsa (ya da sönmüşse) hiçbir şey gösterilmez,
+  /// "bozuldu" gibi bir ifade kullanılmaz.
+  Widget _seriRozeti(BuildContext context) {
+    final GecmisOzeti ozet = ref.watch(gecmisOzetiProvider);
+    if (ozet.guncelSeri <= 0) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.sm),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.xs,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(AppRadius.full),
+          ),
+          child: Text(
+            TrStrings.seriEtiketi(ozet.guncelSeri),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppColors.gold,
+                ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
@@ -195,6 +230,7 @@ class _IcerikState extends ConsumerState<_Icerik>
               ),
             ],
           ),
+          _seriRozeti(context),
           const SizedBox(height: AppSpacing.lg),
 
           // Orta blok: kapalı kader kartı (deste kartı oranında).

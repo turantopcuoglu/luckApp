@@ -22,6 +22,11 @@ abstract final class FeedbackConfig {
   /// Sabah bildirimlerinin başlangıç kimliği (100, 101, ...).
   static const int sabahBildirimBaslangicId = 100;
 
+  /// Şanslı saat (tek seferlik, bugün) bildiriminin kimliği.
+  ///
+  /// 100-113 (sabah) ve 200 (akşam) dolu; 300 serbest.
+  static const int sansliSaatBildirimId = 300;
+
   /// Bildirime dokunulduğunda feedback ekranını açan payload.
   static const String feedbackPayload = 'aksam_feedback';
 
