@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/content/fortune_composer.dart';
@@ -126,6 +127,15 @@ class KaderApp extends ConsumerWidget {
       theme: AppTheme.dark,
       navigatorKey: anaGezginAnahtari,
       scaffoldMessengerKey: anaMesajciAnahtari,
+      // Uygulama Türkçe: cihaz dilinden bağımsız Türkçe Material
+      // bileşenleri (showTimePicker, tarih/saat diyalogları) sağlar.
+      locale: const Locale('tr'),
+      supportedLocales: const <Locale>[Locale('tr'), Locale('en')],
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: onboardingTamam
           ? const DailyLuckScreen()
           : const WelcomeScreen(),

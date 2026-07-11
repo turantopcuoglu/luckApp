@@ -10,6 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # ONAY NOTU: flutter_localizations (SDK paketi), Türkçe Material
+  # bileşenleri (showTimePicker vb.) ve lokalizasyon delegate'leri için
+  # eklendi. Turan onayladı. Harici paket değil, Flutter SDK'sının parçası.
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^1.0.8
   # ONAY NOTU: crypto, luck_engine'in deterministik SHA-256 seed'i için
