@@ -48,6 +48,9 @@ abstract final class TrStrings {
   /// Ana ekrandaki geçmiş takvim ikonunun erişilebilirlik ipucu.
   static const String gecmisIpucu = 'Geçmiş';
 
+  /// Ana ekrandaki koleksiyon (kader kartları) ikonunun ipucu.
+  static const String koleksiyonIpucu = 'Koleksiyon';
+
   /// Beklenmeyen hata metni.
   static const String hataMetni =
       'Bir şeyler ters gitti. Uygulamayı yeniden başlatmayı dene.';

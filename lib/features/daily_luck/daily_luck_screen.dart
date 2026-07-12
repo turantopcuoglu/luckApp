@@ -13,6 +13,7 @@ import '../categories/category_detail_screen.dart';
 import '../categories/entitlement.dart';
 import '../categories/paywall_screen.dart';
 import '../categories/widgets/premium_gate.dart';
+import '../collection/collection_screen.dart';
 import '../history/history_providers.dart';
 import '../history/history_screen.dart';
 import '../settings/settings_screen.dart';
@@ -206,6 +207,16 @@ class _IcerikState extends ConsumerState<_Icerik>
                       style: yaziTemasi.headlineMedium,
                     ),
                   ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.style_rounded,
+                  color: AppColors.textSecondary,
+                ),
+                tooltip: TrStrings.koleksiyonIpucu,
+                onPressed: () => Navigator.of(context).push(
+                  fadeThroughRoute<void>(const CollectionScreen()),
                 ),
               ),
               IconButton(
