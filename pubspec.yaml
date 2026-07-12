@@ -35,6 +35,10 @@ dependencies:
   # zamanlanmış bildirimlerin zorunlu bağımlılığıdır.
   flutter_local_notifications: ^18.0.1
   timezone: ^0.10.0
+  # ONAY NOTU: home_widget, günün skorunu telefon ana ekranı widget'ında
+  # göstermek için eklendi (Phase 7). Flutter ↔ native (Android AppWidget /
+  # iOS WidgetKit) köprüsüdür. Turan onayladı. luck_engine'e dokunmaz.
+  home_widget: ^0.7.0
 
 dev_dependencies:
   flutter_test:
