@@ -42,4 +42,10 @@ abstract final class HistoryStrings {
 
   /// Heatmap hücresine dokununca çıkan detay ($tarih • skor $skor).
   static String hucreDetay(String tarih, int skor) => '$tarih • skor $skor';
+
+  /// Heatmap hücresinin ekran okuyucu (erişilebilirlik) etiketi.
+  ///
+  /// Kayıtlı gün hücresi tek anlamlı düğüm olur; TalkBack/VoiceOver
+  /// "6 Temmuz 2026, Pazartesi, skor 85" gibi okur.
+  static String hucreErisim(String tarih, int skor) => '$tarih, skor $skor';
 }

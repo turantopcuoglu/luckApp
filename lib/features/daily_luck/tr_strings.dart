@@ -63,6 +63,13 @@ abstract final class TrStrings {
   /// [isim] için selamlama metni üretir.
   static String selamlama(String isim) => 'Merhaba, $isim';
 
+  /// Skor halkasının ekran okuyucu (erişilebilirlik) etiketi.
+  ///
+  /// Sayı ve etiketi tek anlamlı düğümde birleştirir; TalkBack/VoiceOver
+  /// "GENEL SKOR: 85 / 100" gibi okur (kopuk "85" + "GENEL SKOR" yerine).
+  static String skorErisim(String etiket, int skor, int maks) =>
+      '$etiket: $skor / $maks';
+
   /// Ana ekrandaki şefkatli seri (streak) rozetinin metni.
   ///
   /// Suçluluk yaratmaz: yalnız seri > 0 iken gösterilir; "bozuldu"

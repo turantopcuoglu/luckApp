@@ -9,6 +9,18 @@ abstract final class CategoriesStrings {
   /// güvenilmez (gizlilik: ekran okuyucu/ekran görüntüsü sızıntısı).
   static const String kilitliSkor = '••';
 
+  /// Kategori kartının ekran okuyucu (erişilebilirlik) etiketi.
+  ///
+  /// Kart içeriğini tek anlamlı düğüme indirger: "Aşk: 72 / 100".
+  static String kartErisim(String etiket, int skor, int maks) =>
+      '$etiket: $skor / $maks';
+
+  /// Kilitli kategori kartının erişilebilirlik etiketi.
+  ///
+  /// Gerçek skoru İÇERMEZ (gizlilik: ekran okuyucuya da sızmamalı;
+  /// bkz. [kilitliSkor] gerekçesi). "Aşk: kilitli" biçiminde okunur.
+  static String kilitliErisim(String etiket) => '$etiket: kilitli';
+
   /// Paywall başlığı.
   static const String paywallBaslik = 'Kader Premium';
 

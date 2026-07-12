@@ -65,53 +65,67 @@ class CategoryCard extends StatelessWidget {
       width: DailyLuckConfig.kategoriKartGenisligi,
       child: Card(
         margin: EdgeInsets.zero,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.sm + AppSpacing.xs),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
+        // Kartı tek anlamlı düğüme indir; kilitliyken etiket skoru
+        // İÇERMEZ (gizlilik: ekran okuyucu sızıntısı da engellenir).
+        child: Semantics(
+          label: kilitli
+              ? CategoriesStrings.kilitliErisim(kategori.etiket)
+              : CategoriesStrings.kartErisim(
+                  kategori.etiket,
+                  skor,
+                  EngineConfig.skorMaks,
+                ),
+          container: true,
+          child: ExcludeSemantics(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm + AppSpacing.xs),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  AppIcons.kategori(
-                    kategori,
-                    boyut: DailyLuckConfig.kategoriIkonBoyutu,
-                    renk: AppColors.textSecondary,
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  // Uzun etiketler (ör. "Sağlık") kart genişliğini
-                  // aşabilir; Expanded + ellipsis taşmayı önler.
-                  Expanded(
-                    child: Text(
-                      kategori.etiket,
-                      overflow: TextOverflow.ellipsis,
-                      style: yaziTemasi.labelMedium?.copyWith(
-                        color: AppColors.textSecondary,
+                  Row(
+                    children: <Widget>[
+                      AppIcons.kategori(
+                        kategori,
+                        boyut: DailyLuckConfig.kategoriIkonBoyutu,
+                        renk: AppColors.textSecondary,
                       ),
+                      const SizedBox(width: AppSpacing.xs),
+                      // Uzun etiketler (ör. "Sağlık") kart genişliğini
+                      // aşabilir; Expanded + ellipsis taşmayı önler.
+                      Expanded(
+                        child: Text(
+                          kategori.etiket,
+                          overflow: TextOverflow.ellipsis,
+                          style: yaziTemasi.labelMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Text(
+                    kilitli ? CategoriesStrings.kilitliSkor : '$skor',
+                    style: yaziTemasi.headlineSmall?.copyWith(
+                      color: AppColors.gold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                    child: LinearProgressIndicator(
+                      // Kilitliyken bar dolgusu da skoru sızdırmasın.
+                      value: kilitli
+                          ? CategoriesConfig.kilitliBarOran
+                          : skor / EngineConfig.skorMaks,
+                      minHeight: DailyLuckConfig.kategoriBarYuksekligi,
+                      color: AppColors.gold,
+                      backgroundColor: AppColors.background,
                     ),
                   ),
                 ],
               ),
-              const Spacer(),
-              Text(
-                kilitli ? CategoriesStrings.kilitliSkor : '$skor',
-                style: yaziTemasi.headlineSmall?.copyWith(
-                  color: AppColors.gold,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadius.full),
-                child: LinearProgressIndicator(
-                  // Kilitliyken bar dolgusu da skoru sızdırmasın.
-                  value: kilitli
-                      ? CategoriesConfig.kilitliBarOran
-                      : skor / EngineConfig.skorMaks,
-                  minHeight: DailyLuckConfig.kategoriBarYuksekligi,
-                  color: AppColors.gold,
-                  backgroundColor: AppColors.background,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

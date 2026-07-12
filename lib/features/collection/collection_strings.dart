@@ -28,4 +28,16 @@ abstract final class CollectionStrings {
   /// [gun] için minik kart üstündeki kısa tarih ("6 Temmuz").
   static String kartTarihi(DateTime gun) =>
       '${gun.day} ${TrStrings.ayAdlari[gun.month - 1]}';
+
+  /// "Altın Gün"ün ekran okuyucuda okunan sözcük karşılığı (emoji değil).
+  static const String altinGunSozcuk = 'Altın Gün';
+
+  /// Minik kartın ekran okuyucu (erişilebilirlik) etiketi.
+  ///
+  /// Kartı tek anlamlı, dokunulabilir düğüme indirger:
+  /// "6 Temmuz: 95 / 100, Altın Gün" (altın değilse son ek olmaz).
+  static String kartErisim(DateTime gun, int skor, int maks, bool altinGun) {
+    final String temel = '${kartTarihi(gun)}: $skor / $maks';
+    return altinGun ? '$temel, $altinGunSozcuk' : temel;
+  }
 }

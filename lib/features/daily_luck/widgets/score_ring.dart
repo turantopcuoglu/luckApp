@@ -46,24 +46,32 @@ class ScoreRing extends StatelessWidget {
           oran: skor / EngineConfig.skorMaks,
           kalinlik: kalinlik,
         ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                '$skor',
-                style: yaziTemasi.displayLarge?.copyWith(
-                  color: AppColors.gold,
-                ),
+        // Ekran okuyucu sayı+etiketi tek düğüm olarak okur; içteki iki
+        // Text görsel-sadece kalır (kopuk "85" + "GENEL SKOR" olmaz).
+        child: Semantics(
+          label: TrStrings.skorErisim(etiket, skor, EngineConfig.skorMaks),
+          container: true,
+          child: ExcludeSemantics(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    '$skor',
+                    style: yaziTemasi.displayLarge?.copyWith(
+                      color: AppColors.gold,
+                    ),
+                  ),
+                  Text(
+                    etiket,
+                    style: yaziTemasi.labelSmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                etiket,
-                style: yaziTemasi.labelSmall?.copyWith(
-                  color: AppColors.textSecondary,
-                  letterSpacing: 2,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

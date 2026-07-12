@@ -41,9 +41,35 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+  # ONAY NOTU: flutter_launcher_icons + flutter_native_splash, yonca
+  # uygulama ikonunu ve lacivert açılış (splash) ekranını native
+  # kaynaklara bağlamak için eklendi (Phase 5). Turan onayladı. Yalnız
+  # build-time dev araçlarıdır; uygulamaya/luck_engine'e bağlanmaz.
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.1
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/svg/
+
+# Uygulama ikonu üretimi (dart run flutter_launcher_icons).
+# Kaynak PNG'ler assets/launcher/ altında (app_icon_yonca.svg'den
+# rsvg-convert ile üretilir); bunlar bundle'a girmez, native kaynaklara
+# gömülür — bu yüzden flutter.assets'e eklenmez.
+flutter_launcher_icons:
+  image_path: assets/launcher/icon.png
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "#0A0E1A"
+  adaptive_icon_foreground: assets/launcher/icon_foreground.png
+
+# Açılış (splash) ekranı üretimi (dart run flutter_native_splash:create).
+flutter_native_splash:
+  color: "#0A0E1A"
+  image: assets/launcher/splash.png
+  android_12:
+    color: "#0A0E1A"
+    image: assets/launcher/splash.png

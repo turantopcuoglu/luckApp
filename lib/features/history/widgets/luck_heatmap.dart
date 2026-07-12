@@ -95,7 +95,9 @@ class _LuckHeatmapState extends State<LuckHeatmap> {
               children: <Widget>[
                 for (int hafta = 0; hafta < haftaSayisi; hafta++)
                   Padding(
-                    padding: const EdgeInsets.only(right: HistoryConfig.hucreAraligi),
+                    padding: const EdgeInsets.only(
+                      right: HistoryConfig.hucreAraligi,
+                    ),
                     child: _haftaSutunu(
                       context,
                       gridBaslangic,
@@ -114,20 +116,25 @@ class _LuckHeatmapState extends State<LuckHeatmap> {
 
   /// Soldaki gün etiketleri sütunu (Pt, Sa, Ça, ...).
   Widget _gunEtiketleri(BuildContext context) {
-    final TextStyle? stil = Theme.of(context)
-        .textTheme
-        .labelSmall
-        ?.copyWith(color: AppColors.textSecondary);
-    return Column(
-      children: <Widget>[
-        for (int gun = 0; gun < _haftaninGunu; gun++)
-          Container(
-            height: HistoryConfig.hucreBoyutu,
-            margin: const EdgeInsets.only(bottom: HistoryConfig.hucreAraligi),
-            alignment: Alignment.centerRight,
-            child: Text(TrStrings.gunAdlari[gun].substring(0, 2), style: stil),
-          ),
-      ],
+    final TextStyle? stil = Theme.of(
+      context,
+    ).textTheme.labelSmall?.copyWith(color: AppColors.textSecondary);
+    // Gün kısaltmaları yalnızca görsel kılavuz → semantics'e girmez.
+    return ExcludeSemantics(
+      child: Column(
+        children: <Widget>[
+          for (int gun = 0; gun < _haftaninGunu; gun++)
+            Container(
+              height: HistoryConfig.hucreBoyutu,
+              margin: const EdgeInsets.only(bottom: HistoryConfig.hucreAraligi),
+              alignment: Alignment.centerRight,
+              child: Text(
+                TrStrings.gunAdlari[gun].substring(0, 2),
+                style: stil,
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -165,15 +172,13 @@ class _LuckHeatmapState extends State<LuckHeatmap> {
     Map<String, DailyRecord> gunToKayit,
   ) {
     final bool gelecek = gun.isAfter(sonGun);
-    final DailyRecord? kayit =
-        gelecek ? null : gunToKayit[gunAnahtari(gun)];
+    final DailyRecord? kayit = gelecek ? null : gunToKayit[gunAnahtari(gun)];
 
     final Color renk = gelecek
         ? Colors.transparent
         : kayit == null
-            ? HistoryConfig.bosGunRengi
-            : HistoryConfig.bandRampasi[
-                SkorBandi.bandiBul(kayit.sonuc.genelSkor)]!;
+        ? HistoryConfig.bosGunRengi
+        : HistoryConfig.bandRampasi[SkorBandi.bandiBul(kayit.sonuc.genelSkor)]!;
 
     final Widget kutu = Container(
       width: HistoryConfig.hucreBoyutu,
@@ -185,21 +190,31 @@ class _LuckHeatmapState extends State<LuckHeatmap> {
       ),
     );
 
+    // Boş/gelecek hücre yalnızca görseldir → semantics ağacından çıkar.
     if (kayit == null) {
-      return kutu;
+      return ExcludeSemantics(child: kutu);
     }
-    return GestureDetector(
-      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            HistoryStrings.hucreDetay(
-              TrStrings.tarihMetni(gun),
-              kayit.sonuc.genelSkor,
+    // Kayıtlı hücre: tarih + skor etiketli tek dokunulabilir düğüm.
+    return Semantics(
+      button: true,
+      container: true,
+      label: HistoryStrings.hucreErisim(
+        TrStrings.tarihMetni(gun),
+        kayit.sonuc.genelSkor,
+      ),
+      child: GestureDetector(
+        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              HistoryStrings.hucreDetay(
+                TrStrings.tarihMetni(gun),
+                kayit.sonuc.genelSkor,
+              ),
             ),
           ),
         ),
+        child: kutu,
       ),
-      child: kutu,
     );
   }
 }
