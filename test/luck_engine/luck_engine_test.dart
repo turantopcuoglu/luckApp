@@ -20,10 +20,14 @@ void main() {
     });
 
     test('günün saati sonucu değiştirmez (yyyy-MM-dd anahtarı)', () {
-      final LuckResult sabah =
-          motor.hesapla(kullanici: turan, gun: DateTime(2026, 7, 6, 8, 30));
-      final LuckResult aksam =
-          motor.hesapla(kullanici: turan, gun: DateTime(2026, 7, 6, 23, 59));
+      final LuckResult sabah = motor.hesapla(
+        kullanici: turan,
+        gun: DateTime(2026, 7, 6, 8, 30),
+      );
+      final LuckResult aksam = motor.hesapla(
+        kullanici: turan,
+        gun: DateTime(2026, 7, 6, 23, 59),
+      );
       expect(sabah.genelSkor, aksam.genelSkor);
       expect(sabah.kategoriSkorlari, aksam.kategoriSkorlari);
     });
@@ -73,7 +77,10 @@ void main() {
       final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: gun);
       expect(sonuc.kategoriSkorlari.keys, LuckCategory.values);
       for (final int skor in sonuc.kategoriSkorlari.values) {
-        expect(skor, inInclusiveRange(EngineConfig.skorMin, EngineConfig.skorMaks));
+        expect(
+          skor,
+          inInclusiveRange(EngineConfig.skorMin, EngineConfig.skorMaks),
+        );
       }
       expect(
         sonuc.genelSkor,
@@ -82,15 +89,18 @@ void main() {
     });
 
     test('kategori ağırlıkları toplamı 1.0', () {
-      final double toplam = LuckCategory.values
-          .fold(0, (double t, LuckCategory k) => t + k.agirlik);
+      final double toplam = LuckCategory.values.fold(
+        0,
+        (double t, LuckCategory k) => t + k.agirlik,
+      );
       expect(toplam, closeTo(1.0, 1e-9));
     });
 
     test('ay evresi ve numeroloji modifiyerleri her zaman raporlanır', () {
       final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: gun);
-      final List<String> adlar =
-          sonuc.modifiyerler.map((LuckModifier m) => m.ad).toList();
+      final List<String> adlar = sonuc.modifiyerler
+          .map((LuckModifier m) => m.ad)
+          .toList();
       expect(adlar, containsAll(<String>[ayEvresiAdi, numerolojiAdi]));
     });
 
@@ -118,8 +128,9 @@ void main() {
         gun: gun,
         sonUcGunSkorlari: dusukGecmis,
       );
-      final LuckModifier bias = sonuc.modifiyerler
-          .firstWhere((LuckModifier m) => m.ad == seriDengesiAdi);
+      final LuckModifier bias = sonuc.modifiyerler.firstWhere(
+        (LuckModifier m) => m.ad == seriDengesiAdi,
+      );
       expect(
         bias.etki,
         inInclusiveRange(EngineConfig.seriBiasMin, EngineConfig.seriBiasMaks),

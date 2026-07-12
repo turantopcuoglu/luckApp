@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/content/fortune_composer.dart';
+import '../../core/localization/app_dil.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
@@ -56,10 +57,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   /// İsmi doğrular, yeniden-hesaplama uyarısını gösterir ve onayda kaydeder.
   Future<void> _isimKaydet() async {
+    final AppDil dil = ref.read(dilProvider);
     final String yeniIsim = _isimKontrol.text.trim();
     if (yeniIsim.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(SettingsStrings.isimBosUyarisi)),
+        SnackBar(content: Text(SettingsStrings.isimBosUyarisi(dil))),
       );
       return;
     }
@@ -69,19 +71,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return; // Değişiklik yok.
     }
 
-    final bool onay = await showDialog<bool>(
+    final bool onay =
+        await showDialog<bool>(
           context: context,
           builder: (BuildContext ctx) => AlertDialog(
-            title: const Text(SettingsStrings.isimUyariBaslik),
-            content: const Text(SettingsStrings.isimUyariMetin),
+            title: Text(SettingsStrings.isimUyariBaslik(dil)),
+            content: Text(SettingsStrings.isimUyariMetin(dil)),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(false),
-                child: const Text(SettingsStrings.uyariVazgec),
+                child: Text(SettingsStrings.uyariVazgec(dil)),
               ),
               FilledButton(
                 onPressed: () => Navigator.of(ctx).pop(true),
-                child: const Text(SettingsStrings.uyariDevam),
+                child: Text(SettingsStrings.uyariDevam(dil)),
               ),
             ],
           ),
@@ -93,20 +96,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     _profilKaydet(profil.copyWith(isim: yeniIsim));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text(SettingsStrings.isimKaydedildi)),
+      SnackBar(content: Text(SettingsStrings.isimKaydedildi(dil))),
     );
+  }
+
+  /// Uygulama dilini değiştirir: profile yazar, sağlayıcıları tazeler
+  /// (dilProvider aktifProfil'i izlediğinden tüm ağaç yeniden kurulur).
+  void _dilSec(AppDil yeni) {
+    if (ref.read(dilProvider) == yeni) {
+      return;
+    }
+    _profilKaydet(ref.read(aktifProfilProvider).copyWith(dil: yeni));
   }
 
   /// Bildirimleri açar/kapatır: kapatınca iptal eder, açınca planlar.
   Future<void> _bildirimlerToggle(bool acik) async {
-    final UserProfile yeni =
-        ref.read(aktifProfilProvider).copyWith(bildirimlerAcik: acik);
+    final UserProfile yeni = ref
+        .read(aktifProfilProvider)
+        .copyWith(bildirimlerAcik: acik);
     _profilKaydet(yeni);
 
     final NotificationService servis = ref.read(notificationServiceProvider);
     if (acik) {
       await servis.gunlukBildirimleriPlanla(
         simdi: DateTime.now(),
+        dil: ref.read(dilProvider),
         aksamDakika: yeni.aksamBildirimDakika,
         sabahDakika: yeni.sabahBildirimDakika,
         sansliSaatBaslangiciSaati: _sansliSaatSenkron(),
@@ -141,8 +155,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final int mevcutDakika = aksam
         ? profil.aksamBildirimDakika ?? SettingsConfig.varsayilanAksamDakika
         : profil.sabahBildirimDakika ?? SettingsConfig.varsayilanSabahDakika;
-    final (int saat, int dakika) =
-        NotificationService.saatDakikaAyir(mevcutDakika);
+    final (int saat, int dakika) = NotificationService.saatDakikaAyir(
+      mevcutDakika,
+    );
 
     final TimeOfDay? secilen = await showTimePicker(
       context: context,
@@ -152,15 +167,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return;
     }
 
-    final int yeniDakika =
-        NotificationService.dakikayaCevir(secilen.hour, secilen.minute);
+    final int yeniDakika = NotificationService.dakikayaCevir(
+      secilen.hour,
+      secilen.minute,
+    );
     final UserProfile yeni = aksam
         ? profil.copyWith(aksamBildirimDakika: yeniDakika)
         : profil.copyWith(sabahBildirimDakika: yeniDakika);
     _profilKaydet(yeni);
 
-    await ref.read(notificationServiceProvider).gunlukBildirimleriPlanla(
+    await ref
+        .read(notificationServiceProvider)
+        .gunlukBildirimleriPlanla(
           simdi: DateTime.now(),
+          dil: ref.read(dilProvider),
           aksamDakika: yeni.aksamBildirimDakika,
           sabahDakika: yeni.sabahBildirimDakika,
           sansliSaatBaslangiciSaati: _sansliSaatSenkron(),
@@ -171,19 +191,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final UserProfile profil = ref.watch(aktifProfilProvider);
+    final AppDil dil = ref.watch(dilProvider);
     final bool bildirimlerAcik = profil.bildirimlerAcik;
 
     final int aksamDakika =
         profil.aksamBildirimDakika ?? SettingsConfig.varsayilanAksamDakika;
     final int sabahDakika =
         profil.sabahBildirimDakika ?? SettingsConfig.varsayilanSabahDakika;
-    final (int aksamS, int aksamD) =
-        NotificationService.saatDakikaAyir(aksamDakika);
-    final (int sabahS, int sabahD) =
-        NotificationService.saatDakikaAyir(sabahDakika);
+    final (int aksamS, int aksamD) = NotificationService.saatDakikaAyir(
+      aksamDakika,
+    );
+    final (int sabahS, int sabahD) = NotificationService.saatDakikaAyir(
+      sabahDakika,
+    );
 
     return Scaffold(
-      appBar: AppBar(title: const Text(SettingsStrings.baslik)),
+      appBar: AppBar(title: Text(SettingsStrings.baslik(dil))),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.lg),
@@ -191,7 +214,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               // — İsim bölümü —
-              Text(SettingsStrings.isimBolumu, style: yaziTemasi.titleMedium),
+              Text(
+                SettingsStrings.isimBolumu(dil),
+                style: yaziTemasi.titleMedium,
+              ),
               const SizedBox(height: AppSpacing.sm),
               Row(
                 children: <Widget>[
@@ -204,21 +230,43 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   const SizedBox(width: AppSpacing.sm),
                   FilledButton(
                     onPressed: _isimKaydet,
-                    child: const Text(SettingsStrings.isimKaydet),
+                    child: Text(SettingsStrings.isimKaydet(dil)),
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.xl),
 
+              // — Dil bölümü —
+              Text(
+                SettingsStrings.dilBolumu(dil),
+                style: yaziTemasi.titleMedium,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              SegmentedButton<AppDil>(
+                segments: const <ButtonSegment<AppDil>>[
+                  ButtonSegment<AppDil>(
+                    value: AppDil.tr,
+                    label: Text(SettingsStrings.dilTurkce),
+                  ),
+                  ButtonSegment<AppDil>(
+                    value: AppDil.en,
+                    label: Text(SettingsStrings.dilIngilizce),
+                  ),
+                ],
+                selected: <AppDil>{dil},
+                onSelectionChanged: (Set<AppDil> secim) => _dilSec(secim.first),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+
               // — Bildirim bölümü —
               Text(
-                SettingsStrings.bildirimBolumu,
+                SettingsStrings.bildirimBolumu(dil),
                 style: yaziTemasi.titleMedium,
               ),
               const SizedBox(height: AppSpacing.sm),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text(SettingsStrings.bildirimAcik),
+                title: Text(SettingsStrings.bildirimAcik(dil)),
                 value: bildirimlerAcik,
                 activeThumbColor: AppColors.gold,
                 onChanged: _bildirimlerToggle,
@@ -226,7 +274,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 enabled: bildirimlerAcik,
-                title: const Text(SettingsStrings.aksamHatirlatma),
+                title: Text(SettingsStrings.aksamHatirlatma(dil)),
                 trailing: Text(
                   NotificationService.saatMetni(aksamS, aksamD),
                   style: yaziTemasi.titleMedium?.copyWith(
@@ -235,13 +283,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         : AppColors.textSecondary,
                   ),
                 ),
-                onTap:
-                    bildirimlerAcik ? () => _saatSec(aksam: true) : null,
+                onTap: bildirimlerAcik ? () => _saatSec(aksam: true) : null,
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 enabled: bildirimlerAcik,
-                title: const Text(SettingsStrings.sabahHatirlatma),
+                title: Text(SettingsStrings.sabahHatirlatma(dil)),
                 trailing: Text(
                   NotificationService.saatMetni(sabahS, sabahD),
                   style: yaziTemasi.titleMedium?.copyWith(
@@ -250,19 +297,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         : AppColors.textSecondary,
                   ),
                 ),
-                onTap:
-                    bildirimlerAcik ? () => _saatSec(aksam: false) : null,
+                onTap: bildirimlerAcik ? () => _saatSec(aksam: false) : null,
               ),
               const SizedBox(height: AppSpacing.xl),
 
               // — Hakkında bölümü —
               Text(
-                SettingsStrings.hakkindaBolumu,
+                SettingsStrings.hakkindaBolumu(dil),
                 style: yaziTemasi.titleMedium,
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                '${SettingsStrings.surumEtiketi}: '
+                '${SettingsStrings.surumEtiketi(dil)}: '
                 '${SettingsConfig.uygulamaSurumu}',
                 style: yaziTemasi.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
@@ -270,7 +316,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                SettingsStrings.eglenceAmacli,
+                SettingsStrings.eglenceAmacli(dil),
                 style: yaziTemasi.bodySmall?.copyWith(
                   color: AppColors.textSecondary,
                 ),

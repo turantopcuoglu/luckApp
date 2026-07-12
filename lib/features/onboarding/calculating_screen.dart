@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/localization/app_dil.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -44,7 +45,9 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
   @override
   void initState() {
     super.initState();
-    _kontrol.addStatusListener((AnimationStatus d) => unawaited(_animasyonBitti(d)));
+    _kontrol.addStatusListener(
+      (AnimationStatus d) => unawaited(_animasyonBitti(d)),
+    );
     _kontrol.forward();
   }
 
@@ -67,8 +70,9 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
     // Bildirim izni akışı onboarding'in sonundadır (plan S8, madde 4):
     // sistem diyaloğu bu ekranın üzerinde görünür, cevaba göre ya
     // bildirimler planlanır ya da nazik bir hatırlatma gösterilir.
-    final NotificationService bildirimler =
-        ref.read(notificationServiceProvider);
+    final NotificationService bildirimler = ref.read(
+      notificationServiceProvider,
+    );
     final bool izinVerildi = await bildirimler.izinIste();
     if (!mounted) {
       return;
@@ -81,18 +85,19 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
       ..invalidate(aktifProfilProvider)
       ..invalidate(gununSansiProvider);
 
+    final AppDil dil = ref.read(dilProvider);
     if (izinVerildi) {
-      final int sansliSaat =
-          await ref.read(gununSansliSaatiProvider.future);
+      final int sansliSaat = await ref.read(gununSansliSaatiProvider.future);
       unawaited(
         bildirimler.gunlukBildirimleriPlanla(
           simdi: DateTime.now(),
           sansliSaatBaslangiciSaati: sansliSaat,
+          dil: dil,
         ),
       );
     } else {
       anaMesajciAnahtari.currentState?.showSnackBar(
-        const SnackBar(content: Text(FeedbackStrings.izinReddiMesaji)),
+        SnackBar(content: Text(FeedbackStrings.izinReddiMesaji(dil))),
       );
     }
     if (!mounted) {
@@ -143,7 +148,7 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     Text(
-                      OnboardingStrings.hesaplaniyor,
+                      OnboardingStrings.hesaplaniyor(ref.watch(dilProvider)),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ],
@@ -201,7 +206,8 @@ class _ParcacikPainter extends CustomPainter {
       (int i) => _Parcacik(
         aci: rnd.nextDouble() * 2 * pi,
         yaricapOrani: 0.4 + rnd.nextDouble() * 0.6,
-        boyut: OnboardingConfig.parcacikMinBoyut +
+        boyut:
+            OnboardingConfig.parcacikMinBoyut +
             rnd.nextDouble() *
                 (OnboardingConfig.parcacikMaksBoyut -
                     OnboardingConfig.parcacikMinBoyut),
@@ -220,19 +226,16 @@ class _ParcacikPainter extends CustomPainter {
     for (final _Parcacik p in _parcaciklar) {
       // Faz kaymalı ilerleme: her parçacık kendi zaman diliminde
       // 0→1 tamamlar (kayma kadar geç başlar, o kadar erken biter).
-      final double t = ((animasyon.value - p.fazKaymasi) /
-              (1 - p.fazKaymasi))
+      final double t = ((animasyon.value - p.fazKaymasi) / (1 - p.fazKaymasi))
           .clamp(0.0, 1.0);
       // sin(pi*t): 0'da merkezde, 0.5'te en dışta, 1'de merkeze döner —
       // "dağıl ve toplan" koreografisinin tamamı tek fonksiyonda.
-      final double uzaklik =
-          sin(pi * t) * azamiYaricap * p.yaricapOrani;
-      final Offset konum = merkez +
-          Offset(cos(p.aci) * uzaklik, sin(p.aci) * uzaklik);
+      final double uzaklik = sin(pi * t) * azamiYaricap * p.yaricapOrani;
+      final Offset konum =
+          merkez + Offset(cos(p.aci) * uzaklik, sin(p.aci) * uzaklik);
 
       // Dışa açıldıkça hafif solar, dönüşte tekrar parlar.
-      boya.color =
-          AppColors.gold.withValues(alpha: 1 - 0.6 * sin(pi * t));
+      boya.color = AppColors.gold.withValues(alpha: 1 - 0.6 * sin(pi * t));
       canvas.drawCircle(konum, p.boyut / 2, boya);
     }
   }

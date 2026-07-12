@@ -83,11 +83,7 @@ void main() {
 
     test('şanslı saat, skor tohumundan bağımsızdır (skoru değiştirmez)', () {
       final LuckResult once = motor.hesapla(kullanici: turan, gun: gun);
-      motor.sansliSaat(
-        kullanici: turan,
-        gun: gun,
-        kategori: LuckCategory.risk,
-      );
+      motor.sansliSaat(kullanici: turan, gun: gun, kategori: LuckCategory.risk);
       final LuckResult sonra = motor.hesapla(kullanici: turan, gun: gun);
       expect(once.kategoriSkorlari, sonra.kategoriSkorlari);
     });

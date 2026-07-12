@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kader/core/history/aylik_ozet.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
 import 'package:kader/features/share/monthly_recap_card.dart';
@@ -37,8 +38,9 @@ void main() {
     enUzunSeri: ozet.enUzunSeri,
   );
 
-  testWidgets('MonthlyRecapCard ay başlığı ve öne çıkanları gösterir',
-      (WidgetTester tester) async {
+  testWidgets('MonthlyRecapCard ay başlığı ve öne çıkanları gösterir', (
+    WidgetTester tester,
+  ) async {
     tester.view.physicalSize = ShareConfig.kartBoyutu;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -46,29 +48,35 @@ void main() {
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
-        child: MonthlyRecapCard(ozet: doluOzet),
+        child: MonthlyRecapCard(ozet: doluOzet, dil: AppDil.tr),
       ),
     );
 
-    expect(find.text('${TrStrings.ayAdlari[6]} 2026'), findsOneWidget);
-    expect(find.text(RecapStrings.ustBaslik), findsOneWidget);
+    expect(
+      find.text('${TrStrings.ayAdlari(AppDil.tr)[6]} 2026'),
+      findsOneWidget,
+    );
+    expect(find.text(RecapStrings.ustBaslik(AppDil.tr)), findsOneWidget);
     expect(find.text(RecapStrings.altinGunDegeri(2)), findsOneWidget);
     expect(find.text(RecapStrings.enUzunSeriDegeri(5)), findsOneWidget);
-    expect(find.text(LuckCategory.para.etiket), findsOneWidget);
+    expect(find.text(LuckCategory.para.etiket(AppDil.tr)), findsOneWidget);
   });
 
-  testWidgets('aylık recap kartı 1080x1920 geçerli PNG üretir',
-      (WidgetTester tester) async {
+  testWidgets('aylık recap kartı 1080x1920 geçerli PNG üretir', (
+    WidgetTester tester,
+  ) async {
     await tester.runAsync(() async {
       final ShareService servis = ShareService();
-      final List<int> png =
-          await servis.kartPngUret(MonthlyRecapCard(ozet: doluOzet));
+      final List<int> png = await servis.kartPngUret(
+        MonthlyRecapCard(ozet: doluOzet, dil: AppDil.tr),
+      );
 
       expect(png, isNotEmpty);
       expect(png.sublist(0, 4), <int>[0x89, 0x50, 0x4E, 0x47]);
 
-      final ui.Codec cozucu =
-          await ui.instantiateImageCodec(Uint8List.fromList(png));
+      final ui.Codec cozucu = await ui.instantiateImageCodec(
+        Uint8List.fromList(png),
+      );
       final ui.FrameInfo kare = await cozucu.getNextFrame();
       expect(kare.image.width, ShareConfig.kartBoyutu.width.toInt());
       expect(kare.image.height, ShareConfig.kartBoyutu.height.toInt());

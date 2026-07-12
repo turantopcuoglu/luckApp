@@ -1,8 +1,11 @@
-/// Ana ekran widget'ının Türkçe metinleri.
+import '../../core/localization/app_dil.dart';
+
+/// Ana ekran widget'ının metinleri (TR + EN).
 abstract final class WidgetStrings {
-  /// Widget üstündeki marka etiketi.
+  /// Widget üstündeki marka etiketi (dil-nötr).
   static const String marka = 'Kader';
 
   /// Günün yorumu boşsa gösterilen yedek ipucu.
-  static const String yedekTeaser = 'Bugünün kaderi seni bekliyor';
+  static String yedekTeaser(AppDil dil) =>
+      dil.sec('Bugünün kaderi seni bekliyor', "Today's fortune awaits you");
 }

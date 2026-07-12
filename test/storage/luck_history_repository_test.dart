@@ -158,8 +158,10 @@ void main() {
       // 1 Temmuz'dan geriye bakınca 28-30 Haziran taranmalı.
       final DateTime ayBasi = DateTime(2026, 7, 1);
       final DateTime haziranSonu = DateTime(2026, 6, 30);
-      final LuckResult temel =
-          motor.hesapla(kullanici: turan, gun: haziranSonu);
+      final LuckResult temel = motor.hesapla(
+        kullanici: turan,
+        gun: haziranSonu,
+      );
       await repo.kaydet(
         DailyRecord(
           sonuc: LuckResult(
@@ -180,27 +182,29 @@ void main() {
       expect(repo.tumKayitlar(), isEmpty);
     });
 
-    test('kayıtları güne göre artan sırada döndürür (ekleme sırası fark etmez)',
-        () async {
-      // Kasıtlı sırasız ekle: 6, 3, 8 Temmuz.
-      for (final int gunNo in <int>[6, 3, 8]) {
-        final DateTime gun = DateTime(2026, 7, gunNo);
-        final LuckResult temel = motor.hesapla(kullanici: turan, gun: gun);
-        await repo.kaydet(
-          DailyRecord(
-            sonuc: LuckResult(
-              gun: gun,
-              genelSkor: gunNo,
-              kategoriSkorlari: temel.kategoriSkorlari,
-              modifiyerler: temel.modifiyerler,
+    test(
+      'kayıtları güne göre artan sırada döndürür (ekleme sırası fark etmez)',
+      () async {
+        // Kasıtlı sırasız ekle: 6, 3, 8 Temmuz.
+        for (final int gunNo in <int>[6, 3, 8]) {
+          final DateTime gun = DateTime(2026, 7, gunNo);
+          final LuckResult temel = motor.hesapla(kullanici: turan, gun: gun);
+          await repo.kaydet(
+            DailyRecord(
+              sonuc: LuckResult(
+                gun: gun,
+                genelSkor: gunNo,
+                kategoriSkorlari: temel.kategoriSkorlari,
+                modifiyerler: temel.modifiyerler,
+              ),
             ),
-          ),
-        );
-      }
+          );
+        }
 
-      final List<DailyRecord> hepsi = repo.tumKayitlar();
-      expect(hepsi.map((DailyRecord k) => k.gun.day), <int>[3, 6, 8]);
-    });
+        final List<DailyRecord> hepsi = repo.tumKayitlar();
+        expect(hepsi.map((DailyRecord k) => k.gun.day), <int>[3, 6, 8]);
+      },
+    );
 
     test('feedback alanları round-trip korunur', () async {
       final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: bugun);

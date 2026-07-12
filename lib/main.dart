@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/content/fortune_composer.dart';
 import 'core/content/gunun_icerigi.dart';
+import 'core/localization/app_dil.dart';
 import 'core/luck_engine/luck_engine.dart';
 import 'core/storage/app_storage.dart';
 import 'core/storage/luck_history_repository.dart';
@@ -13,6 +14,7 @@ import 'core/storage/providers.dart';
 import 'core/storage/user_profile.dart';
 import 'core/storage/user_repository.dart';
 import 'core/theme/app_theme.dart';
+import 'features/daily_luck/daily_luck_providers.dart';
 import 'features/daily_luck/daily_luck_screen.dart';
 import 'features/feedback/feedback_screen.dart';
 import 'features/feedback/notification_service.dart';
@@ -55,8 +57,16 @@ Future<void> main() async {
   // kapatmışsa hiçbir şey planlanmaz (kapatma anında iptal edilmişti).
   final UserRepository kullanicilar = UserRepository(AppStorage.userProfileBox);
   final UserProfile? profil = kullanicilar.profil();
+
+  // Cihaz dilinden uygulama dili (Türkçe değilse İngilizce). Kullanıcı
+  // Ayarlar'dan açık tercih yaptıysa o kazanır (profil.dil).
+  final AppDil cihazDil = AppDil.cihazdan(
+    WidgetsBinding.instance.platformDispatcher.locale.languageCode,
+  );
+
   if (profil != null && profil.onboardingTamam) {
     const LuckEngine motor = LuckEngine();
+    final AppDil dil = profil.dil ?? cihazDil;
 
     // Bugünün sonucunu üret/oku (kaydı erken üretmek streak'e de yarar).
     // Hesaplanamazsa (herhangi bir hata) açılış asla bloklanmaz/çökmez.
@@ -82,6 +92,7 @@ Future<void> main() async {
           motor: motor,
           kullanici: profil.seed,
           sonuc: sonuc,
+          dil: dil,
         );
         unawaited(
           HomeWidgetService().yaz(
@@ -89,6 +100,7 @@ Future<void> main() async {
               skor: sonuc.genelSkor,
               gun: sonuc.gun,
               yorum: icerik.yorum,
+              dil: dil,
             ),
           ),
         );
@@ -121,6 +133,7 @@ Future<void> main() async {
           aksamDakika: profil.aksamBildirimDakika,
           sabahDakika: profil.sabahBildirimDakika,
           sansliSaatBaslangiciSaati: sansliSaat,
+          dil: dil,
         ),
       );
     }
@@ -132,6 +145,8 @@ Future<void> main() async {
         userProfileBoxProvider.overrideWithValue(AppStorage.userProfileBox),
         dailyRecordsBoxProvider.overrideWithValue(AppStorage.dailyRecordsBox),
         notificationServiceProvider.overrideWithValue(bildirimler),
+        // Cihaz dilini gerçek platform diliyle sağla (varsayılan tr).
+        cihazDiliProvider.overrideWithValue(cihazDil),
       ],
       child: const KaderApp(),
     ),
@@ -157,15 +172,17 @@ class KaderApp extends ConsumerWidget {
     final bool onboardingTamam = ref
         .watch(userRepositoryProvider)
         .onboardingTamamlandiMi;
+    final AppDil dil = ref.watch(dilProvider);
     return MaterialApp(
       title: 'Kader',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       navigatorKey: anaGezginAnahtari,
       scaffoldMessengerKey: anaMesajciAnahtari,
-      // Uygulama Türkçe: cihaz dilinden bağımsız Türkçe Material
-      // bileşenleri (showTimePicker, tarih/saat diyalogları) sağlar.
-      locale: const Locale('tr'),
+      // Aktif uygulama diline göre Material bileşenleri (showTimePicker,
+      // tarih/saat diyalogları) yerelleşir; dil Ayarlar'dan değişince
+      // dilProvider tazelenir ve tüm ağaç yeniden kurulur.
+      locale: Locale(dil.localeKodu),
       supportedLocales: const <Locale>[Locale('tr'), Locale('en')],
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         GlobalMaterialLocalizations.delegate,

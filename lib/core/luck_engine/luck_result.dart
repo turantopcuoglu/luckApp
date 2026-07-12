@@ -12,8 +12,8 @@ class LuckResult {
     required this.genelSkor,
     required Map<LuckCategory, int> kategoriSkorlari,
     required List<LuckModifier> modifiyerler,
-  })  : kategoriSkorlari = Map.unmodifiable(kategoriSkorlari),
-        modifiyerler = List.unmodifiable(modifiyerler);
+  }) : kategoriSkorlari = Map.unmodifiable(kategoriSkorlari),
+       modifiyerler = List.unmodifiable(modifiyerler);
 
   /// Sonucun ait olduğu gün (yalnızca tarih kısmı anlamlıdır).
   final DateTime gun;

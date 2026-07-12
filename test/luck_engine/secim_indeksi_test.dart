@@ -177,8 +177,7 @@ void main() {
       for (final int boyut in <int>[2, 4, 6, 7]) {
         for (int i = 0; i < 365; i++) {
           final DateTime g = gun.add(Duration(days: i));
-          final DateTime oncekiGun =
-              DateTime(g.year, g.month, g.day - 1);
+          final DateTime oncekiGun = DateTime(g.year, g.month, g.day - 1);
           final int bugun = motor.tekrarsizSecimIndeksi(
             kullanici: turan,
             gun: g,
@@ -191,8 +190,11 @@ void main() {
             amac: 'orta',
             havuzBoyutu: boyut,
           );
-          expect(bugun, isNot(dunHam),
-              reason: 'boyut $boyut, gün $g tekrarı önlenemedi');
+          expect(
+            bugun,
+            isNot(dunHam),
+            reason: 'boyut $boyut, gün $g tekrarı önlenemedi',
+          );
           expect(bugun, inInclusiveRange(0, boyut - 1));
         }
       }

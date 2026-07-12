@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_dil.dart';
 import '../../../core/luck_engine/luck_engine.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -45,6 +46,7 @@ class CategoryCard extends StatelessWidget {
   const CategoryCard({
     required this.kategori,
     required this.skor,
+    required this.dil,
     this.kilitli = false,
     super.key,
   });
@@ -54,6 +56,9 @@ class CategoryCard extends StatelessWidget {
 
   /// Kategorinin bugünkü skoru.
   final int skor;
+
+  /// Aktif uygulama dili.
+  final AppDil dil;
 
   /// Kart premium kilidi altında mı? (skor maskelenir)
   final bool kilitli;
@@ -69,9 +74,9 @@ class CategoryCard extends StatelessWidget {
         // İÇERMEZ (gizlilik: ekran okuyucu sızıntısı da engellenir).
         child: Semantics(
           label: kilitli
-              ? CategoriesStrings.kilitliErisim(kategori.etiket)
+              ? CategoriesStrings.kilitliErisim(dil, kategori.etiket(dil))
               : CategoriesStrings.kartErisim(
-                  kategori.etiket,
+                  kategori.etiket(dil),
                   skor,
                   EngineConfig.skorMaks,
                 ),
@@ -94,7 +99,7 @@ class CategoryCard extends StatelessWidget {
                       // aşabilir; Expanded + ellipsis taşmayı önler.
                       Expanded(
                         child: Text(
-                          kategori.etiket,
+                          kategori.etiket(dil),
                           overflow: TextOverflow.ellipsis,
                           style: yaziTemasi.labelMedium?.copyWith(
                             color: AppColors.textSecondary,

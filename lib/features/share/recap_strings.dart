@@ -1,45 +1,62 @@
-/// Ay Sonu Şans Raporu özelliğinin Türkçe metinleri.
+import '../../core/localization/app_dil.dart';
+
+/// Ay Sonu Şans Raporu özelliğinin metinleri (TR + EN).
 abstract final class RecapStrings {
   /// Kartın üst-başlığı.
-  static const String ustBaslik = 'ŞANS RAPORU';
+  static String ustBaslik(AppDil dil) => dil.sec('ŞANS RAPORU', 'LUCK REPORT');
 
   /// History ekranındaki bölüm başlığı.
-  static const String bolumBasligi = 'Bu Ayın Şans Raporu';
+  static String bolumBasligi(AppDil dil) =>
+      dil.sec('Bu Ayın Şans Raporu', "This Month's Luck Report");
 
   /// History ekranındaki paylaş butonu.
-  static const String paylasButonu = 'Ay raporunu paylaş ✨';
+  static String paylasButonu(AppDil dil) =>
+      dil.sec('Ay raporunu paylaş ✨', 'Share monthly report ✨');
 
   /// Paylaşım menüsüne eklenen kısa metin.
-  static const String paylasimMetni = 'Bu ayki şans raporum ✨';
+  static String paylasimMetni(AppDil dil) =>
+      dil.sec('Bu ayki şans raporum ✨', 'My luck report this month ✨');
 
   /// En şanslı gün istatistiği etiketi.
-  static const String enSansliGunEtiketi = 'En şanslı günün';
+  static String enSansliGunEtiketi(AppDil dil) =>
+      dil.sec('En şanslı günün', 'Your luckiest day');
 
   /// Ortalama skor istatistiği etiketi.
-  static const String ortalamaEtiketi = 'Ortalama skorun';
+  static String ortalamaEtiketi(AppDil dil) =>
+      dil.sec('Ortalama skorun', 'Your average score');
 
   /// Altın gün sayısı istatistiği etiketi.
-  static const String altinGunEtiketi = 'Altın Gün';
+  static String altinGunEtiketi(AppDil dil) =>
+      dil.sec('Altın Gün', 'Golden Day');
 
   /// En uzun seri istatistiği etiketi.
-  static const String enUzunSeriEtiketi = 'En uzun serin';
+  static String enUzunSeriEtiketi(AppDil dil) =>
+      dil.sec('En uzun serin', 'Your longest streak');
 
   /// Baskın kategori istatistiği etiketi.
-  static const String baskinKategoriEtiketi = 'Öne çıkan';
+  static String baskinKategoriEtiketi(AppDil dil) =>
+      dil.sec('Öne çıkan', 'Standout');
 
   /// Kayıtlı gün sayısı istatistiği etiketi.
-  static const String gunSayisiEtiketi = 'Kayıtlı gün';
+  static String gunSayisiEtiketi(AppDil dil) =>
+      dil.sec('Kayıtlı gün', 'Days logged');
 
-  /// Altın gün değerinin yıldız ekli gösterimi ($sayi 🌟).
+  /// Altın gün değerinin yıldız ekli gösterimi ($sayi 🌟, dil-nötr).
   static String altinGunDegeri(int sayi) => '$sayi 🌟';
 
-  /// En uzun seri değerinin alev ekli gösterimi ($gun 🔥).
+  /// En uzun seri değerinin alev ekli gösterimi ($gun 🔥, dil-nötr).
   static String enUzunSeriDegeri(int gun) => '$gun 🔥';
 
-  /// "$gun gün" biçiminde gün değeri.
-  static String gunDegeri(int gun) => '$gun gün';
+  /// "$gun gün" / "$gun days" biçiminde gün değeri.
+  static String gunDegeri(AppDil dil, int gun) =>
+      dil.sec('$gun gün', '$gun days');
 
   /// History kartındaki özet satırı ($ay $yil · $gun gün · ortalama $ort).
-  static String kartOzeti(String ay, int yil, int gun, int ortalama) =>
-      '$ay $yil · $gun gün · ortalama $ortalama';
+  ///
+  /// [ay] zaten aktif dilde (ay adı) gelir.
+  static String kartOzeti(AppDil dil, String ay, int yil, int gun, int ort) =>
+      dil.sec(
+        '$ay $yil · $gun gün · ortalama $ort',
+        '$ay $yil · $gun days · avg $ort',
+      );
 }

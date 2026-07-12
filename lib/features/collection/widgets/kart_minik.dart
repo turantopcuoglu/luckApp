@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/content/content_config.dart';
 import '../../../core/history/history_analiz_config.dart';
+import '../../../core/localization/app_dil.dart';
 import '../../../core/luck_engine/luck_engine.dart';
 import '../../../core/storage/daily_record.dart';
 import '../../../core/theme/app_colors.dart';
@@ -19,10 +20,18 @@ import '../collection_strings.dart';
 class KartMinik extends StatelessWidget {
   /// [kayit] gününü temsil eden kartı, [onTap] dokunuş geri çağrısıyla
   /// oluşturur.
-  const KartMinik({required this.kayit, this.onTap, super.key});
+  const KartMinik({
+    required this.kayit,
+    required this.dil,
+    this.onTap,
+    super.key,
+  });
 
   /// Gösterilecek günün kaydı.
   final DailyRecord kayit;
+
+  /// Aktif uygulama dili.
+  final AppDil dil;
 
   /// Karta dokunulunca çağrılır (null ise kart pasiftir).
   final VoidCallback? onTap;
@@ -42,6 +51,7 @@ class KartMinik extends StatelessWidget {
       child: Semantics(
         button: true,
         label: CollectionStrings.kartErisim(
+          dil,
           kayit.gun,
           skor,
           EngineConfig.skorMaks,
@@ -84,7 +94,7 @@ class KartMinik extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          CollectionStrings.kartTarihi(kayit.gun),
+                          CollectionStrings.kartTarihi(dil, kayit.gun),
                           style: yaziTemasi.bodySmall?.copyWith(
                             color: AppColors.textPrimary,
                           ),

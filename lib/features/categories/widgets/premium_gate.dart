@@ -40,8 +40,9 @@ class PremiumGate extends StatelessWidget {
         // içeriği (ör. skor sayısı) örten yarı saydam karartma.
         Positioned.fill(
           child: ColoredBox(
-            color: AppColors.background
-                .withValues(alpha: CategoriesConfig.kilitScrimOpaklik),
+            color: AppColors.background.withValues(
+              alpha: CategoriesConfig.kilitScrimOpaklik,
+            ),
           ),
         ),
         const Positioned.fill(

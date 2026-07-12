@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/localization/app_dil.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -24,12 +25,16 @@ class StoryCard extends StatelessWidget {
   /// Günün [sonuc]u ile kart oluşturur.
   const StoryCard({
     required this.sonuc,
+    required this.dil,
     this.kilitliKategoriler = const <LuckCategory>{},
     super.key,
   });
 
   /// Paylaşılan günün sonucu.
   final LuckResult sonuc;
+
+  /// Aktif uygulama dili.
+  final AppDil dil;
 
   /// Skoru maskelenecek (premium kilitli) kategoriler.
   final Set<LuckCategory> kilitliKategoriler;
@@ -59,7 +64,7 @@ class StoryCard extends StatelessWidget {
             children: <Widget>[
               // Üst: tarih.
               Text(
-                TrStrings.tarihMetni(sonuc.gun),
+                TrStrings.tarihMetni(dil, sonuc.gun),
                 style: const TextStyle(
                   fontSize: ShareConfig.tarihPunto,
                   color: AppColors.textSecondary,
@@ -92,7 +97,7 @@ class StoryCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            ShareStrings.genelSkor,
+                            ShareStrings.genelSkor(dil),
                             style: const TextStyle(
                               fontSize: ShareConfig.skorEtiketPunto,
                               color: AppColors.textSecondary,
@@ -112,6 +117,7 @@ class StoryCard extends StatelessWidget {
               for (final LuckCategory kategori in LuckCategory.values)
                 _KategoriBari(
                   kategori: kategori,
+                  dil: dil,
                   skor: kilitliKategoriler.contains(kategori)
                       ? 0
                       : sonuc.kategoriSkorlari[kategori] ?? 0,
@@ -143,10 +149,14 @@ class _KategoriBari extends StatelessWidget {
   const _KategoriBari({
     required this.kategori,
     required this.skor,
+    required this.dil,
     this.kilitli = false,
   });
 
   final LuckCategory kategori;
+
+  /// Aktif uygulama dili.
+  final AppDil dil;
   final int skor;
   final bool kilitli;
 
@@ -159,7 +169,7 @@ class _KategoriBari extends StatelessWidget {
           SizedBox(
             width: ShareConfig.kategoriEtiketGenisligi,
             child: Text(
-              kategori.etiket,
+              kategori.etiket(dil),
               style: const TextStyle(
                 fontSize: ShareConfig.kategoriPunto,
                 color: AppColors.textPrimary,

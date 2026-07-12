@@ -1,30 +1,40 @@
-/// Onboarding akışının Türkçe metinleri.
+import '../../core/localization/app_dil.dart';
+
+/// Onboarding akışının metinleri (TR + EN).
 abstract final class OnboardingStrings {
-  /// Uygulama adı (karşılama başlığı).
+  /// Uygulama adı (karşılama başlığı, marka).
   static const String uygulamaAdi = 'Kader';
 
   /// Karşılama sloganı.
-  static const String slogan = 'Şansın her sabah yeniden yazılır.';
+  static String slogan(AppDil dil) => dil.sec(
+    'Şansın her sabah yeniden yazılır.',
+    'Your luck is rewritten every morning.',
+  );
 
   /// Karşılama ekranı ana butonu.
-  static const String basla = 'Başla';
+  static String basla(AppDil dil) => dil.sec('Başla', 'Start');
 
   /// İsim alanı etiketi.
-  static const String isimEtiketi = 'Adın';
+  static String isimEtiketi(AppDil dil) => dil.sec('Adın', 'Your name');
 
   /// İsim alanı yer tutucusu.
-  static const String isimIpucu = 'Adını yaz';
+  static String isimIpucu(AppDil dil) => dil.sec('Adını yaz', 'Type your name');
 
   /// Doğum tarihi bölümü etiketi.
-  static const String dogumTarihiEtiketi = 'Doğum tarihin';
+  static String dogumTarihiEtiketi(AppDil dil) =>
+      dil.sec('Doğum tarihin', 'Your birth date');
 
   /// Form ekranı ana butonu.
-  static const String kaderimiHesapla = 'Kaderimi hesapla';
+  static String kaderimiHesapla(AppDil dil) =>
+      dil.sec('Kaderimi hesapla', 'Calculate my fortune');
 
   /// İsim boş bırakıldığında gösterilen uyarı.
-  static const String isimBosUyarisi =
-      'Devam etmek için adını yazmalısın.';
+  static String isimBosUyarisi(AppDil dil) => dil.sec(
+    'Devam etmek için adını yazmalısın.',
+    'You must enter your name to continue.',
+  );
 
   /// Sahte hesaplama ekranındaki metin.
-  static const String hesaplaniyor = 'Kaderin hesaplanıyor...';
+  static String hesaplaniyor(AppDil dil) =>
+      dil.sec('Kaderin hesaplanıyor...', 'Reading your fortune...');
 }

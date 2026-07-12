@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/content/fortune_composer.dart' as composer;
+import '../../core/localization/app_dil.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
@@ -36,9 +37,12 @@ class CategoryDetailScreen extends ConsumerWidget {
 
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final AsyncValue<LuckResult> sonuc = ref.watch(gununSansiProvider);
+    final AppDil dil = ref.watch(dilProvider);
 
     // Şanslı saat, skordan bağımsız deterministik motor çağrısıdır.
-    final SansliSaat sansliSaat = ref.watch(luckEngineProvider).sansliSaat(
+    final SansliSaat sansliSaat = ref
+        .watch(luckEngineProvider)
+        .sansliSaat(
           kullanici: ref.watch(aktifProfilProvider).seed,
           gun: ref.watch(bugunProvider),
           kategori: kategori,
@@ -54,7 +58,7 @@ class CategoryDetailScreen extends ConsumerWidget {
               boyut: CategoriesConfig.detayIkonBoyutu,
             ),
             const SizedBox(width: AppSpacing.sm),
-            Text(kategori.etiket),
+            Text(kategori.etiket(dil)),
           ],
         ),
       ),
@@ -64,10 +68,7 @@ class CategoryDetailScreen extends ConsumerWidget {
             child: CircularProgressIndicator(color: AppColors.gold),
           ),
           error: (Object hata, StackTrace iz) => Center(
-            child: Text(
-              TrStrings.hataMetni,
-              style: yaziTemasi.bodyMedium,
-            ),
+            child: Text(TrStrings.hataMetni(dil), style: yaziTemasi.bodyMedium),
           ),
           data: (LuckResult veri) {
             final int skor = veri.kategoriSkorlari[kategori] ?? 0;
@@ -78,6 +79,7 @@ class CategoryDetailScreen extends ConsumerWidget {
               kullanici: ref.watch(aktifProfilProvider).seed,
               sonuc: veri,
               kategori: kategori,
+              dil: dil,
             );
             return SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.lg),
@@ -88,9 +90,10 @@ class CategoryDetailScreen extends ConsumerWidget {
                   Center(
                     child: ScoreRing(
                       skor: skor,
+                      dil: dil,
                       boyut: CategoriesConfig.detayHalkaCapi,
                       kalinlik: CategoriesConfig.detayHalkaKalinligi,
-                      etiket: kategori.etiket.toUpperCase(),
+                      etiket: kategori.etiket(dil).toUpperCase(),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xl),
@@ -98,10 +101,7 @@ class CategoryDetailScreen extends ConsumerWidget {
                     margin: EdgeInsets.zero,
                     child: Padding(
                       padding: const EdgeInsets.all(AppSpacing.md),
-                      child: Text(
-                        yorum,
-                        style: yaziTemasi.bodyMedium,
-                      ),
+                      child: Text(yorum, style: yaziTemasi.bodyMedium),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -118,7 +118,7 @@ class CategoryDetailScreen extends ConsumerWidget {
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
-                              CategoriesStrings.sansliSaatBaslik,
+                              CategoriesStrings.sansliSaatBaslik(dil),
                               style: yaziTemasi.bodyMedium?.copyWith(
                                 color: AppColors.textSecondary,
                               ),

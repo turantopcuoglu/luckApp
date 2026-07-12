@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/core/storage/user_repository.dart';
@@ -27,6 +28,7 @@ class FakeNotificationService extends NotificationService {
   @override
   Future<void> gunlukBildirimleriPlanla({
     required DateTime simdi,
+    required AppDil dil,
     int? aksamDakika,
     int? sabahDakika,
     int? sansliSaatBaslangiciSaati,
@@ -60,14 +62,13 @@ void main() {
   UserProfile temelProfil({
     bool bildirimlerAcik = true,
     int? aksamBildirimDakika,
-  }) =>
-      UserProfile(
-        isim: 'Turan',
-        dogumTarihi: DateTime(1990, 5, 15),
-        onboardingTamam: true,
-        bildirimlerAcik: bildirimlerAcik,
-        aksamBildirimDakika: aksamBildirimDakika,
-      );
+  }) => UserProfile(
+    isim: 'Turan',
+    dogumTarihi: DateTime(1990, 5, 15),
+    onboardingTamam: true,
+    bildirimlerAcik: bildirimlerAcik,
+    aksamBildirimDakika: aksamBildirimDakika,
+  );
 
   Future<FakeNotificationService> ekraniAc(
     WidgetTester tester,
@@ -95,59 +96,69 @@ void main() {
     return sahte;
   }
 
-  testWidgets('disclaimer Hakkında bölümünde görünür',
-      (WidgetTester tester) async {
+  testWidgets('disclaimer Hakkında bölümünde görünür', (
+    WidgetTester tester,
+  ) async {
     await ekraniAc(tester, temelProfil());
-    expect(find.text(SettingsStrings.eglenceAmacli), findsOneWidget);
+    expect(find.text(SettingsStrings.eglenceAmacli(AppDil.tr)), findsOneWidget);
   });
 
-  testWidgets('isim değiştirme uyarı gösterir ve onayda persist eder',
-      (WidgetTester tester) async {
+  testWidgets('isim değiştirme uyarı gösterir ve onayda persist eder', (
+    WidgetTester tester,
+  ) async {
     await ekraniAc(tester, temelProfil());
 
     await tester.enterText(find.byType(TextField), 'Elif');
-    await tester.tap(find.text(SettingsStrings.isimKaydet));
+    await tester.tap(find.text(SettingsStrings.isimKaydet(AppDil.tr)));
     await tester.pump();
 
     // Yeniden-hesaplama uyarısı görünür.
-    expect(find.text(SettingsStrings.isimUyariMetin), findsOneWidget);
+    expect(
+      find.text(SettingsStrings.isimUyariMetin(AppDil.tr)),
+      findsOneWidget,
+    );
 
-    await tester.tap(find.text(SettingsStrings.uyariDevam));
+    await tester.tap(find.text(SettingsStrings.uyariDevam(AppDil.tr)));
     await tester.pump();
 
     expect(UserRepository(profilKutusu).profil()!.isim, 'Elif');
   });
 
-  testWidgets('isim uyarısında vazgeçmek değişikliği uygulamaz',
-      (WidgetTester tester) async {
+  testWidgets('isim uyarısında vazgeçmek değişikliği uygulamaz', (
+    WidgetTester tester,
+  ) async {
     await ekraniAc(tester, temelProfil());
 
     await tester.enterText(find.byType(TextField), 'Elif');
-    await tester.tap(find.text(SettingsStrings.isimKaydet));
+    await tester.tap(find.text(SettingsStrings.isimKaydet(AppDil.tr)));
     await tester.pump();
-    await tester.tap(find.text(SettingsStrings.uyariVazgec));
+    await tester.tap(find.text(SettingsStrings.uyariVazgec(AppDil.tr)));
     await tester.pump();
 
     expect(UserRepository(profilKutusu).profil()!.isim, 'Turan');
   });
 
-  testWidgets('boş isim kaydı SnackBar ile reddedilir',
-      (WidgetTester tester) async {
+  testWidgets('boş isim kaydı SnackBar ile reddedilir', (
+    WidgetTester tester,
+  ) async {
     await ekraniAc(tester, temelProfil());
 
     await tester.enterText(find.byType(TextField), '   ');
-    await tester.tap(find.text(SettingsStrings.isimKaydet));
+    await tester.tap(find.text(SettingsStrings.isimKaydet(AppDil.tr)));
     await tester.pump();
 
-    expect(find.text(SettingsStrings.isimBosUyarisi), findsOneWidget);
+    expect(
+      find.text(SettingsStrings.isimBosUyarisi(AppDil.tr)),
+      findsOneWidget,
+    );
     // Uyarı diyaloğu açılmaz.
-    expect(find.text(SettingsStrings.isimUyariMetin), findsNothing);
+    expect(find.text(SettingsStrings.isimUyariMetin(AppDil.tr)), findsNothing);
   });
 
-  testWidgets('bildirimleri kapatmak iptalEt çağırır ve persist eder',
-      (WidgetTester tester) async {
-    final FakeNotificationService sahte =
-        await ekraniAc(tester, temelProfil());
+  testWidgets('bildirimleri kapatmak iptalEt çağırır ve persist eder', (
+    WidgetTester tester,
+  ) async {
+    final FakeNotificationService sahte = await ekraniAc(tester, temelProfil());
 
     await tester.tap(find.byType(SwitchListTile));
     await tester.pump();
@@ -156,8 +167,9 @@ void main() {
     expect(UserRepository(profilKutusu).profil()!.bildirimlerAcik, isFalse);
   });
 
-  testWidgets('bildirimleri açmak yeniden planlar ve persist eder',
-      (WidgetTester tester) async {
+  testWidgets('bildirimleri açmak yeniden planlar ve persist eder', (
+    WidgetTester tester,
+  ) async {
     final FakeNotificationService sahte = await ekraniAc(
       tester,
       temelProfil(bildirimlerAcik: false),
@@ -173,12 +185,29 @@ void main() {
     expect(sahte.sonSansliSaatBaslangici, anyOf(isNull, isA<int>()));
   });
 
-  testWidgets('akşam saati değiştirmek yeni dakikayla yeniden planlar',
-      (WidgetTester tester) async {
-    final FakeNotificationService sahte =
-        await ekraniAc(tester, temelProfil());
+  testWidgets('dil İngilizce seçilince metinler çevrilir ve tercih persist', (
+    WidgetTester tester,
+  ) async {
+    await ekraniAc(tester, temelProfil());
 
-    await tester.tap(find.text(SettingsStrings.aksamHatirlatma));
+    // Varsayılan Türkçe: başlık "Ayarlar".
+    expect(find.text(SettingsStrings.baslik(AppDil.tr)), findsOneWidget);
+
+    // English segmentine dokun.
+    await tester.tap(find.text(SettingsStrings.dilIngilizce));
+    await tester.pump();
+
+    // Metinler İngilizceye döner ("Settings") ve tercih kaydedilir.
+    expect(find.text(SettingsStrings.baslik(AppDil.en)), findsOneWidget);
+    expect(UserRepository(profilKutusu).profil()!.dil, AppDil.en);
+  });
+
+  testWidgets('akşam saati değiştirmek yeni dakikayla yeniden planlar', (
+    WidgetTester tester,
+  ) async {
+    final FakeNotificationService sahte = await ekraniAc(tester, temelProfil());
+
+    await tester.tap(find.text(SettingsStrings.aksamHatirlatma(AppDil.tr)));
     await tester.pumpAndSettle();
 
     // Saat seçicide "Tamam"a bas: initial saat korunur ama planlama
@@ -188,9 +217,6 @@ void main() {
 
     expect(sahte.planlaCagriSayisi, greaterThan(0));
     expect(sahte.sonAksamDakika, 1260);
-    expect(
-      UserRepository(profilKutusu).profil()!.aksamBildirimDakika,
-      1260,
-    );
+    expect(UserRepository(profilKutusu).profil()!.aksamBildirimDakika, 1260);
   });
 }

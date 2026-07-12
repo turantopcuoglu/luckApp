@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/content/gunun_icerigi.dart';
 import '../../core/history/gecmis_ozeti.dart';
+import '../../core/localization/app_dil.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -44,6 +45,7 @@ class DailyLuckScreen extends ConsumerWidget {
     // bir mikrotask sonra hazırdır. İki provider birlikte beklenir ki
     // _Icerik null dalı olmadan tam veriyle kurulsun.
     final AsyncValue<GununIcerigi> icerik = ref.watch(gununIcerigiProvider);
+    final AppDil dil = ref.watch(dilProvider);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -53,11 +55,11 @@ class DailyLuckScreen extends ConsumerWidget {
               data: (LuckResult veri) => icerik.when(
                 data: (GununIcerigi paket) =>
                     _Icerik(sonuc: veri, icerik: paket),
-                loading: () => const _Yukleniyor(),
-                error: (Object hata, StackTrace iz) => const _Hata(),
+                loading: () => _Yukleniyor(dil: dil),
+                error: (Object hata, StackTrace iz) => _Hata(dil: dil),
               ),
-              loading: () => const _Yukleniyor(),
-              error: (Object hata, StackTrace iz) => const _Hata(),
+              loading: () => _Yukleniyor(dil: dil),
+              error: (Object hata, StackTrace iz) => _Hata(dil: dil),
             ),
           ),
         ],
@@ -117,8 +119,8 @@ class _IcerikState extends ConsumerState<_Icerik>
   /// Kutu açılışları + yorum belirmesinin toplam süresi.
   static final Duration _kutuKontrolSuresi =
       DailyLuckConfig.kutuGecikmesi * (LuckCategory.values.length - 1) +
-          DailyLuckConfig.kutuAcilisSuresi +
-          DailyLuckConfig.yorumBelirmeSuresi;
+      DailyLuckConfig.kutuAcilisSuresi +
+      DailyLuckConfig.yorumBelirmeSuresi;
 
   late final AnimationController _kutuKontrol = AnimationController(
     vsync: this,
@@ -149,6 +151,7 @@ class _IcerikState extends ConsumerState<_Icerik>
   /// "bozuldu" gibi bir ifade kullanılmaz.
   Widget _seriRozeti(BuildContext context) {
     final GecmisOzeti ozet = ref.watch(gecmisOzetiProvider);
+    final AppDil dil = ref.watch(dilProvider);
     if (ozet.guncelSeri <= 0) {
       return const SizedBox.shrink();
     }
@@ -166,10 +169,10 @@ class _IcerikState extends ConsumerState<_Icerik>
             borderRadius: BorderRadius.circular(AppRadius.full),
           ),
           child: Text(
-            TrStrings.seriEtiketi(ozet.guncelSeri),
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.gold,
-                ),
+            TrStrings.seriEtiketi(dil, ozet.guncelSeri),
+            style: Theme.of(
+              context,
+            ).textTheme.labelMedium?.copyWith(color: AppColors.gold),
           ),
         ),
       ),
@@ -181,6 +184,7 @@ class _IcerikState extends ConsumerState<_Icerik>
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final DateTime bugun = ref.watch(bugunProvider);
     final String isim = ref.watch(aktifProfilProvider).isim;
+    final AppDil dil = ref.watch(dilProvider);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -196,14 +200,14 @@ class _IcerikState extends ConsumerState<_Icerik>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      TrStrings.tarihMetni(bugun),
+                      TrStrings.tarihMetni(dil, bugun),
                       style: yaziTemasi.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
-                      TrStrings.selamlama(isim),
+                      TrStrings.selamlama(dil, isim),
                       style: yaziTemasi.headlineMedium,
                     ),
                   ],
@@ -214,30 +218,30 @@ class _IcerikState extends ConsumerState<_Icerik>
                   Icons.style_rounded,
                   color: AppColors.textSecondary,
                 ),
-                tooltip: TrStrings.koleksiyonIpucu,
-                onPressed: () => Navigator.of(context).push(
-                  fadeThroughRoute<void>(const CollectionScreen()),
-                ),
+                tooltip: TrStrings.koleksiyonIpucu(dil),
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(fadeThroughRoute<void>(const CollectionScreen())),
               ),
               IconButton(
                 icon: const Icon(
                   Icons.calendar_month_rounded,
                   color: AppColors.textSecondary,
                 ),
-                tooltip: TrStrings.gecmisIpucu,
-                onPressed: () => Navigator.of(context).push(
-                  fadeThroughRoute<void>(const HistoryScreen()),
-                ),
+                tooltip: TrStrings.gecmisIpucu(dil),
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(fadeThroughRoute<void>(const HistoryScreen())),
               ),
               IconButton(
                 icon: const Icon(
                   Icons.settings_rounded,
                   color: AppColors.textSecondary,
                 ),
-                tooltip: TrStrings.ayarlarIpucu,
-                onPressed: () => Navigator.of(context).push(
-                  fadeThroughRoute<void>(const SettingsScreen()),
-                ),
+                tooltip: TrStrings.ayarlarIpucu(dil),
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(fadeThroughRoute<void>(const SettingsScreen())),
               ),
             ],
           ),
@@ -250,8 +254,9 @@ class _IcerikState extends ConsumerState<_Icerik>
             child: Hero(
               tag: HeroTags.skorHalkasi,
               child: FortuneRevealCard(
+                dil: dil,
                 arkaYuz: const _KapaliKartYuzu(),
-                onYuz: _AcikKartYuzu(skor: widget.sonuc.genelSkor),
+                onYuz: _AcikKartYuzu(skor: widget.sonuc.genelSkor, dil: dil),
                 onAcilisTamam: _kutuKontrol.forward,
               ),
             ),
@@ -269,8 +274,9 @@ class _IcerikState extends ConsumerState<_Icerik>
                   const SizedBox(width: AppSpacing.sm),
               itemBuilder: (BuildContext context, int i) {
                 final LuckCategory kategori = LuckCategory.values[i];
-                final bool kilitli =
-                    ref.watch(kategoriKilitliProvider(kategori));
+                final bool kilitli = ref.watch(
+                  kategoriKilitliProvider(kategori),
+                );
                 // Gate görseli tüm kutuyu (kapalı/açık yüz) sarar;
                 // dokunuş kilide göre paywall'a ya da detaya gider.
                 return GestureDetector(
@@ -290,6 +296,7 @@ class _IcerikState extends ConsumerState<_Icerik>
                       kapali: KapaliKategoriKutusu(kategori: kategori),
                       acik: CategoryCard(
                         kategori: kategori,
+                        dil: dil,
                         // Kilitliyken gerçek skor karta hiç verilmez;
                         // kart maske metni ve boş bar çizer.
                         skor: kilitli
@@ -313,9 +320,11 @@ class _IcerikState extends ConsumerState<_Icerik>
               children: <Widget>[
                 CommentCard(metin: widget.icerik.yorum),
                 const SizedBox(height: AppSpacing.md),
-                SansOgeleriKarti(icerik: widget.icerik),
+                SansOgeleriKarti(icerik: widget.icerik, dil: dil),
                 const SizedBox(height: AppSpacing.md),
-                Center(child: ShareButton(sonuc: widget.sonuc)),
+                Center(
+                  child: ShareButton(sonuc: widget.sonuc, dil: dil),
+                ),
               ],
             ),
           ),
@@ -344,9 +353,12 @@ class _KapaliKartYuzu extends StatelessWidget {
 /// Kader kartının açık yüzü: skor halkası (count-up kart açılırken
 /// başlar, kart inişiyle birlikte sayar).
 class _AcikKartYuzu extends StatelessWidget {
-  const _AcikKartYuzu({required this.skor});
+  const _AcikKartYuzu({required this.skor, required this.dil});
 
   final int skor;
+
+  /// Aktif uygulama dili (skor halkası etiketi için).
+  final AppDil dil;
 
   @override
   Widget build(BuildContext context) {
@@ -361,6 +373,7 @@ class _AcikKartYuzu extends StatelessWidget {
       child: Center(
         child: AnimatedScoreRing(
           skor: skor,
+          dil: dil,
           boyut: DailyLuckConfig.kartHalkaCapi,
           kalinlik: DailyLuckConfig.kartHalkaKalinligi,
         ),
@@ -371,7 +384,10 @@ class _AcikKartYuzu extends StatelessWidget {
 
 /// Skor üretilirken gösterilen basit yükleme durumu.
 class _Yukleniyor extends StatelessWidget {
-  const _Yukleniyor();
+  const _Yukleniyor({required this.dil});
+
+  /// Aktif uygulama dili.
+  final AppDil dil;
 
   @override
   Widget build(BuildContext context) {
@@ -382,7 +398,7 @@ class _Yukleniyor extends StatelessWidget {
           const CircularProgressIndicator(color: AppColors.gold),
           const SizedBox(height: AppSpacing.md),
           Text(
-            TrStrings.yukleniyor,
+            TrStrings.yukleniyor(dil),
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
@@ -393,7 +409,10 @@ class _Yukleniyor extends StatelessWidget {
 
 /// Beklenmeyen hata durumu.
 class _Hata extends StatelessWidget {
-  const _Hata();
+  const _Hata({required this.dil});
+
+  /// Aktif uygulama dili.
+  final AppDil dil;
 
   @override
   Widget build(BuildContext context) {
@@ -401,7 +420,7 @@ class _Hata extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Text(
-          TrStrings.hataMetni,
+          TrStrings.hataMetni(dil),
           style: Theme.of(context).textTheme.bodyMedium,
           textAlign: TextAlign.center,
         ),

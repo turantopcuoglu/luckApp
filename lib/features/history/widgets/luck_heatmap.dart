@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/content/content_config.dart';
+import '../../../core/localization/app_dil.dart';
 import '../../../core/storage/daily_record.dart';
 import '../../../core/storage/storage_keys.dart';
 import '../../../core/theme/app_colors.dart';
@@ -21,13 +22,21 @@ import '../history_strings.dart';
 /// kullanılmaz — CLAUDE.md kural 5).
 class LuckHeatmap extends StatefulWidget {
   /// [kayitlar] tüm günlük kayıtlar, [bugun] pencere çıpası.
-  const LuckHeatmap({required this.kayitlar, required this.bugun, super.key});
+  const LuckHeatmap({
+    required this.kayitlar,
+    required this.bugun,
+    required this.dil,
+    super.key,
+  });
 
   /// Gösterilecek tüm kayıtlar.
   final List<DailyRecord> kayitlar;
 
   /// Bugünün tarihi (pencerenin son günü).
   final DateTime bugun;
+
+  /// Aktif uygulama dili (gün adları, hücre metinleri için).
+  final AppDil dil;
 
   @override
   State<LuckHeatmap> createState() => _LuckHeatmapState();
@@ -129,7 +138,7 @@ class _LuckHeatmapState extends State<LuckHeatmap> {
               margin: const EdgeInsets.only(bottom: HistoryConfig.hucreAraligi),
               alignment: Alignment.centerRight,
               child: Text(
-                TrStrings.gunAdlari[gun].substring(0, 2),
+                TrStrings.gunAdlari(widget.dil)[gun].substring(0, 2),
                 style: stil,
               ),
             ),
@@ -199,7 +208,8 @@ class _LuckHeatmapState extends State<LuckHeatmap> {
       button: true,
       container: true,
       label: HistoryStrings.hucreErisim(
-        TrStrings.tarihMetni(gun),
+        widget.dil,
+        TrStrings.tarihMetni(widget.dil, gun),
         kayit.sonuc.genelSkor,
       ),
       child: GestureDetector(
@@ -207,7 +217,8 @@ class _LuckHeatmapState extends State<LuckHeatmap> {
           SnackBar(
             content: Text(
               HistoryStrings.hucreDetay(
-                TrStrings.tarihMetni(gun),
+                widget.dil,
+                TrStrings.tarihMetni(widget.dil, gun),
                 kayit.sonuc.genelSkor,
               ),
             ),

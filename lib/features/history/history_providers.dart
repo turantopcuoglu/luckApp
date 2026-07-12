@@ -12,27 +12,27 @@ import '../daily_luck/daily_luck_providers.dart';
 /// açılışta taze okuma yapar (yeni feedback/skorlar yansır).
 final AutoDisposeProvider<List<DailyRecord>> tumKayitlarProvider =
     Provider.autoDispose<List<DailyRecord>>(
-  (Ref ref) => ref.watch(luckHistoryRepositoryProvider).tumKayitlar(),
-);
+      (Ref ref) => ref.watch(luckHistoryRepositoryProvider).tumKayitlar(),
+    );
 
 /// Geçmiş kayıtlarından türetilen özet (heatmap üstü istatistikler +
 /// Kanıt Döngüsü).
 final AutoDisposeProvider<GecmisOzeti> gecmisOzetiProvider =
     Provider.autoDispose<GecmisOzeti>(
-  (Ref ref) => gecmisiOzetle(
-    ref.watch(tumKayitlarProvider),
-    // Güncel seri için "bugün" gerekir; testte sabit güne override edilir.
-    bugun: ref.watch(bugunProvider),
-  ),
-);
+      (Ref ref) => gecmisiOzetle(
+        ref.watch(tumKayitlarProvider),
+        // Güncel seri için "bugün" gerekir; testte sabit güne override edilir.
+        bugun: ref.watch(bugunProvider),
+      ),
+    );
 
 /// İçinde bulunulan ayın Şans Raporu özeti (Phase 4).
 final AutoDisposeProvider<AylikOzet> buAyinOzetiProvider =
     Provider.autoDispose<AylikOzet>((Ref ref) {
-  final DateTime bugun = ref.watch(bugunProvider);
-  return aylikOzet(
-    ref.watch(tumKayitlarProvider),
-    yil: bugun.year,
-    ay: bugun.month,
-  );
-});
+      final DateTime bugun = ref.watch(bugunProvider);
+      return aylikOzet(
+        ref.watch(tumKayitlarProvider),
+        yil: bugun.year,
+        ay: bugun.month,
+      );
+    });

@@ -14,18 +14,18 @@ abstract final class LuckResultMapper {
 
   /// [sonuc]u Hive'a yazılacak map'e çevirir.
   static Map<String, dynamic> toMap(LuckResult sonuc) => <String, dynamic>{
-        _gunAnahtari: sonuc.gun.toIso8601String(),
-        _genelSkorAnahtari: sonuc.genelSkor,
-        _kategorilerAnahtari: <String, int>{
-          for (final MapEntry<LuckCategory, int> e
-              in sonuc.kategoriSkorlari.entries)
-            e.key.name: e.value,
-        },
-        _modifiyerlerAnahtari: <Map<String, dynamic>>[
-          for (final LuckModifier m in sonuc.modifiyerler)
-            <String, dynamic>{_adAnahtari: m.ad, _etkiAnahtari: m.etki},
-        ],
-      };
+    _gunAnahtari: sonuc.gun.toIso8601String(),
+    _genelSkorAnahtari: sonuc.genelSkor,
+    _kategorilerAnahtari: <String, int>{
+      for (final MapEntry<LuckCategory, int> e
+          in sonuc.kategoriSkorlari.entries)
+        e.key.name: e.value,
+    },
+    _modifiyerlerAnahtari: <Map<String, dynamic>>[
+      for (final LuckModifier m in sonuc.modifiyerler)
+        <String, dynamic>{_adAnahtari: m.ad, _etkiAnahtari: m.etki},
+    ],
+  };
 
   /// Hive'dan okunan [map]'ten [LuckResult] kurar.
   static LuckResult fromMap(Map<dynamic, dynamic> map) {

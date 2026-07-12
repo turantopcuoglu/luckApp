@@ -70,42 +70,34 @@ void main() {
     });
 
     test('enAzKanitGunu override edilince yüzde hesaplanır', () {
-      final GecmisOzeti ozet = gecmisiOzetle(
-        <DailyRecord>[
-          _kayit(1, 80, feedback: true),
-          _kayit(2, 70, feedback: false),
-        ],
-        enAzKanitGunu: 2,
-      );
+      final GecmisOzeti ozet = gecmisiOzetle(<DailyRecord>[
+        _kayit(1, 80, feedback: true),
+        _kayit(2, 70, feedback: false),
+      ], enAzKanitGunu: 2);
       expect(ozet.kanitOrnekSayisi, 2);
       expect(ozet.kanitYuzdesi, 50);
     });
 
-    test('seçim doğruluğu: feedbacksiz yüksek ve feedbackli düşük dışlanır',
-        () {
-      final GecmisOzeti ozet = gecmisiOzetle(
-        <DailyRecord>[
+    test(
+      'seçim doğruluğu: feedbacksiz yüksek ve feedbackli düşük dışlanır',
+      () {
+        final GecmisOzeti ozet = gecmisiOzetle(<DailyRecord>[
           _kayit(1, 90), // yüksek ama feedback yok → hariç
           _kayit(2, 30, feedback: true), // düşük → hariç
           _kayit(3, 80, feedback: true), // dahil
           _kayit(4, 85, feedback: false), // dahil
           _kayit(5, 95, feedback: true), // dahil
-        ],
-        enAzKanitGunu: 2,
-      );
-      expect(ozet.kanitOrnekSayisi, 3);
-      expect(ozet.kanitPozitifSayisi, 2);
-    });
+        ], enAzKanitGunu: 2);
+        expect(ozet.kanitOrnekSayisi, 3);
+        expect(ozet.kanitPozitifSayisi, 2);
+      },
+    );
 
-    test('bant sınırı: skor 60 dahil, 59 hariç (bandiBul ile aynı kaynak)',
-        () {
-      final GecmisOzeti ozet = gecmisiOzetle(
-        <DailyRecord>[
-          _kayit(1, 60, feedback: true), // yuksek bandı → dahil
-          _kayit(2, 59, feedback: true), // orta bandı → hariç
-        ],
-        enAzKanitGunu: 1,
-      );
+    test('bant sınırı: skor 60 dahil, 59 hariç (bandiBul ile aynı kaynak)', () {
+      final GecmisOzeti ozet = gecmisiOzetle(<DailyRecord>[
+        _kayit(1, 60, feedback: true), // yuksek bandı → dahil
+        _kayit(2, 59, feedback: true), // orta bandı → hariç
+      ], enAzKanitGunu: 1);
       expect(ozet.kanitOrnekSayisi, 1);
       expect(ozet.kanitYuzdesi, 100);
     });
@@ -137,8 +129,7 @@ void main() {
     // Sabit "bugün" = 6 Temmuz 2026; _kayit(gunNo,...) 2026-07-gunNo.
     final DateTime bugun = DateTime(2026, 7, 6);
 
-    GecmisOzeti ozetle(List<DailyRecord> k) =>
-        gecmisiOzetle(k, bugun: bugun);
+    GecmisOzeti ozetle(List<DailyRecord> k) => gecmisiOzetle(k, bugun: bugun);
 
     test('tek gün = bugün → güncel 1, en uzun 1', () {
       final GecmisOzeti o = ozetle(<DailyRecord>[_kayit(6, 50)]);

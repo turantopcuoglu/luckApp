@@ -1,3 +1,4 @@
+import '../localization/app_dil.dart';
 import '../luck_engine/luck_engine.dart';
 
 /// Kullanıcı profili: isim, doğum tarihi, onboarding durumu ve
@@ -16,6 +17,7 @@ class UserProfile {
     this.bildirimlerAcik = true,
     this.aksamBildirimDakika,
     this.sabahBildirimDakika,
+    this.dil,
   });
 
   /// Hive'dan okunan map'ten profil kurar.
@@ -30,7 +32,19 @@ class UserProfile {
       bildirimlerAcik: map[_bildirimlerAcikAnahtari] as bool? ?? true,
       aksamBildirimDakika: map[_aksamDakikaAnahtari] as int?,
       sabahBildirimDakika: map[_sabahDakikaAnahtari] as int?,
+      dil: _dilCoz(map[_dilAnahtari] as String?),
     );
+  }
+
+  /// Kayıtlı dil kodunu [AppDil]'e çevirir; yoksa/tanınmıyorsa null
+  /// (null = cihaz dilini izle). Eski kayıtlar bu anahtarı içermez.
+  static AppDil? _dilCoz(String? kod) {
+    for (final AppDil d in AppDil.values) {
+      if (d.name == kod) {
+        return d;
+      }
+    }
+    return null;
   }
 
   static const String _isimAnahtari = 'isim';
@@ -39,6 +53,7 @@ class UserProfile {
   static const String _bildirimlerAcikAnahtari = 'bildirimlerAcik';
   static const String _aksamDakikaAnahtari = 'aksamBildirimDakika';
   static const String _sabahDakikaAnahtari = 'sabahBildirimDakika';
+  static const String _dilAnahtari = 'dil';
 
   /// Kullanıcının girdiği görünen isim (selamlama için).
   final String isim;
@@ -60,6 +75,12 @@ class UserProfile {
   /// `null` ise [FeedbackConfig] varsayılanı (08:30) kullanılır.
   final int? sabahBildirimDakika;
 
+  /// Kullanıcının açık dil tercihi; `null` ise cihaz dili izlenir.
+  ///
+  /// Bildirim tercihleri gibi bilinçli olarak [seed]'i beslemez —
+  /// dil skoru ETKİLEMEZ (kural 8).
+  final AppDil? dil;
+
   /// Şans motoru için deterministik kullanıcı tohumu üretir.
   ///
   /// Yalnızca [isim] ve [dogumTarihi]'ne bağlıdır — bildirim
@@ -68,13 +89,14 @@ class UserProfile {
 
   /// Hive'a yazılacak map gösterimi.
   Map<String, dynamic> toMap() => <String, dynamic>{
-        _isimAnahtari: isim,
-        _dogumTarihiAnahtari: dogumTarihi.toIso8601String(),
-        _onboardingAnahtari: onboardingTamam,
-        _bildirimlerAcikAnahtari: bildirimlerAcik,
-        _aksamDakikaAnahtari: aksamBildirimDakika,
-        _sabahDakikaAnahtari: sabahBildirimDakika,
-      };
+    _isimAnahtari: isim,
+    _dogumTarihiAnahtari: dogumTarihi.toIso8601String(),
+    _onboardingAnahtari: onboardingTamam,
+    _bildirimlerAcikAnahtari: bildirimlerAcik,
+    _aksamDakikaAnahtari: aksamBildirimDakika,
+    _sabahDakikaAnahtari: sabahBildirimDakika,
+    _dilAnahtari: dil?.name,
+  };
 
   /// Seçili alanları değiştirilmiş bir kopya döndürür.
   ///
@@ -87,13 +109,14 @@ class UserProfile {
     bool? bildirimlerAcik,
     int? aksamBildirimDakika,
     int? sabahBildirimDakika,
-  }) =>
-      UserProfile(
-        isim: isim ?? this.isim,
-        dogumTarihi: dogumTarihi,
-        onboardingTamam: onboardingTamam ?? this.onboardingTamam,
-        bildirimlerAcik: bildirimlerAcik ?? this.bildirimlerAcik,
-        aksamBildirimDakika: aksamBildirimDakika ?? this.aksamBildirimDakika,
-        sabahBildirimDakika: sabahBildirimDakika ?? this.sabahBildirimDakika,
-      );
+    AppDil? dil,
+  }) => UserProfile(
+    isim: isim ?? this.isim,
+    dogumTarihi: dogumTarihi,
+    onboardingTamam: onboardingTamam ?? this.onboardingTamam,
+    bildirimlerAcik: bildirimlerAcik ?? this.bildirimlerAcik,
+    aksamBildirimDakika: aksamBildirimDakika ?? this.aksamBildirimDakika,
+    sabahBildirimDakika: sabahBildirimDakika ?? this.sabahBildirimDakika,
+    dil: dil ?? this.dil,
+  );
 }

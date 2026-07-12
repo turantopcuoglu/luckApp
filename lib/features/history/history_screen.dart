@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/history/aylik_ozet.dart';
 import '../../core/history/gecmis_ozeti.dart';
+import '../../core/localization/app_dil.dart';
 import '../../core/storage/daily_record.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -30,19 +31,20 @@ class HistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final List<DailyRecord> kayitlar = ref.watch(tumKayitlarProvider);
     final GecmisOzeti ozet = ref.watch(gecmisOzetiProvider);
+    final AppDil dil = ref.watch(dilProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(HistoryStrings.baslik)),
+      appBar: AppBar(title: Text(HistoryStrings.baslik(dil))),
       body: SafeArea(
         child: kayitlar.isEmpty
-            ? _bosDurum(context)
-            : _icerik(context, ref, kayitlar, ozet),
+            ? _bosDurum(context, dil)
+            : _icerik(context, ref, kayitlar, ozet, dil),
       ),
     );
   }
 
   /// Hiç kayıt yokken kristal küre + davet metni.
-  Widget _bosDurum(BuildContext context) {
+  Widget _bosDurum(BuildContext context, AppDil dil) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     return Center(
       child: Padding(
@@ -53,13 +55,13 @@ class HistoryScreen extends ConsumerWidget {
             AppIllustrations.kristalKure(),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              HistoryStrings.bosBaslik,
+              HistoryStrings.bosBaslik(dil),
               style: yaziTemasi.titleMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              HistoryStrings.bosMetin,
+              HistoryStrings.bosMetin(dil),
               style: yaziTemasi.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -77,30 +79,40 @@ class HistoryScreen extends ConsumerWidget {
     WidgetRef ref,
     List<DailyRecord> kayitlar,
     GecmisOzeti ozet,
+    AppDil dil,
   ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          _kanitKarti(context, ozet),
+          _kanitKarti(context, ozet, dil),
           const SizedBox(height: AppSpacing.md),
-          _ozetKarti(context, ozet),
+          _ozetKarti(context, ozet, dil),
           const SizedBox(height: AppSpacing.md),
-          _ayRaporuKarti(context, ref),
+          _ayRaporuKarti(context, ref, dil),
           const SizedBox(height: AppSpacing.lg),
-          LuckHeatmap(kayitlar: kayitlar, bugun: ref.watch(bugunProvider)),
+          LuckHeatmap(
+            kayitlar: kayitlar,
+            bugun: ref.watch(bugunProvider),
+            dil: dil,
+          ),
         ],
       ),
     );
   }
 
   /// Kanıt Döngüsü kartı: yeterli örnek varsa yüzde, yoksa davet.
-  Widget _kanitKarti(BuildContext context, GecmisOzeti ozet) {
+  Widget _kanitKarti(BuildContext context, GecmisOzeti ozet, AppDil dil) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final String govde = ozet.kanitYeterli
-        ? HistoryStrings.kanitMetni(ozet.kanitOrnekSayisi, ozet.kanitYuzdesi!)
+        ? HistoryStrings.kanitMetni(
+            dil,
+            ozet.kanitOrnekSayisi,
+            ozet.kanitYuzdesi!,
+          )
         : HistoryStrings.kanitYetersizMetni(
+            dil,
             HistoryConfig.enAzKanitGunu,
             ozet.kanitOrnekSayisi,
           );
@@ -117,7 +129,7 @@ class HistoryScreen extends ConsumerWidget {
                 const Icon(Icons.insights_rounded, color: AppColors.gold),
                 const SizedBox(width: AppSpacing.sm),
                 Text(
-                  HistoryStrings.kanitBasligi,
+                  HistoryStrings.kanitBasligi(dil),
                   style: yaziTemasi.titleMedium,
                 ),
               ],
@@ -133,7 +145,7 @@ class HistoryScreen extends ConsumerWidget {
   /// Bu ayın Şans Raporu kartı + paylaş butonu.
   ///
   /// Bu ay hiç kayıt yoksa gösterilmez (boş kart yerine gizlenir).
-  Widget _ayRaporuKarti(BuildContext context, WidgetRef ref) {
+  Widget _ayRaporuKarti(BuildContext context, WidgetRef ref, AppDil dil) {
     final AylikOzet ozet = ref.watch(buAyinOzetiProvider);
     if (ozet.bosMu) {
       return const SizedBox.shrink();
@@ -150,13 +162,17 @@ class HistoryScreen extends ConsumerWidget {
               children: <Widget>[
                 const Icon(Icons.auto_awesome_rounded, color: AppColors.gold),
                 const SizedBox(width: AppSpacing.sm),
-                Text(RecapStrings.bolumBasligi, style: yaziTemasi.titleMedium),
+                Text(
+                  RecapStrings.bolumBasligi(dil),
+                  style: yaziTemasi.titleMedium,
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               RecapStrings.kartOzeti(
-                TrStrings.ayAdlari[ozet.ay - 1],
+                dil,
+                TrStrings.ayAdlari(dil)[ozet.ay - 1],
                 ozet.yil,
                 ozet.gunSayisi,
                 ozet.ortalamaSkor,
@@ -170,14 +186,12 @@ class HistoryScreen extends ConsumerWidget {
               alignment: Alignment.centerRight,
               child: OutlinedButton.icon(
                 onPressed: () => unawaited(
-                  ref.read(shareServiceProvider).aylikOzetPaylas(ozet),
+                  ref.read(shareServiceProvider).aylikOzetPaylas(ozet, dil),
                 ),
                 icon: const Icon(Icons.ios_share, color: AppColors.gold),
                 label: Text(
-                  RecapStrings.paylasButonu,
-                  style: yaziTemasi.titleSmall?.copyWith(
-                    color: AppColors.gold,
-                  ),
+                  RecapStrings.paylasButonu(dil),
+                  style: yaziTemasi.titleSmall?.copyWith(color: AppColors.gold),
                 ),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.gold),
@@ -191,10 +205,11 @@ class HistoryScreen extends ConsumerWidget {
   }
 
   /// Özet kartı: kayıtlı gün, ortalama skor, en şanslı gün.
-  Widget _ozetKarti(BuildContext context, GecmisOzeti ozet) {
+  Widget _ozetKarti(BuildContext context, GecmisOzeti ozet, AppDil dil) {
     final String enSansli = ozet.enSansliGun == null
         ? '—'
-        : '${TrStrings.tarihMetni(ozet.enSansliGun!)} (${ozet.enSansliSkor})';
+        : '${TrStrings.tarihMetni(dil, ozet.enSansliGun!)} '
+              '(${ozet.enSansliSkor})';
 
     return Card(
       margin: EdgeInsets.zero,
@@ -204,19 +219,19 @@ class HistoryScreen extends ConsumerWidget {
           children: <Widget>[
             _ozetSatiri(
               context,
-              HistoryStrings.toplamGunEtiketi,
+              HistoryStrings.toplamGunEtiketi(dil),
               '${ozet.toplamGun}',
             ),
             const SizedBox(height: AppSpacing.sm),
             _ozetSatiri(
               context,
-              HistoryStrings.ortalamaSkorEtiketi,
+              HistoryStrings.ortalamaSkorEtiketi(dil),
               '${ozet.ortalamaSkor}',
             ),
             const SizedBox(height: AppSpacing.sm),
             _ozetSatiri(
               context,
-              HistoryStrings.enSansliGunEtiketi,
+              HistoryStrings.enSansliGunEtiketi(dil),
               enSansli,
             ),
           ],

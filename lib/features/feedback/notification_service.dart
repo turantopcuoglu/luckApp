@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/data/latest.dart' as tz_veri;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../core/localization/app_dil.dart';
 import '../daily_luck/tr_strings.dart';
 import 'feedback_config.dart';
 import 'feedback_strings.dart';
@@ -54,8 +55,8 @@ class NotificationService {
 
       // Uygulama kapalıyken akşam bildirimine dokunulup açıldıysa
       // çağıran taraf feedback ekranını göstermelidir.
-      final NotificationAppLaunchDetails? acilis =
-          await _eklenti.getNotificationAppLaunchDetails();
+      final NotificationAppLaunchDetails? acilis = await _eklenti
+          .getNotificationAppLaunchDetails();
       return (acilis?.didNotificationLaunchApp ?? false) &&
           acilis?.notificationResponse?.payload ==
               FeedbackConfig.feedbackPayload;
@@ -74,11 +75,13 @@ class NotificationService {
     try {
       final bool? android = await _eklenti
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.requestNotificationsPermission();
       final bool? ios = await _eklenti
           .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>()
+            IOSFlutterLocalNotificationsPlugin
+          >()
           ?.requestPermissions(alert: true, badge: true, sound: true);
       // Platformlardan hangisi mevcutsa onun cevabı geçerlidir.
       return android ?? ios ?? false;
@@ -115,6 +118,7 @@ class NotificationService {
   /// Böylece mevcut çağrı yerleri değişmeden çalışır.
   Future<void> gunlukBildirimleriPlanla({
     required DateTime simdi,
+    required AppDil dil,
     int? aksamDakika,
     int? sabahDakika,
     int? sansliSaatBaslangiciSaati,
@@ -148,17 +152,13 @@ class NotificationService {
       // saatine kilitlenir — Türkiye'de yaz saati uygulanmadığı için
       // bu, her gün aynı yerel saate denk gelir.
       final tz.TZDateTime aksam = tz.TZDateTime.from(
-        sonrakiZaman(
-          simdi,
-          saat: aksamSaatDeger,
-          dakika: aksamDakikaDeger,
-        ),
+        sonrakiZaman(simdi, saat: aksamSaatDeger, dakika: aksamDakikaDeger),
         tz.local,
       );
       await _eklenti.zonedSchedule(
         FeedbackConfig.aksamBildirimId,
         'Kader',
-        FeedbackStrings.aksamSorusu,
+        FeedbackStrings.aksamSorusu(dil),
         aksam,
         detaylar,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -178,7 +178,7 @@ class NotificationService {
         await _eklenti.zonedSchedule(
           FeedbackConfig.sabahBildirimBaslangicId + i,
           'Kader',
-          sabahMetni(hedef),
+          sabahMetni(hedef, dil),
           tz.TZDateTime.from(hedef, tz.local),
           detaylar,
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -191,13 +191,15 @@ class NotificationService {
       // planlanır; geçtiyse atlanır (yarının şanslı saati farklı olduğu
       // için kaydırılmaz — her açılışta yeniden hesaplanır).
       if (sansliSaatBaslangiciSaati != null) {
-        final DateTime? ani =
-            bugunSansliSaatAni(simdi, sansliSaatBaslangiciSaati);
+        final DateTime? ani = bugunSansliSaatAni(
+          simdi,
+          sansliSaatBaslangiciSaati,
+        );
         if (ani != null) {
           await _eklenti.zonedSchedule(
             FeedbackConfig.sansliSaatBildirimId,
             'Kader',
-            sansliSaatMetni(ani),
+            sansliSaatMetni(ani, dil),
             tz.TZDateTime.from(ani, tz.local),
             detaylar,
             androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -223,8 +225,13 @@ class NotificationService {
     required int saat,
     required int dakika,
   }) {
-    final DateTime bugunku =
-        DateTime(simdi.year, simdi.month, simdi.day, saat, dakika);
+    final DateTime bugunku = DateTime(
+      simdi.year,
+      simdi.month,
+      simdi.day,
+      saat,
+      dakika,
+    );
     return bugunku.isAfter(simdi)
         ? bugunku
         : bugunku.add(const Duration(days: 1));
@@ -259,13 +266,13 @@ class NotificationService {
   ///
   /// Gün sayısından türetilen tohumla rastgele ama deterministik:
   /// aynı gün hep aynı varyasyon, ardışık günlerde farklı dağılım.
-  static String sabahMetni(DateTime gun) {
+  static String sabahMetni(DateTime gun, AppDil dil) {
     final int gunNumarasi =
         DateTime(gun.year, gun.month, gun.day).millisecondsSinceEpoch ~/
-            Duration.millisecondsPerDay;
+        Duration.millisecondsPerDay;
     final Random rnd = Random(gunNumarasi);
-    return TrStrings.sabahBildirimVaryasyonlari[
-        rnd.nextInt(TrStrings.sabahBildirimVaryasyonlari.length)];
+    final List<String> havuz = TrStrings.sabahBildirimVaryasyonlari(dil);
+    return havuz[rnd.nextInt(havuz.length)];
   }
 
   /// Bugün [baslangiciSaati]:00 anını döndürür; [simdi]yi geçmişse
@@ -273,8 +280,12 @@ class NotificationService {
   ///
   /// Saf ve statiktir: tek başına test edilebilir.
   static DateTime? bugunSansliSaatAni(DateTime simdi, int baslangiciSaati) {
-    final DateTime ani =
-        DateTime(simdi.year, simdi.month, simdi.day, baslangiciSaati);
+    final DateTime ani = DateTime(
+      simdi.year,
+      simdi.month,
+      simdi.day,
+      baslangiciSaati,
+    );
     return ani.isAfter(simdi) ? ani : null;
   }
 
@@ -282,12 +293,12 @@ class NotificationService {
   ///
   /// [sabahMetni] ile aynı deterministik desen: gün numarasından türeyen
   /// tohumla varyasyon seçilir.
-  static String sansliSaatMetni(DateTime gun) {
+  static String sansliSaatMetni(DateTime gun, AppDil dil) {
     final int gunNumarasi =
         DateTime(gun.year, gun.month, gun.day).millisecondsSinceEpoch ~/
-            Duration.millisecondsPerDay;
+        Duration.millisecondsPerDay;
     final Random rnd = Random(gunNumarasi);
-    return TrStrings.sansliSaatBildirimVaryasyonlari[
-        rnd.nextInt(TrStrings.sansliSaatBildirimVaryasyonlari.length)];
+    final List<String> havuz = TrStrings.sansliSaatBildirimVaryasyonlari(dil);
+    return havuz[rnd.nextInt(havuz.length)];
   }
 }

@@ -18,8 +18,7 @@ class SansliSaat {
   String get etiket =>
       '${_saatMetni(baslangicSaati)} - ${_saatMetni(bitisSaati)}';
 
-  static String _saatMetni(int saat) =>
-      '${saat.toString().padLeft(2, '0')}:00';
+  static String _saatMetni(int saat) => '${saat.toString().padLeft(2, '0')}:00';
 
   @override
   bool operator ==(Object other) =>

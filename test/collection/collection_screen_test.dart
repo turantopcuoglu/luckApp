@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:kader/core/content/fortune_composer.dart';
 import 'package:kader/core/content/gunun_icerigi.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/luck_history_repository.dart';
@@ -60,10 +61,7 @@ void main() {
     );
   }
 
-  Future<void> ekraniAc(
-    WidgetTester tester,
-    List<DailyRecord> kayitlar,
-  ) async {
+  Future<void> ekraniAc(WidgetTester tester, List<DailyRecord> kayitlar) async {
     // Seed yazması gerçek I/O → runAsync (FakeAsync'te asılmasın).
     await tester.runAsync(() async {
       final LuckHistoryRepository repo = LuckHistoryRepository(kayitKutusu);
@@ -86,16 +84,18 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('kayıt yokken kristal küre + boş metin, kart yok',
-      (WidgetTester tester) async {
+  testWidgets('kayıt yokken kristal küre + boş metin, kart yok', (
+    WidgetTester tester,
+  ) async {
     await ekraniAc(tester, <DailyRecord>[]);
 
-    expect(find.text(CollectionStrings.bosMetin), findsOneWidget);
+    expect(find.text(CollectionStrings.bosMetin(AppDil.tr)), findsOneWidget);
     expect(find.byType(KartMinik), findsNothing);
   });
 
-  testWidgets('kayıt varken kartlar + özet + Altın Gün rozeti görünür',
-      (WidgetTester tester) async {
+  testWidgets('kayıt varken kartlar + özet + Altın Gün rozeti görünür', (
+    WidgetTester tester,
+  ) async {
     // 95 → Altın Gün (≥92), 60 ve 30 sıradan.
     await ekraniAc(tester, <DailyRecord>[
       kayitKur(1, 95),
@@ -105,13 +105,14 @@ void main() {
 
     expect(find.byType(KartMinik), findsNWidgets(3));
     // Özet: 3 kart, 1 Altın Gün.
-    expect(find.text(CollectionStrings.ozet(3, 1)), findsOneWidget);
+    expect(find.text(CollectionStrings.ozet(AppDil.tr, 3, 1)), findsOneWidget);
     // Yalnız tek altın kart → tek 🌟 rozeti (özet emoji kullanmaz).
     expect(find.text(CollectionStrings.altinRozet), findsOneWidget);
   });
 
-  testWidgets('Altın karta dokununca o günün yorumu bottom sheet\'te belirir',
-      (WidgetTester tester) async {
+  testWidgets('Altın karta dokununca o günün yorumu bottom sheet\'te belirir', (
+    WidgetTester tester,
+  ) async {
     final DailyRecord altinKayit = kayitKur(1, 95);
     await ekraniAc(tester, <DailyRecord>[
       altinKayit,
@@ -124,6 +125,7 @@ void main() {
       motor: motor,
       kullanici: turan,
       sonuc: altinKayit.sonuc,
+      dil: AppDil.tr,
     );
 
     await tester.tap(

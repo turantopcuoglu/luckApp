@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
 import 'package:kader/features/feedback/feedback_config.dart';
 import 'package:kader/features/feedback/notification_service.dart';
@@ -101,16 +102,21 @@ void main() {
     test('deterministik: aynı gün aynı metin', () {
       final DateTime gun = DateTime(2026, 7, 6);
       expect(
-        NotificationService.sansliSaatMetni(gun),
-        NotificationService.sansliSaatMetni(gun),
+        NotificationService.sansliSaatMetni(gun, AppDil.tr),
+        NotificationService.sansliSaatMetni(gun, AppDil.tr),
       );
     });
 
     test('seçim her zaman varyasyon listesinden gelir', () {
       for (int i = 0; i < 30; i++) {
-        final String metin =
-            NotificationService.sansliSaatMetni(DateTime(2026, 7, 1 + i));
-        expect(TrStrings.sansliSaatBildirimVaryasyonlari, contains(metin));
+        final String metin = NotificationService.sansliSaatMetni(
+          DateTime(2026, 7, 1 + i),
+          AppDil.tr,
+        );
+        expect(
+          TrStrings.sansliSaatBildirimVaryasyonlari(AppDil.tr),
+          contains(metin),
+        );
       }
     });
   });
@@ -118,7 +124,7 @@ void main() {
   group('sabahMetni (plan madde 3)', () {
     test('en az 10 varyasyon tanımlı', () {
       expect(
-        TrStrings.sabahBildirimVaryasyonlari.length,
+        TrStrings.sabahBildirimVaryasyonlari(AppDil.tr).length,
         greaterThanOrEqualTo(10),
       );
     });
@@ -126,23 +132,28 @@ void main() {
     test('deterministik: aynı gün aynı metin', () {
       final DateTime gun = DateTime(2026, 7, 6);
       expect(
-        NotificationService.sabahMetni(gun),
-        NotificationService.sabahMetni(gun),
+        NotificationService.sabahMetni(gun, AppDil.tr),
+        NotificationService.sabahMetni(gun, AppDil.tr),
       );
     });
 
     test('seçim her zaman varyasyon listesinden gelir', () {
       for (int i = 0; i < 30; i++) {
-        final String metin =
-            NotificationService.sabahMetni(DateTime(2026, 7, 1 + i));
-        expect(TrStrings.sabahBildirimVaryasyonlari, contains(metin));
+        final String metin = NotificationService.sabahMetni(
+          DateTime(2026, 7, 1 + i),
+          AppDil.tr,
+        );
+        expect(
+          TrStrings.sabahBildirimVaryasyonlari(AppDil.tr),
+          contains(metin),
+        );
       }
     });
 
     test('30 günde birden fazla farklı varyasyon kullanılır', () {
       final Set<String> metinler = <String>{
         for (int i = 0; i < 30; i++)
-          NotificationService.sabahMetni(DateTime(2026, 7, 1 + i)),
+          NotificationService.sabahMetni(DateTime(2026, 7, 1 + i), AppDil.tr),
       };
       expect(metinler.length, greaterThan(3));
     });

@@ -59,10 +59,9 @@ class LuckHistoryRepository {
   ///
   /// Geçmiş ekranı (heatmap + özet) için kullanılır. Kutu ekleme
   /// sırasını sakladığından kronolojik heatmap için açık sıralama şart.
-  List<DailyRecord> tumKayitlar() => _box.values
-      .map(DailyRecord.fromMap)
-      .toList()
-    ..sort((DailyRecord a, DailyRecord b) => a.gun.compareTo(b.gun));
+  List<DailyRecord> tumKayitlar() =>
+      _box.values.map(DailyRecord.fromMap).toList()
+        ..sort((DailyRecord a, DailyRecord b) => a.gun.compareTo(b.gun));
 
   /// [gun]den önceki son [biasGunSayisi] günün genel skorlarını döndürür.
   ///
@@ -71,8 +70,9 @@ class LuckHistoryRepository {
   List<int> sonUcGunSkorlari(DateTime gun) {
     final List<int> skorlar = <int>[];
     for (int i = 1; i <= biasGunSayisi; i++) {
-      final DailyRecord? kayit =
-          getir(DateTime(gun.year, gun.month, gun.day - i));
+      final DailyRecord? kayit = getir(
+        DateTime(gun.year, gun.month, gun.day - i),
+      );
       if (kayit != null) {
         skorlar.add(kayit.sonuc.genelSkor);
       }

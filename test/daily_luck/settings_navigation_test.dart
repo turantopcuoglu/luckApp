@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/luck_history_repository.dart';
@@ -22,6 +23,7 @@ class _SahteBildirim extends NotificationService {
   @override
   Future<void> gunlukBildirimleriPlanla({
     required DateTime simdi,
+    required AppDil dil,
     int? aksamDakika,
     int? sabahDakika,
     int? sansliSaatBaslangiciSaati,
@@ -65,10 +67,13 @@ void main() {
         onboardingTamam: true,
       );
       await profilKutusu.put(StorageKeys.profilKaydi, profil.toMap());
-      final LuckResult sonuc =
-          const LuckEngine().hesapla(kullanici: profil.seed, gun: sabitGun);
-      await LuckHistoryRepository(kayitKutusu)
-          .kaydet(DailyRecord(sonuc: sonuc));
+      final LuckResult sonuc = const LuckEngine().hesapla(
+        kullanici: profil.seed,
+        gun: sabitGun,
+      );
+      await LuckHistoryRepository(
+        kayitKutusu,
+      ).kaydet(DailyRecord(sonuc: sonuc));
 
       await tester.pumpWidget(
         ProviderScope(
@@ -87,8 +92,9 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('dişliye dokununca Ayarlar gövdesi exception\'sız açılır',
-      (WidgetTester tester) async {
+  testWidgets('dişliye dokununca Ayarlar gövdesi exception\'sız açılır', (
+    WidgetTester tester,
+  ) async {
     await anaEkraniAc(tester);
 
     await tester.tap(find.byIcon(Icons.settings_rounded));
@@ -98,13 +104,17 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.byType(SettingsScreen), findsOneWidget);
     // Gövde gerçekten render oldu mu? (isim bölümü + disclaimer + saatler)
-    expect(find.text(SettingsStrings.isimBolumu), findsOneWidget);
-    expect(find.text(SettingsStrings.eglenceAmacli), findsOneWidget);
-    expect(find.text(SettingsStrings.aksamHatirlatma), findsOneWidget);
+    expect(find.text(SettingsStrings.isimBolumu(AppDil.tr)), findsOneWidget);
+    expect(find.text(SettingsStrings.eglenceAmacli(AppDil.tr)), findsOneWidget);
+    expect(
+      find.text(SettingsStrings.aksamHatirlatma(AppDil.tr)),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('takvim ikonuna dokununca Geçmiş exception\'sız açılır',
-      (WidgetTester tester) async {
+  testWidgets('takvim ikonuna dokununca Geçmiş exception\'sız açılır', (
+    WidgetTester tester,
+  ) async {
     await anaEkraniAc(tester);
 
     await tester.tap(find.byIcon(Icons.calendar_month_rounded));

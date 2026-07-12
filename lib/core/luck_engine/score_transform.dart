@@ -28,8 +28,8 @@ int sekillendir(double ham) {
 
   // Orta bölge: kalan olasılık kütlesini [bandAlt, bandUst] içine
   // doğrusal olarak sıkıştır.
-  final double ortaOran = (ham - EngineConfig.ucOlasilik) /
-      (1 - 2 * EngineConfig.ucOlasilik);
+  final double ortaOran =
+      (ham - EngineConfig.ucOlasilik) / (1 - 2 * EngineConfig.ucOlasilik);
   final double bandGenisligi = EngineConfig.bandUst - EngineConfig.bandAlt;
   return (EngineConfig.bandAlt + ortaOran * bandGenisligi).round();
 }

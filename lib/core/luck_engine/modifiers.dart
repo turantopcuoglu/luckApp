@@ -25,8 +25,8 @@ LuckModifier ayEvresiModifiyeri(DateTime gun) {
   // Dakika hassasiyeti evre için fazlasıyla yeterli.
   final double gecenGun =
       gun.toUtc().difference(_yeniayReferansi).inMinutes /
-          Duration.minutesPerHour /
-          Duration.hoursPerDay;
+      Duration.minutesPerHour /
+      Duration.hoursPerDay;
   final double devir = gecenGun / EngineConfig.sinodikAyGun;
   // floor ile kesir alma, referans öncesi (negatif) tarihlerde de
   // 0..1 aralığında evre döndürür.
@@ -43,7 +43,9 @@ LuckModifier ayEvresiModifiyeri(DateTime gun) {
 /// doğrusal olarak -8..+8 aralığına eşlenir: 1 → -8, 5 → 0, 9 → +8.
 LuckModifier numerolojiModifiyeri(DateTime gun) {
   final int toplam =
-      _rakamToplami(gun.year) + _rakamToplami(gun.month) + _rakamToplami(gun.day);
+      _rakamToplami(gun.year) +
+      _rakamToplami(gun.month) +
+      _rakamToplami(gun.day);
   final int tekHane = _tekHaneyeIndir(toplam);
 
   // 1..9 → -8..+8 doğrusal eşleme (2x - 10).

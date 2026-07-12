@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:kader/core/content/fortune_composer.dart' as composer;
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/providers.dart';
@@ -41,8 +42,10 @@ void main() {
       StorageKeys.dailyRecordsBox,
     );
     // Bugünün kaydı tohumlanır: ekranlar diske yazmadan okusun.
-    final LuckResult sonuc =
-        motor.hesapla(kullanici: misafir.seed, gun: sabitGun);
+    final LuckResult sonuc = motor.hesapla(
+      kullanici: misafir.seed,
+      gun: sabitGun,
+    );
     await kayitKutusu.put(
       gunAnahtari(sabitGun),
       DailyRecord(sonuc: sonuc).toMap(),
@@ -56,15 +59,17 @@ void main() {
   });
 
   List<Override> temelOverridelar({bool premium = false}) => <Override>[
-        userProfileBoxProvider.overrideWithValue(profilKutusu),
-        dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
-        bugunProvider.overrideWithValue(sabitGun),
-        if (premium)
-          entitlementProvider.overrideWith((Ref ref) => true),
-      ];
+    userProfileBoxProvider.overrideWithValue(profilKutusu),
+    dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
+    bugunProvider.overrideWithValue(sabitGun),
+    if (premium) entitlementProvider.overrideWith((Ref ref) => true),
+  ];
 
-  Future<void> ekraniAc(WidgetTester tester, Widget ev,
-      {bool premium = false}) async {
+  Future<void> ekraniAc(
+    WidgetTester tester,
+    Widget ev, {
+    bool premium = false,
+  }) async {
     await tester.runAsync(() async {
       await tester.pumpWidget(
         ProviderScope(
@@ -78,12 +83,14 @@ void main() {
   }
 
   group('CategoryDetailScreen', () {
-    testWidgets('skor, 2 cümle yorum ve şanslı saat gösterilir',
-        (WidgetTester tester) async {
-      final LuckResult sonuc =
-          motor.hesapla(kullanici: misafir.seed, gun: sabitGun);
-      final int beklenenSkor =
-          sonuc.kategoriSkorlari[LuckCategory.saglik]!;
+    testWidgets('skor, 2 cümle yorum ve şanslı saat gösterilir', (
+      WidgetTester tester,
+    ) async {
+      final LuckResult sonuc = motor.hesapla(
+        kullanici: misafir.seed,
+        gun: sabitGun,
+      );
+      final int beklenenSkor = sonuc.kategoriSkorlari[LuckCategory.saglik]!;
       final SansliSaat beklenenSaat = motor.sansliSaat(
         kullanici: misafir.seed,
         gun: sabitGun,
@@ -104,16 +111,21 @@ void main() {
             kullanici: misafir.seed,
             sonuc: sonuc,
             kategori: LuckCategory.saglik,
+            dil: AppDil.tr,
           ),
         ),
         findsOneWidget,
       );
-      expect(find.text(CategoriesStrings.sansliSaatBaslik), findsOneWidget);
+      expect(
+        find.text(CategoriesStrings.sansliSaatBaslik(AppDil.tr)),
+        findsOneWidget,
+      );
       expect(find.text(beklenenSaat.etiket), findsOneWidget);
     });
 
-    testWidgets('kilitli kategoriye doğrudan gelinirse paywall gösterilir',
-        (WidgetTester tester) async {
+    testWidgets('kilitli kategoriye doğrudan gelinirse paywall gösterilir', (
+      WidgetTester tester,
+    ) async {
       // Savunma derinliği: ana ekran yönlendirmesi atlansa bile
       // (deep link, ileride eklenecek rota vs.) içerik kurulmamalı.
       await ekraniAc(
@@ -123,11 +135,15 @@ void main() {
 
       expect(find.byType(PaywallScreen), findsOneWidget);
       expect(find.text(CategoriesStrings.paywallBaslik), findsOneWidget);
-      expect(find.text(CategoriesStrings.sansliSaatBaslik), findsNothing);
+      expect(
+        find.text(CategoriesStrings.sansliSaatBaslik(AppDil.tr)),
+        findsNothing,
+      );
     });
 
-    testWidgets('premium yetkisiyle kilitli kategori detayı açılır',
-        (WidgetTester tester) async {
+    testWidgets('premium yetkisiyle kilitli kategori detayı açılır', (
+      WidgetTester tester,
+    ) async {
       await ekraniAc(
         tester,
         const CategoryDetailScreen(kategori: LuckCategory.ask),
@@ -136,13 +152,18 @@ void main() {
 
       expect(find.byType(PaywallScreen), findsNothing);
       expect(find.text('AŞK'), findsOneWidget);
-      expect(find.text(CategoriesStrings.sansliSaatBaslik), findsOneWidget);
+      expect(
+        find.text(CategoriesStrings.sansliSaatBaslik(AppDil.tr)),
+        findsOneWidget,
+      );
     });
   });
 
   group('premium gate (ana ekran)', () {
-    Future<void> anaEkraniAcVeKartiCevir(WidgetTester tester,
-        {bool premium = false}) async {
+    Future<void> anaEkraniAcVeKartiCevir(
+      WidgetTester tester, {
+      bool premium = false,
+    }) async {
       await ekraniAc(tester, const DailyLuckScreen(), premium: premium);
       await tester.tap(find.byType(FortuneRevealCard));
       await tester.pump();
@@ -151,17 +172,19 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
     }
 
-    testWidgets('aşk ve para kutuları kilit ikonu taşır',
-        (WidgetTester tester) async {
+    testWidgets('aşk ve para kutuları kilit ikonu taşır', (
+      WidgetTester tester,
+    ) async {
       await ekraniAc(tester, const DailyLuckScreen());
       expect(find.byIcon(Icons.lock_rounded), findsNWidgets(2));
     });
 
-    testWidgets('kilitli kutuya dokunmak paywall açar',
-        (WidgetTester tester) async {
+    testWidgets('kilitli kutuya dokunmak paywall açar', (
+      WidgetTester tester,
+    ) async {
       await anaEkraniAcVeKartiCevir(tester);
 
-      await tester.tap(find.text(LuckCategory.ask.etiket));
+      await tester.tap(find.text(LuckCategory.ask.etiket(AppDil.tr)));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
@@ -169,11 +192,12 @@ void main() {
       expect(find.text(CategoriesStrings.paywallBaslik), findsOneWidget);
     });
 
-    testWidgets('kilitsiz kutuya dokunmak detay sayfası açar',
-        (WidgetTester tester) async {
+    testWidgets('kilitsiz kutuya dokunmak detay sayfası açar', (
+      WidgetTester tester,
+    ) async {
       await anaEkraniAcVeKartiCevir(tester);
 
-      await tester.tap(find.text(LuckCategory.saglik.etiket));
+      await tester.tap(find.text(LuckCategory.saglik.etiket(AppDil.tr)));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
@@ -181,18 +205,18 @@ void main() {
       expect(find.byType(PaywallScreen), findsNothing);
     });
 
-    testWidgets('kilitli kartta gerçek skor yerine maske gösterilir',
-        (WidgetTester tester) async {
-      final LuckResult sonuc =
-          motor.hesapla(kullanici: misafir.seed, gun: sabitGun);
+    testWidgets('kilitli kartta gerçek skor yerine maske gösterilir', (
+      WidgetTester tester,
+    ) async {
+      final LuckResult sonuc = motor.hesapla(
+        kullanici: misafir.seed,
+        gun: sabitGun,
+      );
 
       await anaEkraniAcVeKartiCevir(tester);
 
       // İki kilitli kart da maske metni taşır.
-      expect(
-        find.text(CategoriesStrings.kilitliSkor),
-        findsNWidgets(2),
-      );
+      expect(find.text(CategoriesStrings.kilitliSkor), findsNWidgets(2));
 
       // Kilitli skorlar kategori kartlarının İÇİNDE metin olarak yok
       // (blur'dan bağımsız gerçek gizlilik garantisi). Kilitli skor,
@@ -216,18 +240,19 @@ void main() {
             matching: find.text('$gizliSkor'),
           ),
           findsNothing,
-          reason: '${k.etiket} skoru ana ekranda sızdı',
+          reason: '${k.etiket(AppDil.tr)} skoru ana ekranda sızdı',
         );
       }
     });
 
-    testWidgets('premium yetkisi kilidi kaldırır: aşk detaya gider',
-        (WidgetTester tester) async {
+    testWidgets('premium yetkisi kilidi kaldırır: aşk detaya gider', (
+      WidgetTester tester,
+    ) async {
       await anaEkraniAcVeKartiCevir(tester, premium: true);
 
       expect(find.byIcon(Icons.lock_rounded), findsNothing);
 
-      await tester.tap(find.text(LuckCategory.ask.etiket));
+      await tester.tap(find.text(LuckCategory.ask.etiket(AppDil.tr)));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 

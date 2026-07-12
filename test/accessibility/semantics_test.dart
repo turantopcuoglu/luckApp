@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/features/collection/widgets/kart_minik.dart';
@@ -18,27 +19,36 @@ void main() {
 
   Future<void> pompala(WidgetTester tester, Widget cocuk) async {
     await tester.pumpWidget(
-      MaterialApp(home: Scaffold(body: Center(child: cocuk))),
+      MaterialApp(
+        home: Scaffold(body: Center(child: cocuk)),
+      ),
     );
     await tester.pump();
   }
 
-  testWidgets('ScoreRing skoru tek anlamlı düğüm olarak okunur',
-      (WidgetTester tester) async {
+  testWidgets('ScoreRing skoru tek anlamlı düğüm olarak okunur', (
+    WidgetTester tester,
+  ) async {
     final SemanticsHandle handle = tester.ensureSemantics();
-    await pompala(tester, const ScoreRing(skor: 85));
+    await pompala(tester, ScoreRing(skor: 85, dil: AppDil.tr));
 
     // Kopuk "85" + "GENEL SKOR" değil, birleşik etiket.
     expect(find.bySemanticsLabel('GENEL SKOR: 85 / 100'), findsOneWidget);
     handle.dispose();
   });
 
-  testWidgets('kilitli kategori skoru semantics\'e sızmaz (gizlilik)',
-      (WidgetTester tester) async {
+  testWidgets('kilitli kategori skoru semantics\'e sızmaz (gizlilik)', (
+    WidgetTester tester,
+  ) async {
     final SemanticsHandle handle = tester.ensureSemantics();
     await pompala(
       tester,
-      const CategoryCard(kategori: LuckCategory.ask, skor: 72, kilitli: true),
+      CategoryCard(
+        kategori: LuckCategory.ask,
+        skor: 72,
+        kilitli: true,
+        dil: AppDil.tr,
+      ),
     );
 
     // Hiçbir semantics etiketi gerçek skoru (72) içermemeli.
@@ -48,23 +58,27 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('kilidi açık kategori skoru etikette görünür',
-      (WidgetTester tester) async {
+  testWidgets('kilidi açık kategori skoru etikette görünür', (
+    WidgetTester tester,
+  ) async {
     final SemanticsHandle handle = tester.ensureSemantics();
     await pompala(
       tester,
-      const CategoryCard(kategori: LuckCategory.ask, skor: 72),
+      CategoryCard(kategori: LuckCategory.ask, skor: 72, dil: AppDil.tr),
     );
 
     expect(find.bySemanticsLabel('Aşk: 72 / 100'), findsOneWidget);
     handle.dispose();
   });
 
-  testWidgets('Altın gün koleksiyon kartı etiketi skor + "Altın Gün" içerir',
-      (WidgetTester tester) async {
+  testWidgets('Altın gün koleksiyon kartı etiketi skor + "Altın Gün" içerir', (
+    WidgetTester tester,
+  ) async {
     final SemanticsHandle handle = tester.ensureSemantics();
-    final LuckResult temel =
-        motor.hesapla(kullanici: turan, gun: DateTime(2026, 7, 6));
+    final LuckResult temel = motor.hesapla(
+      kullanici: turan,
+      gun: DateTime(2026, 7, 6),
+    );
     final DailyRecord altinKayit = DailyRecord(
       sonuc: LuckResult(
         gun: DateTime(2026, 7, 6),
@@ -74,7 +88,7 @@ void main() {
       ),
     );
 
-    await pompala(tester, KartMinik(kayit: altinKayit));
+    await pompala(tester, KartMinik(kayit: altinKayit, dil: AppDil.tr));
 
     expect(find.bySemanticsLabel(RegExp('95 / 100')), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('Altın Gün')), findsOneWidget);

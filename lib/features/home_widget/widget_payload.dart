@@ -1,3 +1,4 @@
+import '../../core/localization/app_dil.dart';
 import '../daily_luck/tr_strings.dart';
 import 'widget_strings.dart';
 
@@ -43,13 +44,14 @@ WidgetPayload widgetYuku({
   required int skor,
   required DateTime gun,
   required String yorum,
+  required AppDil dil,
 }) {
-  final String tarih = '${gun.day} ${TrStrings.ayAdlari[gun.month - 1]}';
+  final String tarih = '${gun.day} ${TrStrings.ayAdlari(dil)[gun.month - 1]}';
 
   final String kirpik = yorum.trim();
   final int noktaIndeksi = kirpik.indexOf('.');
   final String teaser = kirpik.isEmpty
-      ? WidgetStrings.yedekTeaser
+      ? WidgetStrings.yedekTeaser(dil)
       : (noktaIndeksi == -1 ? kirpik : kirpik.substring(0, noktaIndeksi))
             .trim();
 

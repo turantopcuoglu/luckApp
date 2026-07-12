@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/content/fortune_composer.dart';
 import '../../core/content/gunun_icerigi.dart';
 import '../../core/history/history_analiz_config.dart';
+import '../../core/localization/app_dil.dart';
 import '../../core/storage/daily_record.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
@@ -33,21 +34,24 @@ class CollectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // En yeniden eskiye: kutu artan sıralı olduğundan ters çevrilir.
-    final List<DailyRecord> kayitlar =
-        ref.watch(tumKayitlarProvider).reversed.toList();
+    final List<DailyRecord> kayitlar = ref
+        .watch(tumKayitlarProvider)
+        .reversed
+        .toList();
+    final AppDil dil = ref.watch(dilProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(CollectionStrings.baslik)),
+      appBar: AppBar(title: Text(CollectionStrings.baslik(dil))),
       body: SafeArea(
         child: kayitlar.isEmpty
-            ? _bosDurum(context)
-            : _grid(context, ref, kayitlar),
+            ? _bosDurum(context, dil)
+            : _grid(context, ref, kayitlar, dil),
       ),
     );
   }
 
   /// Hiç kayıt yokken kristal küre + davet metni (HistoryScreen deseni).
-  Widget _bosDurum(BuildContext context) {
+  Widget _bosDurum(BuildContext context, AppDil dil) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     return Center(
       child: Padding(
@@ -58,13 +62,13 @@ class CollectionScreen extends ConsumerWidget {
             AppIllustrations.kristalKure(),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              CollectionStrings.bosBaslik,
+              CollectionStrings.bosBaslik(dil),
               style: yaziTemasi.titleMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              CollectionStrings.bosMetin,
+              CollectionStrings.bosMetin(dil),
               style: yaziTemasi.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -81,10 +85,13 @@ class CollectionScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     List<DailyRecord> kayitlar,
+    AppDil dil,
   ) {
     final int altinSayisi = kayitlar
-        .where((DailyRecord k) =>
-            k.sonuc.genelSkor >= HistoryAnalizConfig.altinGunEsigi)
+        .where(
+          (DailyRecord k) =>
+              k.sonuc.genelSkor >= HistoryAnalizConfig.altinGunEsigi,
+        )
         .length;
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
 
@@ -99,7 +106,7 @@ class CollectionScreen extends ConsumerWidget {
             AppSpacing.sm,
           ),
           child: Text(
-            CollectionStrings.ozet(kayitlar.length, altinSayisi),
+            CollectionStrings.ozet(dil, kayitlar.length, altinSayisi),
             style: yaziTemasi.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
             ),
@@ -117,7 +124,8 @@ class CollectionScreen extends ConsumerWidget {
             itemCount: kayitlar.length,
             itemBuilder: (BuildContext context, int i) => KartMinik(
               kayit: kayitlar[i],
-              onTap: () => _kartDetay(context, ref, kayitlar[i]),
+              dil: dil,
+              onTap: () => _kartDetay(context, ref, kayitlar[i], dil),
             ),
           ),
         ),
@@ -127,22 +135,26 @@ class CollectionScreen extends ConsumerWidget {
 
   /// Karta dokunulunca o günün yorumunu deterministik yeniden üretip
   /// alttan açılan sayfada (bottom sheet) gösterir.
-  void _kartDetay(BuildContext context, WidgetRef ref, DailyRecord kayit) {
+  void _kartDetay(
+    BuildContext context,
+    WidgetRef ref,
+    DailyRecord kayit,
+    AppDil dil,
+  ) {
     // İçerik saklanmaz; kayıtlı sonuç + deterministik tohumdan aynı
     // şekilde yeniden türetilir (kural 8).
     final GununIcerigi icerik = gununIcerigi(
       motor: ref.read(luckEngineProvider),
       kullanici: ref.read(aktifProfilProvider).seed,
       sonuc: kayit.sonuc,
+      dil: dil,
     );
 
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppRadius.lg),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
       ),
       isScrollControlled: true,
       builder: (BuildContext sheetContext) {
@@ -154,22 +166,24 @@ class CollectionScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Text(
-                  CollectionStrings.detayBaslik,
+                  CollectionStrings.detayBaslik(dil),
                   style: yaziTemasi.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  TrStrings.tarihMetni(kayit.gun),
+                  TrStrings.tarihMetni(dil, kayit.gun),
                   style: yaziTemasi.titleMedium,
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                Center(child: ScoreRing(skor: kayit.sonuc.genelSkor)),
+                Center(
+                  child: ScoreRing(skor: kayit.sonuc.genelSkor, dil: dil),
+                ),
                 const SizedBox(height: AppSpacing.lg),
                 CommentCard(metin: icerik.yorum),
                 const SizedBox(height: AppSpacing.md),
-                SansOgeleriKarti(icerik: icerik),
+                SansOgeleriKarti(icerik: icerik, dil: dil),
               ],
             ),
           ),

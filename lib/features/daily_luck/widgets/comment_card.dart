@@ -19,10 +19,7 @@ class CommentCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
-        child: Text(
-          metin,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        child: Text(metin, style: Theme.of(context).textTheme.bodyMedium),
       ),
     );
   }

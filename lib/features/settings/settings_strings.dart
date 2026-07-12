@@ -1,59 +1,79 @@
-/// Ayarlar ekranının Türkçe metinleri.
+import '../../core/localization/app_dil.dart';
+
+/// Ayarlar ekranının metinleri (TR + EN).
 abstract final class SettingsStrings {
   /// Ekran başlığı.
-  static const String baslik = 'Ayarlar';
+  static String baslik(AppDil dil) => dil.sec('Ayarlar', 'Settings');
 
   /// İsim bölümü başlığı.
-  static const String isimBolumu = 'Adın';
+  static String isimBolumu(AppDil dil) => dil.sec('Adın', 'Your name');
 
   /// İsim kaydetme butonu.
-  static const String isimKaydet = 'Kaydet';
+  static String isimKaydet(AppDil dil) => dil.sec('Kaydet', 'Save');
 
   /// İsim boş bırakıldığında gösterilen uyarı.
-  static const String isimBosUyarisi = 'Adın boş bırakılamaz.';
+  static String isimBosUyarisi(AppDil dil) =>
+      dil.sec('Adın boş bırakılamaz.', 'Your name cannot be empty.');
 
   /// İsim değiştirme onay diyaloğu başlığı.
-  static const String isimUyariBaslik = 'Adını değiştir';
+  static String isimUyariBaslik(AppDil dil) =>
+      dil.sec('Adını değiştir', 'Change your name');
 
   /// İsim değiştirme onay diyaloğu açıklaması.
-  ///
-  /// Skor tohumu isimden türediği için gelecekteki günlerin skoru
-  /// değişir; bugünün skoru kayıtlı olduğundan sabit kalır.
-  static const String isimUyariMetin =
-      'Adını değiştirmek gelecekteki kader skorlarını yeniden '
-      'hesaplar. Bugünün skoru değişmez.';
+  static String isimUyariMetin(AppDil dil) => dil.sec(
+    'Adını değiştirmek gelecekteki kader skorlarını yeniden '
+        'hesaplar. Bugünün skoru değişmez.',
+    'Changing your name recalculates your future fortune scores. '
+        "Today's score stays the same.",
+  );
 
   /// Onay diyaloğu "devam et" butonu.
-  static const String uyariDevam = 'Devam et';
+  static String uyariDevam(AppDil dil) => dil.sec('Devam et', 'Continue');
 
   /// Onay diyaloğu "vazgeç" butonu.
-  static const String uyariVazgec = 'Vazgeç';
+  static String uyariVazgec(AppDil dil) => dil.sec('Vazgeç', 'Cancel');
 
   /// İsim kaydedildiğinde gösterilen bilgi.
-  static const String isimKaydedildi = 'Adın güncellendi.';
+  static String isimKaydedildi(AppDil dil) =>
+      dil.sec('Adın güncellendi.', 'Your name has been updated.');
 
   /// Bildirim bölümü başlığı.
-  static const String bildirimBolumu = 'Bildirimler';
+  static String bildirimBolumu(AppDil dil) =>
+      dil.sec('Bildirimler', 'Notifications');
 
   /// Bildirim aç/kapa satırı.
-  static const String bildirimAcik = 'Günlük hatırlatmalar';
+  static String bildirimAcik(AppDil dil) =>
+      dil.sec('Günlük hatırlatmalar', 'Daily reminders');
 
   /// Akşam hatırlatması satırı.
-  static const String aksamHatirlatma = 'Akşam hatırlatması';
+  static String aksamHatirlatma(AppDil dil) =>
+      dil.sec('Akşam hatırlatması', 'Evening reminder');
 
   /// Sabah hatırlatması satırı.
-  static const String sabahHatirlatma = 'Sabah hatırlatması';
+  static String sabahHatirlatma(AppDil dil) =>
+      dil.sec('Sabah hatırlatması', 'Morning reminder');
+
+  /// Dil bölümü başlığı.
+  static String dilBolumu(AppDil dil) => dil.sec('Dil', 'Language');
+
+  /// Türkçe seçeneği etiketi (kendi dilinde gösterilir).
+  static const String dilTurkce = 'Türkçe';
+
+  /// İngilizce seçeneği etiketi (kendi dilinde gösterilir).
+  static const String dilIngilizce = 'English';
 
   /// Hakkında bölümü başlığı.
-  static const String hakkindaBolumu = 'Hakkında';
+  static String hakkindaBolumu(AppDil dil) => dil.sec('Hakkında', 'About');
 
   /// Sürüm satırı etiketi.
-  static const String surumEtiketi = 'Sürüm';
+  static String surumEtiketi(AppDil dil) => dil.sec('Sürüm', 'Version');
 
   /// Yasal uyum ibaresi — disclaimer'ın TEK doğruluk kaynağı.
   ///
   /// Hem onboarding karşılama ekranı hem de Ayarlar > Hakkında bunu
   /// kullanır (store reddi riskine karşı zorunlu ibare).
-  static const String eglenceAmacli =
-      'Bu uygulama yalnızca eğlence amaçlıdır.';
+  static String eglenceAmacli(AppDil dil) => dil.sec(
+    'Bu uygulama yalnızca eğlence amaçlıdır.',
+    'This app is for entertainment purposes only.',
+  );
 }

@@ -1,14 +1,17 @@
-/// Paylaşım özelliğinin Türkçe metinleri.
+import '../../core/localization/app_dil.dart';
+
+/// Paylaşım özelliğinin metinleri (TR + EN).
 abstract final class ShareStrings {
   /// Ana ekrandaki paylaş butonunun etiketi.
-  static const String paylas = 'Paylaş';
+  static String paylas(AppDil dil) => dil.sec('Paylaş', 'Share');
 
-  /// Story kartının alt köşesindeki uygulama imzası.
+  /// Story kartının alt köşesindeki uygulama imzası (marka).
   static const String marka = 'Kader ✨';
 
   /// Story kartındaki skor etiketi.
-  static const String genelSkor = 'GENEL SKOR';
+  static String genelSkor(AppDil dil) => dil.sec('GENEL SKOR', 'OVERALL SCORE');
 
   /// Paylaşım menüsüne eklenen kısa metin.
-  static const String paylasimMetni = 'Bugünkü kaderim ✨';
+  static String paylasimMetni(AppDil dil) =>
+      dil.sec('Bugünkü kaderim ✨', 'My fortune today ✨');
 }

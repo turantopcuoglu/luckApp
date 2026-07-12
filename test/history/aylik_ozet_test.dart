@@ -80,12 +80,12 @@ void main() {
     test('baskın kategori ay boyunca toplamdan seçilir', () {
       // Para her gün yüksek toplanır → baskın.
       Map<LuckCategory, int> skorlar(int para) => <LuckCategory, int>{
-            LuckCategory.ask: 10,
-            LuckCategory.para: para,
-            LuckCategory.saglik: 10,
-            LuckCategory.risk: 10,
-            LuckCategory.sosyal: 10,
-          };
+        LuckCategory.ask: 10,
+        LuckCategory.para: para,
+        LuckCategory.saglik: 10,
+        LuckCategory.risk: 10,
+        LuckCategory.sosyal: 10,
+      };
       final AylikOzet o = aylikOzet(
         <DailyRecord>[
           _kayit(DateTime(2026, 7, 1), 60, kategoriler: skorlar(80)),

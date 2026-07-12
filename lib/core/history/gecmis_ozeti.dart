@@ -114,8 +114,7 @@ int _guncelSeriHesapla(List<int> ordinaller, DateTime? bugun) {
   }
   final int bugunOrd = _gunOrdinali(bugun);
   // Gelecekli kayıtları yok say; bugüne kadar olanları al.
-  final List<int> gecmis =
-      ordinaller.where((int o) => o <= bugunOrd).toList();
+  final List<int> gecmis = ordinaller.where((int o) => o <= bugunOrd).toList();
   if (gecmis.isEmpty) {
     return 0;
   }

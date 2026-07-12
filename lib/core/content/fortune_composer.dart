@@ -7,6 +7,7 @@
 /// saklanan sonuç) her zaman aynı metni üretir (CLAUDE.md kural 8).
 library;
 
+import '../localization/app_dil.dart';
 import '../luck_engine/luck_engine.dart';
 import 'category_pools.dart';
 import 'content_config.dart';
@@ -16,54 +17,65 @@ import 'sans_rengi.dart';
 
 /// [sonuc] ve (kullanici, sonuc.gun) tohumundan günün tam içerik
 /// paketini üretir: 3 cümlelik yorum + şans rengi + şanslı sayı +
-/// günün tavsiyesi.
+/// günün tavsiyesi. Metinler [dil]'de render edilir.
+///
+/// Determinizm (kural 8): seçim indeksleri tohumdan gelir, dilden
+/// bağımsızdır; TR/EN havuzları aynı uzunlukta olduğundan aynı
+/// (kullanıcı, gün) her iki dilde de aynı slotu seçer.
 GununIcerigi gununIcerigi({
   required LuckEngine motor,
   required UserSeed kullanici,
   required LuckResult sonuc,
+  required AppDil dil,
 }) {
   final DateTime gun = sonuc.gun;
 
   // Açılış: genel skorun bandından seçilir.
-  final List<String> acilisHavuzu =
-      FortunePools.acilisCumleleri[SkorBandi.bandiBul(sonuc.genelSkor)]!;
-  final String acilis = acilisHavuzu[motor.tekrarsizSecimIndeksi(
-    kullanici: kullanici,
-    gun: gun,
-    amac: ContentConfig.amacAcilis,
-    havuzBoyutu: acilisHavuzu.length,
-  )];
+  final List<String> acilisHavuzu = FortunePools.acilisCumleleri(
+    dil,
+  )[SkorBandi.bandiBul(sonuc.genelSkor)]!;
+  final String acilis =
+      acilisHavuzu[motor.tekrarsizSecimIndeksi(
+        kullanici: kullanici,
+        gun: gun,
+        amac: ContentConfig.amacAcilis,
+        havuzBoyutu: acilisHavuzu.length,
+      )];
 
   // Orta: günün baskın kategorisi, o kategorinin KENDİ skoruna göre
   // tonlanır (genel banda değil; kategori hikâyesi kendi tonuyla anlatılır).
   final LuckCategory baskin = baskinKategori(sonuc.kategoriSkorlari);
-  final List<String> ortaHavuzu = FortunePools.ortaCumleleri[baskin]![
-      KategoriTonu.tonuBul(sonuc.kategoriSkorlari[baskin]!)]!;
-  final String orta = ortaHavuzu[motor.tekrarsizSecimIndeksi(
-    kullanici: kullanici,
-    gun: gun,
-    amac: ContentConfig.amacOrta,
-    havuzBoyutu: ortaHavuzu.length,
-  )];
+  final List<String> ortaHavuzu = FortunePools.ortaCumleleri(
+    dil,
+  )[baskin]![KategoriTonu.tonuBul(sonuc.kategoriSkorlari[baskin]!)]!;
+  final String orta =
+      ortaHavuzu[motor.tekrarsizSecimIndeksi(
+        kullanici: kullanici,
+        gun: gun,
+        amac: ContentConfig.amacOrta,
+        havuzBoyutu: ortaHavuzu.length,
+      )];
 
   // Kapanış: banttan bağımsız genel havuz.
+  final List<String> kapanisHavuzu = FortunePools.kapanisCumleleri(dil);
   final String kapanis =
-      FortunePools.kapanisCumleleri[motor.tekrarsizSecimIndeksi(
-    kullanici: kullanici,
-    gun: gun,
-    amac: ContentConfig.amacKapanis,
-    havuzBoyutu: FortunePools.kapanisCumleleri.length,
-  )];
+      kapanisHavuzu[motor.tekrarsizSecimIndeksi(
+        kullanici: kullanici,
+        gun: gun,
+        amac: ContentConfig.amacKapanis,
+        havuzBoyutu: kapanisHavuzu.length,
+      )];
 
   final SansRengi renk =
       FortunePools.sansRenkleri[motor.tekrarsizSecimIndeksi(
-    kullanici: kullanici,
-    gun: gun,
-    amac: ContentConfig.amacRenk,
-    havuzBoyutu: FortunePools.sansRenkleri.length,
-  )];
+        kullanici: kullanici,
+        gun: gun,
+        amac: ContentConfig.amacRenk,
+        havuzBoyutu: FortunePools.sansRenkleri.length,
+      )];
 
-  final int sansliSayi = ContentConfig.sansliSayiMin +
+  final int sansliSayi =
+      ContentConfig.sansliSayiMin +
       motor.secimIndeksi(
         kullanici: kullanici,
         gun: gun,
@@ -72,13 +84,14 @@ GununIcerigi gununIcerigi({
             ContentConfig.sansliSayiMaks - ContentConfig.sansliSayiMin + 1,
       );
 
+  final List<String> tavsiyeHavuzu = FortunePools.gununTavsiyeleri(dil);
   final String tavsiye =
-      FortunePools.gununTavsiyeleri[motor.tekrarsizSecimIndeksi(
-    kullanici: kullanici,
-    gun: gun,
-    amac: ContentConfig.amacTavsiye,
-    havuzBoyutu: FortunePools.gununTavsiyeleri.length,
-  )];
+      tavsiyeHavuzu[motor.tekrarsizSecimIndeksi(
+        kullanici: kullanici,
+        gun: gun,
+        amac: ContentConfig.amacTavsiye,
+        havuzBoyutu: tavsiyeHavuzu.length,
+      )];
 
   return GununIcerigi(
     yorum: '$acilis $orta $kapanis',
@@ -88,34 +101,39 @@ GununIcerigi gununIcerigi({
   );
 }
 
-/// [kategori] detayının 2 cümlelik yorumunu üretir: açılış (kategori ×
-/// ton) + tavsiye (kategori).
+/// [kategori] detayının 2 cümlelik yorumunu [dil]'de üretir: açılış
+/// (kategori × ton) + tavsiye (kategori).
 String kategoriYorumu({
   required LuckEngine motor,
   required UserSeed kullanici,
   required LuckResult sonuc,
   required LuckCategory kategori,
+  required AppDil dil,
 }) {
   final DateTime gun = sonuc.gun;
   final int skor = sonuc.kategoriSkorlari[kategori] ?? 0;
 
-  final List<String> acilisHavuzu = CategoryPools
-      .kategoriAcilislari[kategori]![KategoriTonu.tonuBul(skor)]!;
-  final String acilis = acilisHavuzu[motor.tekrarsizSecimIndeksi(
-    kullanici: kullanici,
-    gun: gun,
-    amac: ContentConfig.kategoriAmaci(kategori, ContentConfig.amacAcilis),
-    havuzBoyutu: acilisHavuzu.length,
-  )];
+  final List<String> acilisHavuzu = CategoryPools.kategoriAcilislari(
+    dil,
+  )[kategori]![KategoriTonu.tonuBul(skor)]!;
+  final String acilis =
+      acilisHavuzu[motor.tekrarsizSecimIndeksi(
+        kullanici: kullanici,
+        gun: gun,
+        amac: ContentConfig.kategoriAmaci(kategori, ContentConfig.amacAcilis),
+        havuzBoyutu: acilisHavuzu.length,
+      )];
 
-  final List<String> tavsiyeHavuzu =
-      CategoryPools.kategoriTavsiyeleri[kategori]!;
-  final String tavsiye = tavsiyeHavuzu[motor.tekrarsizSecimIndeksi(
-    kullanici: kullanici,
-    gun: gun,
-    amac: ContentConfig.kategoriAmaci(kategori, ContentConfig.amacTavsiye),
-    havuzBoyutu: tavsiyeHavuzu.length,
-  )];
+  final List<String> tavsiyeHavuzu = CategoryPools.kategoriTavsiyeleri(
+    dil,
+  )[kategori]!;
+  final String tavsiye =
+      tavsiyeHavuzu[motor.tekrarsizSecimIndeksi(
+        kullanici: kullanici,
+        gun: gun,
+        amac: ContentConfig.kategoriAmaci(kategori, ContentConfig.amacTavsiye),
+        havuzBoyutu: tavsiyeHavuzu.length,
+      )];
 
   return '$acilis $tavsiye';
 }

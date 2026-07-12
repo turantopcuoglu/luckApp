@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/history/aylik_ozet.dart';
+import '../../core/localization/app_dil.dart';
 import '../../core/theme/app_colors.dart';
 import '../daily_luck/tr_strings.dart';
 import 'recap_config.dart';
@@ -16,10 +17,13 @@ import 'share_strings.dart';
 /// yüklenir); yonca filigranı emoji ile çizilir.
 class MonthlyRecapCard extends StatelessWidget {
   /// [ozet] ay özetiyle kart oluşturur.
-  const MonthlyRecapCard({required this.ozet, super.key});
+  const MonthlyRecapCard({required this.ozet, required this.dil, super.key});
 
   /// Kartta gösterilen ay özeti.
   final AylikOzet ozet;
+
+  /// Aktif uygulama dili.
+  final AppDil dil;
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +61,9 @@ class MonthlyRecapCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text(
-                    RecapStrings.ustBaslik,
-                    style: TextStyle(
+                  Text(
+                    RecapStrings.ustBaslik(dil),
+                    style: const TextStyle(
                       fontSize: RecapConfig.ustBaslikPunto,
                       color: AppColors.textSecondary,
                       letterSpacing: 8,
@@ -68,7 +72,7 @@ class MonthlyRecapCard extends StatelessWidget {
                   const SizedBox(height: ShareConfig.kenarBoslugu / 4),
                   // Dev ay + yıl başlığı.
                   Text(
-                    '${TrStrings.ayAdlari[ozet.ay - 1]} ${ozet.yil}',
+                    '${TrStrings.ayAdlari(dil)[ozet.ay - 1]} ${ozet.yil}',
                     style: const TextStyle(
                       fontSize: RecapConfig.ayBasligiPunto,
                       fontWeight: FontWeight.w700,
@@ -79,25 +83,28 @@ class MonthlyRecapCard extends StatelessWidget {
                   const Spacer(),
                   // Öne çıkanlar.
                   _stat(
-                    RecapStrings.enSansliGunEtiketi,
+                    RecapStrings.enSansliGunEtiketi(dil),
                     ozet.enSansliGun == null
                         ? '—'
                         : '${ozet.enSansliGun!.day} '
-                            '${TrStrings.ayAdlari[ozet.enSansliGun!.month - 1]}'
-                            ' · ${ozet.enSansliSkor}',
+                              '${TrStrings.ayAdlari(dil)[ozet.enSansliGun!.month - 1]}'
+                              ' · ${ozet.enSansliSkor}',
                   ),
-                  _stat(RecapStrings.ortalamaEtiketi, '${ozet.ortalamaSkor}'),
                   _stat(
-                    RecapStrings.altinGunEtiketi,
+                    RecapStrings.ortalamaEtiketi(dil),
+                    '${ozet.ortalamaSkor}',
+                  ),
+                  _stat(
+                    RecapStrings.altinGunEtiketi(dil),
                     RecapStrings.altinGunDegeri(ozet.altinGunSayisi),
                   ),
                   _stat(
-                    RecapStrings.enUzunSeriEtiketi,
+                    RecapStrings.enUzunSeriEtiketi(dil),
                     RecapStrings.enUzunSeriDegeri(ozet.enUzunSeri),
                   ),
                   _stat(
-                    RecapStrings.baskinKategoriEtiketi,
-                    ozet.baskinKategori?.etiket ?? '—',
+                    RecapStrings.baskinKategoriEtiketi(dil),
+                    ozet.baskinKategori?.etiket(dil) ?? '—',
                   ),
                   const Spacer(),
                   const Text(
