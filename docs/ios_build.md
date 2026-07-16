@@ -12,6 +12,7 @@ koşmalıdır. Bu rehber sık görülen üç hatayı ve tam kurulum sırasını 
 | `could not find included file 'Generated.xcconfig'` | Dosya gitignore'ludur; her makinede `flutter pub get` üretir. Mac'te hiç çalışmamış. | Adım 2 |
 | `Module 'flutter_local_notifications' not found` | Native eklentiler CocoaPods ile gelir; `pod install` hiç koşmamış. | Adım 3 |
 | `#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"` bulunamadı | Aynı neden: `Pods/` dizini yok. Ayrıca muhtemelen `Runner.xcodeproj` açılmış. | Adım 3 + 4 |
+| `pod install` başarılı olduğu hâlde `Module ... not found` sürüyor; pod install "CocoaPods did not set the base configuration" uyarısı veriyor | `ios/Flutter/Debug.xcconfig`/`Release.xcconfig` dosyalarında Pods include satırları eksikti — pod'lar kuruluyor ama derlemeye girmiyordu. | Depoda düzeltildi: `git pull` → Xcode'da Product → Clean Build Folder (⇧⌘K) → yeniden derle |
 
 ## Kurulum Sırası
 
