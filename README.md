@@ -77,6 +77,9 @@ flutter test             # tüm test paketi
 flutter analyze          # statik analiz (sıfır uyarı beklenir)
 ```
 
+iPhone'a kurulum (macOS + Xcode + CocoaPods adımları):
+bkz. [`docs/ios_build.md`](docs/ios_build.md).
+
 ## Test & Kalite
 
 - `luck_engine` ve diğer saf fonksiyonlar widget harness'sız birim test edilir.
