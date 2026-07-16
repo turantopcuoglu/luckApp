@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/luck_history_repository.dart';
@@ -16,6 +17,7 @@ import 'package:kader/features/onboarding/calculating_screen.dart';
 import 'package:kader/features/onboarding/onboarding_strings.dart';
 import 'package:kader/features/onboarding/profile_form_screen.dart';
 import 'package:kader/features/onboarding/welcome_screen.dart';
+import 'package:kader/features/settings/settings_strings.dart';
 
 void main() {
   late Directory geciciDizin;
@@ -55,80 +57,92 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('karşılama: slogan ve Başla butonu görünür',
-      (WidgetTester tester) async {
+  testWidgets('karşılama: slogan ve Başla butonu görünür', (
+    WidgetTester tester,
+  ) async {
     await akisiBaslat(tester);
 
-    expect(find.text(OnboardingStrings.slogan), findsOneWidget);
-    expect(find.text(OnboardingStrings.basla), findsOneWidget);
+    expect(find.text(OnboardingStrings.slogan(AppDil.tr)), findsOneWidget);
+    expect(find.text(OnboardingStrings.basla(AppDil.tr)), findsOneWidget);
+    // Yasal uyum ibaresi karşılama ekranında görünür (store zorunlu).
+    expect(find.text(SettingsStrings.eglenceAmacli(AppDil.tr)), findsOneWidget);
   });
 
-  testWidgets('Başla forma götürür; boş isim uyarı verir, geçirmez',
-      (WidgetTester tester) async {
+  testWidgets('Başla forma götürür; boş isim uyarı verir, geçirmez', (
+    WidgetTester tester,
+  ) async {
     await akisiBaslat(tester);
 
-    await tester.tap(find.text(OnboardingStrings.basla));
+    await tester.tap(find.text(OnboardingStrings.basla(AppDil.tr)));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(ProfileFormScreen), findsOneWidget);
 
     // İsim boşken buton uyarı SnackBar'ı gösterir, ekran değişmez.
-    await tester.tap(find.text(OnboardingStrings.kaderimiHesapla));
+    await tester.tap(find.text(OnboardingStrings.kaderimiHesapla(AppDil.tr)));
     await tester.pump();
-    expect(find.text(OnboardingStrings.isimBosUyarisi), findsOneWidget);
+    expect(
+      find.text(OnboardingStrings.isimBosUyarisi(AppDil.tr)),
+      findsOneWidget,
+    );
     expect(find.byType(ProfileFormScreen), findsOneWidget);
   });
 
   testWidgets(
-      'tam akış: isim gir → hesaplama ekranı → profil kayıtlı → ana ekran',
-      (WidgetTester tester) async {
-    await akisiBaslat(tester);
+    'tam akış: isim gir → hesaplama ekranı → profil kayıtlı → ana ekran',
+    (WidgetTester tester) async {
+      await akisiBaslat(tester);
 
-    // Adım 1 → 2
-    await tester.tap(find.text(OnboardingStrings.basla));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+      // Adım 1 → 2
+      await tester.tap(find.text(OnboardingStrings.basla(AppDil.tr)));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
 
-    // Adım 2: isim yaz, devam et.
-    await tester.enterText(find.byType(TextField), 'Turan');
-    await tester.tap(find.text(OnboardingStrings.kaderimiHesapla));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+      // Adım 2: isim yaz, devam et.
+      await tester.enterText(find.byType(TextField), 'Turan');
+      await tester.tap(find.text(OnboardingStrings.kaderimiHesapla(AppDil.tr)));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
 
-    // Adım 3: hesaplama ekranı; profil bellekte kayıtlı (henüz
-    // onboarding bayrağı false). Hive put bellek içi durumu senkron
-    // günceller, disk yazmasını beklemeye gerek yoktur.
-    expect(find.byType(CalculatingScreen), findsOneWidget);
-    expect(find.text(OnboardingStrings.hesaplaniyor), findsOneWidget);
-    final UserRepository repo = UserRepository(profilKutusu);
-    final UserProfile? kayitli = repo.profil();
-    expect(kayitli, isNotNull);
-    expect(kayitli!.isim, 'Turan');
-    expect(kayitli.onboardingTamam, isFalse);
-
-    // Bugünün kaydı önceden tohumlanır: ana ekran açıldığında
-    // getirVeyaUret senkron okuma yoluna girsin, diske yazmasın.
-    await tester.runAsync(() async {
-      final LuckResult sonuc = const LuckEngine().hesapla(
-        kullanici: UserSeed.fromIsim(
-          isim: 'Turan',
-          dogumTarihi: DateTime(2000),
-        ),
-        gun: DateTime(2026, 7, 6),
+      // Adım 3: hesaplama ekranı; profil bellekte kayıtlı (henüz
+      // onboarding bayrağı false). Hive put bellek içi durumu senkron
+      // günceller, disk yazmasını beklemeye gerek yoktur.
+      expect(find.byType(CalculatingScreen), findsOneWidget);
+      expect(
+        find.text(OnboardingStrings.hesaplaniyor(AppDil.tr)),
+        findsOneWidget,
       );
-      await LuckHistoryRepository(kayitKutusu)
-          .kaydet(DailyRecord(sonuc: sonuc));
-    });
+      final UserRepository repo = UserRepository(profilKutusu);
+      final UserProfile? kayitli = repo.profil();
+      expect(kayitli, isNotNull);
+      expect(kayitli!.isim, 'Turan');
+      expect(kayitli.onboardingTamam, isFalse);
 
-    // 2.5 sn animasyon + geçiş: ana ekran açılır, bayrak true olur.
-    await tester.pump(const Duration(milliseconds: 2600));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.byType(DailyLuckScreen), findsOneWidget);
-    expect(repo.onboardingTamamlandiMi, isTrue);
+      // Bugünün kaydı önceden tohumlanır: ana ekran açıldığında
+      // getirVeyaUret senkron okuma yoluna girsin, diske yazmasın.
+      await tester.runAsync(() async {
+        final LuckResult sonuc = const LuckEngine().hesapla(
+          kullanici: UserSeed.fromIsim(
+            isim: 'Turan',
+            dogumTarihi: DateTime(2000),
+          ),
+          gun: DateTime(2026, 7, 6),
+        );
+        await LuckHistoryRepository(
+          kayitKutusu,
+        ).kaydet(DailyRecord(sonuc: sonuc));
+      });
 
-    // Geri tuşu ana ekrandan onboarding'e dönememeli (yığın temiz).
-    final NavigatorState gezgin = tester.state(find.byType(Navigator));
-    expect(gezgin.canPop(), isFalse);
-  });
+      // 2.5 sn animasyon + geçiş: ana ekran açılır, bayrak true olur.
+      await tester.pump(const Duration(milliseconds: 2600));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.byType(DailyLuckScreen), findsOneWidget);
+      expect(repo.onboardingTamamlandiMi, isTrue);
+
+      // Geri tuşu ana ekrandan onboarding'e dönememeli (yığın temiz).
+      final NavigatorState gezgin = tester.state(find.byType(Navigator));
+      expect(gezgin.canPop(), isFalse);
+    },
+  );
 }

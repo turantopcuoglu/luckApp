@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/luck_history_repository.dart';
@@ -48,8 +49,9 @@ void main() {
         ),
         gun: sabitGun,
       );
-      await LuckHistoryRepository(kayitKutusu)
-          .kaydet(DailyRecord(sonuc: sonuc));
+      await LuckHistoryRepository(
+        kayitKutusu,
+      ).kaydet(DailyRecord(sonuc: sonuc));
     });
 
     await tester.pumpWidget(
@@ -75,57 +77,63 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
   }
 
-  testWidgets('soru, seçenekler ve emojiler görünür; Kaydet kapalı başlar',
-      (WidgetTester tester) async {
+  testWidgets('soru, seçenekler ve emojiler görünür; Kaydet kapalı başlar', (
+    WidgetTester tester,
+  ) async {
     await ekraniAc(tester);
 
-    expect(find.text(FeedbackStrings.aksamSorusu), findsOneWidget);
+    expect(find.text(FeedbackStrings.aksamSorusu(AppDil.tr)), findsOneWidget);
     expect(find.text(FeedbackStrings.evetEmoji), findsOneWidget);
     expect(find.text(FeedbackStrings.hayirEmoji), findsOneWidget);
     for (final String emoji in FeedbackStrings.emojiSecenekleri) {
       expect(find.text(emoji), findsOneWidget);
     }
 
-    final FilledButton kaydet =
-        tester.widget<FilledButton>(find.byType(FilledButton));
+    final FilledButton kaydet = tester.widget<FilledButton>(
+      find.byType(FilledButton),
+    );
     expect(kaydet.onPressed, isNull); // 👍/👎 seçilmeden kapalı
   });
 
-  testWidgets('👍 + emoji seçip kaydetmek bugünün kaydına işlenir',
-      (WidgetTester tester) async {
+  testWidgets('👍 + emoji seçip kaydetmek bugünün kaydına işlenir', (
+    WidgetTester tester,
+  ) async {
     await ekraniAc(tester);
 
     await tester.tap(find.text(FeedbackStrings.evetEmoji));
     await tester.pump();
     await tester.tap(find.text('🍀'));
     await tester.pump();
-    await tester.tap(find.text(FeedbackStrings.kaydet));
+    await tester.tap(find.text(FeedbackStrings.kaydet(AppDil.tr)));
     await tester.pump();
     // Pop geçiş animasyonunun bitmesini bekle.
     await tester.pump(const Duration(seconds: 1));
 
     // Hive bellek içi durumu senkron günceller; kayıt hemen okunabilir.
-    final DailyRecord kayit =
-        LuckHistoryRepository(kayitKutusu).getir(sabitGun)!;
+    final DailyRecord kayit = LuckHistoryRepository(
+      kayitKutusu,
+    ).getir(sabitGun)!;
     expect(kayit.feedbackPozitif, isTrue);
     expect(kayit.feedbackEmoji, '🍀');
     // Teşekkür mesajı gösterilir ve ekran kapanır.
-    expect(find.text(FeedbackStrings.tesekkur), findsOneWidget);
-    expect(find.text(FeedbackStrings.aksamSorusu), findsNothing);
+    expect(find.text(FeedbackStrings.tesekkur(AppDil.tr)), findsOneWidget);
+    expect(find.text(FeedbackStrings.aksamSorusu(AppDil.tr)), findsNothing);
   });
 
-  testWidgets('👎 emoji olmadan da kaydedilebilir',
-      (WidgetTester tester) async {
+  testWidgets('👎 emoji olmadan da kaydedilebilir', (
+    WidgetTester tester,
+  ) async {
     await ekraniAc(tester);
 
     await tester.tap(find.text(FeedbackStrings.hayirEmoji));
     await tester.pump();
-    await tester.tap(find.text(FeedbackStrings.kaydet));
+    await tester.tap(find.text(FeedbackStrings.kaydet(AppDil.tr)));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
 
-    final DailyRecord kayit =
-        LuckHistoryRepository(kayitKutusu).getir(sabitGun)!;
+    final DailyRecord kayit = LuckHistoryRepository(
+      kayitKutusu,
+    ).getir(sabitGun)!;
     expect(kayit.feedbackPozitif, isFalse);
     expect(kayit.feedbackEmoji, isNull);
   });

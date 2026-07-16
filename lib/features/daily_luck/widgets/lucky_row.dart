@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/content/gunun_icerigi.dart';
+import '../../../core/localization/app_dil.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../daily_luck_config.dart';
@@ -10,10 +11,13 @@ import '../tr_strings.dart';
 /// yan yana, günün tavsiyesi altta tam satır.
 class SansOgeleriKarti extends StatelessWidget {
   /// [icerik] paketindeki renk/sayı/tavsiye ile kart oluşturur.
-  const SansOgeleriKarti({required this.icerik, super.key});
+  const SansOgeleriKarti({required this.icerik, required this.dil, super.key});
 
   /// Gösterilecek günün içeriği.
   final GununIcerigi icerik;
+
+  /// Aktif uygulama dili.
+  final AppDil dil;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,7 @@ class SansOgeleriKarti extends StatelessWidget {
                 // Sol sütun: renk yuvarlağı + adı.
                 Expanded(
                   child: _OgeSutunu(
-                    etiket: TrStrings.sansRengiEtiketi,
+                    etiket: TrStrings.sansRengiEtiketi(dil),
                     deger: Row(
                       children: <Widget>[
                         Container(
@@ -45,7 +49,7 @@ class SansOgeleriKarti extends StatelessWidget {
                         const SizedBox(width: AppSpacing.sm),
                         Flexible(
                           child: Text(
-                            icerik.sansRengi.ad,
+                            icerik.sansRengi.ad(dil),
                             style: yaziTemasi.titleSmall,
                           ),
                         ),
@@ -57,7 +61,7 @@ class SansOgeleriKarti extends StatelessWidget {
                 // Sağ sütun: altın renkli şanslı sayı.
                 Expanded(
                   child: _OgeSutunu(
-                    etiket: TrStrings.sansliSayiEtiketi,
+                    etiket: TrStrings.sansliSayiEtiketi(dil),
                     deger: Text(
                       '${icerik.sansliSayi}',
                       style: yaziTemasi.headlineMedium?.copyWith(
@@ -71,7 +75,7 @@ class SansOgeleriKarti extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             // Alt satır: günün tavsiyesi.
             _OgeSutunu(
-              etiket: TrStrings.tavsiyeEtiketi,
+              etiket: TrStrings.tavsiyeEtiketi(dil),
               deger: Text(icerik.tavsiye, style: yaziTemasi.bodyMedium),
             ),
           ],
@@ -98,9 +102,9 @@ class _OgeSutunu extends StatelessWidget {
       children: <Widget>[
         Text(
           etiket,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.xs),
         deger,

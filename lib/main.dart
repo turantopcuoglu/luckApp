@@ -1,22 +1,31 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/content/fortune_composer.dart';
+import 'core/content/gunun_icerigi.dart';
+import 'core/localization/app_dil.dart';
+import 'core/luck_engine/luck_engine.dart';
 import 'core/storage/app_storage.dart';
+import 'core/storage/luck_history_repository.dart';
 import 'core/storage/providers.dart';
+import 'core/storage/user_profile.dart';
 import 'core/storage/user_repository.dart';
 import 'core/theme/app_theme.dart';
+import 'features/daily_luck/daily_luck_providers.dart';
 import 'features/daily_luck/daily_luck_screen.dart';
 import 'features/feedback/feedback_screen.dart';
 import 'features/feedback/notification_service.dart';
+import 'features/home_widget/home_widget_service.dart';
+import 'features/home_widget/widget_payload.dart';
 import 'features/onboarding/welcome_screen.dart';
 import 'shared/widgets/app_route.dart';
 
 /// Kök gezgin anahtarı: bildirim dokunuşları context olmadan
 /// feedback ekranını açabilsin diye globaldir.
-final GlobalKey<NavigatorState> anaGezginAnahtari =
-    GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> anaGezginAnahtari = GlobalKey<NavigatorState>();
 
 /// Kök mesajcı anahtarı: ekranlar arası geçişlerde SnackBar
 /// gösterebilmek için (örn. bildirim izni reddi mesajı).
@@ -38,17 +47,96 @@ Future<void> main() async {
 
   // Bildirim altyapısı: uygulama bir akşam bildirimiyle mi açıldı?
   final NotificationService bildirimler = NotificationService();
-  final bool bildirimdenAcildi =
-      await bildirimler.baslat(bildirimeDokunuldu: _feedbackEkraniniAc);
+  final bool bildirimdenAcildi = await bildirimler.baslat(
+    bildirimeDokunuldu: _feedbackEkraniniAc,
+  );
 
-  // Onboarding bitmişse bildirim penceresi her açılışta tazelenir
-  // (sabah metin varyasyonları 14 gün ileriye planlanır).
-  final UserRepository kullanicilar =
-      UserRepository(AppStorage.userProfileBox);
-  if (kullanicilar.onboardingTamamlandiMi) {
-    unawaited(
-      bildirimler.gunlukBildirimleriPlanla(simdi: DateTime.now()),
-    );
+  // Onboarding bitmiş VE kullanıcı bildirimleri açık bırakmışsa
+  // bildirim penceresi her açılışta tazelenir (sabah metin
+  // varyasyonları 14 gün ileriye planlanır). Kullanıcı Ayarlar'dan
+  // kapatmışsa hiçbir şey planlanmaz (kapatma anında iptal edilmişti).
+  final UserRepository kullanicilar = UserRepository(AppStorage.userProfileBox);
+  final UserProfile? profil = kullanicilar.profil();
+
+  // Cihaz dilinden uygulama dili (Türkçe değilse İngilizce). Kullanıcı
+  // Ayarlar'dan açık tercih yaptıysa o kazanır (profil.dil).
+  final AppDil cihazDil = AppDil.cihazdan(
+    WidgetsBinding.instance.platformDispatcher.locale.languageCode,
+  );
+
+  if (profil != null && profil.onboardingTamam) {
+    const LuckEngine motor = LuckEngine();
+    final AppDil dil = profil.dil ?? cihazDil;
+
+    // Bugünün sonucunu üret/oku (kaydı erken üretmek streak'e de yarar).
+    // Hesaplanamazsa (herhangi bir hata) açılış asla bloklanmaz/çökmez.
+    LuckResult? sonuc;
+    try {
+      sonuc = await LuckHistoryRepository(AppStorage.dailyRecordsBox)
+          .getirVeyaUret(
+            motor: motor,
+            kullanici: profil.seed,
+            gun: DateTime.now(),
+          );
+      // ignore: avoid_catches_without_on_clauses - açılış opsiyonel
+      // özellikler yüzünden bloklanmamalı.
+    } catch (_) {
+      sonuc = null;
+    }
+
+    // Ana ekran widget'ı: bildirim tercihinden BAĞIMSIZ, her açılışta
+    // bugünün skoruyla güncellenir (widget yoksa/başarısızsa yutulur).
+    if (sonuc != null) {
+      try {
+        final GununIcerigi icerik = gununIcerigi(
+          motor: motor,
+          kullanici: profil.seed,
+          sonuc: sonuc,
+          dil: dil,
+        );
+        unawaited(
+          HomeWidgetService().yaz(
+            widgetYuku(
+              skor: sonuc.genelSkor,
+              gun: sonuc.gun,
+              yorum: icerik.yorum,
+              dil: dil,
+            ),
+          ),
+        );
+        // ignore: avoid_catches_without_on_clauses
+      } catch (_) {
+        // Widget güncellemesi opsiyoneldir.
+      }
+    }
+
+    // Bildirimler yalnız kullanıcı açık bıraktıysa planlanır.
+    if (profil.bildirimlerAcik) {
+      // Şanslı saat hesabı OPSİYONEL: hesaplanamazsa null geçilir,
+      // bildirimler yine planlanır.
+      int? sansliSaat;
+      try {
+        sansliSaat = sonuc == null
+            ? null
+            : gununSansliSaatBaslangici(
+                motor: motor,
+                kullanici: profil.seed,
+                sonuc: sonuc,
+              );
+        // ignore: avoid_catches_without_on_clauses
+      } catch (_) {
+        sansliSaat = null;
+      }
+      unawaited(
+        bildirimler.gunlukBildirimleriPlanla(
+          simdi: DateTime.now(),
+          aksamDakika: profil.aksamBildirimDakika,
+          sabahDakika: profil.sabahBildirimDakika,
+          sansliSaatBaslangiciSaati: sansliSaat,
+          dil: dil,
+        ),
+      );
+    }
   }
 
   runApp(
@@ -57,6 +145,8 @@ Future<void> main() async {
         userProfileBoxProvider.overrideWithValue(AppStorage.userProfileBox),
         dailyRecordsBoxProvider.overrideWithValue(AppStorage.dailyRecordsBox),
         notificationServiceProvider.overrideWithValue(bildirimler),
+        // Cihaz dilini gerçek platform diliyle sağla (varsayılan tr).
+        cihazDiliProvider.overrideWithValue(cihazDil),
       ],
       child: const KaderApp(),
     ),
@@ -65,9 +155,7 @@ Future<void> main() async {
   // Uygulama kapalıyken bildirime dokunularak açıldıysa ilk kareden
   // sonra feedback ekranına gidilir.
   if (bildirimdenAcildi) {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _feedbackEkraniniAc(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _feedbackEkraniniAc());
   }
 }
 
@@ -81,17 +169,27 @@ class KaderApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool onboardingTamam =
-        ref.watch(userRepositoryProvider).onboardingTamamlandiMi;
+    final bool onboardingTamam = ref
+        .watch(userRepositoryProvider)
+        .onboardingTamamlandiMi;
+    final AppDil dil = ref.watch(dilProvider);
     return MaterialApp(
       title: 'Kader',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       navigatorKey: anaGezginAnahtari,
       scaffoldMessengerKey: anaMesajciAnahtari,
-      home: onboardingTamam
-          ? const DailyLuckScreen()
-          : const WelcomeScreen(),
+      // Aktif uygulama diline göre Material bileşenleri (showTimePicker,
+      // tarih/saat diyalogları) yerelleşir; dil Ayarlar'dan değişince
+      // dilProvider tazelenir ve tüm ağaç yeniden kurulur.
+      locale: Locale(dil.localeKodu),
+      supportedLocales: const <Locale>[Locale('tr'), Locale('en')],
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: onboardingTamam ? const DailyLuckScreen() : const WelcomeScreen(),
     );
   }
 }

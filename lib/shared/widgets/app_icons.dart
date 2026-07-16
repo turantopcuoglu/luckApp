@@ -15,12 +15,12 @@ abstract final class AppIcons {
   /// Kategori → asset yolu eşlemesi.
   static const Map<LuckCategory, String> _kategoriDosyalari =
       <LuckCategory, String>{
-    LuckCategory.ask: 'assets/svg/kategori_kalp.svg',
-    LuckCategory.para: 'assets/svg/kategori_para.svg',
-    LuckCategory.saglik: 'assets/svg/kategori_yaprak.svg',
-    LuckCategory.risk: 'assets/svg/kategori_zar.svg',
-    LuckCategory.sosyal: 'assets/svg/kategori_sosyal.svg',
-  };
+        LuckCategory.ask: 'assets/svg/kategori_kalp.svg',
+        LuckCategory.para: 'assets/svg/kategori_para.svg',
+        LuckCategory.saglik: 'assets/svg/kategori_yaprak.svg',
+        LuckCategory.risk: 'assets/svg/kategori_zar.svg',
+        LuckCategory.sosyal: 'assets/svg/kategori_sosyal.svg',
+      };
 
   /// [kategori] ikonunu [renk] ile [boyut] boyutunda çizer.
   static Widget kategori(

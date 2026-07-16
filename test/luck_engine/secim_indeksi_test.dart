@@ -154,4 +154,74 @@ void main() {
       expect(once.genelSkor, sonra.genelSkor);
     });
   });
+
+  group('tekrarsizSecimIndeksi', () {
+    test('deterministik: aynı girdiler aynı indeks', () {
+      final int a = motor.tekrarsizSecimIndeksi(
+        kullanici: turan,
+        gun: gun,
+        amac: 'orta',
+        havuzBoyutu: 6,
+      );
+      final int b = motor.tekrarsizSecimIndeksi(
+        kullanici: turan,
+        gun: gun,
+        amac: 'orta',
+        havuzBoyutu: 6,
+      );
+      expect(a, b);
+    });
+
+    test('GARANTİ: dönüş değeri önceki günün ham indeksine eşit değil', () {
+      // En küçük gerçek havuz (2) en zorlayıcı durum; 4/6 da denenir.
+      for (final int boyut in <int>[2, 4, 6, 7]) {
+        for (int i = 0; i < 365; i++) {
+          final DateTime g = gun.add(Duration(days: i));
+          final DateTime oncekiGun = DateTime(g.year, g.month, g.day - 1);
+          final int bugun = motor.tekrarsizSecimIndeksi(
+            kullanici: turan,
+            gun: g,
+            amac: 'orta',
+            havuzBoyutu: boyut,
+          );
+          final int dunHam = motor.secimIndeksi(
+            kullanici: turan,
+            gun: oncekiGun,
+            amac: 'orta',
+            havuzBoyutu: boyut,
+          );
+          expect(
+            bugun,
+            isNot(dunHam),
+            reason: 'boyut $boyut, gün $g tekrarı önlenemedi',
+          );
+          expect(bugun, inInclusiveRange(0, boyut - 1));
+        }
+      }
+    });
+
+    test('tek elemanlı havuz her zaman 0 döner (kaydırma yok)', () {
+      expect(
+        motor.tekrarsizSecimIndeksi(
+          kullanici: turan,
+          gun: gun,
+          amac: 'renk',
+          havuzBoyutu: 1,
+        ),
+        0,
+      );
+    });
+
+    test('skoru değiştirmez (bağımsız içerik tohumu)', () {
+      final LuckResult once = motor.hesapla(kullanici: turan, gun: gun);
+      motor.tekrarsizSecimIndeksi(
+        kullanici: turan,
+        gun: gun,
+        amac: 'acilis',
+        havuzBoyutu: 9,
+      );
+      final LuckResult sonra = motor.hesapla(kullanici: turan, gun: gun);
+      expect(once.genelSkor, sonra.genelSkor);
+    });
+  });
 }

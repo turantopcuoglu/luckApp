@@ -1,21 +1,26 @@
-/// Geri bildirim özelliğinin Türkçe metinleri.
+import '../../core/localization/app_dil.dart';
+
+/// Geri bildirim özelliğinin metinleri (TR + EN).
 abstract final class FeedbackStrings {
   /// Akşam bildirimi ve feedback ekranının ana sorusu.
-  static const String aksamSorusu = 'Bugün gerçekten şanslı mıydın?';
+  static String aksamSorusu(AppDil dil) =>
+      dil.sec('Bugün gerçekten şanslı mıydın?', 'Were you really lucky today?');
 
   /// Feedback ekranının başlığı.
-  static const String baslik = 'Günün nasıldı?';
+  static String baslik(AppDil dil) =>
+      dil.sec('Günün nasıldı?', 'How was your day?');
 
-  /// Olumlu seçenek emojisi.
+  /// Olumlu seçenek emojisi (dil-nötr).
   static const String evetEmoji = '👍';
 
-  /// Olumsuz seçenek emojisi.
+  /// Olumsuz seçenek emojisi (dil-nötr).
   static const String hayirEmoji = '👎';
 
   /// Opsiyonel emoji bölümünün başlığı.
-  static const String emojiBaslik = 'İstersen bir emoji bırak';
+  static String emojiBaslik(AppDil dil) =>
+      dil.sec('İstersen bir emoji bırak', 'Leave an emoji if you like');
 
-  /// Seçilebilir duygu emojileri.
+  /// Seçilebilir duygu emojileri (dil-nötr).
   static const List<String> emojiSecenekleri = <String>[
     '🍀',
     '✨',
@@ -26,13 +31,17 @@ abstract final class FeedbackStrings {
   ];
 
   /// Kaydet butonu.
-  static const String kaydet = 'Kaydet';
+  static String kaydet(AppDil dil) => dil.sec('Kaydet', 'Save');
 
   /// Kayıt sonrası teşekkür metni.
-  static const String tesekkur = 'Kaydedildi, yarın görüşürüz ✨';
+  static String tesekkur(AppDil dil) =>
+      dil.sec('Kaydedildi, yarın görüşürüz ✨', 'Saved, see you tomorrow ✨');
 
   /// Bildirim izni reddedildiğinde gösterilen nazik hatırlatma.
-  static const String izinReddiMesaji =
-      'Sorun değil! İstersen bildirimleri daha sonra '
-      'telefon ayarlarından açabilirsin.';
+  static String izinReddiMesaji(AppDil dil) => dil.sec(
+    'Sorun değil! İstersen bildirimleri daha sonra '
+        'telefon ayarlarından açabilirsin.',
+    'No problem! You can turn on notifications later from your '
+        'phone settings.',
+  );
 }

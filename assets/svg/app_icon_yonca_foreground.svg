@@ -1,0 +1,18 @@
+<!-- Adaptive icon FOREGROUND türevi: app_icon_yonca.svg'nin zemini (<rect>)
+     çıkarılmış, saydam; yonca güvenli alana (~%62) küçültülmüş sürümü.
+     Android adaptive_icon_foreground için; zemin renk config'ten gelir. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <g transform="translate(256 256) scale(0.62)">
+    <g transform="translate(0 8)">
+      <g fill="#F4C95D">
+        <!-- Yukarı bakan yaprak; ucu merkezde, lobları dışarıda. -->
+        <path d="M0 -8 C-18 -60 -104 -60 -104 -122 C-104 -166 -58 -184 -29 -156 C-11 -139 0 -120 0 -102 C0 -120 11 -139 29 -156 C58 -184 104 -166 104 -122 C104 -60 18 -60 0 -8 Z"/>
+        <path d="M0 -8 C-18 -60 -104 -60 -104 -122 C-104 -166 -58 -184 -29 -156 C-11 -139 0 -120 0 -102 C0 -120 11 -139 29 -156 C58 -184 104 -166 104 -122 C104 -60 18 -60 0 -8 Z" transform="rotate(90)"/>
+        <path d="M0 -8 C-18 -60 -104 -60 -104 -122 C-104 -166 -58 -184 -29 -156 C-11 -139 0 -120 0 -102 C0 -120 11 -139 29 -156 C58 -184 104 -166 104 -122 C104 -60 18 -60 0 -8 Z" transform="rotate(180)"/>
+        <path d="M0 -8 C-18 -60 -104 -60 -104 -122 C-104 -166 -58 -184 -29 -156 C-11 -139 0 -120 0 -102 C0 -120 11 -139 29 -156 C58 -184 104 -166 104 -122 C104 -60 18 -60 0 -8 Z" transform="rotate(270)"/>
+      </g>
+      <!-- Sap: merkezden sağ alta kıvrılan kısa çizgi. -->
+      <path d="M6 10 C30 60 24 96 52 132" stroke="#F4C95D" stroke-width="18" stroke-linecap="round" fill="none"/>
+    </g>
+  </g>
+</svg>

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_dil.dart';
 import '../daily_luck_config.dart';
 import 'score_ring.dart';
 
@@ -12,6 +13,7 @@ class AnimatedScoreRing extends StatefulWidget {
   /// Hedef [skor] ile animasyonlu gösterge oluşturur.
   const AnimatedScoreRing({
     required this.skor,
+    required this.dil,
     this.boyut = DailyLuckConfig.halkaCapi,
     this.kalinlik = DailyLuckConfig.halkaKalinligi,
     super.key,
@@ -19,6 +21,9 @@ class AnimatedScoreRing extends StatefulWidget {
 
   /// Count-up'ın ulaşacağı genel skor.
   final int skor;
+
+  /// Aktif uygulama dili ([ScoreRing.dil]).
+  final AppDil dil;
 
   /// Halkanın dış çapı ([ScoreRing.boyut]).
   final double boyut;
@@ -67,6 +72,7 @@ class _AnimatedScoreRingState extends State<AnimatedScoreRing>
         // izole edilmiştir; jank ölçülürse painter'a inilebilir.
         builder: (BuildContext context, Widget? child) => ScoreRing(
           skor: (_egri.value * widget.skor).round(),
+          dil: widget.dil,
           boyut: widget.boyut,
           kalinlik: widget.kalinlik,
         ),

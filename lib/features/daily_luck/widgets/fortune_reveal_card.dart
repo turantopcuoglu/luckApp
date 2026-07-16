@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_dil.dart';
 import '../../../core/theme/app_colors.dart';
 import '../daily_luck_config.dart';
 import '../tr_strings.dart';
@@ -18,9 +19,13 @@ class FortuneRevealCard extends StatefulWidget {
   const FortuneRevealCard({
     required this.onYuz,
     required this.arkaYuz,
+    required this.dil,
     this.onAcilisTamam,
     super.key,
   });
+
+  /// Aktif uygulama dili (dokunma ipucu metni için).
+  final AppDil dil;
 
   /// Flip sonrası görünen içerik (skor).
   final Widget onYuz;
@@ -44,7 +49,7 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
   /// Flip fazının toplam süre içindeki bitiş oranı.
   static final double _flipSonu =
       DailyLuckConfig.kartFlipSuresi.inMilliseconds /
-          _toplamSure.inMilliseconds;
+      _toplamSure.inMilliseconds;
 
   late final AnimationController _kontrol = AnimationController(
     vsync: this,
@@ -60,31 +65,34 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
   /// Ölçek koreografisi: flip boyunca 1.0 sabit → yaklaşma (büyüme) →
   /// düşme (hedefin altına sıkışma) → oturma. "Ekrana yaklaşıp düşme"
   /// hissinin tamamı bu dizidir.
-  late final Animation<double> _olcek = TweenSequence<double>(
-    <TweenSequenceItem<double>>[
-      TweenSequenceItem<double>(
-        tween: ConstantTween<double>(1),
-        weight: _flipSonu,
-      ),
-      TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 1, end: DailyLuckConfig.kartYaklasmaOlcegi)
-            .chain(CurveTween(curve: Curves.easeOutCubic)),
-        weight: (1 - _flipSonu) * 0.5,
-      ),
-      TweenSequenceItem<double>(
-        tween: Tween<double>(
-          begin: DailyLuckConfig.kartYaklasmaOlcegi,
-          end: DailyLuckConfig.kartCarpmaOlcegi,
-        ).chain(CurveTween(curve: Curves.easeIn)),
-        weight: (1 - _flipSonu) * 0.3,
-      ),
-      TweenSequenceItem<double>(
-        tween: Tween<double>(begin: DailyLuckConfig.kartCarpmaOlcegi, end: 1)
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: (1 - _flipSonu) * 0.2,
-      ),
-    ],
-  ).animate(_kontrol);
+  late final Animation<double> _olcek =
+      TweenSequence<double>(<TweenSequenceItem<double>>[
+        TweenSequenceItem<double>(
+          tween: ConstantTween<double>(1),
+          weight: _flipSonu,
+        ),
+        TweenSequenceItem<double>(
+          tween: Tween<double>(
+            begin: 1,
+            end: DailyLuckConfig.kartYaklasmaOlcegi,
+          ).chain(CurveTween(curve: Curves.easeOutCubic)),
+          weight: (1 - _flipSonu) * 0.5,
+        ),
+        TweenSequenceItem<double>(
+          tween: Tween<double>(
+            begin: DailyLuckConfig.kartYaklasmaOlcegi,
+            end: DailyLuckConfig.kartCarpmaOlcegi,
+          ).chain(CurveTween(curve: Curves.easeIn)),
+          weight: (1 - _flipSonu) * 0.3,
+        ),
+        TweenSequenceItem<double>(
+          tween: Tween<double>(
+            begin: DailyLuckConfig.kartCarpmaOlcegi,
+            end: 1,
+          ).chain(CurveTween(curve: Curves.easeOut)),
+          weight: (1 - _flipSonu) * 0.2,
+        ),
+      ]).animate(_kontrol);
 
   @override
   void initState() {
@@ -127,7 +135,7 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
               ..setEntry(3, 2, DailyLuckConfig.kartFlipPerspektifi)
               ..rotateY(aci)
               // Ölçek aynı matriste: yaklaşma/düşme flip merkezinden.
-              ..scale(_olcek.value);
+              ..scaleByDouble(_olcek.value, _olcek.value, _olcek.value, 1);
 
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -148,10 +156,10 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
                 Opacity(
                   opacity: (1 - _kontrol.value * 3).clamp(0.0, 1.0),
                   child: Text(
-                    TrStrings.kartIpucu,
+                    TrStrings.kartIpucu(widget.dil),
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               ],
@@ -162,4 +170,3 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
     );
   }
 }
-

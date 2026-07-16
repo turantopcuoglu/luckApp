@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#0A0E1A</color>
+    <!-- Ana ekran widget'ı marka renkleri (uygulama paletiyle aynı). -->
+    <color name="kader_navy">#0A0E1A</color>
+    <color name="kader_gold">#F4C95D</color>
+    <color name="kader_text_secondary">#9AA1B5</color>
+</resources>

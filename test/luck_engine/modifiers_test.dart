@@ -4,15 +4,22 @@ import 'package:kader/core/luck_engine/luck_engine.dart';
 void main() {
   group('ayEvresiModifiyeri', () {
     test('referans yeniay gününde etki -8', () {
-      final LuckModifier m = ayEvresiModifiyeri(DateTime.utc(2000, 1, 6, 18, 14));
+      final LuckModifier m = ayEvresiModifiyeri(
+        DateTime.utc(2000, 1, 6, 18, 14),
+      );
       expect(m.ad, ayEvresiAdi);
       expect(m.etki, -EngineConfig.modifiyerMaksEtki);
     });
 
     test('dolunayda (yarım sinodik ay sonra) etki +8', () {
       // Referans yeniay + 14.77 gün ≈ dolunay.
-      final DateTime dolunay = DateTime.utc(2000, 1, 6, 18, 14)
-          .add(const Duration(days: 14, hours: 18));
+      final DateTime dolunay = DateTime.utc(
+        2000,
+        1,
+        6,
+        18,
+        14,
+      ).add(const Duration(days: 14, hours: 18));
       expect(ayEvresiModifiyeri(dolunay).etki, EngineConfig.modifiyerMaksEtki);
     });
 
@@ -62,8 +69,9 @@ void main() {
     test('1000 gün boyunca etki -8..+8 aralığında', () {
       final DateTime baslangic = DateTime(2026, 1, 1);
       for (int i = 0; i < 1000; i++) {
-        final int etki =
-            numerolojiModifiyeri(baslangic.add(Duration(days: i))).etki;
+        final int etki = numerolojiModifiyeri(
+          baslangic.add(Duration(days: i)),
+        ).etki;
         expect(
           etki,
           inInclusiveRange(

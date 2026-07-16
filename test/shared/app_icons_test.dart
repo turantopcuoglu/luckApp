@@ -32,15 +32,14 @@ void main() {
     }
   });
 
-  testWidgets('her SVG flutter_svg tarafından hatasız parse edilip çizilir',
-      (WidgetTester tester) async {
+  testWidgets('her SVG flutter_svg tarafından hatasız parse edilip çizilir', (
+    WidgetTester tester,
+  ) async {
     for (final String yol in svgDosyalari) {
       final String icerik = File(yol).readAsStringSync();
       // SvgPicture.string senkron parse eder; bozuk SVG burada
       // exception olarak yüzeye çıkar ve testi kırar.
-      await tester.pumpWidget(
-        MaterialApp(home: SvgPicture.string(icerik)),
-      );
+      await tester.pumpWidget(MaterialApp(home: SvgPicture.string(icerik)));
       await tester.pump();
       expect(
         tester.takeException(),
@@ -50,12 +49,11 @@ void main() {
     }
   });
 
-  testWidgets('AppIcons.kategori her kategori için widget üretir',
-      (WidgetTester tester) async {
+  testWidgets('AppIcons.kategori her kategori için widget üretir', (
+    WidgetTester tester,
+  ) async {
     for (final LuckCategory kategori in LuckCategory.values) {
-      await tester.pumpWidget(
-        MaterialApp(home: AppIcons.kategori(kategori)),
-      );
+      await tester.pumpWidget(MaterialApp(home: AppIcons.kategori(kategori)));
       expect(find.byType(SvgPicture), findsOneWidget);
     }
   });

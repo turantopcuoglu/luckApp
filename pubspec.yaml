@@ -10,6 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # ONAY NOTU: flutter_localizations (SDK paketi), Türkçe Material
+  # bileşenleri (showTimePicker vb.) ve lokalizasyon delegate'leri için
+  # eklendi. Turan onayladı. Harici paket değil, Flutter SDK'sının parçası.
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^1.0.8
   # ONAY NOTU: crypto, luck_engine'in deterministik SHA-256 seed'i için
@@ -30,15 +35,45 @@ dependencies:
   # zamanlanmış bildirimlerin zorunlu bağımlılığıdır.
   flutter_local_notifications: ^18.0.1
   timezone: ^0.10.0
+  # ONAY NOTU: home_widget, günün skorunu telefon ana ekranı widget'ında
+  # göstermek için eklendi (Phase 7). Flutter ↔ native (Android AppWidget /
+  # iOS WidgetKit) köprüsüdür. Turan onayladı. luck_engine'e dokunmaz.
+  home_widget: ^0.7.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+  # ONAY NOTU: flutter_launcher_icons + flutter_native_splash, yonca
+  # uygulama ikonunu ve lacivert açılış (splash) ekranını native
+  # kaynaklara bağlamak için eklendi (Phase 5). Turan onayladı. Yalnız
+  # build-time dev araçlarıdır; uygulamaya/luck_engine'e bağlanmaz.
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.1
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/svg/
+
+# Uygulama ikonu üretimi (dart run flutter_launcher_icons).
+# Kaynak PNG'ler assets/launcher/ altında (app_icon_yonca.svg'den
+# rsvg-convert ile üretilir); bunlar bundle'a girmez, native kaynaklara
+# gömülür — bu yüzden flutter.assets'e eklenmez.
+flutter_launcher_icons:
+  image_path: assets/launcher/icon.png
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "#0A0E1A"
+  adaptive_icon_foreground: assets/launcher/icon_foreground.png
+
+# Açılış (splash) ekranı üretimi (dart run flutter_native_splash:create).
+flutter_native_splash:
+  color: "#0A0E1A"
+  image: assets/launcher/splash.png
+  android_12:
+    color: "#0A0E1A"
+    image: assets/launcher/splash.png

@@ -43,10 +43,10 @@ class DailyRecord {
 
   /// Hive'a yazılacak map gösterimi.
   Map<String, dynamic> toMap() => <String, dynamic>{
-        _sonucAnahtari: LuckResultMapper.toMap(sonuc),
-        _feedbackPozitifAnahtari: feedbackPozitif,
-        _feedbackEmojiAnahtari: feedbackEmoji,
-      };
+    _sonucAnahtari: LuckResultMapper.toMap(sonuc),
+    _feedbackPozitifAnahtari: feedbackPozitif,
+    _feedbackEmojiAnahtari: feedbackEmoji,
+  };
 
   /// Feedback alanları güncellenmiş bir kopya döndürür.
   DailyRecord copyWith({bool? feedbackPozitif, String? feedbackEmoji}) =>

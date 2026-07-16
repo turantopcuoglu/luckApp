@@ -99,10 +99,14 @@ abstract final class ContentConfig {
   // ---- Minimum havuz boyutları (bütünlük testleri için) ----
 
   /// Bant başına en az açılış cümlesi sayısı.
-  static const int enAzAcilisVaryanti = 6;
+  static const int enAzAcilisVaryanti = 9;
 
   /// (kategori, ton) başına en az orta cümle sayısı.
-  static const int enAzOrtaVaryanti = 4;
+  ///
+  /// Orta cümle havuzu en küçük ve baskın kategori günlerce
+  /// değişmeyebildiği için tekrar hissi en çok buradan doğar; bu
+  /// yüzden bilinçli olarak yüksek tutulur.
+  static const int enAzOrtaVaryanti = 6;
 
   /// En az kapanış cümlesi sayısı.
   static const int enAzKapanis = 12;
@@ -114,7 +118,7 @@ abstract final class ContentConfig {
   static const int enAzRenk = 12;
 
   /// (kategori, ton) başına en az kategori açılış cümlesi sayısı.
-  static const int enAzKategoriVaryanti = 4;
+  static const int enAzKategoriVaryanti = 6;
 
   /// Kategori başına en az tavsiye cümlesi sayısı.
   static const int enAzKategoriTavsiye = 4;

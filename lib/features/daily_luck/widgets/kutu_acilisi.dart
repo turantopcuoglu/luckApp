@@ -41,8 +41,9 @@ class KutuAcilisi extends StatelessWidget {
     // Kutunun zaman dilimi: kendi gecikmesinden başlayıp açılış süresi
     // kadar sürer; Interval bu dilimi 0-1'e ölçekler.
     final double toplamMs = kontrolSuresi.inMilliseconds.toDouble();
-    final double baslangicMs =
-        (DailyLuckConfig.kutuGecikmesi * indeks).inMilliseconds.toDouble();
+    final double baslangicMs = (DailyLuckConfig.kutuGecikmesi * indeks)
+        .inMilliseconds
+        .toDouble();
     final double bitisMs =
         baslangicMs + DailyLuckConfig.kutuAcilisSuresi.inMilliseconds;
 

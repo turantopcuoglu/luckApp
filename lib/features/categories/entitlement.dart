@@ -9,13 +9,14 @@ import 'categories_config.dart';
 /// Şimdilik sabit false: satın alma entegrasyonu yok. RevenueCat
 /// bağlanınca YALNIZCA bu provider'ın gövdesi değişecek; kilit
 /// kontrolü yapan hiçbir widget'a dokunulmayacak.
-final StateProvider<bool> entitlementProvider =
-    StateProvider<bool>((Ref ref) => false);
+final StateProvider<bool> entitlementProvider = StateProvider<bool>(
+  (Ref ref) => false,
+);
 
 /// [kategori] şu an kilitli mi? (kilitli listede + premium değil).
 final ProviderFamily<bool, LuckCategory> kategoriKilitliProvider =
     Provider.family<bool, LuckCategory>(
-  (Ref ref, LuckCategory kategori) =>
-      CategoriesConfig.kilitliKategoriler.contains(kategori) &&
-      !ref.watch(entitlementProvider),
-);
+      (Ref ref, LuckCategory kategori) =>
+          CategoriesConfig.kilitliKategoriler.contains(kategori) &&
+          !ref.watch(entitlementProvider),
+    );

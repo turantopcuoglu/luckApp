@@ -4,6 +4,7 @@ import 'package:kader/core/content/content_config.dart';
 import 'package:kader/core/content/fortune_composer.dart';
 import 'package:kader/core/content/fortune_pools.dart';
 import 'package:kader/core/content/gunun_icerigi.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 
 void main() {
@@ -19,21 +20,28 @@ void main() {
     required int genelSkor,
     required Map<LuckCategory, int> skorlar,
     DateTime? hangiGun,
-  }) =>
-      LuckResult(
-        gun: hangiGun ?? gun,
-        genelSkor: genelSkor,
-        kategoriSkorlari: skorlar,
-        modifiyerler: const <LuckModifier>[],
-      );
+  }) => LuckResult(
+    gun: hangiGun ?? gun,
+    genelSkor: genelSkor,
+    kategoriSkorlari: skorlar,
+    modifiyerler: const <LuckModifier>[],
+  );
 
   group('gununIcerigi', () {
     test('deterministik: aynı (kullanıcı, sonuç) aynı içerik paketi', () {
       final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: gun);
-      final GununIcerigi a =
-          gununIcerigi(motor: motor, kullanici: turan, sonuc: sonuc);
-      final GununIcerigi b =
-          gununIcerigi(motor: motor, kullanici: turan, sonuc: sonuc);
+      final GununIcerigi a = gununIcerigi(
+        motor: motor,
+        kullanici: turan,
+        sonuc: sonuc,
+        dil: AppDil.tr,
+      );
+      final GununIcerigi b = gununIcerigi(
+        motor: motor,
+        kullanici: turan,
+        sonuc: sonuc,
+        dil: AppDil.tr,
+      );
       expect(a, b);
     });
 
@@ -43,18 +51,85 @@ void main() {
         final DateTime g = gun.add(Duration(days: i));
         final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: g);
         yorumlar.add(
-          gununIcerigi(motor: motor, kullanici: turan, sonuc: sonuc).yorum,
+          gununIcerigi(
+            motor: motor,
+            kullanici: turan,
+            sonuc: sonuc,
+            dil: AppDil.tr,
+          ).yorum,
         );
       }
       expect(yorumlar.length, greaterThan(20));
     });
 
+    test('ardışık iki gün aynı yorum gelmez (60 gün)', () {
+      // Asıl gereksinim: günlük yorum cümlesi peş peşe tekrar etmemeli.
+      // Yorum üç bağımsız cümleden oluştuğu ve her biri
+      // tekrarsizSecimIndeksi ile seçildiği için ardışık gün asla
+      // birebir aynı olmaz.
+      String? oncekiYorum;
+      for (int i = 0; i < 60; i++) {
+        final DateTime g = gun.add(Duration(days: i));
+        final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: g);
+        final String bugunYorum = gununIcerigi(
+          motor: motor,
+          kullanici: turan,
+          sonuc: sonuc,
+          dil: AppDil.tr,
+        ).yorum;
+        if (oncekiYorum != null) {
+          expect(
+            bugunYorum,
+            isNot(oncekiYorum),
+            reason: '$g yorumu bir öncekiyle aynı',
+          );
+        }
+        oncekiYorum = bugunYorum;
+      }
+    });
+
+    test(
+      'tek bileşenler (renk/tavsiye) ardışık tekrarı büyük ölçüde azalır',
+      () {
+        // Tek bileşenli alanlarda tekrarsizSecimIndeksi tek-adım garanti
+        // verir; nadir uç durumda (bir önceki gün kaydırılmışsa) ardışık
+        // çakışma olabilir. 60 günde bu, elle sayılabilir kadar seyrek olmalı.
+        int renkTekrar = 0;
+        int tavsiyeTekrar = 0;
+        GununIcerigi? onceki;
+        for (int i = 0; i < 60; i++) {
+          final DateTime g = gun.add(Duration(days: i));
+          final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: g);
+          final GununIcerigi bugun = gununIcerigi(
+            motor: motor,
+            kullanici: turan,
+            sonuc: sonuc,
+            dil: AppDil.tr,
+          );
+          if (onceki != null) {
+            if (bugun.sansRengi.ad(AppDil.tr) ==
+                onceki.sansRengi.ad(AppDil.tr)) {
+              renkTekrar++;
+            }
+            if (bugun.tavsiye == onceki.tavsiye) tavsiyeTekrar++;
+          }
+          onceki = bugun;
+        }
+        expect(renkTekrar, lessThanOrEqualTo(2));
+        expect(tavsiyeTekrar, lessThanOrEqualTo(2));
+      },
+    );
+
     test('şanslı sayı her zaman sınırlar içinde', () {
       for (int i = 0; i < 365; i++) {
         final DateTime g = gun.add(Duration(days: i));
         final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: g);
-        final GununIcerigi icerik =
-            gununIcerigi(motor: motor, kullanici: turan, sonuc: sonuc);
+        final GununIcerigi icerik = gununIcerigi(
+          motor: motor,
+          kullanici: turan,
+          sonuc: sonuc,
+          dil: AppDil.tr,
+        );
         expect(
           icerik.sansliSayi,
           inInclusiveRange(
@@ -80,13 +155,20 @@ void main() {
             for (final LuckCategory k in LuckCategory.values) k: girdi.value,
           },
         );
-        final GununIcerigi icerik =
-            gununIcerigi(motor: motor, kullanici: turan, sonuc: sonuc);
-        final bool bandtanGeliyor = FortunePools
-            .acilisCumleleri[girdi.key]!
-            .any(icerik.yorum.startsWith);
-        expect(bandtanGeliyor, isTrue,
-            reason: '${girdi.key} bandı açılışı yanlış havuzdan');
+        final GununIcerigi icerik = gununIcerigi(
+          motor: motor,
+          kullanici: turan,
+          sonuc: sonuc,
+          dil: AppDil.tr,
+        );
+        final bool bandtanGeliyor = FortunePools.acilisCumleleri(
+          AppDil.tr,
+        )[girdi.key]!.any(icerik.yorum.startsWith);
+        expect(
+          bandtanGeliyor,
+          isTrue,
+          reason: '${girdi.key} bandı açılışı yanlış havuzdan',
+        );
       }
     });
 
@@ -102,21 +184,33 @@ void main() {
           LuckCategory.sosyal: 45,
         },
       );
-      final GununIcerigi icerik =
-          gununIcerigi(motor: motor, kullanici: turan, sonuc: sonuc);
-      final bool paradanGeliyor = FortunePools
-          .ortaCumleleri[LuckCategory.para]![KategoriTonu.yuksek]!
-          .any(icerik.yorum.contains);
+      final GununIcerigi icerik = gununIcerigi(
+        motor: motor,
+        kullanici: turan,
+        sonuc: sonuc,
+        dil: AppDil.tr,
+      );
+      final bool paradanGeliyor = FortunePools.ortaCumleleri(
+        AppDil.tr,
+      )[LuckCategory.para]![KategoriTonu.yuksek]!.any(icerik.yorum.contains);
       expect(paradanGeliyor, isTrue);
     });
 
     test('tavsiye ve kapanış kendi havuzlarından gelir', () {
       final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: gun);
-      final GununIcerigi icerik =
-          gununIcerigi(motor: motor, kullanici: turan, sonuc: sonuc);
-      expect(FortunePools.gununTavsiyeleri, contains(icerik.tavsiye));
-      final bool kapanisVar =
-          FortunePools.kapanisCumleleri.any(icerik.yorum.endsWith);
+      final GununIcerigi icerik = gununIcerigi(
+        motor: motor,
+        kullanici: turan,
+        sonuc: sonuc,
+        dil: AppDil.tr,
+      );
+      expect(
+        FortunePools.gununTavsiyeleri(AppDil.tr),
+        contains(icerik.tavsiye),
+      );
+      final bool kapanisVar = FortunePools.kapanisCumleleri(
+        AppDil.tr,
+      ).any(icerik.yorum.endsWith);
       expect(kapanisVar, isTrue);
       expect(FortunePools.sansRenkleri, contains(icerik.sansRengi));
     });
@@ -126,13 +220,61 @@ void main() {
       for (int i = 0; i < 10; i++) {
         final DateTime g = gun.add(Duration(days: i));
         final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: g);
-        final GununIcerigi icerik =
-            gununIcerigi(motor: motor, kullanici: turan, sonuc: sonuc);
+        final GununIcerigi icerik = gununIcerigi(
+          motor: motor,
+          kullanici: turan,
+          sonuc: sonuc,
+          dil: AppDil.tr,
+        );
         // ignore: avoid_print
-        print('${g.day}.${g.month}: ${icerik.yorum} | '
-            '${icerik.sansRengi.ad} | ${icerik.sansliSayi} | '
-            '${icerik.tavsiye}');
+        print(
+          '${g.day}.${g.month}: ${icerik.yorum} | '
+          '${icerik.sansRengi.ad(AppDil.tr)} | ${icerik.sansliSayi} | '
+          '${icerik.tavsiye}',
+        );
         expect(icerik.yorum.split('. ').length, greaterThanOrEqualTo(2));
+      }
+    });
+  });
+
+  group('gununSansliSaatBaslangici', () {
+    test('baskın kategorinin şanslı saatinin başlangıcını verir', () {
+      // Para açık ara baskın.
+      final LuckResult sonuc = sonucKur(
+        genelSkor: 70,
+        skorlar: <LuckCategory, int>{
+          LuckCategory.ask: 40,
+          LuckCategory.para: 90,
+          LuckCategory.saglik: 30,
+          LuckCategory.risk: 20,
+          LuckCategory.sosyal: 25,
+        },
+      );
+      final int beklenen = motor
+          .sansliSaat(kullanici: turan, gun: gun, kategori: LuckCategory.para)
+          .baslangicSaati;
+      expect(
+        gununSansliSaatBaslangici(motor: motor, kullanici: turan, sonuc: sonuc),
+        beklenen,
+      );
+    });
+
+    test('deterministik ve 8-20 aralığında', () {
+      for (int i = 0; i < 60; i++) {
+        final DateTime g = gun.add(Duration(days: i));
+        final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: g);
+        final int a = gununSansliSaatBaslangici(
+          motor: motor,
+          kullanici: turan,
+          sonuc: sonuc,
+        );
+        final int b = gununSansliSaatBaslangici(
+          motor: motor,
+          kullanici: turan,
+          sonuc: sonuc,
+        );
+        expect(a, b);
+        expect(a, inInclusiveRange(8, 20));
       }
     });
   });
@@ -188,12 +330,14 @@ void main() {
         kullanici: turan,
         sonuc: sonuc,
         kategori: LuckCategory.ask,
+        dil: AppDil.tr,
       );
       final String b = kategoriYorumu(
         motor: motor,
         kullanici: turan,
         sonuc: sonuc,
         kategori: LuckCategory.ask,
+        dil: AppDil.tr,
       );
       expect(a, b);
     });
@@ -211,12 +355,14 @@ void main() {
           kullanici: turan,
           sonuc: sonuc,
           kategori: kategori,
+          dil: AppDil.tr,
         );
-        final bool acilisDogru = CategoryPools
-            .kategoriAcilislari[kategori]![KategoriTonu.yuksek]!
-            .any(yorum.startsWith);
-        final bool tavsiyeDogru =
-            CategoryPools.kategoriTavsiyeleri[kategori]!.any(yorum.endsWith);
+        final bool acilisDogru = CategoryPools.kategoriAcilislari(
+          AppDil.tr,
+        )[kategori]![KategoriTonu.yuksek]!.any(yorum.startsWith);
+        final bool tavsiyeDogru = CategoryPools.kategoriTavsiyeleri(
+          AppDil.tr,
+        )[kategori]!.any(yorum.endsWith);
         expect(acilisDogru, isTrue, reason: '$kategori açılışı yanlış');
         expect(tavsiyeDogru, isTrue, reason: '$kategori tavsiyesi yanlış');
       }
@@ -231,6 +377,7 @@ void main() {
             kullanici: turan,
             sonuc: sonuc,
             kategori: k,
+            dil: AppDil.tr,
           ),
       };
       expect(yorumlar.length, LuckCategory.values.length);

@@ -6,15 +6,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:kader/core/content/fortune_composer.dart';
 import 'package:kader/core/content/gunun_icerigi.dart';
+import 'package:kader/core/history/gecmis_ozeti.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
+import 'package:kader/features/categories/categories_config.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
 import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 import 'package:kader/features/daily_luck/widgets/score_ring.dart';
+import 'package:kader/features/history/history_providers.dart';
 import 'package:kader/features/share/share_button.dart';
 import 'package:kader/features/share/share_service.dart';
 
@@ -75,24 +79,26 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500)); // yorum fade
   }
 
-  testWidgets('tarih, misafir selamlaması ve kapalı kart görünür',
-      (WidgetTester tester) async {
+  testWidgets('tarih, misafir selamlaması ve kapalı kart görünür', (
+    WidgetTester tester,
+  ) async {
     await ekraniAc(tester);
 
     expect(find.text('6 Temmuz 2026, Pazartesi'), findsOneWidget);
     expect(
-      find.text(TrStrings.selamlama(TrStrings.misafirIsmi)),
+      find.text(TrStrings.selamlama(AppDil.tr, TrStrings.misafirIsmi)),
       findsOneWidget,
     );
     expect(find.byType(FortuneRevealCard), findsOneWidget);
-    expect(find.text(TrStrings.kartIpucu), findsOneWidget);
+    expect(find.text(TrStrings.kartIpucu(AppDil.tr)), findsOneWidget);
     // Kart kapalı: skor halkası ve skor etiketi henüz yok.
     expect(find.byType(ScoreRing), findsNothing);
-    expect(find.text(TrStrings.genelSkorEtiketi), findsNothing);
+    expect(find.text(TrStrings.genelSkorEtiketi(AppDil.tr)), findsNothing);
   });
 
-  testWidgets('karta dokununca motorun ürettiği skor halkada yazar',
-      (WidgetTester tester) async {
+  testWidgets('karta dokununca motorun ürettiği skor halkada yazar', (
+    WidgetTester tester,
+  ) async {
     // Ekranın göstermesi beklenen deterministik skoru motordan hesapla.
     final UserProfile misafir = UserProfile(
       isim: TrStrings.misafirIsmi,
@@ -116,8 +122,7 @@ void main() {
     );
   });
 
-  testWidgets(
-      'kutular kapalı başlar; kart açılınca etiketler, yorum ve şans '
+  testWidgets('kutular kapalı başlar; kart açılınca etiketler, yorum ve şans '
       'ögeleri belirir', (WidgetTester tester) async {
     // Ekranın göstermesi beklenen deterministik içerik: misafir profil
     // + sabit gün için composer'ın üreteceği paket.
@@ -126,39 +131,43 @@ void main() {
       dogumTarihi: DateTime(2000),
     );
     const LuckEngine motor = LuckEngine();
-    final LuckResult sonuc =
-        motor.hesapla(kullanici: misafir.seed, gun: sabitGun);
+    final LuckResult sonuc = motor.hesapla(
+      kullanici: misafir.seed,
+      gun: sabitGun,
+    );
     final GununIcerigi beklenen = gununIcerigi(
       motor: motor,
       kullanici: misafir.seed,
       sonuc: sonuc,
+      dil: AppDil.tr,
     );
 
     await ekraniAc(tester);
 
     // Kapalı durumda kategori etiketleri görünmez (yalnız ikonlar).
     for (final LuckCategory kategori in LuckCategory.values) {
-      expect(find.text(kategori.etiket), findsNothing);
+      expect(find.text(kategori.etiket(AppDil.tr)), findsNothing);
     }
 
     await kartiAc(tester);
 
     // Açılış sonrası: 5 etiket + kompoze yorum + şans ögeleri + paylaş.
     for (final LuckCategory kategori in LuckCategory.values) {
-      expect(find.text(kategori.etiket), findsOneWidget);
+      expect(find.text(kategori.etiket(AppDil.tr)), findsOneWidget);
     }
     expect(find.text(beklenen.yorum), findsOneWidget);
-    expect(find.text(beklenen.sansRengi.ad), findsOneWidget);
+    expect(find.text(beklenen.sansRengi.ad(AppDil.tr)), findsOneWidget);
     expect(find.text('${beklenen.sansliSayi}'), findsWidgets);
     expect(find.text(beklenen.tavsiye), findsOneWidget);
-    expect(find.text(TrStrings.sansRengiEtiketi), findsOneWidget);
-    expect(find.text(TrStrings.sansliSayiEtiketi), findsOneWidget);
-    expect(find.text(TrStrings.tavsiyeEtiketi), findsOneWidget);
+    expect(find.text(TrStrings.sansRengiEtiketi(AppDil.tr)), findsOneWidget);
+    expect(find.text(TrStrings.sansliSayiEtiketi(AppDil.tr)), findsOneWidget);
+    expect(find.text(TrStrings.tavsiyeEtiketi(AppDil.tr)), findsOneWidget);
     expect(find.byType(ShareButton), findsOneWidget);
   });
 
-  testWidgets('Paylaş butonu servisi günün sonucuyla çağırır',
-      (WidgetTester tester) async {
+  testWidgets('Paylaş butonu servisi günün sonucuyla çağırır', (
+    WidgetTester tester,
+  ) async {
     final _SahteShareService sahte = _SahteShareService();
 
     await tester.runAsync(() async {
@@ -184,10 +193,13 @@ void main() {
 
     expect(sahte.paylasilanlar, hasLength(1));
     expect(sahte.paylasilanlar.single.gun, sabitGun);
+    // Premium yokken kilitli kategoriler karta maskeli gitmeli.
+    expect(sahte.kilitliSetler.single, CategoriesConfig.kilitliKategoriler);
   });
 
-  testWidgets('kayıtlı profil varsa selamlama onun ismiyle yapılır',
-      (WidgetTester tester) async {
+  testWidgets('kayıtlı profil varsa selamlama onun ismiyle yapılır', (
+    WidgetTester tester,
+  ) async {
     // Kutuya yazma gerçek I/O'dur; FakeAsync'te takılmaması için
     // runAsync içinde yapılır.
     await tester.runAsync(
@@ -203,7 +215,53 @@ void main() {
 
     await ekraniAc(tester);
 
-    expect(find.text(TrStrings.selamlama('Turan')), findsOneWidget);
+    expect(find.text(TrStrings.selamlama(AppDil.tr, 'Turan')), findsOneWidget);
+  });
+
+  group('şefkatli seri rozeti', () {
+    GecmisOzeti ozetSeri(int guncel) => GecmisOzeti(
+      toplamGun: 1,
+      ortalamaSkor: 50,
+      enSansliGun: null,
+      enSansliSkor: null,
+      kanitOrnekSayisi: 0,
+      kanitPozitifSayisi: 0,
+      kanitYuzdesi: null,
+      guncelSeri: guncel,
+      enUzunSeri: guncel,
+    );
+
+    Future<void> ekraniAcSeri(WidgetTester tester, GecmisOzeti ozet) async {
+      await tester.runAsync(() async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: <Override>[
+              userProfileBoxProvider.overrideWithValue(profilKutusu),
+              dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
+              bugunProvider.overrideWithValue(sabitGun),
+              gecmisOzetiProvider.overrideWith((Ref ref) => ozet),
+            ],
+            child: const MaterialApp(home: DailyLuckScreen()),
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pump();
+    }
+
+    testWidgets('güncel seri > 0 iken rozet görünür', (
+      WidgetTester tester,
+    ) async {
+      await ekraniAcSeri(tester, ozetSeri(3));
+      expect(find.text(TrStrings.seriEtiketi(AppDil.tr, 3)), findsOneWidget);
+    });
+
+    testWidgets('güncel seri 0 iken rozet gösterilmez (suçluluk yok)', (
+      WidgetTester tester,
+    ) async {
+      await ekraniAcSeri(tester, ozetSeri(0));
+      expect(find.textContaining('gündür buradasın'), findsNothing);
+    });
   });
 }
 
@@ -212,8 +270,16 @@ class _SahteShareService extends ShareService {
   /// paylas ile gelen sonuçlar.
   final List<LuckResult> paylasilanlar = <LuckResult>[];
 
+  /// paylas ile gelen kilitli kategori setleri (sızıntı doğrulaması).
+  final List<Set<LuckCategory>> kilitliSetler = <Set<LuckCategory>>[];
+
   @override
-  Future<void> paylas({required LuckResult sonuc}) async {
+  Future<void> paylas({
+    required LuckResult sonuc,
+    required AppDil dil,
+    Set<LuckCategory> kilitliKategoriler = const <LuckCategory>{},
+  }) async {
     paylasilanlar.add(sonuc);
+    kilitliSetler.add(kilitliKategoriler);
   }
 }

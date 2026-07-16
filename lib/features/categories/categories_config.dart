@@ -10,7 +10,19 @@ abstract final class CategoriesConfig {
   };
 
   /// Kilitli kutulardaki blur şiddeti.
-  static const double blurSigma = 3;
+  static const double blurSigma = 10;
+
+  /// Kilitli kutunun üzerine binen karartma katmanının opaklığı.
+  ///
+  /// Blur tek başına yetmez: sayı gibi yüksek kontrastlı içerik zayıf
+  /// blur'da okunabilir kalır. Scrim ikinci bir güvenlik katmanıdır.
+  static const double kilitScrimOpaklik = 0.55;
+
+  /// Kilitli kartta ilerleme barının sabit dolgu oranı.
+  ///
+  /// Gerçek skor oransal bar dolgusundan bile okunabildiği için
+  /// kilitliyken bar hiç dolmaz.
+  static const double kilitliBarOran = 0;
 
   /// Kilit ikonunun boyutu.
   static const double kilitIkonBoyutu = 28;

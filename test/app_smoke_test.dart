@@ -44,8 +44,9 @@ void main() {
     await geciciDizin.delete(recursive: true);
   });
 
-  testWidgets('uygulama açılır ve ana ekran yüklenir',
-      (WidgetTester tester) async {
+  testWidgets('uygulama açılır ve ana ekran yüklenir', (
+    WidgetTester tester,
+  ) async {
     // Smoke test FakeAsync'te kalır (runAsync YOK): gerçek event loop,
     // GoogleFonts'un gerçek HTTP font indirmesini tetikleyip patlatır.
     // FakeAsync'te ise Hive'ın disk yazması hiç bitmeyeceğinden, günün

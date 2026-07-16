@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_dil.dart';
 import '../../../core/luck_engine/luck_engine.dart';
 import '../../../core/theme/app_colors.dart';
 import '../daily_luck_config.dart';
@@ -16,18 +17,22 @@ class ScoreRing extends StatelessWidget {
   /// 0-100 arası [skor] ile gösterge oluşturur.
   const ScoreRing({
     required this.skor,
+    required this.dil,
     this.boyut = DailyLuckConfig.halkaCapi,
     this.kalinlik = DailyLuckConfig.halkaKalinligi,
-    this.etiket = TrStrings.genelSkorEtiketi,
+    this.etiket,
     super.key,
   });
 
   /// Gösterilecek genel skor.
   final int skor;
 
-  /// Skorun altındaki etiket (varsayılan "GENEL SKOR"; kategori
-  /// detayında kategori adı kullanılır).
-  final String etiket;
+  /// Aktif uygulama dili.
+  final AppDil dil;
+
+  /// Skorun altındaki etiket; `null` ise "GENEL SKOR"/"OVERALL SCORE"
+  /// kullanılır (kategori detayında kategori adı verilir).
+  final String? etiket;
 
   /// Halkanın dış çapı.
   final double boyut;
@@ -38,6 +43,7 @@ class ScoreRing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
+    final String etiketMetni = etiket ?? TrStrings.genelSkorEtiketi(dil);
     return SizedBox(
       width: boyut,
       height: boyut,
@@ -46,24 +52,32 @@ class ScoreRing extends StatelessWidget {
           oran: skor / EngineConfig.skorMaks,
           kalinlik: kalinlik,
         ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                '$skor',
-                style: yaziTemasi.displayLarge?.copyWith(
-                  color: AppColors.gold,
-                ),
+        // Ekran okuyucu sayı+etiketi tek düğüm olarak okur; içteki iki
+        // Text görsel-sadece kalır (kopuk "85" + "GENEL SKOR" olmaz).
+        child: Semantics(
+          label: TrStrings.skorErisim(etiketMetni, skor, EngineConfig.skorMaks),
+          container: true,
+          child: ExcludeSemantics(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    '$skor',
+                    style: yaziTemasi.displayLarge?.copyWith(
+                      color: AppColors.gold,
+                    ),
+                  ),
+                  Text(
+                    etiketMetni,
+                    style: yaziTemasi.labelSmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                etiket,
-                style: yaziTemasi.labelSmall?.copyWith(
-                  color: AppColors.textSecondary,
-                  letterSpacing: 2,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

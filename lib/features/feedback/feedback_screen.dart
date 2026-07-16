@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/localization/app_dil.dart';
 import '../../core/storage/luck_history_repository.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
@@ -36,8 +37,7 @@ class FeedbackScreen extends ConsumerWidget {
   /// yazmayı beklemez (unawaited).
   void _kaydet(BuildContext context, WidgetRef ref, {required bool pozitif}) {
     final DateTime gun = ref.read(bugunProvider);
-    final LuckHistoryRepository repo =
-        ref.read(luckHistoryRepositoryProvider);
+    final LuckHistoryRepository repo = ref.read(luckHistoryRepositoryProvider);
     final String? emoji = ref.read(feedbackEmojiProvider);
 
     unawaited(() async {
@@ -50,7 +50,7 @@ class FeedbackScreen extends ConsumerWidget {
     }());
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text(FeedbackStrings.tesekkur)),
+      SnackBar(content: Text(FeedbackStrings.tesekkur(ref.read(dilProvider)))),
     );
     Navigator.of(context).pop();
   }
@@ -60,9 +60,10 @@ class FeedbackScreen extends ConsumerWidget {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final bool? pozitif = ref.watch(feedbackPozitifProvider);
     final String? emoji = ref.watch(feedbackEmojiProvider);
+    final AppDil dil = ref.watch(dilProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(FeedbackStrings.baslik)),
+      appBar: AppBar(title: Text(FeedbackStrings.baslik(dil))),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.lg),
@@ -70,7 +71,7 @@ class FeedbackScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                FeedbackStrings.aksamSorusu,
+                FeedbackStrings.aksamSorusu(dil),
                 style: yaziTemasi.headlineMedium,
               ),
               const SizedBox(height: AppSpacing.xl),
@@ -80,23 +81,22 @@ class FeedbackScreen extends ConsumerWidget {
                   _SecimButonu(
                     emoji: FeedbackStrings.evetEmoji,
                     secili: pozitif ?? false,
-                    onTap: () => ref
-                        .read(feedbackPozitifProvider.notifier)
-                        .state = true,
+                    onTap: () =>
+                        ref.read(feedbackPozitifProvider.notifier).state = true,
                   ),
                   const SizedBox(width: AppSpacing.lg),
                   _SecimButonu(
                     emoji: FeedbackStrings.hayirEmoji,
                     secili: pozitif == false,
-                    onTap: () => ref
-                        .read(feedbackPozitifProvider.notifier)
-                        .state = false,
+                    onTap: () =>
+                        ref.read(feedbackPozitifProvider.notifier).state =
+                            false,
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.xl),
               Text(
-                FeedbackStrings.emojiBaslik,
+                FeedbackStrings.emojiBaslik(dil),
                 style: yaziTemasi.titleMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -105,15 +105,14 @@ class FeedbackScreen extends ConsumerWidget {
               Wrap(
                 spacing: AppSpacing.sm,
                 children: <Widget>[
-                  for (final String secenek
-                      in FeedbackStrings.emojiSecenekleri)
+                  for (final String secenek in FeedbackStrings.emojiSecenekleri)
                     ChoiceChip(
                       label: Text(secenek),
                       selected: emoji == secenek,
                       // Tekrar dokunmak seçimi kaldırır (emoji opsiyonel).
-                      onSelected: (bool secildi) => ref
-                          .read(feedbackEmojiProvider.notifier)
-                          .state = secildi ? secenek : null,
+                      onSelected: (bool secildi) =>
+                          ref.read(feedbackEmojiProvider.notifier).state =
+                              secildi ? secenek : null,
                     ),
                 ],
               ),
@@ -123,7 +122,7 @@ class FeedbackScreen extends ConsumerWidget {
                 onPressed: pozitif == null
                     ? null
                     : () => _kaydet(context, ref, pozitif: pozitif),
-                child: const Text(FeedbackStrings.kaydet),
+                child: Text(FeedbackStrings.kaydet(dil)),
               ),
             ],
           ),
@@ -164,9 +163,7 @@ class _SecimButonu extends StatelessWidget {
         child: Center(
           child: Text(
             emoji,
-            style: const TextStyle(
-              fontSize: FeedbackConfig.secimEmojiPunto,
-            ),
+            style: const TextStyle(fontSize: FeedbackConfig.secimEmojiPunto),
           ),
         ),
       ),

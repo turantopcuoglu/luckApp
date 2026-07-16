@@ -6,14 +6,19 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/history/aylik_ozet.dart';
+import '../../core/localization/app_dil.dart';
 import '../../core/luck_engine/luck_engine.dart';
+import 'monthly_recap_card.dart';
+import 'recap_strings.dart';
 import 'share_config.dart';
 import 'share_strings.dart';
 import 'story_card.dart';
 
 /// [ShareService] örneğini sağlar (testte sahtesiyle override edilir).
-final Provider<ShareService> shareServiceProvider =
-    Provider<ShareService>((Ref ref) => ShareService());
+final Provider<ShareService> shareServiceProvider = Provider<ShareService>(
+  (Ref ref) => ShareService(),
+);
 
 /// Story kartını off-screen PNG'ye çevirip sistem paylaşım menüsüne
 /// veren servis.
@@ -22,18 +27,32 @@ class ShareService {
   ShareService();
 
   /// Günün [sonuc]unu story kartı olarak paylaşır.
-  Future<void> paylas({required LuckResult sonuc}) async {
-    final Uint8List png = await kartPngUret(StoryCard(sonuc: sonuc));
-    await Share.shareXFiles(
-      <XFile>[
-        XFile.fromData(
-          png,
-          mimeType: 'image/png',
-          name: ShareConfig.dosyaAdi,
-        ),
-      ],
-      text: ShareStrings.paylasimMetni,
+  ///
+  /// [kilitliKategoriler]: premium kilidi altındaki kategoriler;
+  /// skorları karta çizilmez (gizlilik — kilitli içerik sızmaz).
+  Future<void> paylas({
+    required LuckResult sonuc,
+    required AppDil dil,
+    Set<LuckCategory> kilitliKategoriler = const <LuckCategory>{},
+  }) async {
+    final Uint8List png = await kartPngUret(
+      StoryCard(sonuc: sonuc, dil: dil, kilitliKategoriler: kilitliKategoriler),
     );
+    await Share.shareXFiles(<XFile>[
+      XFile.fromData(png, mimeType: 'image/png', name: ShareConfig.dosyaAdi),
+    ], text: ShareStrings.paylasimMetni(dil));
+  }
+
+  /// Ay Sonu Şans Raporu'nu ([ozet]) off-screen PNG olarak paylaşır.
+  ///
+  /// [kartPngUret] (public, generic) yeniden kullanılır.
+  Future<void> aylikOzetPaylas(AylikOzet ozet, AppDil dil) async {
+    final Uint8List png = await kartPngUret(
+      MonthlyRecapCard(ozet: ozet, dil: dil),
+    );
+    await Share.shareXFiles(<XFile>[
+      XFile.fromData(png, mimeType: 'image/png', name: ShareConfig.dosyaAdi),
+    ], text: RecapStrings.paylasimMetni(dil));
   }
 
   /// [kart] widget'ını ekrana koymadan 1080x1920 PNG'ye çevirir.
@@ -43,8 +62,7 @@ class ShareService {
   /// boyama tamamen off-screen yapılır (plan Session 7, madde 2).
   /// Public ve UI'dan bağımsızdır ki tek başına test edilebilsin.
   Future<Uint8List> kartPngUret(Widget kart) async {
-    final ui.FlutterView goruntu =
-        ui.PlatformDispatcher.instance.implicitView!;
+    final ui.FlutterView goruntu = ui.PlatformDispatcher.instance.implicitView!;
     final RenderRepaintBoundary sinir = RenderRepaintBoundary();
 
     // Kök render nesnesi: story kartı boyutuna sıkıştırılmış sahne.
@@ -65,9 +83,9 @@ class ShareService {
     final BuildOwner insaSahibi = BuildOwner(focusManager: FocusManager());
     final RenderObjectToWidgetElement<RenderBox> eleman =
         RenderObjectToWidgetAdapter<RenderBox>(
-      container: sinir,
-      child: Directionality(textDirection: TextDirection.ltr, child: kart),
-    ).attachToRenderTree(insaSahibi);
+          container: sinir,
+          child: Directionality(textDirection: TextDirection.ltr, child: kart),
+        ).attachToRenderTree(insaSahibi);
 
     insaSahibi
       ..buildScope(eleman)
@@ -78,8 +96,9 @@ class ShareService {
       ..flushPaint();
 
     final ui.Image resim = await sinir.toImage();
-    final ByteData? veri =
-        await resim.toByteData(format: ui.ImageByteFormat.png);
+    final ByteData? veri = await resim.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
     return veri!.buffer.asUint8List();
   }
 }

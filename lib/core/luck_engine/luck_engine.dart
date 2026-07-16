@@ -76,12 +76,16 @@ class LuckEngine {
     }
 
     // 4) Modifiyer toplamı tüm kategorilere uygulanır ve 0-100'e kırpılır.
-    final int toplamEtki =
-        modifiyerler.fold(0, (int toplam, LuckModifier m) => toplam + m.etki);
+    final int toplamEtki = modifiyerler.fold(
+      0,
+      (int toplam, LuckModifier m) => toplam + m.etki,
+    );
     final Map<LuckCategory, int> skorlar = <LuckCategory, int>{
       for (final MapEntry<LuckCategory, int> e in hamSkorlar.entries)
-        e.key: (e.value + toplamEtki)
-            .clamp(EngineConfig.skorMin, EngineConfig.skorMaks),
+        e.key: (e.value + toplamEtki).clamp(
+          EngineConfig.skorMin,
+          EngineConfig.skorMaks,
+        ),
     };
 
     // 5) Genel skor: kategori ağırlıklarıyla ortalama.
@@ -113,11 +117,11 @@ class LuckEngine {
     final Random rnd = Random(
       _seedUret(kullanici, tarih, ek: ':saat:${kategori.name}'),
     );
-    final int aralik = EngineConfig.sansliSaatEnGecBaslangic -
+    final int aralik =
+        EngineConfig.sansliSaatEnGecBaslangic -
         EngineConfig.sansliSaatEnErken +
         1;
-    final int baslangic =
-        EngineConfig.sansliSaatEnErken + rnd.nextInt(aralik);
+    final int baslangic = EngineConfig.sansliSaatEnErken + rnd.nextInt(aralik);
     return SansliSaat(
       baslangicSaati: baslangic,
       bitisSaati: baslangic + EngineConfig.sansliSaatSuresi,
@@ -147,10 +151,45 @@ class LuckEngine {
       );
     }
     final DateTime tarih = DateTime(gun.year, gun.month, gun.day);
-    final Random rnd = Random(
-      _seedUret(kullanici, tarih, ek: ':icerik:$amac'),
-    );
+    final Random rnd = Random(_seedUret(kullanici, tarih, ek: ':icerik:$amac'));
     return rnd.nextInt(havuzBoyutu);
+  }
+
+  /// [secimIndeksi] gibi seçer ama ARDIŞIK GÜN TEKRARINI önler.
+  ///
+  /// Seçilen indeks, bir önceki günün aynı (amaç, boyut) için ürettiği
+  /// ham indekse eşitse bir sonraki elemana kaydırılır. Böylece aynı
+  /// havuzdan peş peşe iki gün aynı cümle gelmez — kullanıcı "hep aynı"
+  /// hissini yaşamaz (istenen: cümleler peşpeşe aynı gelmemeli).
+  ///
+  /// Deterministiktir: yalnız (kullanıcı, gün, amaç, boyut)'a bağlıdır
+  /// (önceki gün de sabittir), böylece CLAUDE.md kural 8 korunur.
+  /// [havuzBoyutu] < 2 ise kaydırılacak yer olmadığından ham indeks
+  /// döner. Garanti: dönüş değeri, önceki günün ham indeksine EŞİT DEĞİL.
+  int tekrarsizSecimIndeksi({
+    required UserSeed kullanici,
+    required DateTime gun,
+    required String amac,
+    required int havuzBoyutu,
+  }) {
+    final int bugun = secimIndeksi(
+      kullanici: kullanici,
+      gun: gun,
+      amac: amac,
+      havuzBoyutu: havuzBoyutu,
+    );
+    // Tek/boş havuz: kaydıracak alternatif yok.
+    if (havuzBoyutu < 2) {
+      return bugun;
+    }
+    final DateTime dun = DateTime(gun.year, gun.month, gun.day - 1);
+    final int dunHam = secimIndeksi(
+      kullanici: kullanici,
+      gun: dun,
+      amac: amac,
+      havuzBoyutu: havuzBoyutu,
+    );
+    return bugun != dunHam ? bugun : (bugun + 1) % havuzBoyutu;
   }
 
   /// (kullanıcı, gün) çiftinden deterministik RNG tohumu üretir.
@@ -160,7 +199,8 @@ class LuckEngine {
   /// aynı günden farklı tohum türetebilsin). SHA-256 özetinin ilk 8
   /// baytı big-endian int'e çevrilir.
   int _seedUret(UserSeed kullanici, DateTime gun, {String ek = ''}) {
-    final String girdi = kullanici.isimHash +
+    final String girdi =
+        kullanici.isimHash +
         kullanici.dogumTarihi.toIso8601String() +
         _gunAnahtari(gun) +
         ek;
@@ -190,12 +230,11 @@ class LuckEngine {
     }
     final double ortalama =
         sonUcGunSkorlari.reduce((int a, int b) => a + b) /
-            sonUcGunSkorlari.length;
+        sonUcGunSkorlari.length;
     if (ortalama >= EngineConfig.dusukSeriEsigi) {
       return null;
     }
-    final int aralik =
-        EngineConfig.seriBiasMaks - EngineConfig.seriBiasMin + 1;
+    final int aralik = EngineConfig.seriBiasMaks - EngineConfig.seriBiasMin + 1;
     final int etki = EngineConfig.seriBiasMin + rnd.nextInt(aralik);
     return LuckModifier(ad: seriDengesiAdi, etki: etki);
   }

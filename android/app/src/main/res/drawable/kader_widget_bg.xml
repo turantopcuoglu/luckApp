@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ana ekran widget'ının lacivert, yuvarlak köşeli zemini. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/kader_navy" />
+    <corners android:radius="20dp" />
+</shape>
