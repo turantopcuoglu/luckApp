@@ -1,0 +1,10 @@
+<!-- Nadir İşaret 01 — Açık Kapı: ilk günlük kart açılışı. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <rect x="5" y="5" width="290" height="410" rx="24" fill="#07162F" stroke="#D3A953" stroke-width="4"/>
+  <path d="M28 382c50-9 88-37 111-82 15-30 23-68 23-115" fill="none" stroke="#F7F0E5" stroke-width="31" stroke-linecap="round"/>
+  <path d="M162 72c-48 0-76 36-76 88v116h152V160c0-52-28-88-76-88Z" fill="#10213B" stroke="#D3A953" stroke-width="5"/>
+  <path d="M162 118c-23 0-36 18-36 45v113h72V163c0-27-13-45-36-45Z" fill="#FFF9F0"/>
+  <circle cx="162" cy="190" r="8" fill="#D8F04A"/>
+  <path d="M32 90c35 20 55 18 81-7M198 340c35-12 54-29 72-56" fill="none" stroke="#9B8AF2" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="54" cy="322" r="8" fill="#FF8B73"/>
+</svg>

@@ -1,0 +1,10 @@
+<!-- Nadir İşaret 09 — Açık Pencere: yeni bakış ve temiz hava. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <rect x="5" y="5" width="290" height="410" rx="24" fill="#07162F" stroke="#D3A953" stroke-width="4"/>
+  <path d="M150 55c-55 0-88 42-88 103v142h176V158c0-61-33-103-88-103Z" fill="#F7F0E5" stroke="#D3A953" stroke-width="5"/>
+  <path d="M150 96c-31 0-50 25-50 62v108h100V158c0-37-19-62-50-62Z" fill="#BFE5F2"/>
+  <path d="M150 97v169M100 182h100" stroke="#07162F" stroke-width="6"/>
+  <path d="M63 158c29 17 58 19 87 6-12 47-42 83-87 107ZM237 158c-29 17-58 19-87 6 12 47 42 83 87 107Z" fill="#9B8AF2" fill-opacity=".86"/>
+  <path d="M35 343c57-5 96-27 115-66 19 39 58 61 115 66" fill="none" stroke="#D8F04A" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="219" cy="333" r="8" fill="#FF8B73"/>
+</svg>

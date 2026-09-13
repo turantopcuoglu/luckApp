@@ -1,0 +1,10 @@
+<!-- Nadir İşaret 06 — Yeni Patika: alışılmış rotadan küçük bir ayrılık. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <rect x="5" y="5" width="290" height="410" rx="24" fill="#07162F" stroke="#D3A953" stroke-width="4"/>
+  <path d="M33 398c89-27 128-84 117-171-7-55 15-104 66-147" fill="none" stroke="#FFF9F0" stroke-width="34" stroke-linecap="round"/>
+  <path d="M37 398c75-28 109-82 101-162" fill="none" stroke="#D8F04A" stroke-width="9" stroke-linecap="round"/>
+  <path d="M150 237c33-22 69-26 108-11" fill="none" stroke="#FF8B73" stroke-width="18" stroke-linecap="round"/>
+  <path d="M211 56c-31 0-50 24-50 60v62h100v-62c0-36-19-60-50-60Z" fill="#F7F0E5" stroke="#D3A953" stroke-width="4"/>
+  <path d="M211 91c-14 0-22 11-22 28v59h44v-59c0-17-8-28-22-28Z" fill="#07162F"/>
+  <circle cx="69" cy="115" r="9" fill="#9B8AF2"/>
+</svg>

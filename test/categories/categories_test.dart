@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:kader/core/content/experience_dimension.dart';
 import 'package:kader/core/content/fortune_composer.dart' as composer;
 import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
@@ -17,8 +18,10 @@ import 'package:kader/features/categories/entitlement.dart';
 import 'package:kader/features/categories/paywall_screen.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
-import 'package:kader/features/daily_luck/widgets/category_card.dart';
-import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
+import 'package:kader/features/daily_luck/today_strings.dart';
+import 'package:kader/features/daily_luck/widgets/today_content.dart';
+
+import '../fixtures/reveal_test_overrides.dart';
 
 void main() {
   late Directory geciciDizin;
@@ -59,6 +62,7 @@ void main() {
   });
 
   List<Override> temelOverridelar({bool premium = false}) => <Override>[
+    layoutOnlyRevealWriter,
     userProfileBoxProvider.overrideWithValue(profilKutusu),
     dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
     bugunProvider.overrideWithValue(sabitGun),
@@ -165,18 +169,39 @@ void main() {
       bool premium = false,
     }) async {
       await ekraniAc(tester, const DailyLuckScreen(), premium: premium);
-      await tester.tap(find.byType(FortuneRevealCard));
+      await tester.ensureVisible(find.text(TodayStrings.open(AppDil.tr)));
+      await tester.tap(find.text(TodayStrings.open(AppDil.tr)));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 1200));
       await tester.pump(const Duration(milliseconds: 1500));
       await tester.pump(const Duration(milliseconds: 500));
     }
 
+    Future<void> kategoriKartinaDokun(
+      WidgetTester tester,
+      LuckCategory kategori,
+    ) async {
+      final Finder dokunmaHedefi = find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is TodayDimensionTile &&
+            widget.data.dimension == ExperienceDimension.kategoriden(kategori),
+      );
+      expect(dokunmaHedefi, findsOneWidget);
+
+      // Tam genişlikteki yeni alan satırını kaydırarak görünür kıl.
+      await tester.ensureVisible(dokunmaHedefi);
+      await tester.pump();
+      expect(dokunmaHedefi.hitTestable(), findsOneWidget);
+      await tester.tap(dokunmaHedefi);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+    }
+
     testWidgets('aşk ve para kutuları kilit ikonu taşır', (
       WidgetTester tester,
     ) async {
-      await ekraniAc(tester, const DailyLuckScreen());
-      expect(find.byIcon(Icons.lock_rounded), findsNWidgets(2));
+      await anaEkraniAcVeKartiCevir(tester);
+      expect(find.byIcon(Icons.lock_outline_rounded), findsNWidgets(2));
     });
 
     testWidgets('kilitli kutuya dokunmak paywall açar', (
@@ -184,9 +209,7 @@ void main() {
     ) async {
       await anaEkraniAcVeKartiCevir(tester);
 
-      await tester.tap(find.text(LuckCategory.ask.etiket(AppDil.tr)));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 400));
+      await kategoriKartinaDokun(tester, LuckCategory.ask);
 
       expect(find.byType(PaywallScreen), findsOneWidget);
       expect(find.text(CategoriesStrings.paywallBaslik), findsOneWidget);
@@ -197,9 +220,7 @@ void main() {
     ) async {
       await anaEkraniAcVeKartiCevir(tester);
 
-      await tester.tap(find.text(LuckCategory.saglik.etiket(AppDil.tr)));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 400));
+      await kategoriKartinaDokun(tester, LuckCategory.saglik);
 
       expect(find.byType(CategoryDetailScreen), findsOneWidget);
       expect(find.byType(PaywallScreen), findsNothing);
@@ -216,7 +237,13 @@ void main() {
       await anaEkraniAcVeKartiCevir(tester);
 
       // İki kilitli kart da maske metni taşır.
-      expect(find.text(CategoriesStrings.kilitliSkor), findsNWidgets(2));
+      expect(
+        find.byWidgetPredicate(
+          (Widget widget) =>
+              widget is TodayDimensionTile && widget.data.score == null,
+        ),
+        findsNWidgets(2),
+      );
 
       // Kilitli skorlar kategori kartlarının İÇİNDE metin olarak yok
       // (blur'dan bağımsız gerçek gizlilik garantisi). Kilitli skor,
@@ -236,7 +263,7 @@ void main() {
         }
         expect(
           find.descendant(
-            of: find.byType(CategoryCard),
+            of: find.byType(TodayDimensionTile),
             matching: find.text('$gizliSkor'),
           ),
           findsNothing,
@@ -252,9 +279,7 @@ void main() {
 
       expect(find.byIcon(Icons.lock_rounded), findsNothing);
 
-      await tester.tap(find.text(LuckCategory.ask.etiket(AppDil.tr)));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 400));
+      await kategoriKartinaDokun(tester, LuckCategory.ask);
 
       expect(find.byType(CategoryDetailScreen), findsOneWidget);
     });

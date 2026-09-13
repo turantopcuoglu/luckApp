@@ -7,8 +7,38 @@ import '../../core/theme/app_dimens.dart';
 /// Gün" eşiği ise mevcut tek kaynaklardan (`HistoryConfig.bandRampasi`,
 /// `HistoryAnalizConfig.altinGunEsigi`) yeniden kullanılır.
 abstract final class CollectionConfig {
+  /// V4 sahne galerisi: odak görseli ve detay önizlemesi.
+  static const double sceneHeroHeight = 250;
+
+  /// Açılan detay görselinin yüksekliği.
+  static const double sceneDetailHeight = 280;
+
+  /// Standart yazıda sahne + başlık hücresi.
+  static const double sceneTileHeight = 174;
+
+  /// Büyük yazıda hücre alanı.
+  static const double sceneLargeTileHeight = 240;
+
+  /// Başlık yazısında iki sütuna geçiş ölçüsü.
+  static const double largeTextThreshold = 22;
+
+  /// Galerinin sütun aralığı.
+  static const double sceneColumnGap = 12;
+
+  /// Galerinin satır aralığı.
+  static const double sceneRowGap = 14;
+
+  /// Thumbnail çözme bütçesi.
+  static const int sceneThumbnailWidth = 320;
+
+  /// Detay çözme bütçesi.
+  static const int sceneDetailWidth = 512;
+
   /// Grid sütun sayısı (oyun kartı destesi hissi için 3'lü dizilim).
   static const int sutunSayisi = 3;
+
+  /// Büyük erişilebilirlik yazısında daha geniş kartlar.
+  static const int buyukYaziSutunSayisi = 2;
 
   /// Minik kartın en/boy oranı (genişlik / yükseklik).
   ///
@@ -26,6 +56,12 @@ abstract final class CollectionConfig {
 
   /// Altın rozetinin köşeden iç boşluğu.
   static const double rozetKenarBoslugu = AppSpacing.xs;
+
+  /// Küçük kart için tam ekran görselinden daha düşük decode bütçesi.
+  static const int kartGorselGenisligi = 384;
+
+  /// Yazı tipine bağlı olmayan Altın Gün yıldızının boyutu.
+  static const double rozetBoyutu = 18;
 
   /// Detay bottom sheet'inin dış dolgusu.
   static const double detayDolgu = AppSpacing.lg;

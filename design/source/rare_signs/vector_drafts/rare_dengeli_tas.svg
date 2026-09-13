@@ -1,0 +1,11 @@
+<!-- Nadir İşaret 05 — Dengeli Taş: ritim ve sınırları koruma. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <rect x="5" y="5" width="290" height="410" rx="24" fill="#07162F" stroke="#D3A953" stroke-width="4"/>
+  <path d="M24 334c67-35 185-35 252 0v81H24Z" fill="#BFE5F2" fill-opacity=".28"/>
+  <ellipse cx="150" cy="318" rx="94" ry="38" fill="#10213B" stroke="#BFE5F2" stroke-width="3"/>
+  <ellipse cx="150" cy="253" rx="67" ry="43" fill="#162A48" stroke="#D3A953" stroke-width="3"/>
+  <ellipse cx="150" cy="191" rx="45" ry="32" fill="#233A5A" stroke="#9B8AF2" stroke-width="3"/>
+  <ellipse cx="150" cy="145" rx="29" ry="23" fill="#F7F0E5"/>
+  <path d="M64 266c8-59 31-102 69-130M236 278c-10-51-31-84-61-107" fill="none" stroke="#D8F04A" stroke-width="8" stroke-linecap="round"/>
+  <path d="M67 226c25-21 45-18 61 8-27 15-47 12-61-8ZM231 244c-22-20-40-18-55 7 23 14 42 11 55-7Z" fill="#D8F04A"/>
+</svg>

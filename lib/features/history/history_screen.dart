@@ -10,6 +10,7 @@ import '../../core/storage/daily_record.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/cosmic_page.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/tr_strings.dart';
 import '../share/recap_strings.dart';
@@ -33,7 +34,7 @@ class HistoryScreen extends ConsumerWidget {
     final GecmisOzeti ozet = ref.watch(gecmisOzetiProvider);
     final AppDil dil = ref.watch(dilProvider);
 
-    return Scaffold(
+    return CosmicPage(
       appBar: AppBar(title: Text(HistoryStrings.baslik(dil))),
       body: SafeArea(
         child: kayitlar.isEmpty
@@ -52,7 +53,7 @@ class HistoryScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            AppIllustrations.kristalKure(),
+            AppIllustrations.kaderMark(),
             const SizedBox(height: AppSpacing.lg),
             Text(
               HistoryStrings.bosBaslik(dil),
@@ -86,6 +87,8 @@ class HistoryScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          CosmicPageHeader(title: HistoryStrings.baslik(dil)),
+          const SizedBox(height: AppSpacing.lg),
           _kanitKarti(context, ozet, dil),
           const SizedBox(height: AppSpacing.md),
           _ozetKarti(context, ozet, dil),
@@ -128,9 +131,11 @@ class HistoryScreen extends ConsumerWidget {
               children: <Widget>[
                 const Icon(Icons.insights_rounded, color: AppColors.gold),
                 const SizedBox(width: AppSpacing.sm),
-                Text(
-                  HistoryStrings.kanitBasligi(dil),
-                  style: yaziTemasi.titleMedium,
+                Expanded(
+                  child: Text(
+                    HistoryStrings.kanitBasligi(dil),
+                    style: yaziTemasi.titleMedium,
+                  ),
                 ),
               ],
             ),
@@ -162,9 +167,11 @@ class HistoryScreen extends ConsumerWidget {
               children: <Widget>[
                 const Icon(Icons.auto_awesome_rounded, color: AppColors.gold),
                 const SizedBox(width: AppSpacing.sm),
-                Text(
-                  RecapStrings.bolumBasligi(dil),
-                  style: yaziTemasi.titleMedium,
+                Expanded(
+                  child: Text(
+                    RecapStrings.bolumBasligi(dil),
+                    style: yaziTemasi.titleMedium,
+                  ),
                 ),
               ],
             ),
@@ -243,6 +250,23 @@ class HistoryScreen extends ConsumerWidget {
   /// Tek özet satırı: solda etiket, sağda değer.
   Widget _ozetSatiri(BuildContext context, String etiket, String deger) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
+    if (MediaQuery.textScalerOf(context).scale(14) > 21) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Text(
+            etiket,
+            style: yaziTemasi.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          Text(
+            deger,
+            style: yaziTemasi.titleSmall?.copyWith(color: AppColors.gold),
+          ),
+        ],
+      );
+    }
     return Row(
       children: <Widget>[
         Expanded(
@@ -253,9 +277,12 @@ class HistoryScreen extends ConsumerWidget {
             ),
           ),
         ),
-        Text(
-          deger,
-          style: yaziTemasi.titleSmall?.copyWith(color: AppColors.gold),
+        Flexible(
+          child: Text(
+            deger,
+            textAlign: TextAlign.right,
+            style: yaziTemasi.titleSmall?.copyWith(color: AppColors.gold),
+          ),
         ),
       ],
     );

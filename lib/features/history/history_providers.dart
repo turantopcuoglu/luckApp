@@ -8,12 +8,12 @@ import '../daily_luck/daily_luck_providers.dart';
 
 /// Kutudaki tüm günlük kayıtlar (güne göre artan).
 ///
-/// autoDispose: daily_records kutusu reaktif değildir; ekran her
-/// açılışta taze okuma yapar (yeni feedback/skorlar yansır).
+/// Hive değişiklikleri izlenir; ekran açıkken de yeni kayıt ve feedback yansır.
 final AutoDisposeProvider<List<DailyRecord>> tumKayitlarProvider =
-    Provider.autoDispose<List<DailyRecord>>(
-      (Ref ref) => ref.watch(luckHistoryRepositoryProvider).tumKayitlar(),
-    );
+    Provider.autoDispose<List<DailyRecord>>((Ref ref) {
+      ref.watch(kayitDegisiklikleriProvider);
+      return ref.watch(luckHistoryRepositoryProvider).tumKayitlar();
+    });
 
 /// Geçmiş kayıtlarından türetilen özet (heatmap üstü istatistikler +
 /// Kanıt Döngüsü).

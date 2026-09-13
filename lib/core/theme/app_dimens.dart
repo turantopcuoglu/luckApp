@@ -37,3 +37,51 @@ abstract final class AppRadius {
   /// Tam yuvarlak (stadium) buton ve halkalar için.
   static const double full = 999;
 }
+
+/// Ekran ve dokunma alanı sınırları; yükseklikler minimumdur, metin büyüyebilir.
+abstract final class AppLayout {
+  /// İç dolgu dahil tek sütun ekran genişliğinin üst sınırı.
+  static const double maxContentWidth = 560;
+
+  /// Dokunulabilir kontrolün en küçük boyutu.
+  static const double minTouchTarget = 48;
+
+  /// Ana/ikincil eylemin minimum yüksekliği.
+  static const double buttonMinHeight = 56;
+
+  /// Ortak işlev ikonları.
+  static const double iconSize = 24;
+
+  /// Buton içindeki yükleme işareti.
+  static const double progressSize = 20;
+
+  /// Alt gezinme hedefinin yazı büyüdükçe artabilen taban yüksekliği.
+  static const double navigationMinHeight = 64;
+
+  /// Seçili sekmenin ikon arkasındaki gösterge yüksekliği.
+  static const double navigationIndicatorHeight = 32;
+}
+
+/// Kenarlık kalınlıkları.
+abstract final class AppStroke {
+  /// Kart ayırıcı ve ince folyo.
+  static const double thin = 1;
+
+  /// Etkileşimli kontrol sınırı.
+  static const double control = 1.5;
+
+  /// Klavye odağı ve yükleme çizgisi.
+  static const double focus = 2;
+}
+
+/// Kontrollü yüzey derinliği; büyük bulanık gölgeler kullanılmaz.
+abstract final class AppElevation {
+  /// Düz yüzey.
+  static const double flat = 0;
+
+  /// Hover veya hafif kalkmış kart.
+  static const double raised = 2;
+
+  /// Sheet ve dialog.
+  static const double overlay = 6;
+}

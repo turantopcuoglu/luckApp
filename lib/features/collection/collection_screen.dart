@@ -10,12 +10,15 @@ import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/cosmic_page.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/tr_strings.dart';
 import '../daily_luck/widgets/comment_card.dart';
 import '../daily_luck/widgets/lucky_row.dart';
-import '../daily_luck/widgets/score_ring.dart';
+import '../daily_luck/widgets/today_content.dart';
 import '../history/history_providers.dart';
+import '../share/share_strings.dart';
+import '../share/story_designer_screen.dart';
 import 'collection_config.dart';
 import 'collection_strings.dart';
 import 'widgets/kart_minik.dart';
@@ -40,7 +43,7 @@ class CollectionScreen extends ConsumerWidget {
         .toList();
     final AppDil dil = ref.watch(dilProvider);
 
-    return Scaffold(
+    return CosmicPage(
       appBar: AppBar(title: Text(CollectionStrings.baslik(dil))),
       body: SafeArea(
         child: kayitlar.isEmpty
@@ -59,7 +62,7 @@ class CollectionScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            AppIllustrations.kristalKure(),
+            AppIllustrations.kaderMark(),
             const SizedBox(height: AppSpacing.lg),
             Text(
               CollectionStrings.bosBaslik(dil),
@@ -115,8 +118,10 @@ class CollectionScreen extends ConsumerWidget {
         Expanded(
           child: GridView.builder(
             padding: const EdgeInsets.all(AppSpacing.lg),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: CollectionConfig.sutunSayisi,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.textScalerOf(context).scale(14) > 21
+                  ? CollectionConfig.buyukYaziSutunSayisi
+                  : CollectionConfig.sutunSayisi,
               childAspectRatio: CollectionConfig.kartOrani,
               crossAxisSpacing: CollectionConfig.kartAraligi,
               mainAxisSpacing: CollectionConfig.kartAraligi,
@@ -178,7 +183,23 @@ class CollectionScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Center(
-                  child: ScoreRing(skor: kayit.sonuc.genelSkor, dil: dil),
+                  child: CosmicScoreHero(
+                    score: kayit.sonuc.genelSkor,
+                    language: dil,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                FilledButton.icon(
+                  icon: const Icon(Icons.ios_share),
+                  label: Text(ShareStrings.designer(dil)),
+                  onPressed: () => Navigator.of(sheetContext).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => StoryDesignerScreen(
+                        result: kayit.sonuc,
+                        language: dil,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 CommentCard(metin: icerik.yorum),

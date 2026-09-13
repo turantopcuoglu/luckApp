@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 
 import 'storage_keys.dart';
 import 'user_profile.dart';
+import 'user_profile_factory.dart';
 
 /// Kullanıcı profili üzerinde okuma/yazma işlemleri.
 ///
@@ -22,13 +23,27 @@ class UserRepository {
   Future<void> kaydet(UserProfile profil) =>
       _box.put(StorageKeys.profilKaydi, profil.toMap());
 
+  /// Kayıt yoksa bir v2 kimliği oluşturup kalıcılaştırır; mevcut profilin
+  /// sürümünü veya kimliğini değiştirmez. Hive put belleği ilk await'ten
+  /// önce günceller; art arda çağrılar aynı profili kullanır.
+  Future<UserProfile> profilOlustur({
+    required String isim,
+    required UserProfileFactory factory,
+  }) async {
+    final UserProfile? mevcut = profil();
+    if (mevcut != null) return mevcut;
+    final UserProfile yeni = factory.olustur(isim: isim);
+    await kaydet(yeni);
+    return yeni;
+  }
+
   /// Onboarding akışı tamamlanmış mı?
   bool get onboardingTamamlandiMi => profil()?.onboardingTamam ?? false;
 
   /// Mevcut profili onboarding tamamlandı olarak işaretler.
   ///
-  /// Profil yoksa [StateError] fırlatır: akış gereği önce isim ve doğum
-  /// tarihi kaydedilmiş olmalıdır.
+  /// Profil yoksa [StateError] fırlatır: akış gereği önce kalıcı profil
+  /// ve tohum kimliği kaydedilmiş olmalıdır.
   Future<void> onboardingTamamla() {
     final UserProfile? mevcut = profil();
     if (mevcut == null) {

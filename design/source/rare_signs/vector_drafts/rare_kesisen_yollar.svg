@@ -1,0 +1,10 @@
+<!-- Nadir İşaret 02 — Kesişen Yollar: iki rotanın anlamlı karşılaşması. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <rect x="5" y="5" width="290" height="410" rx="24" fill="#07162F" stroke="#D3A953" stroke-width="4"/>
+  <path d="M-18 365c77-10 127-57 168-145 41 88 91 135 168 145" fill="none" stroke="#F7F0E5" stroke-width="34" stroke-linecap="round"/>
+  <path d="M-18 64c77 10 127 57 168 145 41-88 91-135 168-145" fill="none" stroke="#BFE5F2" stroke-width="29" stroke-linecap="round"/>
+  <circle cx="150" cy="215" r="28" fill="#D3A953" stroke="#FFE4A5" stroke-width="3"/>
+  <path d="M150 238v-45M150 197l-14 14M150 197l14 14" fill="none" stroke="#07162F" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="62" cy="107" r="9" fill="#9B8AF2"/>
+  <circle cx="240" cy="326" r="9" fill="#FF8B73"/>
+</svg>

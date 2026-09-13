@@ -7,6 +7,8 @@ import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/luck_history_repository.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 
+import '../fixtures/legacy_storage_fixtures.dart';
+
 void main() {
   late Directory geciciDizin;
   late Box<Map<dynamic, dynamic>> kutu;
@@ -56,6 +58,26 @@ void main() {
       final LuckResult sonuc = motor.hesapla(kullanici: turan, gun: bugun);
       await repo.kaydet(DailyRecord(sonuc: sonuc));
       expect(repo.kayitVarMi(DateTime(2026, 7, 6, 23, 45)), isTrue);
+    });
+
+    test('sabit eski günlük kayıt fixture\'ı Hive üzerinden açılır', () async {
+      await kutu.put(
+        gunAnahtari(bugun),
+        Map<dynamic, dynamic>.from(legacyDailyRecordFixture),
+      );
+
+      final DailyRecord okunan = repo.getir(bugun)!;
+      expect(okunan.gun, bugun);
+      expect(okunan.sonuc.genelSkor, 62);
+      expect(okunan.sonuc.kategoriSkorlari, <LuckCategory, int>{
+        LuckCategory.ask: 78,
+        LuckCategory.para: 53,
+        LuckCategory.saglik: 75,
+        LuckCategory.risk: 49,
+        LuckCategory.sosyal: 46,
+      });
+      expect(okunan.feedbackPozitif, isNull);
+      expect(okunan.feedbackEmoji, isNull);
     });
   });
 

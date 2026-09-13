@@ -1,13 +1,19 @@
+import '../../core/content/experience_dimension.dart';
 import '../../core/luck_engine/luck_engine.dart';
 
 /// Kategori detay ve premium iskeletine özgü sabitler.
 abstract final class CategoriesConfig {
-  /// Premium olmadan kilitli görünen kategoriler (plan Session 9,
-  /// madde 2: aşk ve para).
-  static const Set<LuckCategory> kilitliKategoriler = <LuckCategory>{
-    LuckCategory.ask,
-    LuckCategory.para,
+  /// Premium detayları olan deneyim alanlarının tek tanımı.
+  static const Set<ExperienceDimension> kilitliAlanlar = <ExperienceDimension>{
+    ExperienceDimension.bag,
+    ExperienceDimension.uretim,
   };
+
+  /// Eski ekran ve paylaşım çağrıları için aynı politikanın kategori karşılığı.
+  static final Set<LuckCategory> kilitliKategoriler =
+      Set<LuckCategory>.unmodifiable(
+        kilitliAlanlar.map((ExperienceDimension alan) => alan.kategori),
+      );
 
   /// Kilitli kutulardaki blur şiddeti.
   static const double blurSigma = 10;

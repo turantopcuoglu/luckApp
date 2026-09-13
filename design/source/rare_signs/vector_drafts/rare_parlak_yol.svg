@@ -1,0 +1,16 @@
+<!-- Nadir İşaret 12 — Parlak Yol: nadir yüksek enerji günü. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <defs>
+    <linearGradient id="road" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#D8F04A"/>
+      <stop offset="1" stop-color="#FFF9F0"/>
+    </linearGradient>
+  </defs>
+  <rect x="5" y="5" width="290" height="410" rx="24" fill="#07162F" stroke="#D3A953" stroke-width="4"/>
+  <path d="M31 400c84-24 128-77 132-158 3-67 27-118 73-153" fill="none" stroke="url(#road)" stroke-width="37" stroke-linecap="round"/>
+  <path d="M229 48c-42 0-67 32-67 80v91h134v-91c0-48-25-80-67-80Z" fill="#FFF9F0" stroke="#D3A953" stroke-width="5"/>
+  <path d="M229 88c-20 0-31 16-31 43v88h62v-88c0-27-11-43-31-43Z" fill="#07162F"/>
+  <circle cx="229" cy="153" r="11" fill="#D8F04A"/>
+  <path d="M34 105c37 25 70 25 99 0M40 310c37-8 65-24 86-48" fill="none" stroke="#9B8AF2" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="61" cy="87" r="8" fill="#FF8B73"/>
+</svg>

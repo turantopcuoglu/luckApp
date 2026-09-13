@@ -5,6 +5,12 @@ import 'package:flutter/animation.dart';
 /// Magic number yasağı gereği ekrandaki tüm özel ölçüler buradan okunur;
 /// genel boşluk/radius değerleri `core/theme/app_dimens.dart`tan gelir.
 abstract final class DailyLuckConfig {
+  /// Statik günlük kartın 2:3 oranlı genişliği.
+  static const double todayCardWidth = 220;
+
+  /// Motorun genel ve alan puanlarının üst sınırı.
+  static const int todayScoreMax = 100;
+
   /// Skor halkasının dış çapı.
   static const double halkaCapi = 220;
 

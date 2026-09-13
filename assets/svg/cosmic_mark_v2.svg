@@ -1,0 +1,16 @@
+<!-- Üretim marka işareti: açılan kapı, yıldız ve ışık yolu. İsme bağımlı değildir. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="night"><stop stop-color="#12344B"/><stop offset="1" stop-color="#07162F"/></radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#B9873D"/><stop offset=".42" stop-color="#FFEAC1"/><stop offset=".7" stop-color="#EBCB89"/><stop offset="1" stop-color="#AB7942"/></linearGradient>
+  </defs>
+  <path fill="url(#night)" d="M0 0h512v512H0z"/>
+  <circle cx="256" cy="256" r="202" fill="none" stroke="#D8B779" stroke-width="2" opacity=".42"/>
+  <path d="M142 386V237c0-68 40-116 114-157 74 41 114 89 114 157v149" fill="none" stroke="url(#gold)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M163 378V239c0-58 32-96 93-134 61 38 93 76 93 134v139" fill="none" stroke="#FFEAC1" stroke-width="3" opacity=".5"/>
+  <path d="M256 158l15 51 47 17-47 16-15 54-15-54-47-16 47-17z" fill="url(#gold)"/>
+  <path d="M246 307c-13 31-52 56-87 70 48-7 91-16 121-35-2 28-24 48-72 79 70-12 121-38 161-62" fill="none" stroke="url(#gold)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M265 306c0 11-7 21-19 30" fill="none" stroke="#83E7ED" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="96" cy="271" r="4" fill="#83E7ED"/>
+  <circle cx="416" cy="271" r="4" fill="#83E7ED"/>
+</svg>

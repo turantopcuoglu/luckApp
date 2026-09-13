@@ -6,6 +6,8 @@ import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/core/storage/user_repository.dart';
 
+import '../fixtures/legacy_storage_fixtures.dart';
+
 void main() {
   late Directory geciciDizin;
   late Box<Map<dynamic, dynamic>> kutu;
@@ -78,17 +80,24 @@ void main() {
     });
 
     test('eski map (bildirim anahtarsız) geriye uyumlu okunur', () {
-      // Yeni alanlar eklenmeden önce yazılmış bir kaydı taklit eder.
-      final Map<String, dynamic> eskiMap = <String, dynamic>{
-        'isim': 'Turan',
-        'dogumTarihi': DateTime(1990, 5, 15).toIso8601String(),
-        'onboardingTamam': true,
-      };
-
-      final UserProfile okunan = UserProfile.fromMap(eskiMap);
+      final UserProfile okunan = UserProfile.fromMap(legacyUserProfileFixture);
       expect(okunan.bildirimlerAcik, isTrue);
       expect(okunan.aksamBildirimDakika, isNull);
       expect(okunan.sabahBildirimDakika, isNull);
+    });
+
+    test('sabit eski profil fixture\'ı Hive üzerinden açılır', () async {
+      await kutu.put(
+        StorageKeys.profilKaydi,
+        Map<dynamic, dynamic>.from(legacyUserProfileFixture),
+      );
+
+      final UserProfile okunan = repo.profil()!;
+      expect(okunan.isim, 'Turan');
+      expect(okunan.dogumTarihi, DateTime(1990, 5, 15));
+      expect(okunan.onboardingTamam, isTrue);
+      expect(okunan.bildirimlerAcik, isTrue);
+      expect(okunan.dil, isNull);
     });
 
     test('toMap→fromMap round-trip bildirim alanlarını korur', () {

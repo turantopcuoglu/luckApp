@@ -38,7 +38,7 @@ class NotificationService {
       const InitializationSettings ayarlar = InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         iOS: DarwinInitializationSettings(
-          // İzin, onboarding sonunda açıkça istenir (izinIste).
+          // İzin yalnız kullanıcının Profil'deki açma eylemiyle istenir.
           requestAlertPermission: false,
           requestBadgePermission: false,
           requestSoundPermission: false,
@@ -70,7 +70,7 @@ class NotificationService {
   /// Bildirim iznini ister; verildiyse true.
   ///
   /// Android 13+ çalışma zamanı izni, iOS ilk kurulum izni buradan
-  /// akar (onboarding sonunda çağrılır — plan madde 4).
+  /// akar; başlangıçta değil, kullanıcının açık etkinleştirme eyleminde çağrılır.
   Future<bool> izinIste() async {
     try {
       final bool? android = await _eklenti

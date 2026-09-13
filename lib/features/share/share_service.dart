@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -14,6 +15,7 @@ import 'recap_strings.dart';
 import 'share_config.dart';
 import 'share_strings.dart';
 import 'story_card.dart';
+import 'story_style.dart';
 
 /// [ShareService] örneğini sağlar (testte sahtesiyle override edilir).
 final Provider<ShareService> shareServiceProvider = Provider<ShareService>(
@@ -34,9 +36,17 @@ class ShareService {
     required LuckResult sonuc,
     required AppDil dil,
     Set<LuckCategory> kilitliKategoriler = const <LuckCategory>{},
+    StoryStyle style = StoryStyle.portal,
+    bool hideScore = false,
   }) async {
     final Uint8List png = await kartPngUret(
-      StoryCard(sonuc: sonuc, dil: dil, kilitliKategoriler: kilitliKategoriler),
+      StoryCard(
+        sonuc: sonuc,
+        dil: dil,
+        kilitliKategoriler: kilitliKategoriler,
+        style: style,
+        hideScore: hideScore,
+      ),
     );
     await Share.shareXFiles(<XFile>[
       XFile.fromData(png, mimeType: 'image/png', name: ShareConfig.dosyaAdi),
@@ -62,6 +72,8 @@ class ShareService {
   /// boyama tamamen off-screen yapılır (plan Session 7, madde 2).
   /// Public ve UI'dan bağımsızdır ki tek başına test edilebilsin.
   Future<Uint8List> kartPngUret(Widget kart) async {
+    // Fontlar pubspec içinde paketlidir; her paylaşımda yeniden FontLoader
+    // çalıştırmak global metin ağacını gereksiz yere geçersizleştirir.
     final ui.FlutterView goruntu = ui.PlatformDispatcher.instance.implicitView!;
     final RenderRepaintBoundary sinir = RenderRepaintBoundary();
 
@@ -87,18 +99,58 @@ class ShareService {
           child: Directionality(textDirection: TextDirection.ltr, child: kart),
         ).attachToRenderTree(insaSahibi);
 
-    insaSahibi
-      ..buildScope(eleman)
-      ..finalizeTree();
-    boruHatti
-      ..flushLayout()
-      ..flushCompositingBits()
-      ..flushPaint();
+    try {
+      if (kart is StoryCard) {
+        final Completer<void> ready = Completer<void>();
+        final ImageStream stream = kart.sceneProvider.resolve(
+          ImageConfiguration.empty,
+        );
+        final ImageStreamListener listener = ImageStreamListener(
+          (ImageInfo info, bool sync) {
+            info.dispose();
+            if (!ready.isCompleted) ready.complete();
+          },
+          onError: (Object error, StackTrace? stack) {
+            if (!ready.isCompleted) ready.completeError(error, stack);
+          },
+        );
+        stream.addListener(listener);
+        try {
+          await ready.future;
+        } finally {
+          stream.removeListener(listener);
+        }
+      }
+      insaSahibi
+        ..buildScope(eleman)
+        ..finalizeTree();
+      boruHatti
+        ..flushLayout()
+        ..flushCompositingBits()
+        ..flushPaint();
 
-    final ui.Image resim = await sinir.toImage();
-    final ByteData? veri = await resim.toByteData(
-      format: ui.ImageByteFormat.png,
-    );
-    return veri!.buffer.asUint8List();
+      final ui.Image resim = await sinir.toImage();
+      try {
+        final ByteData? veri = await resim.toByteData(
+          format: ui.ImageByteFormat.png,
+        );
+        return veri!.buffer.asUint8List();
+      } finally {
+        resim.dispose();
+      }
+    } finally {
+      RenderObjectToWidgetAdapter<RenderBox>(
+        container: sinir,
+      ).attachToRenderTree(insaSahibi, eleman);
+      insaSahibi
+        ..buildScope(eleman)
+        ..finalizeTree();
+      insaSahibi.focusManager.dispose();
+      boruHatti.rootNode = null;
+      kokGorunum.child?.dispose();
+      sinir.dispose();
+      kokGorunum.dispose();
+      boruHatti.dispose();
+    }
   }
 }

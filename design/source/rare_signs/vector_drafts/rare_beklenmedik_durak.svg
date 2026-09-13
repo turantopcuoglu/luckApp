@@ -1,0 +1,10 @@
+<!-- Nadir İşaret 10 — Beklenmedik Durak: küçük bir ara ve fark edilen ayrıntı. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <rect x="5" y="5" width="290" height="410" rx="24" fill="#07162F" stroke="#D3A953" stroke-width="4"/>
+  <path d="M24 378c76-11 125-56 147-135 15-53 39-90 73-111" fill="none" stroke="#F7F0E5" stroke-width="32" stroke-linecap="round"/>
+  <path d="M61 274h128v29H61Z" fill="#D3A953"/>
+  <path d="M75 303v45M175 303v45" stroke="#D3A953" stroke-width="10" stroke-linecap="round"/>
+  <path d="M223 101v150M205 126h36l-18-26-18 26Z" fill="#D8F04A" stroke="#D8F04A" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M46 117c27-21 55-21 82 0" fill="none" stroke="#9B8AF2" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="72" cy="93" r="8" fill="#FF8B73"/>
+</svg>

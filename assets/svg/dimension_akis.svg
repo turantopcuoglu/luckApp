@@ -1,0 +1,4 @@
+<!-- Akış alanı ikonu: uyumlu biçimde ilerleyen üç akış çizgisi. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <path d="M3 7c3.2-3 5.8 3 9 0s5.8 3 9 0M3 12c3.2-3 5.8 3 9 0s5.8 3 9 0M3 17c3.2-3 5.8 3 9 0s5.8 3 9 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

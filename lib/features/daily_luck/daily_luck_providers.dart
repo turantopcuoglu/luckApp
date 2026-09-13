@@ -19,16 +19,18 @@ final Provider<DateTime> bugunProvider = Provider<DateTime>(
 ///
 /// Onboarding (Session 6) tamamlanana kadar kayıtlı profil yoksa
 /// misafir profiline düşer; böylece ekran her koşulda çalışır.
-final Provider<UserProfile> aktifProfilProvider = Provider<UserProfile>(
-  (Ref ref) =>
-      ref.watch(userRepositoryProvider).profil() ??
+final Provider<UserProfile> aktifProfilProvider = Provider<UserProfile>((
+  Ref ref,
+) {
+  ref.watch(profilDegisiklikleriProvider);
+  return ref.watch(userRepositoryProvider).profil() ??
       UserProfile(
         isim: TrStrings.misafirIsmi,
         // Misafir için sabit doğum tarihi: deterministik skor üretimi
         // isteyen kural 8 gereği rastgele bir değer KULLANILAMAZ.
         dogumTarihi: DateTime(2000),
-      ),
-);
+      );
+});
 
 /// Cihazın türetilmiş uygulama dili (kullanıcı açık tercih yapmadıysa).
 ///

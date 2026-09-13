@@ -1,224 +1,197 @@
 import 'package:flutter/material.dart';
-
 import '../../core/localization/app_dil.dart';
 import '../../core/luck_engine/luck_engine.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_typography.dart';
+import '../../core/theme/cosmic_config.dart';
+import '../daily_luck/today_strings.dart';
 import '../daily_luck/tr_strings.dart';
-import '../daily_luck/widgets/score_ring.dart';
 import 'share_config.dart';
 import 'share_strings.dart';
+import 'story_style.dart';
 
-/// 1080x1920 story formatında paylaşım kartı (off-screen render edilir).
-///
-/// Tasarım ekrandakinden bilinçli olarak farklı: tam ekran çapraz
-/// gradient, dev tipografi, kategori mini barları ve alt köşede marka
-/// (plan Session 7, madde 4).
-///
-/// Not: Metinler tema/GoogleFonts yerine yerel sabit stiller kullanır;
-/// off-screen render ağacında asenkron font yüklemesine güvenilmez.
-///
-/// Gizlilik/premium: [kilitliKategoriler] içindeki kategorilerin
-/// skoru karta HİÇ çizilmez — sayı yerine kilit ikonu, bar boş kalır.
-/// Satır yine de görünür ki paylaşılan görsel premium'u tanıtsın.
+/// Tek sahne, okunaklı canlı metin ve gerçek kayıttan üretilen 9:16 Story.
 class StoryCard extends StatelessWidget {
-  /// Günün [sonuc]u ile kart oluşturur.
+  /// Kilitli veya kullanıcının gizlediği değerleri PNG'ye de eklemez.
   const StoryCard({
     required this.sonuc,
     required this.dil,
     this.kilitliKategoriler = const <LuckCategory>{},
+    this.style = StoryStyle.portal,
+    this.hideScore = false,
     super.key,
   });
 
-  /// Paylaşılan günün sonucu.
+  /// Yeniden hesaplanmayan günlük kayıt.
   final LuckResult sonuc;
 
-  /// Aktif uygulama dili.
+  /// Paylaşım dili.
   final AppDil dil;
 
-  /// Skoru maskelenecek (premium kilitli) kategoriler.
+  /// Yetkisi olmayan kategoriler.
   final Set<LuckCategory> kilitliKategoriler;
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: ShareConfig.kartBoyutu.width,
-      height: ShareConfig.kartBoyutu.height,
-      child: DecoratedBox(
-        // Dramatik zemin: lacivertten mora çapraz gradient.
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: <Color>[
-              AppColors.background,
-              Color(0xFF231C4E),
-              Color(0xFF43317A),
-            ],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(ShareConfig.kenarBoslugu),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // Üst: tarih.
-              Text(
-                TrStrings.tarihMetni(dil, sonuc.gun),
-                style: const TextStyle(
-                  fontSize: ShareConfig.tarihPunto,
-                  color: AppColors.textSecondary,
-                  letterSpacing: 2,
-                ),
-              ),
-              const Spacer(),
+  /// Seçilen sahne.
+  final StoryStyle style;
 
-              // Orta: dev skor halkası + dev sayı.
-              Center(
-                child: SizedBox(
-                  width: ShareConfig.halkaCapi,
-                  height: ShareConfig.halkaCapi,
-                  child: CustomPaint(
-                    painter: ScoreRingPainter(
-                      oran: sonuc.genelSkor / EngineConfig.skorMaks,
-                      kalinlik: ShareConfig.halkaKalinligi,
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Text(
-                            '${sonuc.genelSkor}',
-                            style: const TextStyle(
-                              fontSize: ShareConfig.skorPunto,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.gold,
-                              height: 1,
-                            ),
-                          ),
-                          Text(
-                            ShareStrings.genelSkor(dil),
-                            style: const TextStyle(
-                              fontSize: ShareConfig.skorEtiketPunto,
-                              color: AppColors.textSecondary,
-                              letterSpacing: 10,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const Spacer(),
+  /// Genel skor ve bütün kategori değerlerini kaldırır.
+  final bool hideScore;
 
-              // Alt: kategori mini barları. Kilitli kategorilerin
-              // gerçek skoru bara hiç aktarılmaz (gizlilik).
-              for (final LuckCategory kategori in LuckCategory.values)
-                _KategoriBari(
-                  kategori: kategori,
-                  dil: dil,
-                  skor: kilitliKategoriler.contains(kategori)
-                      ? 0
-                      : sonuc.kategoriSkorlari[kategori] ?? 0,
-                  kilitli: kilitliKategoriler.contains(kategori),
-                ),
-              const SizedBox(height: ShareConfig.kenarBoslugu / 2),
+  /// Skora ait tipografik vurgu.
+  CosmicTone get tone => CosmicTone.fromScore(sonuc.genelSkor);
 
-              // Alt köşe: uygulama imzası.
-              const Text(
-                ShareStrings.marka,
-                style: TextStyle(
-                  fontSize: ShareConfig.markaPunto,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.gold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+  /// Off-screen yakalamadan önce çözülecek tek sahne.
+  String get sceneAsset => style.sceneAsset;
 
-/// Tek kategori satırı: etiket — dolan bar — skor.
-///
-/// [kilitli] ise bar boş kalır ve skor yerine kilit ikonu çizilir.
-class _KategoriBari extends StatelessWidget {
-  const _KategoriBari({
-    required this.kategori,
-    required this.skor,
-    required this.dil,
-    this.kilitli = false,
-  });
+  /// Önizleme ve PNG aynı görsel anahtarını kullanır.
+  ImageProvider<Object> get sceneProvider =>
+      ResizeImage(AssetImage(sceneAsset), width: ShareConfig.captureImageWidth);
 
-  final LuckCategory kategori;
-
-  /// Aktif uygulama dili.
-  final AppDil dil;
-  final int skor;
-  final bool kilitli;
+  TextStyle _text(
+    double size, {
+    bool serif = false,
+    Color color = Colors.white,
+  }) => TextStyle(
+    fontFamily: serif ? AppTypography.headingFamily : AppTypography.bodyFamily,
+    fontSize: size,
+    height: 1.2,
+    color: color,
+    shadows: const <Shadow>[
+      Shadow(color: Color(0xE6000815), blurRadius: 16),
+      Shadow(color: Color(0xFF000711), offset: Offset(0, 2), blurRadius: 4),
+    ],
+  );
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: ShareConfig.kategoriSatirYuksekligi,
-      child: Row(
-        children: <Widget>[
-          SizedBox(
-            width: ShareConfig.kategoriEtiketGenisligi,
-            child: Text(
-              kategori.etiket(dil),
-              style: const TextStyle(
-                fontSize: ShareConfig.kategoriPunto,
-                color: AppColors.textPrimary,
-              ),
+  Widget build(BuildContext context) => MediaQuery(
+    data: const MediaQueryData(
+      size: ShareConfig.kartBoyutu,
+      textScaler: TextScaler.noScaling,
+    ),
+    child: SizedBox.fromSize(
+      size: ShareConfig.kartBoyutu,
+      child: ColoredBox(
+        color: const Color(0xFF041428),
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Image(
+              image: sceneProvider,
+              fit: BoxFit.cover,
+              excludeFromSemantics: true,
             ),
-          ),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadius.full),
-              child: SizedBox(
-                height: ShareConfig.barYuksekligi,
-                child: Stack(
-                  children: <Widget>[
-                    Container(color: AppColors.surface),
-                    // Kilitli satırda dolgu çizilmez; oran bile skoru
-                    // ele verir.
-                    if (!kilitli)
-                      FractionallySizedBox(
-                        widthFactor: skor / EngineConfig.skorMaks,
-                        child: Container(color: AppColors.gold),
-                      ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: <Color>[
+                    Color(0x00041020),
+                    Color(0xA6041020),
+                    Color(0x33041020),
+                    Color(0xE6041020),
                   ],
+                  stops: <double>[0, .42, .65, 1],
                 ),
               ),
             ),
-          ),
-          SizedBox(
-            width: ShareConfig.kategoriSkorGenisligi,
-            child: kilitli
-                ? const Align(
-                    alignment: Alignment.centerRight,
-                    child: Icon(
-                      Icons.lock_rounded,
-                      color: AppColors.gold,
-                      size: ShareConfig.kilitIkonBoyutu,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                ShareConfig.kenarBoslugu,
+                ShareConfig.storySafeTop,
+                ShareConfig.kenarBoslugu,
+                ShareConfig.storySafeBottom,
+              ),
+              child: Column(
+                children: <Widget>[
+                  const Spacer(flex: 3),
+                  Text(
+                    hideScore
+                        ? dil.sec('Bugünün kartı', 'Today’s card')
+                        : ShareStrings.genelSkor(dil),
+                    style: _text(ShareConfig.skorEtiketPunto, serif: true),
+                  ),
+                  if (!hideScore)
+                    Text(
+                      '${sonuc.genelSkor}',
+                      style: _text(
+                        ShareConfig.skorPunto,
+                        serif: true,
+                        color: CosmicConfig.goldLight,
+                      ),
                     ),
-                  )
-                : Text(
-                    '$skor',
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(
-                      fontSize: ShareConfig.kategoriPunto,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.gold,
+                  const SizedBox(height: ShareConfig.elementGap),
+                  Text(
+                    TrStrings.tarihMetni(dil, sonuc.gun),
+                    style: _text(ShareConfig.tarihPunto),
+                  ),
+                  const Spacer(flex: 3),
+                  Text(
+                    TodayStrings.scoreTitle(dil, sonuc.genelSkor),
+                    textAlign: TextAlign.center,
+                    style: _text(ShareConfig.quoteSize, serif: true),
+                  ),
+                  const SizedBox(height: ShareConfig.sectionGap),
+                  if (!hideScore)
+                    Row(
+                      children: <Widget>[
+                        for (final LuckCategory category in LuckCategory.values)
+                          Expanded(
+                            child: Column(
+                              children: <Widget>[
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    category.etiket(dil),
+                                    style: _text(ShareConfig.categoryLabelSize),
+                                  ),
+                                ),
+                                const SizedBox(height: ShareConfig.elementGap),
+                                if (kilitliKategoriler.contains(category))
+                                  Icon(
+                                    Icons.lock_rounded,
+                                    size: ShareConfig.kilitIkonBoyutu,
+                                    color: CosmicConfig.goldLight,
+                                    semanticLabel: ShareStrings.locked(dil),
+                                  )
+                                else
+                                  Text(
+                                    '${sonuc.kategoriSkorlari[category] ?? 0}',
+                                    style: _text(
+                                      ShareConfig.kategoriPunto,
+                                      color: CosmicConfig.goldLight,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  const SizedBox(height: ShareConfig.sectionGap),
+                  const Icon(
+                    Icons.nightlight_round,
+                    size: ShareConfig.markaPunto,
+                    color: CosmicConfig.goldLight,
+                  ),
+                  Text(
+                    ShareStrings.marka,
+                    style: _text(
+                      ShareConfig.markaPunto,
+                      serif: true,
+                      color: CosmicConfig.goldLight,
                     ),
                   ),
-          ),
-        ],
+                  const SizedBox(height: ShareConfig.elementGap),
+                  Text(
+                    TodayStrings.scoreNote(dil),
+                    textAlign: TextAlign.center,
+                    style: _text(ShareConfig.noteSize),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
 }

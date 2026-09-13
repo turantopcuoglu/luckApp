@@ -1,0 +1,5 @@
+<!-- Üretim alanı ikonu: küçük bir tohumdan yükselen düzenli filiz. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <path d="M12 21V10M12 13c-5 0-7-2.5-7-6 4 0 7 1.7 7 6ZM12 10c5 0 7-2.5 7-6-4 0-7 1.7-7 6Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M6 21h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

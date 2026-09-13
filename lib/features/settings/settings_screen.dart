@@ -10,10 +10,20 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/theme/cosmic_config.dart';
+import '../../shared/widgets/cosmic_page.dart';
+import '../categories/categories_strings.dart';
+import '../categories/paywall_screen.dart';
 import '../daily_luck/daily_luck_providers.dart';
+import '../daily_luck/tr_strings.dart';
+import '../feedback/feedback_strings.dart';
 import '../feedback/notification_service.dart';
 import 'settings_config.dart';
 import 'settings_strings.dart';
+
+/// İzin diyaloğu açıkken tekrarlanan etkinleştirme isteklerini engeller.
+final AutoDisposeStateProvider<bool> bildirimIzniBekleniyorProvider =
+    StateProvider.autoDispose<bool>((Ref ref) => false);
 
 /// Ayarlar ekranı: isim düzenleme, bildirim tercihleri ve hakkında
 /// (Phase 1). Ana ekrandaki dişli ikonundan açılır.
@@ -22,7 +32,10 @@ import 'settings_strings.dart';
 /// (CLAUDE.md kural 5: setState yalnız lokal denetleyici için).
 class SettingsScreen extends ConsumerStatefulWidget {
   /// Varsayılan kurucu.
-  const SettingsScreen({super.key});
+  const SettingsScreen({this.title, super.key});
+
+  /// Kabuğa gömülünce Profil başlığı; bağımsız rotada varsayılan Ayarlar.
+  final String? title;
 
   @override
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
@@ -111,12 +124,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   /// Bildirimleri açar/kapatır: kapatınca iptal eder, açınca planlar.
   Future<void> _bildirimlerToggle(bool acik) async {
+    if (ref.read(bildirimIzniBekleniyorProvider)) return;
+    final NotificationService servis = ref.read(notificationServiceProvider);
+    if (acik) {
+      ref.read(bildirimIzniBekleniyorProvider.notifier).state = true;
+      final bool granted = await servis.izinIste();
+      if (!mounted) return;
+      ref.read(bildirimIzniBekleniyorProvider.notifier).state = false;
+      if (!granted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              FeedbackStrings.izinReddiMesaji(ref.read(dilProvider)),
+            ),
+          ),
+        );
+        return;
+      }
+    }
     final UserProfile yeni = ref
         .read(aktifProfilProvider)
         .copyWith(bildirimlerAcik: acik);
     _profilKaydet(yeni);
 
-    final NotificationService servis = ref.read(notificationServiceProvider);
     if (acik) {
       await servis.gunlukBildirimleriPlanla(
         simdi: DateTime.now(),
@@ -205,14 +235,77 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       sabahDakika,
     );
 
-    return Scaffold(
-      appBar: AppBar(title: Text(SettingsStrings.baslik(dil))),
+    return CosmicPage(
+      appBar: AppBar(title: Text(widget.title ?? SettingsStrings.baslik(dil))),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Container(
+                    width: 76,
+                    height: 76,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF0B243A),
+                      border: Border.all(
+                        color: CosmicConfig.goldLight,
+                        width: 1.5,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      profil.isim.characters.firstOrNull?.toUpperCase() ?? '✦',
+                      style: yaziTemasi.headlineLarge,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.lg),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(profil.isim, style: yaziTemasi.headlineSmall),
+                        if (profil.dogumTarihi != null)
+                          Text(
+                            TrStrings.tarihMetni(dil, profil.dogumTarihi!),
+                            style: yaziTemasi.bodyMedium,
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Material(
+                color: const Color(0xA60C233B),
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  side: BorderSide(
+                    color: CosmicConfig.gold.withValues(alpha: .7),
+                  ),
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
+                  leading: const Icon(
+                    Icons.auto_awesome,
+                    color: CosmicConfig.gold,
+                  ),
+                  title: const Text(CategoriesStrings.paywallBaslik),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const PaywallScreen(),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
               // — İsim bölümü —
               Text(
                 SettingsStrings.isimBolumu(dil),
@@ -269,7 +362,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 title: Text(SettingsStrings.bildirimAcik(dil)),
                 value: bildirimlerAcik,
                 activeThumbColor: AppColors.gold,
-                onChanged: _bildirimlerToggle,
+                onChanged: ref.watch(bildirimIzniBekleniyorProvider)
+                    ? null
+                    : _bildirimlerToggle,
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,

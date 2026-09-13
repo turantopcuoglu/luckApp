@@ -1,0 +1,9 @@
+<!-- Nadir İşaret 11 — Yan Yana İzler: aynı yönde farklı ritimler. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <rect x="5" y="5" width="290" height="410" rx="24" fill="#07162F" stroke="#D3A953" stroke-width="4"/>
+  <path d="M79 392c44-42 66-91 66-147S123 140 79 91" fill="none" stroke="#F7F0E5" stroke-width="28" stroke-linecap="round"/>
+  <path d="M221 392c-44-42-66-91-66-147s22-105 66-154" fill="none" stroke="#BFE5F2" stroke-width="28" stroke-linecap="round"/>
+  <path d="M112 346c13-12 25-12 38 0M150 299c13-12 25-12 38 0M112 252c13-12 25-12 38 0M150 205c13-12 25-12 38 0M112 158c13-12 25-12 38 0" fill="none" stroke="#D8F04A" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="85" cy="67" r="9" fill="#FF8B73"/>
+  <circle cx="215" cy="67" r="9" fill="#9B8AF2"/>
+</svg>

@@ -1,0 +1,12 @@
+<!-- Açık ve koyu yüzeylerde düşük opaklıkla kullanılan kesişen yol deseni. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <g fill="none" stroke-linecap="round">
+    <path d="M-20 208C42 201 72 163 86 116S119 28 179-10" stroke="#D3A953" stroke-width="2" stroke-opacity=".22"/>
+    <path d="M12 250c25-64 70-95 135-95 48 0 79-24 106-75" stroke="#9B8AF2" stroke-width="3" stroke-opacity=".12"/>
+    <path d="M-16 63c60 5 93 30 111 76 15 38 47 65 96 82" stroke="#BFE5F2" stroke-width="3" stroke-opacity=".14"/>
+    <path d="M166 55c18-16 36-16 54 0" stroke="#FF8B73" stroke-width="5" stroke-opacity=".18"/>
+  </g>
+  <circle cx="86" cy="116" r="5" fill="#D8F04A" fill-opacity=".2"/>
+  <path d="M178 28l19 8-17 8 5-7-7-9Z" fill="#F7F0E5" fill-opacity=".18"/>
+  <path d="M32 174c6-9 14-9 20 0-6 9-14 9-20 0Z" fill="#FF8B73" fill-opacity=".16"/>
+</svg>

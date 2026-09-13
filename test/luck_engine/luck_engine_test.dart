@@ -41,6 +41,100 @@ void main() {
     });
   });
 
+  group('motor golden regresyonu (Kader 2.0 Faz 0)', () {
+    test('beş sabit kullanıcı/gün örneğinin tüm skorları değişmez', () {
+      final goldenlar =
+          <
+            ({
+              String isim,
+              DateTime dogumTarihi,
+              DateTime gun,
+              int genelSkor,
+              Map<LuckCategory, int> kategoriSkorlari,
+            })
+          >[
+            (
+              isim: 'Turan',
+              dogumTarihi: DateTime(1990, 5, 15),
+              gun: DateTime(2026, 7, 6),
+              genelSkor: 62,
+              kategoriSkorlari: const <LuckCategory, int>{
+                LuckCategory.ask: 78,
+                LuckCategory.para: 53,
+                LuckCategory.saglik: 75,
+                LuckCategory.risk: 49,
+                LuckCategory.sosyal: 46,
+              },
+            ),
+            (
+              isim: 'Ayşe',
+              dogumTarihi: DateTime(1988, 11, 2),
+              gun: DateTime(2026, 1, 1),
+              genelSkor: 55,
+              kategoriSkorlari: const <LuckCategory, int>{
+                LuckCategory.ask: 58,
+                LuckCategory.para: 70,
+                LuckCategory.saglik: 47,
+                LuckCategory.risk: 47,
+                LuckCategory.sosyal: 47,
+              },
+            ),
+            (
+              isim: 'Deniz',
+              dogumTarihi: DateTime(2000, 2, 29),
+              gun: DateTime(2024, 2, 29),
+              genelSkor: 72,
+              kategoriSkorlari: const <LuckCategory, int>{
+                LuckCategory.ask: 58,
+                LuckCategory.para: 79,
+                LuckCategory.saglik: 74,
+                LuckCategory.risk: 69,
+                LuckCategory.sosyal: 83,
+              },
+            ),
+            (
+              isim: 'Misafir',
+              dogumTarihi: DateTime(2000),
+              gun: DateTime(2030, 12, 31),
+              genelSkor: 64,
+              kategoriSkorlari: const <LuckCategory, int>{
+                LuckCategory.ask: 60,
+                LuckCategory.para: 89,
+                LuckCategory.saglik: 78,
+                LuckCategory.risk: 39,
+                LuckCategory.sosyal: 37,
+              },
+            ),
+            (
+              isim: 'Alex',
+              dogumTarihi: DateTime(1975, 8, 23),
+              gun: DateTime(2027, 3, 14),
+              genelSkor: 52,
+              kategoriSkorlari: const <LuckCategory, int>{
+                LuckCategory.ask: 37,
+                LuckCategory.para: 70,
+                LuckCategory.saglik: 60,
+                LuckCategory.risk: 40,
+                LuckCategory.sosyal: 47,
+              },
+            ),
+          ];
+
+      for (final golden in goldenlar) {
+        final LuckResult sonuc = motor.hesapla(
+          kullanici: UserSeed.fromIsim(
+            isim: golden.isim,
+            dogumTarihi: golden.dogumTarihi,
+          ),
+          gun: golden.gun,
+        );
+        final String neden = '${golden.isim} / ${golden.gun} değişti';
+        expect(sonuc.genelSkor, golden.genelSkor, reason: neden);
+        expect(sonuc.kategoriSkorlari, golden.kategoriSkorlari, reason: neden);
+      }
+    });
+  });
+
   group('kullanıcıya özgülük', () {
     test('farklı isim farklı skor üretir', () {
       final UserSeed ayse = UserSeed.fromIsim(

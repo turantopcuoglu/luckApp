@@ -97,4 +97,36 @@ class LuckHistoryRepository {
       mevcut.copyWith(feedbackPozitif: pozitif, feedbackEmoji: emoji),
     );
   }
+
+  /// İlk kart açılışını kaydeder; tekrarı skoru veya ilk zamanı değiştirmez.
+  /// Saat dışarıdan verilir, testlerde gerçek cihaz saatine bağlı değildir.
+  /// Hive put belleği senkron günceller: okuma/yazma arasında await yoktur.
+  Future<void> revealKaydet(DateTime gun, {required DateTime revealedAt}) {
+    final DailyRecord? mevcut = getir(gun);
+    if (mevcut == null) {
+      throw StateError('Kart açılamaz: $gun için kayıt yok.');
+    }
+    if (mevcut.revealedAt != null) return Future<void>.value();
+    return kaydet(mevcut.copyWith(revealedAt: revealedAt));
+  }
+
+  /// Üç seçenekli geri bildirimi ilgili güne yazar; sonuç ve reveal korunur.
+  /// Yeni seçim eski emojiyi temizler; etiketler isteğe bağlıdır.
+  Future<void> feedbackDurumuKaydet(
+    DateTime gun, {
+    required FeedbackMood mood,
+    List<String> tags = const <String>[],
+  }) {
+    final DailyRecord? mevcut = getir(gun);
+    if (mevcut == null) {
+      throw StateError('Feedback kaydedilemez: $gun için kayıt yok.');
+    }
+    return kaydet(
+      mevcut.copyWith(
+        feedbackMood: mood,
+        feedbackTags: tags,
+        feedbackEmoji: null,
+      ),
+    );
+  }
 }

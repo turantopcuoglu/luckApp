@@ -14,6 +14,15 @@ import 'package:kader/features/settings/settings_strings.dart';
 
 /// Bildirim çağrılarını kaydeden sahte servis (gerçek plugin çağrısı yok).
 class FakeNotificationService extends NotificationService {
+  bool izinVerildi = true;
+  int izinCagrisi = 0;
+
+  @override
+  Future<bool> izinIste() async {
+    izinCagrisi++;
+    return izinVerildi;
+  }
+
   bool iptalEtCagrildi = false;
   int planlaCagriSayisi = 0;
   int? sonAksamDakika;
@@ -108,7 +117,11 @@ void main() {
   ) async {
     await ekraniAc(tester, temelProfil());
 
+    await tester.ensureVisible(find.byType(TextField));
     await tester.enterText(find.byType(TextField), 'Elif');
+    await tester.ensureVisible(
+      find.text(SettingsStrings.isimKaydet(AppDil.tr)),
+    );
     await tester.tap(find.text(SettingsStrings.isimKaydet(AppDil.tr)));
     await tester.pump();
 
@@ -129,7 +142,11 @@ void main() {
   ) async {
     await ekraniAc(tester, temelProfil());
 
+    await tester.ensureVisible(find.byType(TextField));
     await tester.enterText(find.byType(TextField), 'Elif');
+    await tester.ensureVisible(
+      find.text(SettingsStrings.isimKaydet(AppDil.tr)),
+    );
     await tester.tap(find.text(SettingsStrings.isimKaydet(AppDil.tr)));
     await tester.pump();
     await tester.tap(find.text(SettingsStrings.uyariVazgec(AppDil.tr)));
@@ -143,7 +160,11 @@ void main() {
   ) async {
     await ekraniAc(tester, temelProfil());
 
+    await tester.ensureVisible(find.byType(TextField));
     await tester.enterText(find.byType(TextField), '   ');
+    await tester.ensureVisible(
+      find.text(SettingsStrings.isimKaydet(AppDil.tr)),
+    );
     await tester.tap(find.text(SettingsStrings.isimKaydet(AppDil.tr)));
     await tester.pump();
 
@@ -160,10 +181,12 @@ void main() {
   ) async {
     final FakeNotificationService sahte = await ekraniAc(tester, temelProfil());
 
+    await tester.ensureVisible(find.byType(SwitchListTile));
     await tester.tap(find.byType(SwitchListTile));
     await tester.pump();
 
     expect(sahte.iptalEtCagrildi, isTrue);
+    expect(sahte.izinCagrisi, 0);
     expect(UserRepository(profilKutusu).profil()!.bildirimlerAcik, isFalse);
   });
 
@@ -175,14 +198,33 @@ void main() {
       temelProfil(bildirimlerAcik: false),
     );
 
+    await tester.ensureVisible(find.byType(SwitchListTile));
     await tester.tap(find.byType(SwitchListTile));
     await tester.pump();
 
     expect(sahte.planlaCagriSayisi, greaterThan(0));
+    expect(sahte.izinCagrisi, 1);
     expect(UserRepository(profilKutusu).profil()!.bildirimlerAcik, isTrue);
     // Şanslı saat senkron/bloklamadan geçirilir: değer int? (cache'de
     // bugünün sonucu yoksa null — donmadan planlama yine çağrılır).
     expect(sahte.sonSansliSaatBaslangici, anyOf(isNull, isA<int>()));
+  });
+
+  testWidgets('izin reddedilirse bildirim tercihi kapalı kalır ve planlanmaz', (
+    WidgetTester tester,
+  ) async {
+    final FakeNotificationService service = await ekraniAc(
+      tester,
+      temelProfil(bildirimlerAcik: false),
+    );
+    service.izinVerildi = false;
+    await tester.ensureVisible(find.byType(SwitchListTile));
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    expect(service.izinCagrisi, 1);
+    expect(service.planlaCagriSayisi, 0);
+    expect(UserRepository(profilKutusu).profil()!.bildirimlerAcik, isFalse);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('dil İngilizce seçilince metinler çevrilir ve tercih persist', (
@@ -194,6 +236,7 @@ void main() {
     expect(find.text(SettingsStrings.baslik(AppDil.tr)), findsOneWidget);
 
     // English segmentine dokun.
+    await tester.ensureVisible(find.text(SettingsStrings.dilIngilizce));
     await tester.tap(find.text(SettingsStrings.dilIngilizce));
     await tester.pump();
 
@@ -207,6 +250,9 @@ void main() {
   ) async {
     final FakeNotificationService sahte = await ekraniAc(tester, temelProfil());
 
+    await tester.ensureVisible(
+      find.text(SettingsStrings.aksamHatirlatma(AppDil.tr)),
+    );
     await tester.tap(find.text(SettingsStrings.aksamHatirlatma(AppDil.tr)));
     await tester.pumpAndSettle();
 

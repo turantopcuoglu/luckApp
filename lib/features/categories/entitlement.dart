@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/content/experience_dimension.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import 'categories_config.dart';
 
@@ -13,10 +14,18 @@ final StateProvider<bool> entitlementProvider = StateProvider<bool>(
   (Ref ref) => false,
 );
 
-/// [kategori] şu an kilitli mi? (kilitli listede + premium değil).
+/// Deneyim alanı, ortak premium yetkisine göre şu an kilitli mi?
+final ProviderFamily<bool, ExperienceDimension> alanKilitliProvider =
+    Provider.family<bool, ExperienceDimension>(
+      (Ref ref, ExperienceDimension alan) =>
+          CategoriesConfig.kilitliAlanlar.contains(alan) &&
+          !ref.watch(entitlementProvider),
+    );
+
+/// Eski kategori çağrılarını aynı deneyim alanı kilit politikasına bağlar.
 final ProviderFamily<bool, LuckCategory> kategoriKilitliProvider =
     Provider.family<bool, LuckCategory>(
-      (Ref ref, LuckCategory kategori) =>
-          CategoriesConfig.kilitliKategoriler.contains(kategori) &&
-          !ref.watch(entitlementProvider),
+      (Ref ref, LuckCategory kategori) => ref.watch(
+        alanKilitliProvider(ExperienceDimension.kategoriden(kategori)),
+      ),
     );

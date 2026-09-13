@@ -13,7 +13,7 @@ class GununIcerigi {
     required this.tavsiye,
   });
 
-  /// Üç cümlelik günlük fal yorumu (açılış + orta + kapanış).
+  /// Üç cümlelik günlük düşünme daveti (açılış + orta + kapanış).
   final String yorum;
 
   /// Günün şans rengi.

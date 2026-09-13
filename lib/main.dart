@@ -14,13 +14,14 @@ import 'core/storage/providers.dart';
 import 'core/storage/user_profile.dart';
 import 'core/storage/user_repository.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/app_typography.dart';
 import 'features/daily_luck/daily_luck_providers.dart';
-import 'features/daily_luck/daily_luck_screen.dart';
 import 'features/feedback/feedback_screen.dart';
 import 'features/feedback/notification_service.dart';
 import 'features/home_widget/home_widget_service.dart';
 import 'features/home_widget/widget_payload.dart';
 import 'features/onboarding/welcome_screen.dart';
+import 'features/shell/app_shell.dart';
 import 'shared/widgets/app_route.dart';
 
 /// Kök gezgin anahtarı: bildirim dokunuşları context olmadan
@@ -41,6 +42,7 @@ void _feedbackEkraniniAc() {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppTypography.registerLicenses();
   // Hive kutuları açılır ve provider'lara override ile bağlanır;
   // kutu provider'ları bilerek override'sız çalışmaz (bkz. providers.dart).
   await AppStorage.baslat();
@@ -189,7 +191,7 @@ class KaderApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: onboardingTamam ? const DailyLuckScreen() : const WelcomeScreen(),
+      home: onboardingTamam ? const AppShell() : const WelcomeScreen(),
     );
   }
 }

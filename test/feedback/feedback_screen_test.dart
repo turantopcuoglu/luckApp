@@ -104,6 +104,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('🍀'));
     await tester.pump();
+    await tester.ensureVisible(find.text(FeedbackStrings.kaydet(AppDil.tr)));
     await tester.tap(find.text(FeedbackStrings.kaydet(AppDil.tr)));
     await tester.pump();
     // Pop geçiş animasyonunun bitmesini bekle.
@@ -127,6 +128,7 @@ void main() {
 
     await tester.tap(find.text(FeedbackStrings.hayirEmoji));
     await tester.pump();
+    await tester.ensureVisible(find.text(FeedbackStrings.kaydet(AppDil.tr)));
     await tester.tap(find.text(FeedbackStrings.kaydet(AppDil.tr)));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));

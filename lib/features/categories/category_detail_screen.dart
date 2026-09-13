@@ -7,7 +7,9 @@ import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/theme/cosmic_config.dart';
 import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/cosmic_page.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/tr_strings.dart';
 import '../daily_luck/widgets/score_ring.dart';
@@ -48,7 +50,8 @@ class CategoryDetailScreen extends ConsumerWidget {
           kategori: kategori,
         );
 
-    return Scaffold(
+    return CosmicPage(
+      tone: CosmicTone.balanced,
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,

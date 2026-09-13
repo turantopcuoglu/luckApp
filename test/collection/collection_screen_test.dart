@@ -12,11 +12,14 @@ import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/luck_history_repository.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/user_profile.dart';
+import 'package:kader/core/theme/cosmic_config.dart';
 import 'package:kader/features/collection/collection_screen.dart';
 import 'package:kader/features/collection/collection_strings.dart';
 import 'package:kader/features/collection/widgets/kart_minik.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/widgets/comment_card.dart';
+import 'package:kader/features/share/share_strings.dart';
+import 'package:kader/features/share/story_designer_screen.dart';
 
 void main() {
   late Directory geciciDizin;
@@ -73,6 +76,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: <Override>[
+          cosmicMotionEnabledProvider.overrideWithValue(false),
           userProfileBoxProvider.overrideWithValue(profilKutusu),
           dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
           // Profil seed'i deterministik olsun (yorum doğrulaması için).
@@ -106,8 +110,8 @@ void main() {
     expect(find.byType(KartMinik), findsNWidgets(3));
     // Özet: 3 kart, 1 Altın Gün.
     expect(find.text(CollectionStrings.ozet(AppDil.tr, 3, 1)), findsOneWidget);
-    // Yalnız tek altın kart → tek 🌟 rozeti (özet emoji kullanmaz).
-    expect(find.text(CollectionStrings.altinRozet), findsOneWidget);
+    // Yalnız tek altın kart → yazı tipinden bağımsız tek yıldız rozeti.
+    expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
   });
 
   testWidgets('Altın karta dokununca o günün yorumu bottom sheet\'te belirir', (
@@ -137,5 +141,15 @@ void main() {
 
     expect(find.byType(CommentCard), findsOneWidget);
     expect(find.text(beklenen.yorum), findsOneWidget);
+    await tester.ensureVisible(find.text(ShareStrings.designer(AppDil.tr)));
+    await tester.tap(find.text(ShareStrings.designer(AppDil.tr)));
+    await tester.pumpAndSettle();
+    final StoryDesignerScreen story = tester.widget(
+      find.byType(StoryDesignerScreen),
+    );
+    // Hive'dan geri okunan nesnenin kimliği değil, kayıtlı içeriği korunur.
+    expect(story.result.gun, altinKayit.sonuc.gun);
+    expect(story.result.genelSkor, altinKayit.sonuc.genelSkor);
+    expect(story.result.kategoriSkorlari, altinKayit.sonuc.kategoriSkorlari);
   });
 }

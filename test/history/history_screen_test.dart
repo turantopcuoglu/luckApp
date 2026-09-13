@@ -159,6 +159,7 @@ void main() {
 
     expect(find.text(RecapStrings.bolumBasligi(AppDil.tr)), findsOneWidget);
 
+    await tester.ensureVisible(find.byType(OutlinedButton));
     await tester.tap(find.byType(OutlinedButton));
     await tester.pump();
 

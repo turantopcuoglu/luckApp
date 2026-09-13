@@ -2,23 +2,35 @@
 ///
 /// Magic number yasağı gereği (CLAUDE.md kural 6).
 abstract final class OnboardingConfig {
+  /// Kısa ve okunabilir görünen ad/rumuz sınırı (grapheme).
+  static const int isimMaksUzunluk = 40;
+
+  /// Büyük yazıda doğrulama mesajının satır alanı.
+  static const int hataMaksSatir = 4;
+
   /// Karşılama ekranındaki uygulama ikonunun kenar uzunluğu.
   static const double ikonBoyutu = 120;
 
   /// İkonun köşe yuvarlaklığı (uygulama ikonu hissi için).
   static const double ikonKoseYaricapi = 28;
 
-  /// Doğum tarihi seçicisinin yüksekliği.
-  static const double tarihSeciciYuksekligi = 200;
+  /// Kart hazırlama geçişinin toplam süresi.
+  static const Duration hesaplamaSuresi = Duration(milliseconds: 1600);
 
-  /// Varsayılan doğum tarihi (seçici ilk açıldığında).
-  static final DateTime varsayilanDogumTarihi = DateTime(2000);
+  /// Hazırlama sahnesinin genişliği.
+  static const double hazirlamaBoyutu = 240;
 
-  /// Seçilebilir en eski doğum yılı.
-  static const int enEskiDogumYili = 1920;
+  /// Sahnedeki kapalı kartın genişliği.
+  static const double hazirlamaKartGenisligi = 160;
 
-  /// Sahte hesaplama ekranının toplam süresi (plan: 2.5 sn).
-  static const Duration hesaplamaSuresi = Duration(milliseconds: 2500);
+  /// Kartın ilk yerleşme açısı (radyan).
+  static const double hazirlamaAci = 0.065;
+
+  /// Kart yerleşme mesafesi.
+  static const double hazirlamaMesafe = 18;
+
+  /// Folyo üzerindeki ışığın azami opaklığı.
+  static const double isikOpakligi = 0.24;
 
   /// Parçacık sistemi: parçacık sayısı (plan: 50).
   static const int parcacikSayisi = 50;

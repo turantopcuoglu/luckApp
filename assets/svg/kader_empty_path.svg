@@ -1,0 +1,11 @@
+<!-- Desenlerim ve koleksiyon boş durumları için sakin, astrolojisiz yol illüstrasyonu. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240">
+  <path d="M16 210c50-5 88-28 112-69 18-31 27-68 32-111 6 43 15 80 33 111 24 41 62 64 111 69" fill="#F7F0E5" stroke="#D3A953" stroke-width="2"/>
+  <path d="M160 34c-35 0-56 27-56 67v66h112v-66c0-40-21-67-56-67Z" fill="#07162F" stroke="#D3A953" stroke-width="3"/>
+  <path d="M160 68c-17 0-27 14-27 35v64h54v-64c0-21-10-35-27-35Z" fill="#FFF9F0"/>
+  <path d="M32 213c52-4 95-27 128-72 33 45 76 68 128 72" fill="none" stroke="#BFE5F2" stroke-width="18" stroke-linecap="round"/>
+  <path d="M52 218c46-6 82-24 108-54" fill="none" stroke="#D8F04A" stroke-width="6" stroke-linecap="round"/>
+  <path d="M268 218c-46-6-82-24-108-54" fill="none" stroke="#9B8AF2" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="62" cy="183" rx="15" ry="7" fill="#FF8B73"/>
+  <path d="M247 172c11-14 25-13 35 2-11 12-24 11-35-2Z" fill="#D8F04A"/>
+</svg>

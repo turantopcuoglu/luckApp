@@ -1,80 +1,200 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 import 'app_dimens.dart';
+import 'app_motion.dart';
+import 'app_typography.dart';
 
-/// Uygulamanın tek (dark) temasını üreten sınıf.
-///
-/// Tema `MaterialApp.theme`'e [AppTheme.dark] ile bağlanır; renkler
-/// [AppColors], ölçüler [AppSpacing]/[AppRadius] sabitlerinden gelir.
+/// Modern Tesadüf açık/koyu temaları; bileşenler renkleri ColorScheme'den alır.
+/// Eski feature ekranları taşınana kadar kök uygulama koyu temada kalır.
 abstract final class AppTheme {
-  /// Koyu tema: derin lacivert zemin, altın vurgu, soft mor ikincil.
-  static ThemeData get dark {
-    final ColorScheme scheme = ColorScheme.dark(
-      surface: AppColors.background,
-      surfaceContainer: AppColors.surface,
-      primary: AppColors.gold,
-      onPrimary: AppColors.background,
-      secondary: AppColors.purple,
-      onSecondary: AppColors.textPrimary,
-      error: AppColors.error,
-      onSurface: AppColors.textPrimary,
-      onSurfaceVariant: AppColors.textSecondary,
-    );
+  /// Sıcak krem zemin ve lime ana eylem.
+  static ThemeData get light => _build(Brightness.light);
 
+  /// Derin ink zemin ve lime ana eylem.
+  static ThemeData get dark => _build(Brightness.dark);
+
+  static ThemeData _build(Brightness brightness) {
+    final bool dark = brightness == Brightness.dark;
+    final Color canvas = dark ? AppColors.ink : AppColors.warmCream;
+    final Color surface = dark ? AppColors.inkSurface : AppColors.creamSurface;
+    final Color text = dark ? AppColors.textOnInk : AppColors.textOnCream;
+    final Color muted = dark ? AppColors.mutedOnInk : AppColors.mutedOnCream;
+    final Color outline = dark
+        ? AppColors.outlineOnInk
+        : AppColors.outlineOnCream;
+    final Color divider = dark
+        ? AppColors.dividerOnInk
+        : AppColors.dividerOnCream;
+    final ColorScheme scheme = ColorScheme(
+      brightness: brightness,
+      primary: AppColors.electricLime,
+      onPrimary: AppColors.ink,
+      primaryContainer: AppColors.electricLime,
+      onPrimaryContainer: AppColors.ink,
+      secondary: AppColors.iris,
+      onSecondary: AppColors.ink,
+      secondaryContainer: AppColors.iris,
+      onSecondaryContainer: AppColors.ink,
+      tertiary: AppColors.warmCoral,
+      onTertiary: AppColors.ink,
+      tertiaryContainer: AppColors.iceBlue,
+      onTertiaryContainer: AppColors.ink,
+      error: dark ? AppColors.errorOnInk : AppColors.errorOnCream,
+      onError: dark ? AppColors.ink : AppColors.creamSurface,
+      surface: surface,
+      onSurface: text,
+      surfaceContainerLowest: canvas,
+      surfaceContainerLow: surface,
+      surfaceContainer: surface,
+      surfaceContainerHigh: canvas,
+      surfaceContainerHighest: canvas,
+      onSurfaceVariant: muted,
+      outline: outline,
+      outlineVariant: divider,
+      inverseSurface: dark ? AppColors.creamSurface : AppColors.inkSurface,
+      onInverseSurface: dark ? AppColors.textOnCream : AppColors.textOnInk,
+      inversePrimary: dark ? AppColors.ink : AppColors.electricLime,
+      shadow: AppColors.ink,
+      scrim: AppColors.ink,
+      surfaceTint: Colors.transparent,
+    );
+    final RoundedRectangleBorder shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+    );
+    final ButtonStyle control = ButtonStyle(
+      minimumSize: const WidgetStatePropertyAll<Size>(
+        Size(AppLayout.minTouchTarget, AppLayout.buttonMinHeight),
+      ),
+      padding: const WidgetStatePropertyAll<EdgeInsetsGeometry>(
+        EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+      ),
+      shape: WidgetStatePropertyAll<OutlinedBorder>(shape),
+      tapTargetSize: MaterialTapTargetSize.padded,
+      animationDuration: AppMotion.press,
+      textStyle: WidgetStatePropertyAll<TextStyle>(
+        AppTypography.textTheme(brightness).labelLarge!,
+      ),
+    );
     return ThemeData(
       useMaterial3: true,
+      brightness: brightness,
       colorScheme: scheme,
-      scaffoldBackgroundColor: AppColors.background,
-      textTheme: _textTheme,
+      scaffoldBackgroundColor: canvas,
+      fontFamily: AppTypography.bodyFamily,
+      textTheme: AppTypography.textTheme(
+        brightness,
+      ).apply(bodyColor: text, displayColor: text),
+      disabledColor: muted,
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: text,
+        selectionColor: outline.withValues(alpha: 0.25),
+        selectionHandleColor: text,
+      ),
+      visualDensity: VisualDensity.standard,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
       cardTheme: CardThemeData(
-        color: AppColors.surface,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
+        color: surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: AppElevation.flat,
+        margin: EdgeInsets.zero,
+        shape: shape.copyWith(
+          side: BorderSide(color: divider, width: AppStroke.thin),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: AppColors.gold,
-          foregroundColor: AppColors.background,
-          minimumSize: const Size.fromHeight(AppSpacing.xxl),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.full),
+        style: control.copyWith(
+          backgroundColor: WidgetStateProperty.resolveWith<Color>(
+            (Set<WidgetState> states) => states.contains(WidgetState.disabled)
+                ? divider
+                : scheme.primary,
+          ),
+          foregroundColor: WidgetStateProperty.resolveWith<Color>(
+            (Set<WidgetState> states) => states.contains(WidgetState.disabled)
+                ? muted
+                : scheme.onPrimary,
+          ),
+          side: WidgetStateProperty.resolveWith<BorderSide>(
+            (Set<WidgetState> states) => BorderSide(
+              color: states.contains(WidgetState.focused)
+                  ? outline
+                  : scheme.onPrimary,
+              width: states.contains(WidgetState.focused)
+                  ? AppStroke.focus
+                  : AppStroke.thin,
+            ),
           ),
         ),
       ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: control.copyWith(
+          foregroundColor: WidgetStateProperty.resolveWith<Color>(
+            (Set<WidgetState> states) =>
+                states.contains(WidgetState.disabled) ? muted : text,
+          ),
+          side: WidgetStateProperty.resolveWith<BorderSide>(
+            (Set<WidgetState> states) => BorderSide(
+              color: states.contains(WidgetState.disabled) ? divider : outline,
+              width: states.contains(WidgetState.focused)
+                  ? AppStroke.focus
+                  : AppStroke.control,
+            ),
+          ),
+        ),
       ),
+      textButtonTheme: TextButtonThemeData(
+        style: control.copyWith(
+          foregroundColor: WidgetStatePropertyAll<Color>(text),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          foregroundColor: text,
+          minimumSize: const Size.square(AppLayout.minTouchTarget),
+        ),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: canvas,
+        foregroundColor: text,
+        surfaceTintColor: Colors.transparent,
+        elevation: AppElevation.flat,
+        scrolledUnderElevation: AppElevation.flat,
+        centerTitle: false,
+      ),
+      dividerTheme: DividerThemeData(color: divider, thickness: AppStroke.thin),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: AppElevation.overlay,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppRadius.lg),
+          ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surface,
+        hintStyle: TextStyle(color: muted),
+        labelStyle: TextStyle(color: muted),
+        floatingLabelStyle: TextStyle(color: text),
+        contentPadding: const EdgeInsets.all(AppSpacing.md),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderSide: BorderSide(color: outline),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderSide: BorderSide(color: outline, width: AppStroke.focus),
+        ),
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(color: text),
     );
-  }
-
-  /// Metin stilleri: başlıklar Playfair Display (mistik/şık),
-  /// gövde metinleri Inter (okunaklı).
-  static TextTheme get _textTheme {
-    final TextTheme base = ThemeData.dark().textTheme;
-    return GoogleFonts.interTextTheme(base)
-        .copyWith(
-          displayLarge: GoogleFonts.playfairDisplay(
-            textStyle: base.displayLarge,
-            fontWeight: FontWeight.w600,
-          ),
-          displayMedium: GoogleFonts.playfairDisplay(
-            textStyle: base.displayMedium,
-            fontWeight: FontWeight.w600,
-          ),
-          headlineMedium: GoogleFonts.playfairDisplay(
-            textStyle: base.headlineMedium,
-            fontWeight: FontWeight.w600,
-          ),
-        )
-        .apply(
-          bodyColor: AppColors.textPrimary,
-          displayColor: AppColors.textPrimary,
-        );
   }
 }

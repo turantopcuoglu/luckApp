@@ -7,16 +7,17 @@ import '../../../core/luck_engine/luck_engine.dart';
 import '../../../core/storage/daily_record.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
+import '../../../core/theme/cosmic_config.dart';
 import '../../history/history_config.dart';
 import '../collection_config.dart';
 import '../collection_strings.dart';
 
 /// Koleksiyon grid'indeki tek bir günü temsil eden minik kader kartı.
 ///
-/// Arka plan rengi, günün skor bandından (`HistoryConfig.bandRampasi`)
-/// gelir — heatmap ile aynı görsel dil. Skor "Altın Gün" eşiğini
+/// Sahne, ana ekran ve Story ile aynı skor ailesinden gelir. Yükleme
+/// zemini heatmap ile aynı renk rampasını kullanır. Skor "Altın Gün" eşiğini
 /// (`HistoryAnalizConfig.altinGunEsigi`) geçen nadir günler altın kenar
-/// + 🌟 rozetiyle öne çıkar. Dokununca [onTap] tetiklenir.
+/// + yıldız rozetiyle öne çıkar. Dokununca [onTap] tetiklenir.
 class KartMinik extends StatelessWidget {
   /// [kayit] gününü temsil eden kartı, [onTap] dokunuş geri çağrısıyla
   /// oluşturur.
@@ -46,7 +47,7 @@ class KartMinik extends StatelessWidget {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
 
     // Kartı tek anlamlı, dokunulabilir düğüme indir: iç tarih/skor
-    // metinleri (ve 🌟 emojisi) yerine "6 Temmuz: 95 / 100, Altın Gün".
+    // metinleri (ve yıldız simgesi) yerine "6 Temmuz: 95 / 100, Altın Gün".
     return MergeSemantics(
       child: Semantics(
         button: true,
@@ -77,6 +78,12 @@ class KartMinik extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
+                  Image.asset(
+                    CosmicTone.fromScore(skor).sceneAsset,
+                    fit: BoxFit.cover,
+                    cacheWidth: CollectionConfig.kartGorselGenisligi,
+                    excludeFromSemantics: true,
+                  ),
                   // Alt scrim: band rengi açık (altın) olsa da metnin her
                   // zaman okunur kalması için alttan koyu bir geçiş.
                   const DecoratedBox(
@@ -84,7 +91,11 @@ class KartMinik extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: <Color>[Colors.transparent, Colors.black45],
+                        colors: <Color>[
+                          Color(0x8807162F),
+                          Color(0x2207162F),
+                          Color(0xEE07162F),
+                        ],
                       ),
                     ),
                   ),
@@ -117,7 +128,11 @@ class KartMinik extends StatelessWidget {
                     const Positioned(
                       top: CollectionConfig.rozetKenarBoslugu,
                       right: CollectionConfig.rozetKenarBoslugu,
-                      child: Text(CollectionStrings.altinRozet),
+                      child: Icon(
+                        Icons.auto_awesome,
+                        size: CollectionConfig.rozetBoyutu,
+                        color: AppColors.goldAcik,
+                      ),
                     ),
                 ],
               ),

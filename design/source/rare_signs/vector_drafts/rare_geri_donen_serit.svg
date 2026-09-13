@@ -1,0 +1,9 @@
+<!-- Nadir İşaret 07 — Geri Dönen Şerit: deneyimin yeni biçimde geri gelişi. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <rect x="5" y="5" width="290" height="410" rx="24" fill="#07162F" stroke="#D3A953" stroke-width="4"/>
+  <path d="M31 293c52-71 100-93 145-67 50 28 89 9 109-56" fill="none" stroke="#9B8AF2" stroke-width="20" stroke-linecap="round"/>
+  <path d="M33 139c41 65 89 88 144 69 54-19 86 2 99 65" fill="none" stroke="#FF8B73" stroke-width="16" stroke-linecap="round"/>
+  <path d="M69 354c24-34 51-52 81-52 31 0 59 18 83 52" fill="none" stroke="#D8F04A" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="150" cy="216" r="28" fill="#F7F0E5" stroke="#D3A953" stroke-width="4"/>
+  <path d="M136 216h28M150 202v28" stroke="#07162F" stroke-width="5" stroke-linecap="round"/>
+</svg>

@@ -12,7 +12,9 @@ class UserProfile {
   /// Tüm alanlarıyla profil oluşturur.
   const UserProfile({
     required this.isim,
-    required this.dogumTarihi,
+    this.dogumTarihi,
+    this.rituelKimligi,
+    this.seedSurumu = 1,
     this.onboardingTamam = false,
     this.bildirimlerAcik = true,
     this.aksamBildirimDakika,
@@ -25,15 +27,40 @@ class UserProfile {
   /// Bildirim alanları geriye uyumlu okunur: eski kayıtlar bu
   /// anahtarları içermez, o yüzden `?? varsayılan` uygulanır.
   factory UserProfile.fromMap(Map<dynamic, dynamic> map) {
-    return UserProfile(
-      isim: map[_isimAnahtari] as String,
-      dogumTarihi: DateTime.parse(map[_dogumTarihiAnahtari] as String),
-      onboardingTamam: map[_onboardingAnahtari] as bool,
-      bildirimlerAcik: map[_bildirimlerAcikAnahtari] as bool? ?? true,
-      aksamBildirimDakika: map[_aksamDakikaAnahtari] as int?,
-      sabahBildirimDakika: map[_sabahDakikaAnahtari] as int?,
-      dil: _dilCoz(map[_dilAnahtari] as String?),
-    );
+    try {
+      final Object? surum = map.containsKey('seedSurumu')
+          ? map['seedSurumu']
+          : 1;
+      final Object? tarih = map[_dogumTarihiAnahtari];
+      final Object? kimlik = map['rituelKimligi'];
+      if (surum is! int ||
+          (surum != 1 && surum != 2) ||
+          (surum == 1 && tarih is! String) ||
+          (surum == 2 && (kimlik is! String || kimlik.trim().isEmpty))) {
+        throw const FormatException(
+          'Profil tohum bilgisi eksik veya sürüm desteklenmiyor.',
+        );
+      }
+      return UserProfile(
+        isim: map[_isimAnahtari] as String,
+        dogumTarihi: tarih == null ? null : DateTime.parse(tarih as String),
+        rituelKimligi: kimlik as String?,
+        seedSurumu: surum,
+        onboardingTamam: map[_onboardingAnahtari] as bool,
+        bildirimlerAcik: map[_bildirimlerAcikAnahtari] as bool? ?? true,
+        aksamBildirimDakika: map[_aksamDakikaAnahtari] as int?,
+        sabahBildirimDakika: map[_sabahDakikaAnahtari] as int?,
+        dil: _dilCoz(map[_dilAnahtari] as String?),
+      );
+    } on TypeError {
+      throw const FormatException(
+        'Profil kaydındaki alan türleri geçersiz; kayıt değiştirilmedi.',
+      );
+    } on FormatException {
+      throw const FormatException(
+        'Profil kaydı okunamadı: tarih veya tohum sürümü geçersiz; kayıt değiştirilmedi.',
+      );
+    }
   }
 
   /// Kayıtlı dil kodunu [AppDil]'e çevirir; yoksa/tanınmıyorsa null
@@ -54,12 +81,19 @@ class UserProfile {
   static const String _aksamDakikaAnahtari = 'aksamBildirimDakika';
   static const String _sabahDakikaAnahtari = 'sabahBildirimDakika';
   static const String _dilAnahtari = 'dil';
+  static const Object _degismedi = Object();
 
   /// Kullanıcının girdiği görünen isim (selamlama için).
   final String isim;
 
-  /// Kullanıcının doğum tarihi.
-  final DateTime dogumTarihi;
+  /// V1'de motor girdisi; v2'de yalnız kullanıcının seçtiği profil bilgisi.
+  final DateTime? dogumTarihi;
+
+  /// Yeni profilde bir kez üretilip saklanan anonim kimlik.
+  final String? rituelKimligi;
+
+  /// 1: eski isim/doğum tarihi; 2: anonim ritüel kimliği.
+  final int seedSurumu;
 
   /// Onboarding akışı tamamlandı mı?
   final bool onboardingTamam;
@@ -83,14 +117,26 @@ class UserProfile {
 
   /// Şans motoru için deterministik kullanıcı tohumu üretir.
   ///
-  /// Yalnızca [isim] ve [dogumTarihi]'ne bağlıdır — bildirim
-  /// tercihleri sonucu ETKİLEMEZ (kural 8).
-  UserSeed get seed => UserSeed.fromIsim(isim: isim, dogumTarihi: dogumTarihi);
+  /// V1 girdileri aynen korunur. V2 görünen addan bağımsızdır.
+  /// Bu getter rastgele kimlik üretmez veya bozuk profili onarmaz.
+  UserSeed get seed {
+    if (seedSurumu == 1 && dogumTarihi != null) {
+      return UserSeed.fromIsim(isim: isim, dogumTarihi: dogumTarihi!);
+    }
+    if (seedSurumu == 2 &&
+        rituelKimligi != null &&
+        rituelKimligi!.trim().isNotEmpty) {
+      return UserSeed.fromRituelKimligi(rituelKimligi!);
+    }
+    throw const FormatException('Profil tohum bilgisi geçersiz.');
+  }
 
   /// Hive'a yazılacak map gösterimi.
   Map<String, dynamic> toMap() => <String, dynamic>{
     _isimAnahtari: isim,
-    _dogumTarihiAnahtari: dogumTarihi.toIso8601String(),
+    _dogumTarihiAnahtari: dogumTarihi?.toIso8601String(),
+    'rituelKimligi': rituelKimligi,
+    'seedSurumu': seedSurumu,
     _onboardingAnahtari: onboardingTamam,
     _bildirimlerAcikAnahtari: bildirimlerAcik,
     _aksamDakikaAnahtari: aksamBildirimDakika,
@@ -100,23 +146,38 @@ class UserProfile {
 
   /// Seçili alanları değiştirilmiş bir kopya döndürür.
   ///
-  /// Not: [aksamBildirimDakika]/[sabahBildirimDakika] için `??`
-  /// deseni bir değeri `null`'a geri döndüremez; Phase 1'de saat
-  /// seçici her zaman somut değer verdiği için bu kabul edilebilir.
+  /// Nullable tercihler açık null ile varsayılana döner. Tohum kimliği
+  /// ve v1 doğum tarihi bu yöntemle değiştirilemez; v2 tarihi seed'i etkilemez.
   UserProfile copyWith({
     String? isim,
     bool? onboardingTamam,
     bool? bildirimlerAcik,
-    int? aksamBildirimDakika,
-    int? sabahBildirimDakika,
-    AppDil? dil,
-  }) => UserProfile(
-    isim: isim ?? this.isim,
-    dogumTarihi: dogumTarihi,
-    onboardingTamam: onboardingTamam ?? this.onboardingTamam,
-    bildirimlerAcik: bildirimlerAcik ?? this.bildirimlerAcik,
-    aksamBildirimDakika: aksamBildirimDakika ?? this.aksamBildirimDakika,
-    sabahBildirimDakika: sabahBildirimDakika ?? this.sabahBildirimDakika,
-    dil: dil ?? this.dil,
-  );
+    Object? aksamBildirimDakika = _degismedi,
+    Object? sabahBildirimDakika = _degismedi,
+    Object? dil = _degismedi,
+    Object? dogumTarihi = _degismedi,
+  }) {
+    if (seedSurumu == 1 &&
+        !identical(dogumTarihi, _degismedi) &&
+        dogumTarihi != this.dogumTarihi) {
+      throw ArgumentError('Eski profilin doğum tarihi motor girdisidir.');
+    }
+    return UserProfile(
+      isim: isim ?? this.isim,
+      dogumTarihi: identical(dogumTarihi, _degismedi)
+          ? this.dogumTarihi
+          : dogumTarihi as DateTime?,
+      rituelKimligi: rituelKimligi,
+      seedSurumu: seedSurumu,
+      onboardingTamam: onboardingTamam ?? this.onboardingTamam,
+      bildirimlerAcik: bildirimlerAcik ?? this.bildirimlerAcik,
+      aksamBildirimDakika: identical(aksamBildirimDakika, _degismedi)
+          ? this.aksamBildirimDakika
+          : aksamBildirimDakika as int?,
+      sabahBildirimDakika: identical(sabahBildirimDakika, _degismedi)
+          ? this.sabahBildirimDakika
+          : sabahBildirimDakika as int?,
+      dil: identical(dil, _degismedi) ? this.dil : dil as AppDil?,
+    );
+  }
 }

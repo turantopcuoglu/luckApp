@@ -23,9 +23,23 @@ class UserSeed {
     return UserSeed(isimHash: hash, dogumTarihi: dogumTarihi);
   }
 
-  /// Kullanıcı isminin SHA-256 hex özeti (ham isim saklanmaz).
+  /// Anonim v2 kimliğini mevcut motor girdisine dönüştürür.
+  ///
+  /// Sabit UTC tarih bir doğum tarihi değildir; eski motorun iki parçalı
+  /// girdisini koruyan sürümlü bir sabitleyicidir. İsim ve tercihler katılmaz.
+  factory UserSeed.fromRituelKimligi(String kimlik) {
+    if (kimlik.trim().isEmpty) {
+      throw ArgumentError.value(kimlik, 'kimlik', 'Kimlik boş olamaz.');
+    }
+    final String hash = sha256
+        .convert(utf8.encode('kader:rituel:v2:$kimlik'))
+        .toString();
+    return UserSeed(isimHash: hash, dogumTarihi: DateTime.utc(2000));
+  }
+
+  /// Sürüme göre isim veya anonim ritüel kimliğinin SHA-256 hex özeti.
   final String isimHash;
 
-  /// Kullanıcının doğum tarihi.
+  /// V1 doğum tarihi veya v2 için sabit UTC algoritma girdisi.
   final DateTime dogumTarihi;
 }

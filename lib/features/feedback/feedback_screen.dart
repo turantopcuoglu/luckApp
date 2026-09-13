@@ -8,6 +8,8 @@ import '../../core/storage/luck_history_repository.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/theme/cosmic_config.dart';
+import '../../shared/widgets/cosmic_page.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import 'feedback_config.dart';
 import 'feedback_strings.dart';
@@ -62,14 +64,19 @@ class FeedbackScreen extends ConsumerWidget {
     final String? emoji = ref.watch(feedbackEmojiProvider);
     final AppDil dil = ref.watch(dilProvider);
 
-    return Scaffold(
+    return CosmicPage(
       appBar: AppBar(title: Text(FeedbackStrings.baslik(dil))),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              CosmicPageHeader(
+                title: FeedbackStrings.baslik(dil),
+                asset: CosmicConfig.sanctuary,
+              ),
+              const SizedBox(height: AppSpacing.lg),
               Text(
                 FeedbackStrings.aksamSorusu(dil),
                 style: yaziTemasi.headlineMedium,
@@ -116,7 +123,7 @@ class FeedbackScreen extends ConsumerWidget {
                     ),
                 ],
               ),
-              const Spacer(),
+              const SizedBox(height: AppSpacing.xl),
               FilledButton(
                 // 👍/👎 seçilmeden kaydedilemez; emoji opsiyoneldir.
                 onPressed: pozitif == null

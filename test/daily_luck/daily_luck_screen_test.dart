@@ -4,23 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
-import 'package:kader/core/content/fortune_composer.dart';
-import 'package:kader/core/content/gunun_icerigi.dart';
+import 'package:kader/core/content/daily_experience.dart';
+import 'package:kader/core/content/daily_experience_composer.dart';
+import 'package:kader/core/content/experience_dimension.dart';
 import 'package:kader/core/history/gecmis_ozeti.dart';
 import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
+import 'package:kader/core/theme/cosmic_config.dart';
 import 'package:kader/features/categories/categories_config.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
+import 'package:kader/features/daily_luck/today_strings.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
-import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
-import 'package:kader/features/daily_luck/widgets/score_ring.dart';
+import 'package:kader/features/daily_luck/widgets/today_content.dart';
 import 'package:kader/features/history/history_providers.dart';
-import 'package:kader/features/share/share_button.dart';
 import 'package:kader/features/share/share_service.dart';
+import 'package:kader/features/share/share_strings.dart';
+import 'package:kader/features/share/story_style.dart';
+
+import '../fixtures/reveal_test_overrides.dart';
 
 void main() {
   late Directory geciciDizin;
@@ -56,6 +61,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: <Override>[
+            cosmicMotionEnabledProvider.overrideWithValue(false),
+            layoutOnlyRevealWriter,
             userProfileBoxProvider.overrideWithValue(profilKutusu),
             dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
             bugunProvider.overrideWithValue(sabitGun),
@@ -69,14 +76,11 @@ void main() {
     await tester.pump();
   }
 
-  /// Kader kartına dokunur ve tüm açılış zincirini pompalar:
-  /// flip+iniş (1.1sn) → count-up (1.2sn) + kutu açılışları + yorum.
+  /// FAZ 8 statik yerleşimine açma eylemiyle geçer.
   Future<void> kartiAc(WidgetTester tester) async {
-    await tester.tap(find.byType(FortuneRevealCard));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 1200)); // flip + iniş
-    await tester.pump(const Duration(milliseconds: 1500)); // sayaç+kutular
-    await tester.pump(const Duration(milliseconds: 500)); // yorum fade
+    await tester.ensureVisible(find.text(TodayStrings.open(AppDil.tr)));
+    await tester.tap(find.text(TodayStrings.open(AppDil.tr)));
+    await tester.pumpAndSettle();
   }
 
   testWidgets('tarih, misafir selamlaması ve kapalı kart görünür', (
@@ -89,14 +93,14 @@ void main() {
       find.text(TrStrings.selamlama(AppDil.tr, TrStrings.misafirIsmi)),
       findsOneWidget,
     );
-    expect(find.byType(FortuneRevealCard), findsOneWidget);
-    expect(find.text(TrStrings.kartIpucu(AppDil.tr)), findsOneWidget);
+    expect(find.byType(TodayConcealedCard), findsOneWidget);
+    expect(find.text(TodayStrings.open(AppDil.tr)), findsOneWidget);
     // Kart kapalı: skor halkası ve skor etiketi henüz yok.
-    expect(find.byType(ScoreRing), findsNothing);
-    expect(find.text(TrStrings.genelSkorEtiketi(AppDil.tr)), findsNothing);
+    expect(find.byType(TodayRevealedContent), findsNothing);
+    expect(find.text(TodayStrings.score(AppDil.tr)), findsNothing);
   });
 
-  testWidgets('karta dokununca motorun ürettiği skor halkada yazar', (
+  testWidgets('karta dokununca motorun saklanmış skoru açık yerleşimde yazar', (
     WidgetTester tester,
   ) async {
     // Ekranın göstermesi beklenen deterministik skoru motordan hesapla.
@@ -112,58 +116,72 @@ void main() {
     await ekraniAc(tester);
     await kartiAc(tester);
 
-    expect(find.byType(ScoreRing), findsOneWidget);
+    expect(find.byType(TodayRevealedContent), findsOneWidget);
     expect(
       find.descendant(
-        of: find.byType(ScoreRing),
+        of: find.byType(TodayRevealedContent),
         matching: find.text('${beklenen.genelSkor}'),
       ),
       findsOneWidget,
     );
   });
 
-  testWidgets('kutular kapalı başlar; kart açılınca etiketler, yorum ve şans '
-      'ögeleri belirir', (WidgetTester tester) async {
-    // Ekranın göstermesi beklenen deterministik içerik: misafir profil
-    // + sabit gün için composer'ın üreteceği paket.
-    final UserProfile misafir = UserProfile(
-      isim: TrStrings.misafirIsmi,
-      dogumTarihi: DateTime(2000),
-    );
-    const LuckEngine motor = LuckEngine();
-    final LuckResult sonuc = motor.hesapla(
-      kullanici: misafir.seed,
-      gun: sabitGun,
-    );
-    final GununIcerigi beklenen = gununIcerigi(
-      motor: motor,
-      kullanici: misafir.seed,
-      sonuc: sonuc,
-      dil: AppDil.tr,
-    );
+  testWidgets(
+    'kapalıyken gizli; açılınca yeni alanlar, arketip ve mikro görev görünür',
+    (WidgetTester tester) async {
+      // Ekranın göstermesi beklenen deterministik içerik: misafir profil
+      // + sabit gün için composer'ın üreteceği paket.
+      final UserProfile misafir = UserProfile(
+        isim: TrStrings.misafirIsmi,
+        dogumTarihi: DateTime(2000),
+      );
+      const LuckEngine motor = LuckEngine();
+      final LuckResult sonuc = motor.hesapla(
+        kullanici: misafir.seed,
+        gun: sabitGun,
+      );
+      final DailyExperience beklenen = composeDailyExperience(
+        motor: motor,
+        kullanici: misafir.seed,
+        sonuc: sonuc,
+        dil: AppDil.tr,
+      );
 
-    await ekraniAc(tester);
+      await ekraniAc(tester);
 
-    // Kapalı durumda kategori etiketleri görünmez (yalnız ikonlar).
-    for (final LuckCategory kategori in LuckCategory.values) {
-      expect(find.text(kategori.etiket(AppDil.tr)), findsNothing);
-    }
+      // Eski alan adları kaldırıldı; kapalıyken yalnız kategori adları vardır.
+      for (final ExperienceDimension dimension in ExperienceDimension.values) {
+        expect(find.text(dimension.etiket(AppDil.tr)), findsNothing);
+      }
 
-    await kartiAc(tester);
+      await kartiAc(tester);
 
-    // Açılış sonrası: 5 etiket + kompoze yorum + şans ögeleri + paylaş.
-    for (final LuckCategory kategori in LuckCategory.values) {
-      expect(find.text(kategori.etiket(AppDil.tr)), findsOneWidget);
-    }
-    expect(find.text(beklenen.yorum), findsOneWidget);
-    expect(find.text(beklenen.sansRengi.ad(AppDil.tr)), findsOneWidget);
-    expect(find.text('${beklenen.sansliSayi}'), findsWidgets);
-    expect(find.text(beklenen.tavsiye), findsOneWidget);
-    expect(find.text(TrStrings.sansRengiEtiketi(AppDil.tr)), findsOneWidget);
-    expect(find.text(TrStrings.sansliSayiEtiketi(AppDil.tr)), findsOneWidget);
-    expect(find.text(TrStrings.tavsiyeEtiketi(AppDil.tr)), findsOneWidget);
-    expect(find.byType(ShareButton), findsOneWidget);
-  });
+      // Açılış sonrası: 5 etiket + kompoze yorum + şans ögeleri + paylaş.
+      for (final ExperienceDimension dimension in ExperienceDimension.values) {
+        expect(find.text(dimension.kategori.etiket(AppDil.tr)), findsOneWidget);
+      }
+      expect(
+        find.text(TodayStrings.scoreTitle(AppDil.tr, beklenen.score)),
+        findsOneWidget,
+      );
+      expect(
+        find.text(TodayStrings.scoreReflection(AppDil.tr, beklenen.score)),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          beklenen.score < CosmicConfig.calmScore
+              ? TodayStrings.gentleStep(AppDil.tr)
+              : beklenen.microMission,
+        ),
+        findsOneWidget,
+      );
+      expect(find.text(TrStrings.sansRengiEtiketi(AppDil.tr)), findsNothing);
+      expect(find.text(TrStrings.sansliSayiEtiketi(AppDil.tr)), findsNothing);
+      expect(find.text(TrStrings.tavsiyeEtiketi(AppDil.tr)), findsNothing);
+      expect(find.text(TodayStrings.share(AppDil.tr)), findsOneWidget);
+    },
+  );
 
   testWidgets('Paylaş butonu servisi günün sonucuyla çağırır', (
     WidgetTester tester,
@@ -174,6 +192,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: <Override>[
+            cosmicMotionEnabledProvider.overrideWithValue(false),
+            layoutOnlyRevealWriter,
             userProfileBoxProvider.overrideWithValue(profilKutusu),
             dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
             bugunProvider.overrideWithValue(sabitGun),
@@ -187,8 +207,11 @@ void main() {
     await tester.pump();
     await kartiAc(tester);
 
-    await tester.ensureVisible(find.byType(ShareButton));
-    await tester.tap(find.byType(ShareButton));
+    await tester.ensureVisible(find.text(TodayStrings.share(AppDil.tr)));
+    await tester.tap(find.text(TodayStrings.share(AppDil.tr)));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text(ShareStrings.export(AppDil.tr)));
+    await tester.tap(find.text(ShareStrings.export(AppDil.tr)));
     await tester.pump();
 
     expect(sahte.paylasilanlar, hasLength(1));
@@ -236,6 +259,8 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             overrides: <Override>[
+              cosmicMotionEnabledProvider.overrideWithValue(false),
+              layoutOnlyRevealWriter,
               userProfileBoxProvider.overrideWithValue(profilKutusu),
               dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
               bugunProvider.overrideWithValue(sabitGun),
@@ -278,6 +303,8 @@ class _SahteShareService extends ShareService {
     required LuckResult sonuc,
     required AppDil dil,
     Set<LuckCategory> kilitliKategoriler = const <LuckCategory>{},
+    StoryStyle style = StoryStyle.portal,
+    bool hideScore = false,
   }) async {
     paylasilanlar.add(sonuc);
     kilitliSetler.add(kilitliKategoriler);

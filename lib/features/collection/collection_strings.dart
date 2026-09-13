@@ -22,9 +22,6 @@ abstract final class CollectionStrings {
   static String detayBaslik(AppDil dil) =>
       dil.sec('Kader kartın', 'Your fate card');
 
-  /// "Altın Gün" kartının köşe rozeti (dil-nötr).
-  static const String altinRozet = '🌟';
-
   /// "Altın Gün"ün ekran okuyucuda okunan sözcük karşılığı (emoji değil).
   static String altinGunSozcuk(AppDil dil) =>
       dil.sec('Altın Gün', 'Golden Day');

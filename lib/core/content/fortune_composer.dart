@@ -1,4 +1,4 @@
-/// Günlük fal metinlerini havuzlardan deterministik biçimde birleştirir.
+/// Günlük düşünme davetlerini havuzlardan deterministik biçimde birleştirir.
 ///
 /// Kritik sözleşme: bantlar/tonlar SAKLANAN [LuckResult] skorlarından
 /// okunur — genel skor "seri dengesi" bias'ı yüzünden (kullanıcı, gün)

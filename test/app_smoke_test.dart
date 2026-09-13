@@ -3,14 +3,20 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:kader/core/localization/app_dil.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
+import 'package:kader/core/theme/cosmic_config.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
-import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
+import 'package:kader/features/daily_luck/today_strings.dart';
+import 'package:kader/features/daily_luck/widgets/today_content.dart';
+import 'package:kader/features/shell/app_shell.dart';
 import 'package:kader/main.dart';
+
+import 'fixtures/reveal_test_overrides.dart';
 
 void main() {
   late Directory geciciDizin;
@@ -47,9 +53,8 @@ void main() {
   testWidgets('uygulama açılır ve ana ekran yüklenir', (
     WidgetTester tester,
   ) async {
-    // Smoke test FakeAsync'te kalır (runAsync YOK): gerçek event loop,
-    // GoogleFonts'un gerçek HTTP font indirmesini tetikleyip patlatır.
-    // FakeAsync'te ise Hive'ın disk yazması hiç bitmeyeceğinden, günün
+    // Smoke test FakeAsync'te kalır (runAsync YOK). Fontlar artık yerel
+    // bundle'dan gelir. Hive'ın disk yazması FakeAsync'te bitmeyeceğinden günün
     // sonucu diske dokunmayan bir override ile sabitlenir; kutu
     // override'ları profil okuma (senkron) için yine gereklidir.
     final DateTime sabitGun = DateTime(2026, 7, 6);
@@ -64,6 +69,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: <Override>[
+          cosmicMotionEnabledProvider.overrideWithValue(false),
+          layoutOnlyRevealWriter,
           userProfileBoxProvider.overrideWithValue(profilKutusu),
           dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
           bugunProvider.overrideWithValue(sabitGun),
@@ -77,15 +84,19 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    // Ana ekran kapalı kader kartıyla açılır; karta dokununca
-    // flip + iniş + count-up sonrası skor görünür.
+    // FAZ 8: kapalı kartın eylemi statik açık yerleşime geçer.
     expect(find.byType(DailyLuckScreen), findsOneWidget);
-    expect(find.byType(FortuneRevealCard), findsOneWidget);
+    expect(find.byType(AppShell), findsOneWidget);
+    expect(find.text('Koleksiyon'), findsOneWidget);
+    expect(find.text('Profil'), findsOneWidget);
+    expect(find.byType(TodayConcealedCard), findsOneWidget);
 
-    await tester.tap(find.byType(FortuneRevealCard));
+    await tester.ensureVisible(find.text(TodayStrings.open(AppDil.tr)));
+    await tester.tap(find.text(TodayStrings.open(AppDil.tr)));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 1200));
     await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
     expect(find.text('${sabitSonuc.genelSkor}'), findsWidgets);
   });
 }

@@ -1,0 +1,10 @@
+<!-- Nadir İşaret 03 — Sessiz Tohum: küçük ve düzenli başlangıç. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <rect x="5" y="5" width="290" height="410" rx="24" fill="#07162F" stroke="#D3A953" stroke-width="4"/>
+  <path d="M30 348c63-37 177-37 240 0v67H30Z" fill="#10213B"/>
+  <ellipse cx="150" cy="320" rx="75" ry="27" fill="#0A1931" stroke="#BFE5F2" stroke-opacity=".35" stroke-width="3"/>
+  <path d="M150 325V161M150 218c-54 0-73-29-70-78 43 0 69 22 70 78ZM150 181c54 0 73-29 70-78-43 0-69 22-70 78Z" fill="none" stroke="#D8F04A" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M119 328c10-18 19-28 31-37 13 9 23 20 31 37" fill="#FF8B73" stroke="#D3A953" stroke-width="3"/>
+  <circle cx="64" cy="92" r="8" fill="#9B8AF2"/>
+  <path d="M220 268c17-18 31-18 47 0" fill="none" stroke="#BFE5F2" stroke-width="7" stroke-linecap="round"/>
+</svg>
