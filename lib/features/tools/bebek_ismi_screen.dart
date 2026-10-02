@@ -15,6 +15,7 @@ import '../daily_luck/daily_luck_providers.dart';
 import '../premium/paywall_screen.dart';
 import '../premium/premium_providers.dart';
 import '../profile/kilitli_bolum_karti.dart';
+import '../share/arac_story_card.dart';
 import 'tools_config.dart';
 import 'tools_providers.dart';
 import 'tools_strings.dart';
@@ -227,14 +228,17 @@ class _BebekIsmiScreenState extends ConsumerState<BebekIsmiScreen> {
               const SizedBox(height: AppSpacing.md),
               OutlinedButton.icon(
                 onPressed: () => unawaited(
-                  ref.read(metinPaylasProvider)(
-                    <String>[
-                      sonuc.ilkAday.uyum.analiz.tamAd,
-                      '${ToolsStrings.puan(sonuc.ilkAday.uyum.puan)} · '
-                          '${sonuc.ilkAday.bant.etiket}',
-                      ...sonuc.ilkAday.iliskiCumleleri,
-                      ToolsStrings.paylasimImzasi,
-                    ].join('\n'),
+                  ref.read(aracPaylasProvider)(
+                    AracPaylasimi(
+                      ustEtiket: ToolsStrings.bebekKartEtiketi,
+                      baslik: sonuc.ilkAday.uyum.analiz.tamAd,
+                      sayi: '${sonuc.ilkAday.uyum.puan}',
+                      sayiEtiketi: sonuc.ilkAday.bant.etiket,
+                      metin: <String>[
+                        sonuc.ilkAday.bant.aciklama,
+                        ...sonuc.ilkAday.iliskiCumleleri,
+                      ].join(' '),
+                    ),
                   ),
                 ),
                 icon: const Icon(Icons.ios_share_rounded),

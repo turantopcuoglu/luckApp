@@ -38,11 +38,7 @@ class StoryCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: <Color>[
-              AppColors.background,
-              Color(0xFF231C4E),
-              Color(0xFF43317A),
-            ],
+            colors: ShareConfig.gradyanRenkleri,
           ),
         ),
         child: Padding(

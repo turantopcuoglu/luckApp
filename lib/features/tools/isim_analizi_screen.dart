@@ -11,6 +11,7 @@ import '../../shared/widgets/app_route.dart';
 import '../premium/paywall_screen.dart';
 import '../premium/premium_providers.dart';
 import '../profile/kilitli_bolum_karti.dart';
+import '../share/arac_story_card.dart';
 import 'tools_providers.dart';
 import 'tools_strings.dart';
 
@@ -103,9 +104,8 @@ class _IsimAnaliziScreenState extends ConsumerState<IsimAnaliziScreen> {
                   ),
                 ),
               OutlinedButton.icon(
-                onPressed: () => unawaited(
-                  ref.read(metinPaylasProvider)(_paylasimMetni(analiz)),
-                ),
+                onPressed: () =>
+                    unawaited(ref.read(aracPaylasProvider)(_paylasim(analiz))),
                 icon: const Icon(Icons.ios_share_rounded),
                 label: const Text(ToolsStrings.paylas),
               ),
@@ -116,11 +116,12 @@ class _IsimAnaliziScreenState extends ConsumerState<IsimAnaliziScreen> {
     );
   }
 
-  /// Ücretsiz bölümlerden kısa paylaşım metni.
-  String _paylasimMetni(IsimAnalizi analiz) => <String>[
-    analiz.tamAd,
-    for (final AracBolumu b in isimOkumasi(analiz))
-      if (!b.premium) b.baslik,
-    ToolsStrings.paylasimImzasi,
-  ].join('\n');
+  /// Kart: isim sayısı ve (ücretsiz) isim sayısı metni.
+  AracPaylasimi _paylasim(IsimAnalizi analiz) => AracPaylasimi(
+    ustEtiket: ToolsStrings.isimKartEtiketi,
+    baslik: analiz.tamAd,
+    sayi: '${analiz.isim.deger}',
+    sayiEtiketi: ToolsStrings.isimSayisiEtiketi,
+    metin: isimOkumasi(analiz).first.metin,
+  );
 }

@@ -1,11 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
 
-/// Metin paylaşma fonksiyonu (testlerde sahtesiyle değiştirilir).
+import '../share/arac_story_card.dart';
+import '../share/share_service.dart';
+
+/// Keşfet sonucunu paylaşma fonksiyonu (testlerde sahtesiyle değiştirilir).
 ///
-/// Keşfet sonuçları, sistem paylaşım menüsüne düz metin olarak verilir.
-final Provider<Future<void> Function(String)> metinPaylasProvider =
-    Provider<Future<void> Function(String)>(
-      (Ref ref) =>
-          (String metin) async => Share.share(metin),
+/// Araç ekranı neyin paylaşılacağını [AracPaylasimi] ile tarif eder;
+/// varsayılan uygulama story kartını PNG olarak çizip sistem paylaşım
+/// menüsüne verir.
+final Provider<Future<void> Function(AracPaylasimi)> aracPaylasProvider =
+    Provider<Future<void> Function(AracPaylasimi)>(
+      (Ref ref) => ref.read(shareServiceProvider).aracPaylas,
     );

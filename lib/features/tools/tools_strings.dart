@@ -42,8 +42,17 @@ abstract final class ToolsStrings {
   /// Geçersiz girdi uyarısı.
   static const String gecersiz = 'Hesaplanacak harf ya da rakam bulunamadı.';
 
-  /// Paylaşım metninin son satırı.
-  static const String paylasimImzasi = 'Kader uygulamasıyla hesaplandı ✨';
+  /// Paylaşım kartı üst etiketleri (büyük harf, Türkçe kurallarıyla).
+  static const String isimKartEtiketi = 'İSİM ANALİZİ';
+
+  /// Paylaşım kartı üst etiketi.
+  static const String numaraKartEtiketi = 'NUMARA ANALİZİ';
+
+  /// Paylaşım kartı üst etiketi.
+  static const String bebekKartEtiketi = 'BEBEK İSMİ';
+
+  /// Paylaşım kartında isim sayısı etiketi.
+  static const String isimSayisiEtiketi = 'İsim sayısı';
 
   // ---- İsim analizi ----
 

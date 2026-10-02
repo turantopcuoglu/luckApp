@@ -11,4 +11,7 @@ abstract final class ShareStrings {
 
   /// Paylaşım menüsüne eklenen kısa metin.
   static const String paylasimMetni = 'Bugünkü kaderim ✨';
+
+  /// Keşfet kartının altındaki davet.
+  static const String aracDavet = 'Sen de hesapla: Kader uygulaması';
 }

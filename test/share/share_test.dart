@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
+import 'package:kader/features/share/arac_story_card.dart';
 import 'package:kader/features/share/share_config.dart';
 import 'package:kader/features/share/share_service.dart';
 import 'package:kader/features/share/share_strings.dart';
@@ -19,8 +20,9 @@ void main() {
     gun: DateTime(2026, 7, 6),
   );
 
-  testWidgets('StoryCard skor, tarih, 5 kategori ve markayı gösterir',
-      (WidgetTester tester) async {
+  testWidgets('StoryCard skor, tarih, 5 kategori ve markayı gösterir', (
+    WidgetTester tester,
+  ) async {
     // Kart 1080x1920 tasarlandı; test yüzeyi ona ayarlanır.
     tester.view.physicalSize = ShareConfig.kartBoyutu;
     tester.view.devicePixelRatio = 1;
@@ -42,21 +44,86 @@ void main() {
     expect(find.text(ShareStrings.genelSkor), findsOneWidget);
   });
 
-  testWidgets('kartPngUret 1080x1920 boyutunda geçerli PNG üretir',
-      (WidgetTester tester) async {
+  testWidgets('kartPngUret 1080x1920 boyutunda geçerli PNG üretir', (
+    WidgetTester tester,
+  ) async {
     // toImage ve PNG kodlama gerçek async işlemlerdir → runAsync.
     await tester.runAsync(() async {
       final ShareService servis = ShareService();
-      final List<int> png =
-          await servis.kartPngUret(StoryCard(sonuc: sonuc));
+      final List<int> png = await servis.kartPngUret(StoryCard(sonuc: sonuc));
 
       expect(png, isNotEmpty);
       // PNG imzası: 89 50 4E 47.
       expect(png.sublist(0, 4), <int>[0x89, 0x50, 0x4E, 0x47]);
 
       // Boyut doğrulaması: gerçekten 1080x1920 mi?
-      final ui.Codec cozucu =
-          await ui.instantiateImageCodec(Uint8List.fromList(png));
+      final ui.Codec cozucu = await ui.instantiateImageCodec(
+        Uint8List.fromList(png),
+      );
+      final ui.FrameInfo kare = await cozucu.getNextFrame();
+      expect(kare.image.width, ShareConfig.kartBoyutu.width.toInt());
+      expect(kare.image.height, ShareConfig.kartBoyutu.height.toInt());
+    });
+  });
+  const AracPaylasimi numara = AracPaylasimi(
+    ustEtiket: 'NUMARA ANALİZİ',
+    baslik: '0532 123 45 67',
+    sayi: '11',
+    sayiEtiketi: 'Usta İlham',
+    metin: 'Bu numara usta sayı 11 enerjisini taşır.',
+  );
+
+  testWidgets('AracStoryCard etiket, başlık, dev sayı, metin, marka ve '
+      'daveti gösterir', (WidgetTester tester) async {
+    tester.view.physicalSize = ShareConfig.kartBoyutu;
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: AracStoryCard(paylasim: numara),
+      ),
+    );
+
+    for (final String m in <String>[
+      numara.ustEtiket,
+      numara.baslik,
+      numara.sayi,
+      numara.sayiEtiketi,
+      numara.metin,
+      ShareStrings.marka,
+      ShareStrings.aracDavet,
+    ]) {
+      expect(find.text(m), findsOneWidget, reason: m);
+    }
+  });
+
+  test('paylaşım metni başlık, etiket, sayı ve daveti içerir', () {
+    expect(
+      numara.paylasimMetni,
+      '0532 123 45 67 · Usta İlham 11\n${ShareStrings.aracDavet}',
+    );
+  });
+
+  testWidgets('AracStoryCard uzun metinle de 1080x1920 PNG üretir', (
+    WidgetTester tester,
+  ) async {
+    await tester.runAsync(() async {
+      final List<int> png = await ShareService().kartPngUret(
+        AracStoryCard(
+          paylasim: AracPaylasimi(
+            ustEtiket: numara.ustEtiket,
+            baslik: 'Çok Uzun Bir Ad Soyad Örneği İçin Şimşek Ünal Öztürk',
+            sayi: numara.sayi,
+            sayiEtiketi: numara.sayiEtiketi,
+            metin: List<String>.filled(40, 'Uzun bir cümle.').join(' '),
+          ),
+        ),
+      );
+      final ui.Codec cozucu = await ui.instantiateImageCodec(
+        Uint8List.fromList(png),
+      );
       final ui.FrameInfo kare = await cozucu.getNextFrame();
       expect(kare.image.width, ShareConfig.kartBoyutu.width.toInt());
       expect(kare.image.height, ShareConfig.kartBoyutu.height.toInt());

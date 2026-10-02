@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kader/core/content/arac_metinleri.dart';
 import 'package:kader/core/content/rapor_metinleri.dart';
+import 'package:kader/core/content/sayi_metinleri.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/storage_keys.dart';
@@ -10,6 +11,7 @@ import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/features/home/ana_kabuk.dart';
 import 'package:kader/features/home/ana_sekme.dart';
 import 'package:kader/features/profile/profile_strings.dart';
+import 'package:kader/features/share/arac_story_card.dart';
 import 'package:kader/features/tools/bebek_ismi_screen.dart';
 import 'package:kader/features/tools/isim_analizi_screen.dart';
 import 'package:kader/features/tools/numara_analizi_screen.dart';
@@ -30,7 +32,7 @@ void main() {
     onboardingTamam: true,
     uyariKabulSurumu: 1,
   );
-  late List<String> paylasilanlar;
+  late List<AracPaylasimi> paylasilanlar;
 
   Future<void> hazirla() async {
     await ortam.kur('tools_test');
@@ -48,7 +50,7 @@ void main() {
     Widget ev, {
     bool premium = false,
   }) async {
-    paylasilanlar = <String>[];
+    paylasilanlar = <AracPaylasimi>[];
     await tester.runAsync(hazirla);
     await tester.runAsync(() async {
       await tester.pumpWidget(
@@ -57,8 +59,8 @@ void main() {
             gun: sabitGun,
             premium: premium,
             ek: <Override>[
-              metinPaylasProvider.overrideWithValue(
-                (String m) async => paylasilanlar.add(m),
+              aracPaylasProvider.overrideWithValue(
+                (AracPaylasimi p) async => paylasilanlar.add(p),
               ),
             ],
           ),
@@ -116,8 +118,12 @@ void main() {
 
       await tester.tap(find.text(ToolsStrings.paylas));
       await tester.pump();
-      expect(paylasilanlar.single, contains('Numaranın sayısı 11'));
-      expect(paylasilanlar.single, contains(ToolsStrings.paylasimImzasi));
+      final AracPaylasimi p = paylasilanlar.single;
+      expect(p.ustEtiket, ToolsStrings.numaraKartEtiketi);
+      expect(p.baslik, '0532 123 45 67');
+      expect(p.sayi, '11');
+      expect(p.sayiEtiketi, 'Usta İlham');
+      expect(p.metin, AracMetinleri.numaralar[11]!.metin);
     });
 
     testWidgets('harf/rakam yoksa uyarı', (WidgetTester tester) async {
@@ -157,11 +163,11 @@ void main() {
       );
       await tester.tap(find.text(ToolsStrings.paylas));
       await tester.pump();
-      expect(
-        paylasilanlar.single,
-        'Ayşe Yılmaz\nİsim sayısı 1\nRuh sayısı 7\nKişilik sayısı 3\n'
-        '${ToolsStrings.paylasimImzasi}',
-      );
+      final AracPaylasimi p = paylasilanlar.single;
+      expect(p.ustEtiket, ToolsStrings.isimKartEtiketi);
+      expect(p.baslik, 'Ayşe Yılmaz');
+      expect(p.sayi, '1');
+      expect(p.metin, SayiMetinleri.isimSayisi[1]);
     });
   });
 

@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import '../../core/theme/app_colors.dart';
+
 /// Paylaşım (story kartı) özelliğine özgü ölçü sabitleri.
 ///
 /// Kart, Instagram story formatında (1080x1920) tek seferde
@@ -49,4 +51,31 @@ abstract final class ShareConfig {
 
   /// Alt köşedeki marka yazısının puntosu.
   static const double markaPunto = 52;
+
+  /// Kart zemininin çapraz gradyanı (lacivertten mora).
+  static const List<Color> gradyanRenkleri = <Color>[
+    AppColors.background,
+    Color(0xFF231C4E),
+    Color(0xFF43317A),
+  ];
+
+  /// Üst etiketin harf aralığı.
+  static const double etiketHarfAraligi = 2;
+
+  // ---- Keşfet aracı kartı ----
+
+  /// Araç kartı dosya adı.
+  static const String aracDosyaAdi = 'kader_kesfet.png';
+
+  /// Dev sayının altındaki etiket puntosu ("Usta İlham").
+  static const double aracEtiketPunto = 64;
+
+  /// Kısa yorumun puntosu.
+  static const double aracMetinPunto = 44;
+
+  /// Kısa yorumun satır yüksekliği çarpanı.
+  static const double aracMetinSatirYuksekligi = 1.4;
+
+  /// Kısa yorumun en fazla satır sayısı.
+  static const int aracMetinSatiri = 8;
 }

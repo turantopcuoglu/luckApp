@@ -7,6 +7,7 @@ import '../../core/content/arac_okumalari.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../share/arac_story_card.dart';
 import 'tools_config.dart';
 import 'tools_providers.dart';
 import 'tools_strings.dart';
@@ -139,12 +140,14 @@ class _NumaraAnaliziScreenState extends ConsumerState<NumaraAnaliziScreen> {
                       const SizedBox(height: AppSpacing.md),
                       OutlinedButton.icon(
                         onPressed: () => unawaited(
-                          ref.read(metinPaylasProvider)(
-                            <String>[
-                              okuma.baslik,
-                              okuma.metin,
-                              ToolsStrings.paylasimImzasi,
-                            ].join('\n\n'),
+                          ref.read(aracPaylasProvider)(
+                            AracPaylasimi(
+                              ustEtiket: ToolsStrings.numaraKartEtiketi,
+                              baslik: girdi!.trim(),
+                              sayi: '${okuma.analiz.deger}',
+                              sayiEtiketi: okuma.lakap,
+                              metin: okuma.metin,
+                            ),
                           ),
                         ),
                         icon: const Icon(Icons.ios_share_rounded),
