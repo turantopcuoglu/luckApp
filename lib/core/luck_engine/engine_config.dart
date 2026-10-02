@@ -121,6 +121,21 @@ abstract final class EngineConfig {
   /// Bu skor ve üstü "dengeli uyum" (altı "geliştiren uyum").
   static const int uyumDengeliEsik = 62;
 
+  // ---- İsim uyumu (bebek ismi) ----
+
+  /// İsim sayısı referans sayıyla aynı gruptaysa puan.
+  static const int isimUyumAyniGrupPuani = 95;
+
+  /// İsim sayısı referans sayıyla aynıysa puan (ayna: güçlü ama tek
+  /// yönlü; aynı grubun biraz altında).
+  static const int isimUyumAynaPuani = 90;
+
+  /// Destekleyici gruplarda puan.
+  static const int isimUyumDestekleyiciPuani = 80;
+
+  /// Farklı ritimdeki gruplarda puan (öğretici uyum).
+  static const int isimUyumZorlayiciPuani = 60;
+
   // ---- Tekrarsız içerik seçimi ----
 
   /// Döngüsel indekste gün numarasının sayıldığı referans yıl (1 Ocak).

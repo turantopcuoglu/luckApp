@@ -155,6 +155,13 @@ UyumSonucu uyumHesapla(KaderProfili a, KaderProfili b) {
   );
 }
 
+/// İki taban sayının (1-9) geleneksel uyum ilişkisi.
+///
+/// Yaşam yolu uyumunun yanı sıra isim sayısı ile yaşam yolu gibi farklı
+/// sayı türlerini karşılaştırmak için de kullanılır (ör. bebek ismi).
+YasamYoluIliskisi sayiIliskisi(int tabanA, int tabanB) =>
+    _yasamYoluIliskisi(tabanA, tabanB);
+
 YasamYoluIliskisi _yasamYoluIliskisi(int a, int b) {
   if (a == b) {
     return YasamYoluIliskisi.ayna;
