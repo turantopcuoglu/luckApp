@@ -121,6 +121,22 @@ abstract final class EngineConfig {
   /// Bu skor ve üstü "dengeli uyum" (altı "geliştiren uyum").
   static const int uyumDengeliEsik = 62;
 
+  // ---- Doğum haritası (astronomi) ----
+
+  /// Bir burcun ekliptik genişliği (derece).
+  static const double burcGenisligi = 30;
+
+  /// Ay burcu bu kadar dereceden sınıra yakınsa "kesin değil" sayılır:
+  /// Ay saatte ~0.5° ilerler; ~0.5° ≈ 1 saatlik doğum saati belirsizliği.
+  static const double aySinirToleransi = 0.5;
+
+  /// Yükselen bu kadar dereceden sınıra yakınsa "sınırda" sayılır:
+  /// Yükselen 4 dakikada ~1° ilerler; 2° ≈ 8 dakikalık saat belirsizliği.
+  static const double yukselenSinirToleransi = 2;
+
+  /// Doğum saati bilinmiyorsa Ay burcu bu yerel saat için hesaplanır.
+  static const int bilinmeyenSaat = 12;
+
   // ---- İsim uyumu (bebek ismi) ----
 
   /// İsim sayısı referans sayıyla aynı gruptaysa puan.

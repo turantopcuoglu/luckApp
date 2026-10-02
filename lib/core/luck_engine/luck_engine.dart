@@ -24,6 +24,7 @@ import 'sansli_saat.dart';
 import 'score_transform.dart';
 import 'user_seed.dart';
 
+export 'astronomi.dart';
 export 'ay_evresi.dart';
 export 'burc.dart';
 export 'derin_numeroloji.dart';
