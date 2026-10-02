@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/content/harita_okumasi.dart';
 import '../../core/content/rapor_okumasi.dart';
 import '../../core/content/yillik_rapor.dart';
 import '../../core/luck_engine/luck_engine.dart';
@@ -35,3 +36,37 @@ final ProviderFamily<YillikRaporOkumasi, int> yillikRaporProvider =
         yil: yil,
       ),
     );
+
+/// Aktif kullanıcının doğum haritası okuması (Güneş, Ay, Yükselen).
+///
+/// Doğum saati yoksa Ay öğlen için hesaplanır ve Yükselen hesaplanmaz;
+/// saat dilimi Türkiye'nin o tarihteki kuralından bulunur.
+final Provider<HaritaOkumasi> haritaOkumasiProvider = Provider<HaritaOkumasi>(
+  (Ref ref) {
+    final UserProfile p = ref.watch(aktifProfilProvider);
+    final int? dakika = p.dogumSaatiDakika;
+    final bool saatVar = dakika != null;
+    final DateTime yerel = DateTime(
+      p.dogumTarihi.year,
+      p.dogumTarihi.month,
+      p.dogumTarihi.day,
+      saatVar ? dakika ~/ Duration.minutesPerHour : EngineConfig.bilinmeyenSaat,
+      saatVar ? dakika % Duration.minutesPerHour : 0,
+    );
+    final SaatDilimiSonucu dilim = TurkiyeSaatDilimi.utcFarki(yerel);
+    final int? plaka = p.dogumIliPlaka;
+    final Il? il = plaka == null ? null : TurkiyeIlleri.plakadan(plaka);
+    return haritaOkumasi(
+      harita: DogumHaritasi.hesapla(
+        yerelDogum: yerel,
+        utcFarkiSaat: dilim.farkSaat.toDouble(),
+        saatBiliniyor: saatVar,
+        enlem: il?.enlem,
+        boylam: il?.boylam,
+      ),
+      saatBiliniyor: saatVar,
+      konumBiliniyor: il != null,
+      saatDilimiKesin: dilim.kesin,
+    );
+  },
+);

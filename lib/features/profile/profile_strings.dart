@@ -104,6 +104,76 @@ abstract final class ProfileStrings {
   /// Zaman çizelgesinde zirve sayısı etiketi.
   static String zirveEtiketi(int zirve) => 'Zirve $zirve';
 
+  // ---- Büyük Üçlü (doğum haritası) ----
+
+  /// Kart ve ekran başlığı.
+  static const String buyukUcluBaslik = 'Büyük Üçlün';
+
+  /// Kart açıklaması.
+  static const String buyukUcluAciklama =
+      'Güneş burcun kim olduğunu, Ay burcun nasıl hissettiğini, Yükselenin '
+      'dünyaya nasıl göründüğünü anlatır.';
+
+  /// Sütun etiketleri.
+  static const String gunes = 'Güneş';
+
+  /// Sütun etiketi.
+  static const String ay = 'Ay';
+
+  /// Sütun etiketi.
+  static const String yukselen = 'Yükselen';
+
+  /// Bilinmeyen değer.
+  static const String bilinmiyor = '?';
+
+  /// Yükselen yokken düğme.
+  static const String yukseleniniOgren = 'Yükselenini öğren';
+
+  /// Harita ekranına giden düğme.
+  static const String haritaniOku = 'Haritanı oku';
+
+  /// Güneş bölümü başlığı.
+  static String gunesBasligi(String burc) => 'Güneş burcun · $burc';
+
+  /// Harita kilit açıklaması.
+  static const String haritaKilitAciklamasi =
+      'Yükselen yorumun Premium üyelere açık. İstersen kısa bir reklam '
+      'izleyerek bugün için de açabilirsin.';
+
+  // ---- Doğum bilgisi düzenleyici ----
+
+  /// Düzenleyici başlığı.
+  static const String dogumBilgisiBaslik = 'Doğum saatin ve yerin';
+
+  /// Düzenleyici açıklaması.
+  static const String dogumBilgisiAciklama =
+      'Yükselen burcun doğum saatine ve doğduğun yere göre değişir. Nüfus '
+      'kaydındaki ya da ailenin hatırladığı saati gir; birkaç dakikalık fark '
+      'bile Yükseleni değiştirebilir.';
+
+  /// Doğum saati satırı.
+  static const String dogumSaati = 'Doğum saati';
+
+  /// Saat bilinmiyor.
+  static const String saatBilinmiyor = 'Bilmiyorum';
+
+  /// Saat seç.
+  static const String saatSec = 'Saat seç';
+
+  /// Doğum ili alanı.
+  static const String dogumIli = 'Doğduğun il';
+
+  /// Doğum ili ipucu.
+  static const String dogumIliIpucu = 'İl adı yaz (ör. İzmir)';
+
+  /// Kaydet.
+  static const String kaydet = 'Kaydet';
+
+  /// Doğum saati gösterimi ("08:05").
+  static String saatMetni(int dakika) =>
+      '${(dakika ~/ Duration.minutesPerHour).toString().padLeft(2, '0')}:'
+      '${(dakika % Duration.minutesPerHour).toString().padLeft(2, '0')}';
+
   // ---- Kişisel Yıl Raporu ----
 
   /// Ana ekran tanıtım kartı başlığı.

@@ -15,6 +15,8 @@ class UserProfile {
     this.tamAd,
     this.tercihler = const OkuyucuTercihleri(),
     this.uyariKabulSurumu,
+    this.dogumSaatiDakika,
+    this.dogumIliPlaka,
   });
 
   /// Hive'dan okunan map'ten profil kurar.
@@ -31,6 +33,8 @@ class UserProfile {
         ugras: _enumOku(Ugras.values, map[_ugrasAnahtari]),
       ),
       uyariKabulSurumu: map[_uyariAnahtari] as int?,
+      dogumSaatiDakika: map[_dogumSaatiAnahtari] as int?,
+      dogumIliPlaka: map[_dogumIliAnahtari] as int?,
     );
   }
 
@@ -43,6 +47,8 @@ class UserProfile {
   static const String _iliskiAnahtari = 'iliski';
   static const String _ugrasAnahtari = 'ugras';
   static const String _uyariAnahtari = 'uyariKabulSurumu';
+  static const String _dogumSaatiAnahtari = 'dogumSaatiDakika';
+  static const String _dogumIliAnahtari = 'dogumIliPlaka';
 
   /// Kayıtlı enum adını değere çevirir; bilinmeyen/boş değer null olur
   /// (ileride bir seçenek kaldırılırsa eski kayıt uygulamayı çökertmez).
@@ -79,6 +85,14 @@ class UserProfile {
   /// Kabul edilen uyarı/koşullar metninin sürümü (null = kabul yok).
   final int? uyariKabulSurumu;
 
+  /// Doğum saati, gece yarısından itibaren dakika (0-1439); bilinmiyorsa
+  /// null. Yalnızca Ay burcu kesinliği ve Yükselen için kullanılır; skor
+  /// tohumunu etkilemez.
+  final int? dogumSaatiDakika;
+
+  /// Doğum ilinin plaka kodu (1-81); bilinmiyorsa null.
+  final int? dogumIliPlaka;
+
   /// Şans motoru için deterministik kullanıcı tohumu üretir.
   UserSeed get seed => UserSeed.fromIsim(isim: isim, dogumTarihi: dogumTarihi);
 
@@ -105,12 +119,15 @@ class UserProfile {
         _iliskiAnahtari: tercihler.iliski?.name,
         _ugrasAnahtari: tercihler.ugras?.name,
         _uyariAnahtari: uyariKabulSurumu,
+        _dogumSaatiAnahtari: dogumSaatiDakika,
+        _dogumIliAnahtari: dogumIliPlaka,
       };
 
   /// Seçili alanları değiştirilmiş bir kopya döndürür.
   ///
   /// [tamAdiTemizle] true ise tam ad null'a çekilir (copyWith null'ı
-  /// "değiştirme" olarak yorumladığı için ayrı bayrak gerekir).
+  /// "değiştirme" olarak yorumladığı için ayrı bayrak gerekir);
+  /// [dogumSaatiniTemizle] ve [dogumIliniTemizle] de aynı amaçla vardır.
   UserProfile copyWith({
     String? isim,
     bool? onboardingTamam,
@@ -118,6 +135,10 @@ class UserProfile {
     bool tamAdiTemizle = false,
     OkuyucuTercihleri? tercihler,
     int? uyariKabulSurumu,
+    int? dogumSaatiDakika,
+    bool dogumSaatiniTemizle = false,
+    int? dogumIliPlaka,
+    bool dogumIliniTemizle = false,
   }) =>
       UserProfile(
         isim: isim ?? this.isim,
@@ -126,5 +147,10 @@ class UserProfile {
         tamAd: tamAdiTemizle ? null : (tamAd ?? this.tamAd),
         tercihler: tercihler ?? this.tercihler,
         uyariKabulSurumu: uyariKabulSurumu ?? this.uyariKabulSurumu,
+        dogumSaatiDakika: dogumSaatiniTemizle
+            ? null
+            : (dogumSaatiDakika ?? this.dogumSaatiDakika),
+        dogumIliPlaka:
+            dogumIliniTemizle ? null : (dogumIliPlaka ?? this.dogumIliPlaka),
       );
 }

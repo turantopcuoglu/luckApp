@@ -17,6 +17,7 @@ import '../daily_luck/tr_strings.dart';
 import '../legal/legal_texts.dart';
 import '../premium/kilit_secenekleri.dart';
 import '../premium/premium_providers.dart';
+import 'dogum_haritasi_screen.dart';
 import 'hesap_metni.dart';
 import 'kilitli_bolum_karti.dart';
 import 'numeroloji_raporu_screen.dart';
@@ -61,6 +62,8 @@ class KaderProfiliScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             _KimlikKarti(profil: profil, kader: kader, karakter: karakter),
+            const SizedBox(height: AppSpacing.md),
+            const BuyukUcluKarti(),
             const SizedBox(height: AppSpacing.md),
             _SayiKarolari(kader: kader),
             if (kader.isimSayisi == null) ...<Widget>[

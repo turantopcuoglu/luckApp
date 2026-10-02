@@ -105,6 +105,7 @@ void main() {
       expect(find.text(ProfileStrings.baslik), findsOneWidget);
       expect(find.text('4'), findsWidgets); // yaşam yolu
       expect(find.text('5'), findsWidgets); // isim sayısı (Ayşe)
+      await tester.scrollUntilVisible(find.text('Özün · Kurucu'), 200);
       expect(find.text('Özün · Kurucu'), findsOneWidget);
 
       await tester.scrollUntilVisible(find.text('Gölge yanın'), 200);
@@ -137,6 +138,10 @@ void main() {
       );
       await ac(tester, const KaderProfiliScreen(), premium: true);
 
+      await tester.scrollUntilVisible(
+        find.text(ProfileStrings.tamAdEksikBaslik),
+        200,
+      );
       expect(find.text(ProfileStrings.tamAdEksikBaslik), findsOneWidget);
       await tester.scrollUntilVisible(find.text('Yaşam dersin'), 200);
       expect(find.text(ProfileStrings.kilidiAc), findsNothing);
