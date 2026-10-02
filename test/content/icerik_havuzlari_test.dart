@@ -57,12 +57,14 @@ List<String> _tumMetinler() {
     t.durum.values.forEach(ekle);
   }
   YorumYonu.bulusmaCumleleri.values.forEach(ekle);
-  for (final Map<String, String> s in YorumYonu.gunSahneleri.values) {
-    ekle(s.values);
+  for (final Map<String, List<String>> s in YorumYonu.gunSahneleri.values) {
+    s.values.forEach(ekle);
   }
   for (final KarakterYonu k in YorumYonu.karakterler.values) {
-    ekle(<String>[k.gucTavsiyesi, k.golgeTavsiyesi, k.dengeTavsiyesi]);
-    ekle(k.kategoriTarzi.values);
+    ekle(k.gucTavsiyeleri);
+    ekle(k.golgeTavsiyeleri);
+    ekle(k.dengeTavsiyeleri);
+    k.kategoriTarzi.values.forEach(ekle);
   }
   for (final Map<String, Map<KategoriTonu, List<String>>> d
       in YorumYonu.kategoriDurumlari.values) {
@@ -74,6 +76,7 @@ List<String> _tumMetinler() {
     ekle(t.values);
   }
   YorumYonu.donemCumleleri.values.forEach(ekle);
+  YorumYonu.ayCumleleri.values.forEach(ekle);
   // Kullanılmaya devam eden v1 havuzları.
   ekle(FortunePools.gununTavsiyeleri);
   CategoryPools.kategoriTavsiyeleri.values.forEach(ekle);
@@ -146,18 +149,89 @@ void main() {
           reason: '$sayi kendi gününde uyumlu olmalı',
         );
         expect(k.doga.endsWith('.'), isFalse);
+        for (final BulusmaTuru tur in BulusmaTuru.values) {
+          final List<String> oneriler = k.tavsiyeler(tur);
+          expect(
+            oneriler.length,
+            greaterThanOrEqualTo(ContentConfig.enAzOneriVaryanti),
+            reason: '$sayi $tur',
+          );
+          havuzuDogrula('öneri[$sayi][$tur]', oneriler);
+        }
         for (final LuckCategory kat in LuckCategory.values) {
-          expect(k.kategoriTarzi[kat], isNotNull, reason: '$sayi $kat');
+          final List<String>? tarz = k.kategoriTarzi[kat];
+          expect(tarz, isNotNull, reason: '$sayi $kat');
+          expect(
+            tarz!.length,
+            greaterThanOrEqualTo(ContentConfig.enAzTarzVaryanti),
+            reason: '$sayi $kat',
+          );
+          havuzuDogrula('tarz[$sayi][$kat]', tarz);
         }
       }
     });
 
-    test('her tema × uğraş sahnesi mevcut (genel dahil)', () {
+    test('okumanın ortasındaki cümleler "Bugün" ile başlamaz; tarz '
+        'cümleleri günden bağımsızdır', () {
+      // Yalnızca açılış (gün teması durumu) günü anar; ortadaki cümleler
+      // de "Bugün" ile başlarsa okuma tek kalıptan çıkmış gibi okunur.
+      final List<String> ortaCumleler = <String>[
+        ...YorumYonu.bulusmaCumleleri.values.expand((List<String> l) => l),
+        for (final Map<String, List<String>> s in YorumYonu.gunSahneleri.values)
+          ...s.values.expand((List<String> l) => l),
+        for (final KarakterYonu k in YorumYonu.karakterler.values) ...<String>[
+          ...k.gucTavsiyeleri,
+          ...k.golgeTavsiyeleri,
+          ...k.dengeTavsiyeleri,
+        ],
+        for (final Map<String, Map<KategoriTonu, List<String>>> d
+            in YorumYonu.kategoriDurumlari.values)
+          for (final Map<KategoriTonu, List<String>> tonlar in d.values)
+            ...tonlar.values.expand((List<String> l) => l),
+        for (final Map<LuckCategory, String> t in YorumYonu.temaKategori.values)
+          ...t.values,
+        ...KisiselHavuzlar.golgesizGun,
+        ...YorumYonu.donemCumleleri.values.expand((List<String> l) => l),
+        ...YorumYonu.ayCumleleri.values.expand((List<String> l) => l),
+      ];
+      for (final String c in ortaCumleler) {
+        expect(c.startsWith('Bugün'), isFalse, reason: c);
+      }
+      for (final KarakterYonu k in YorumYonu.karakterler.values) {
+        for (final String c in k.kategoriTarzi.values.expand(
+          (List<String> l) => l,
+        )) {
+          expect(c.toLowerCase().contains('bugün'), isFalse, reason: c);
+        }
+      }
+    });
+
+    test('buluşma cümleleri her türde yeterli varyantta', () {
+      for (final BulusmaTuru tur in BulusmaTuru.values) {
+        final List<String> havuz = YorumYonu.bulusmaCumleleri[tur]!;
+        expect(
+          havuz.length,
+          greaterThanOrEqualTo(ContentConfig.enAzBulusmaVaryanti),
+        );
+        havuzuDogrula('buluşma[$tur]', havuz);
+      }
+    });
+
+    test('her tema × uğraş sahnesi mevcut (genel dahil) ve varyantlı', () {
       for (int k = 1; k <= 9; k++) {
-        final Map<String, String> s = YorumYonu.gunSahneleri[k]!;
+        final Map<String, List<String>> s = YorumYonu.gunSahneleri[k]!;
         expect(s.containsKey(YorumYonu.genelAnahtar), isTrue);
-        for (final Ugras u in Ugras.values) {
-          expect(s[u.name], isNotNull, reason: 'sahne $k ${u.name}');
+        for (final String anahtar in <String>[
+          YorumYonu.genelAnahtar,
+          for (final Ugras u in Ugras.values) u.name,
+        ]) {
+          final List<String>? havuz = s[anahtar];
+          expect(havuz, isNotNull, reason: 'sahne $k $anahtar');
+          expect(
+            havuz!.length,
+            greaterThanOrEqualTo(ContentConfig.enAzSahneVaryanti),
+          );
+          havuzuDogrula('sahne[$k][$anahtar]', havuz);
         }
       }
     });
@@ -173,7 +247,7 @@ void main() {
             final List<String> havuz = e.value[ton]!;
             expect(
               havuz.length,
-              greaterThanOrEqualTo(ContentConfig.enAzDurumVaryanti),
+              greaterThanOrEqualTo(ContentConfig.enAzKategoriDurumVaryanti),
             );
             havuzuDogrula('durum[$kat][${e.key}][$ton]', havuz);
           }
@@ -202,12 +276,28 @@ void main() {
       );
     });
 
-    test('dönem cümleleri 1-9, eylem cümleleri şanslı saati taşır', () {
+    test('dönem ve ay cümleleri 1-9, eylem cümleleri şanslı saati taşır', () {
       for (int k = 1; k <= 9; k++) {
-        expect(YorumYonu.donemCumleleri[k], isNotEmpty);
+        expect(
+          YorumYonu.donemCumleleri[k]!.length,
+          greaterThanOrEqualTo(ContentConfig.enAzDonemVaryanti),
+        );
+        expect(
+          YorumYonu.ayCumleleri[k]!.length,
+          greaterThanOrEqualTo(ContentConfig.enAzDonemVaryanti),
+        );
+        havuzuDogrula('dönem[$k]', YorumYonu.donemCumleleri[k]!);
+        havuzuDogrula('ay[$k]', YorumYonu.ayCumleleri[k]!);
+        // Kapanış havuzunda dönem ve ay cümleleri birbirini tekrar etmez.
+        havuzuDogrula('kapanış[$k]', YorumYonu.kapanisHavuzu(k, k));
       }
       for (final List<String> eylemler
           in KisiselHavuzlar.eylemCumleleri.values) {
+        expect(
+          eylemler.length,
+          greaterThanOrEqualTo(ContentConfig.enAzEylemDikkat),
+        );
+        havuzuDogrula('eylem', eylemler);
         for (final String c in eylemler) {
           expect(slotlariBul(c), contains(SlotAnahtarlari.saat), reason: c);
         }
@@ -223,8 +313,9 @@ void main() {
         final String kucuk = metin.toLowerCase();
         for (final String yasak in ContentConfig.yasakliIfadeler) {
           // Kelime başı eşleşmesi: öncesinde harf olmamalı ("bölüm" serbest).
-          final RegExp desen =
-              RegExp('(^|[^a-zçğıöşüâîû])${RegExp.escape(yasak)}');
+          final RegExp desen = RegExp(
+            '(^|[^a-zçğıöşüâîû])${RegExp.escape(yasak)}',
+          );
           expect(
             desen.hasMatch(kucuk),
             isFalse,
@@ -241,9 +332,16 @@ void main() {
         for (final GunTemasi t in YorumYonu.gunTemalari.values)
           ...t.durum.values.expand((List<String> l) => l),
         ...YorumYonu.bulusmaCumleleri.values.expand((List<String> l) => l),
-        for (final Map<String, String> s in YorumYonu.gunSahneleri.values)
-          ...s.values,
+        for (final Map<String, List<String>> s in YorumYonu.gunSahneleri.values)
+          ...s.values.expand((List<String> l) => l),
         ...YorumYonu.donemCumleleri.values.expand((List<String> l) => l),
+        ...YorumYonu.ayCumleleri.values.expand((List<String> l) => l),
+        for (final KarakterYonu k in YorumYonu.karakterler.values) ...<String>[
+          ...k.gucTavsiyeleri,
+          ...k.golgeTavsiyeleri,
+          ...k.dengeTavsiyeleri,
+          ...k.kategoriTarzi.values.expand((List<String> l) => l),
+        ],
       ];
       for (final String metin in gunlukMetinler) {
         final String kucuk = metin.toLowerCase();
@@ -255,8 +353,9 @@ void main() {
           'sayın',
         ]) {
           // Kelime başı eşleşmesi ("çevren" içindeki "evren" serbest).
-          final RegExp desen =
-              RegExp('(^|[^a-zçğıöşüâîû])${RegExp.escape(terim)}');
+          final RegExp desen = RegExp(
+            '(^|[^a-zçğıöşüâîû])${RegExp.escape(terim)}',
+          );
           expect(desen.hasMatch(kucuk), isFalse, reason: '"$terim": $metin');
         }
       }

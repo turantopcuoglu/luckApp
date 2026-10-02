@@ -33,13 +33,12 @@ void main() {
     required int genel,
     required Map<LuckCategory, int> skorlar,
     DateTime? hangiGun,
-  }) =>
-      LuckResult(
-        gun: hangiGun ?? gun,
-        genelSkor: genel,
-        kategoriSkorlari: skorlar,
-        modifiyerler: const <LuckModifier>[],
-      );
+  }) => LuckResult(
+    gun: hangiGun ?? gun,
+    genelSkor: genel,
+    kategoriSkorlari: skorlar,
+    modifiyerler: const <LuckModifier>[],
+  );
 
   final Map<LuckCategory, int> ornekSkorlar = <LuckCategory, int>{
     LuckCategory.ask: 55,
@@ -59,10 +58,16 @@ void main() {
   group('gunlukOkuma', () {
     test('deterministik: aynı girdiler aynı okuma', () {
       final LuckResult s = motor.hesapla(kullanici: okuyucu().seed, gun: gun);
-      final GunlukOkuma a =
-          gunlukOkuma(motor: motor, okuyucu: okuyucu(), sonuc: s);
-      final GunlukOkuma b =
-          gunlukOkuma(motor: motor, okuyucu: okuyucu(), sonuc: s);
+      final GunlukOkuma a = gunlukOkuma(
+        motor: motor,
+        okuyucu: okuyucu(),
+        sonuc: s,
+      );
+      final GunlukOkuma b = gunlukOkuma(
+        motor: motor,
+        okuyucu: okuyucu(),
+        sonuc: s,
+      );
       expect(a.kartMetni, b.kartMetni);
       expect(a.baslik, b.baslik);
       expect(a.tavsiye, b.tavsiye);
@@ -81,7 +86,10 @@ void main() {
       expect(DonguMetinleri.gunBasliklari[4], contains(o.baslik));
       expect(o.parlayanKategori, LuckCategory.para);
       expect(o.dikkatKategori, LuckCategory.sosyal);
-      expect(YorumYonu.donemCumleleri[o.dongu.kisiselYil], contains(o.kapanis));
+      expect(
+        YorumYonu.kapanisHavuzu(o.dongu.kisiselYil, o.dongu.kisiselAy),
+        contains(o.kapanis),
+      );
     });
 
     test('günün bölümü: tema durumu → doğayla buluşma → sahne → öneri', () {
@@ -97,8 +105,11 @@ void main() {
       final KarakterYonu karakter = YorumYonu.karakterler[4]!;
       // Kişisel gün 4, yaşam yolu 4 için uyumlu → güç önerisi.
       expect(karakter.bulusma(4), BulusmaTuru.uyumlu);
-      expect(metin, contains(karakter.gucTavsiyesi));
-      expect(metin, contains(YorumYonu.gunSahneleri[4]!['ogrenci']));
+      expect(karakter.gucTavsiyeleri.any(metin.contains), isTrue);
+      expect(
+        YorumYonu.gunSahneleri[4]!['ogrenci']!.any(metin.contains),
+        isTrue,
+      );
       expect(
         YorumYonu.gunTemalari[4]!.durum[GunTonu.yuksek]!.any(
           (String s) => metin.startsWith(s.replaceAll('{isim}', 'Ayşe')),
@@ -123,12 +134,15 @@ void main() {
       final Okuyucu baska = adaylar
           .map((DateTime d) => okuyucu(isim: 'Deniz', dogumTarihi: d))
           .firstWhere((Okuyucu o) {
-        final int k =
-            GunDongusu.hesapla(dogumTarihi: o.profil.dogumTarihi, gun: gun)
-                .kisiselGun;
-        return YorumYonu.karakterler[o.profil.yasamYolu.deger]!.bulusma(k) ==
-            BulusmaTuru.zorlayici;
-      });
+            final int k = GunDongusu.hesapla(
+              dogumTarihi: o.profil.dogumTarihi,
+              gun: gun,
+            ).kisiselGun;
+            return YorumYonu.karakterler[o.profil.yasamYolu.deger]!.bulusma(
+                  k,
+                ) ==
+                BulusmaTuru.zorlayici;
+          });
       final GunlukOkuma b = gunlukOkuma(
         motor: motor,
         okuyucu: baska,
@@ -136,40 +150,53 @@ void main() {
       );
       final KarakterYonu kb =
           YorumYonu.karakterler[baska.profil.yasamYolu.deger]!;
-      expect(b.bolumler.first.metin, contains(kb.golgeTavsiyesi));
+      expect(kb.golgeTavsiyeleri.any(b.bolumler.first.metin.contains), isTrue);
       expect(b.bolumler.first.metin, contains(kb.doga));
       expect(a.bolumler.first.metin, isNot(b.bolumler.first.metin));
     });
 
-    test('öne çıkan alan kişinin durumuna göre: bekar ve evli farklı havuz', () {
-      final Map<LuckCategory, int> askBaskin = <LuckCategory, int>{
-        LuckCategory.ask: 90,
-        LuckCategory.para: 50,
-        LuckCategory.saglik: 50,
-        LuckCategory.risk: 50,
-        LuckCategory.sosyal: 45,
-      };
-      String parlayan(IliskiDurumu d) => gunlukOkuma(
-            motor: motor,
-            okuyucu: okuyucu(tercihler: OkuyucuTercihleri(iliski: d)),
-            sonuc: sonucKur(genel: 70, skorlar: askBaskin),
-          ).bolumler[1].metin;
-      final List<String> bekarHavuz = YorumYonu
-          .kategoriDurumlari[LuckCategory.ask]!['bekar']![KategoriTonu.yuksek]!;
-      final List<String> partnerHavuz = YorumYonu.kategoriDurumlari[
-          LuckCategory.ask]!['partnerli']![KategoriTonu.yuksek]!;
-      expect(bekarHavuz.any(parlayan(IliskiDurumu.bekar).startsWith), isTrue);
-      expect(partnerHavuz.any(parlayan(IliskiDurumu.evli).startsWith), isTrue);
-      // Kişinin aşk tarzı ve günün temasının aşka etkisi de yer alır.
-      expect(
-        parlayan(IliskiDurumu.bekar),
-        contains(YorumYonu.karakterler[4]!.kategoriTarzi[LuckCategory.ask]),
-      );
-      expect(
-        parlayan(IliskiDurumu.bekar),
-        contains(YorumYonu.temaKategori[4]![LuckCategory.ask]),
-      );
-    });
+    test(
+      'öne çıkan alan kişinin durumuna göre: bekar ve evli farklı havuz',
+      () {
+        final Map<LuckCategory, int> askBaskin = <LuckCategory, int>{
+          LuckCategory.ask: 90,
+          LuckCategory.para: 50,
+          LuckCategory.saglik: 50,
+          LuckCategory.risk: 50,
+          LuckCategory.sosyal: 45,
+        };
+        String parlayan(IliskiDurumu d) => gunlukOkuma(
+          motor: motor,
+          okuyucu: okuyucu(tercihler: OkuyucuTercihleri(iliski: d)),
+          sonuc: sonucKur(genel: 70, skorlar: askBaskin),
+        ).bolumler[1].metin;
+        final List<String> bekarHavuz =
+            YorumYonu.kategoriDurumlari[LuckCategory
+                .ask]!['bekar']![KategoriTonu.yuksek]!;
+        final List<String> partnerHavuz =
+            YorumYonu.kategoriDurumlari[LuckCategory
+                .ask]!['partnerli']![KategoriTonu.yuksek]!;
+        expect(bekarHavuz.any(parlayan(IliskiDurumu.bekar).startsWith), isTrue);
+        expect(
+          partnerHavuz.any(parlayan(IliskiDurumu.evli).startsWith),
+          isTrue,
+        );
+        // Günün temasının aşka etkisi her gün, kişinin aşk tarzı ise
+        // tarz cümlesinin bu paragrafa düştüğü günlerde yer alır.
+        final bool tarzBurada =
+            LuckEngine.gunNumarasi(gun) % ContentConfig.tarzDonusumu == 0;
+        expect(
+          YorumYonu.karakterler[4]!.kategoriTarzi[LuckCategory.ask]!.any(
+            parlayan(IliskiDurumu.bekar).contains,
+          ),
+          tarzBurada,
+        );
+        expect(
+          parlayan(IliskiDurumu.bekar),
+          contains(YorumYonu.temaKategori[4]![LuckCategory.ask]),
+        );
+      },
+    );
 
     test('2 yıl × farklı tercihler: yer tutucu, çift boşluk, cümle tekrarı ve '
         'numeroloji jargonu yok; okuma yeterince uzun', () {
@@ -202,8 +229,11 @@ void main() {
               kullanici: o.seed,
               gun: DateTime(2026, 1, 1 + i),
             );
-            final GunlukOkuma okuma =
-                gunlukOkuma(motor: motor, okuyucu: o, sonuc: s);
+            final GunlukOkuma okuma = gunlukOkuma(
+              motor: motor,
+              okuyucu: o,
+              sonuc: s,
+            );
             final String metin = '${okuma.baslik} ${okuma.kartMetni}';
             expect(metin.contains('{'), isFalse, reason: metin);
             expect(metin.contains('  '), isFalse, reason: metin);
@@ -227,8 +257,10 @@ void main() {
           gunlukOkuma(
             motor: motor,
             okuyucu: o,
-            sonuc:
-                motor.hesapla(kullanici: o.seed, gun: DateTime(2026, 9, 1 + i)),
+            sonuc: motor.hesapla(
+              kullanici: o.seed,
+              gun: DateTime(2026, 9, 1 + i),
+            ),
           ).bolumler.first.metin,
       };
       // Tema ~9 günde bir tekrar eder; durum/buluşma varyantları ve tonlar
@@ -261,7 +293,10 @@ void main() {
         <String>['B.'],
       );
       expect(
-        begenilenleriSec(havuz, OkumaBolumTuru.enerji, <String>{k('A.'), k('B.')}),
+        begenilenleriSec(havuz, OkumaBolumTuru.enerji, <String>{
+          k('A.'),
+          k('B.'),
+        }),
         havuz,
       );
     });
@@ -269,16 +304,22 @@ void main() {
     test('neden öğeleri ayrı ayrı ve gerçek değerlerle', () {
       final DateTime g = DateTime(2026, 9, 13);
       final LuckResult s = motor.hesapla(kullanici: okuyucu().seed, gun: g);
-      final GunlukOkuma okuma =
-          gunlukOkuma(motor: motor, okuyucu: okuyucu(), sonuc: s);
-      final Set<String> etiketler =
-          okuma.nedenler.map((NedenOgesi n) => n.etiket).toSet();
+      final GunlukOkuma okuma = gunlukOkuma(
+        motor: motor,
+        okuyucu: okuyucu(),
+        sonuc: s,
+      );
+      final Set<String> etiketler = okuma.nedenler
+          .map((NedenOgesi n) => n.etiket)
+          .toSet();
       expect(etiketler.length, okuma.nedenler.length);
-      final NedenOgesi ay = okuma.nedenler
-          .firstWhere((NedenOgesi n) => n.tur == NedenTuru.ayEvresi);
+      final NedenOgesi ay = okuma.nedenler.firstWhere(
+        (NedenOgesi n) => n.tur == NedenTuru.ayEvresi,
+      );
       expect(ay.etki, ayEvresiModifiyeri(g).etki);
-      final NedenOgesi kg = okuma.nedenler
-          .firstWhere((NedenOgesi n) => n.tur == NedenTuru.kisiselGun);
+      final NedenOgesi kg = okuma.nedenler.firstWhere(
+        (NedenOgesi n) => n.tur == NedenTuru.kisiselGun,
+      );
       expect(kg.aciklama, contains(YorumYonu.gunTemalari[4]!.istek));
     });
   });
@@ -319,22 +360,27 @@ void main() {
       );
       expect(k.ton, KategoriTonu.dusuk);
       expect(
-        YorumYonu.kategoriDurumlari[LuckCategory.sosyal]!['iceDonuk']![
-                KategoriTonu.dusuk]!
+        YorumYonu
+            .kategoriDurumlari[LuckCategory.sosyal]!['iceDonuk']![KategoriTonu
+                .dusuk]!
             .any(k.paragraf.startsWith),
         isTrue,
       );
-      expect(k.paragraf, contains(YorumYonu.temaKategori[4]![LuckCategory.sosyal]));
       expect(
         k.paragraf,
-        contains(YorumYonu.karakterler[4]!.kategoriTarzi[LuckCategory.sosyal]),
+        contains(YorumYonu.temaKategori[4]![LuckCategory.sosyal]),
+      );
+      expect(
+        YorumYonu.karakterler[4]!.kategoriTarzi[LuckCategory.sosyal]!.any(
+          k.paragraf.contains,
+        ),
+        isTrue,
       );
       expect(k.eylem, contains(k.sansliSaat.etiket));
       expect(
         KisiselHavuzlar.eylemCumleleri[LuckCategory.sosyal]!.any(
-          (String e) => slotDoldur(e, <String, String>{
-            'saat': k.sansliSaat.etiket,
-          }) ==
+          (String e) =>
+              slotDoldur(e, <String, String>{'saat': k.sansliSaat.etiket}) ==
               k.eylem,
         ),
         isTrue,
@@ -365,8 +411,10 @@ void main() {
 
   group('profilOkumasi', () {
     test('tam adla tüm bölümler, ücretsizler önce', () {
-      final List<ProfilBolumu> bolumler =
-          profilOkumasi(okuyucu: okuyucu(), gun: gun);
+      final List<ProfilBolumu> bolumler = profilOkumasi(
+        okuyucu: okuyucu(),
+        gun: gun,
+      );
       expect(bolumler.map((ProfilBolumu b) => b.tur), ProfilBolumTuru.values);
       expect(bolumler.first.baslik, contains('Kurucu'));
       expect(
@@ -379,8 +427,9 @@ void main() {
           ProfilBolumTuru.burc,
         ],
       );
-      final ProfilBolumu yil =
-          bolumler.firstWhere((ProfilBolumu b) => b.tur == ProfilBolumTuru.yil);
+      final ProfilBolumu yil = bolumler.firstWhere(
+        (ProfilBolumu b) => b.tur == ProfilBolumTuru.yil,
+      );
       expect(yil.metin, contains('2026 senin için bir 9 yılı'));
     });
 
@@ -388,13 +437,17 @@ void main() {
       final int kelime = profilOkumasi(okuyucu: okuyucu(), gun: gun)
           .map((ProfilBolumu b) => b.metin.split(' ').length)
           .fold(0, (int a, int b) => a + b);
-      expect(kelime, greaterThanOrEqualTo(ContentConfig.profilToplamEnAzKelime));
+      expect(
+        kelime,
+        greaterThanOrEqualTo(ContentConfig.profilToplamEnAzKelime),
+      );
     });
 
     test('tam ad yoksa isim tabanlı bölümler çıkmaz', () {
-      final Iterable<ProfilBolumTuru> turler =
-          profilOkumasi(okuyucu: okuyucu(tamAd: null), gun: gun)
-              .map((ProfilBolumu b) => b.tur);
+      final Iterable<ProfilBolumTuru> turler = profilOkumasi(
+        okuyucu: okuyucu(tamAd: null),
+        gun: gun,
+      ).map((ProfilBolumu b) => b.tur);
       expect(turler, isNot(contains(ProfilBolumTuru.icSes)));
       expect(turler, isNot(contains(ProfilBolumTuru.yansima)));
     });

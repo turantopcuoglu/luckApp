@@ -170,6 +170,27 @@ abstract final class ContentConfig {
   /// Dikkat cümlesi.
   static const String amacDikkat = 'dikkat';
 
+  /// Buluşma türüne göre karakter önerisi.
+  static const String amacOneri = 'oneri';
+
+  /// Kişinin bir kategorideki tarz cümlesi.
+  static const String amacTarz = 'tarz';
+
+  /// Tarz cümlesinin öne çıkan alan ve dikkat paragrafları arasında
+  /// dönüşüm periyodu (gün): çift günlerde öne çıkan alanda, tek günlerde
+  /// dikkat paragrafında yer alır.
+  static const int tarzDonusumu = 2;
+
+  /// Günün temasının gündelik hayattaki sahnesi.
+  static const String amacSahne = 'sahne';
+
+  /// Tema × uğraş başına en az sahne varyantı.
+  static const int enAzSahneVaryanti = 2;
+
+  /// Kategori detay sayfasındaki seçimlerin amaç eki (günlük kartla aynı
+  /// cümleyi göstermemek için).
+  static const String amacDetayEki = 'detay';
+
   // ---- Günlük okuma ayarları ----
 
   /// Kişisel güne bağlı havuzların yaklaşık kullanım aralığı (gün):
@@ -181,11 +202,64 @@ abstract final class ContentConfig {
   /// havuzlarda "beni anlatmadı" denen varyantın bir daha gelmemesi için 1.
   static const int enAzKalanVaryant = 1;
 
-  /// Durum havuzlarında (tema/kategori × ton) en az varyant.
+  /// Günün teması durum havuzlarında (tema × ton) en az varyant.
+  ///
+  /// Kişisel gün ~9 günde bir geldiği için iki varyant yeterlidir.
   static const int enAzDurumVaryanti = 2;
 
-  /// Kategori başına en az eylem ve dikkat cümlesi.
-  static const int enAzEylemDikkat = 4;
+  /// Kategori durum havuzlarında (kategori × durum × ton) en az varyant.
+  ///
+  /// Öne çıkan kategori ayda 10-15 kez aynı tonda gelebildiği için
+  /// gün temasından daha geniş tutulur.
+  static const int enAzKategoriDurumVaryanti = 4;
+
+  /// Buluşma türü başına en az "doğanla buluşma" cümlesi (her gün
+  /// kullanılır).
+  static const int enAzBulusmaVaryanti = 5;
+
+  /// Karakter başına her öneri türünde (güç/gölge/denge) en az varyant.
+  static const int enAzOneriVaryanti = 4;
+
+  /// Karakter başına her kategori tarzında en az varyant.
+  static const int enAzTarzVaryanti = 4;
+
+  /// Kişisel yıl başına en az dönem cümlesi ve kişisel ay başına en az
+  /// "bu ay" cümlesi.
+  static const int enAzDonemVaryanti = 4;
+
+  /// Kategori başına en az şanslı saatli eylem cümlesi.
+  static const int enAzEylemDikkat = 6;
+
+  // ---- Tekrar denetimi (bkz. test/content/tekrar_denetimi_test.dart) ----
+
+  /// Tekrar ölçümünün yapıldığı ardışık gün sayısı.
+  static const int denetimGunSayisi = 30;
+
+  /// Denetim penceresinde aynı cümlenin en fazla görülme sayısı.
+  static const int denetimEnFazlaAyniCumle = 6;
+
+  /// Denetim penceresinde benzersiz cümlelerin tüm cümlelere oranının
+  /// alt sınırı (yüzde).
+  static const int denetimEnAzBenzersizYuzde = 55;
+
+  /// Ardışık gün çiftlerinden (kapanış hariç) hiç ortak cümle
+  /// içermeyenlerin alt sınırı (yüzde).
+  static const int denetimEnAzArdisikFarkYuzde = 80;
+
+  /// Tek okumada "Bugün" ile başlayan en fazla cümle sayısı.
+  static const int denetimEnFazlaBugunBasi = 1;
+
+  /// Tek okumada kalıp ifadelerin toplam en fazla geçme sayısı.
+  static const int denetimEnFazlaKalip = 2;
+
+  /// Okuru ezber hissine sokan kalıp ifadeler (küçük harf).
+  static const List<String> kalipIfadeler = <String>[
+    'uygun bir gün',
+    'elverişli bir gün',
+    'anlamına gelebilir',
+    'iyi gelir',
+    'iyi gelecek',
+  ];
 
   /// Profil bölümü başına en az kelime sayısı (yüzeysel metin olmasın).
   static const int profilEnAzKelime = 18;

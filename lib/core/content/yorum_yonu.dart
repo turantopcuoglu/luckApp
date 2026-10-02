@@ -17,12 +17,22 @@
 /// tarzı. Numeroloji terimleri (kişisel gün, yaşam yolu sayısı, ay evresi)
 /// ana metinde KULLANILMAZ; yalnızca "Neden bugün?" açıklamalarındadır.
 ///
+/// v4 (tekrar denetimi): v3'te öneri, kategori tarzı ve dönem cümleleri
+/// tek varyantlıydı; bir kullanıcı 30 günde okuduğu cümlelerin yarıdan
+/// fazlasını ikinci kez görüyordu. Artık her havuz döngüsel seçilen
+/// birden çok varyant taşır, yalnızca açılış cümlesi "Bugün" der ve
+/// sahne/tema cümleleri tek kalıba ("… anlamına gelebilir", "Günün …
+/// havası") dayanmaz. Ölçütler `test/content/tekrar_denetimi_test.dart`
+/// içindedir.
+///
 /// Yer tutucular: `{isim}`, `{doga}`, `{gunIstegi}`, `{saat}`.
 library;
 
 import '../luck_engine/luck_engine.dart';
 import 'content_config.dart';
 import 'dongu_metinleri.dart';
+import 'karakter_yonleri.dart';
+import 'kategori_durumlari.dart';
 import 'okuyucu.dart';
 
 /// Günün teması ile kişinin doğası arasındaki buluşma türü.
@@ -44,9 +54,9 @@ class KarakterYonu {
     required this.doga,
     required this.uyumluGunler,
     required this.zorlayiciGunler,
-    required this.gucTavsiyesi,
-    required this.golgeTavsiyesi,
-    required this.dengeTavsiyesi,
+    required this.gucTavsiyeleri,
+    required this.golgeTavsiyeleri,
+    required this.dengeTavsiyeleri,
     required this.kategoriTarzi,
   });
 
@@ -59,17 +69,17 @@ class KarakterYonu {
   /// Temasında zorlandığı kişisel gün sayıları (1-9).
   final Set<int> zorlayiciGunler;
 
-  /// Uyumlu günde: güçlü yanını kullanma önerisi.
-  final String gucTavsiyesi;
+  /// Uyumlu günde: güçlü yanını kullanma önerileri.
+  final List<String> gucTavsiyeleri;
 
-  /// Zorlayıcı günde: gölge yanını yönetme önerisi.
-  final String golgeTavsiyesi;
+  /// Zorlayıcı günde: gölge yanını yönetme önerileri.
+  final List<String> golgeTavsiyeleri;
 
-  /// Dengeli günde: iki yanı birleştirme önerisi.
-  final String dengeTavsiyesi;
+  /// Dengeli günde: iki yanı birleştirme önerileri.
+  final List<String> dengeTavsiyeleri;
 
-  /// Her kategoride kişinin tipik tarzı (tondan bağımsız).
-  final Map<LuckCategory, String> kategoriTarzi;
+  /// Her kategoride kişinin tipik tarzı (tondan bağımsız varyantlar).
+  final Map<LuckCategory, List<String>> kategoriTarzi;
 
   /// [kisiselGun] temasıyla buluşma türü.
   BulusmaTuru bulusma(int kisiselGun) {
@@ -82,12 +92,12 @@ class KarakterYonu {
     return BulusmaTuru.dengeli;
   }
 
-  /// Buluşma türüne göre öneri.
-  String tavsiye(BulusmaTuru tur) => switch (tur) {
-        BulusmaTuru.uyumlu => gucTavsiyesi,
-        BulusmaTuru.dengeli => dengeTavsiyesi,
-        BulusmaTuru.zorlayici => golgeTavsiyesi,
-      };
+  /// Buluşma türüne göre öneri varyantları.
+  List<String> tavsiyeler(BulusmaTuru tur) => switch (tur) {
+    BulusmaTuru.uyumlu => gucTavsiyeleri,
+    BulusmaTuru.dengeli => dengeTavsiyeleri,
+    BulusmaTuru.zorlayici => golgeTavsiyeleri,
+  };
 }
 
 /// Kişisel gün (1-9) temasının günlük dildeki anlatımı.
@@ -102,9 +112,12 @@ class GunTemasi {
   final Map<GunTonu, List<String>> durum;
 }
 
-/// v3 yorum içerikleri.
+/// v3/v4 yorum içerikleri.
 abstract final class YorumYonu {
   /// Kişisel gün temaları.
+  ///
+  /// Durum cümleleri okumanın AÇILIŞIDIR: "bugün" kelimesi yalnızca
+  /// burada doğal olarak geçer.
   static const Map<int, GunTemasi> gunTemalari = <int, GunTemasi>{
     1: GunTemasi(
       istek: 'yeni bir şeye cesaretle başlamak',
@@ -114,11 +127,11 @@ abstract final class YorumYonu {
           'Bugün içinde bir başlangıç kıpırtısı var; yine de büyük adımlar yerine küçük bir hazırlık daha doğru olur.',
         ],
         GunTonu.orta: <String>[
-          '{isim}, bugün yeni bir sayfa açmak için makul bir gün; küçük ve somut bir başlangıç iyi gelir.',
+          '{isim}, bugün yeni bir sayfa açmak için makul bir gün; küçük ve somut bir başlangıç yeterli.',
           'Bugün ertelediğin bir işe başlamak için yeterli enerjin var, yeter ki mükemmel anı bekleme.',
         ],
         GunTonu.yuksek: <String>[
-          '{isim}, bugün yeni bir şeye başlamak, bir teklifte bulunmak ya da ilk adımı atmak için elverişli bir gün.',
+          '{isim}, bugün yeni bir şeye başlamak, bir teklifte bulunmak ya da ilk adımı atmak için rüzgâr arkanda.',
           'Bugün cesaretin karşılık bulduğu bir gün; aklındaki başlangıcı ertelemek için iyi bir sebebin yok.',
         ],
       },
@@ -135,7 +148,7 @@ abstract final class YorumYonu {
           'Bugün küçük ayrıntılar ve nazik tavırlar, büyük hamlelerden daha çok işe yarıyor.',
         ],
         GunTonu.yuksek: <String>[
-          '{isim}, bugün iş birliği, anlaşma ve yakınlaşma için elverişli bir gün; insanlar sana karşı daha açık.',
+          '{isim}, bugün iş birliği, anlaşma ve yakınlaşma kolaylaşıyor; insanlar sana karşı daha açık.',
           'Bugün bir konuşmada ya da ortaklıkta beklediğinden daha kolay uzlaşı sağlayabilirsin.',
         ],
       },
@@ -148,8 +161,8 @@ abstract final class YorumYonu {
           'Bugün enerjin dağılmaya meyilli; aynı anda birçok işe dokunup hiçbirini bitirememe riski var.',
         ],
         GunTonu.orta: <String>[
-          '{isim}, bugün kendini ifade etmek ve insanlarla temas kurmak sana iyi gelecek.',
-          'Bugün bir fikri paylaşmak ya da uzun zamandır görmediğin biriyle konuşmak için uygun bir gün.',
+          '{isim}, bugün kendini ifade etmek ve insanlarla temas kurmak seni canlandıracak.',
+          'Bugün bir fikri paylaşmak ya da uzun zamandır görmediğin biriyle konuşmak için kapılar açık.',
         ],
         GunTonu.yuksek: <String>[
           '{isim}, bugün sözlerin ve fikirlerin karşılık buluyor; paylaşım ya da yaratıcı bir iş için güzel bir gün.',
@@ -165,7 +178,7 @@ abstract final class YorumYonu {
           'Bugün emeğinin karşılığını hemen görememek seni sabırsızlandırabilir.',
         ],
         GunTonu.orta: <String>[
-          '{isim}, bugün dağınık duran işleri toparlamak ve bir planı adım adım ilerletmek için uygun bir gün.',
+          '{isim}, bugün dağınık duran işleri toplamanın ve bir planı adım adım ilerletmenin tam zamanı.',
           'Bugün hızdan çok istikrar kazandırıyor; ertelediğin küçük işleri bitirmek içini rahatlatır.',
         ],
         GunTonu.yuksek: <String>[
@@ -179,7 +192,7 @@ abstract final class YorumYonu {
       durum: <GunTonu, List<String>>{
         GunTonu.dusuk: <String>[
           '{isim}, bugün planların son dakikada değişebilir ve bu seni huzursuz edebilir.',
-          'Bugün içinde her şeyi bir anda değiştirme isteği olabilir; ani kararlar için uygun bir gün değil.',
+          'Bugün içinde her şeyi bir anda değiştirme isteği olabilir; ani kararlar için doğru zaman değil.',
         ],
         GunTonu.orta: <String>[
           '{isim}, bugün rutini biraz esnetmek ve farklı bir şey denemek zihnini tazeler.',
@@ -187,7 +200,7 @@ abstract final class YorumYonu {
         ],
         GunTonu.yuksek: <String>[
           '{isim}, bugün yeni bir deneyim, kısa bir yolculuk ya da beklenmedik bir teklif için açık bir gün.',
-          'Bugün değişim senin lehine işliyor; farklı bir yol denemek için elverişli bir gün.',
+          'Bugün değişim senin lehine işliyor; farklı bir yol denemekten çekinme.',
         ],
       },
     ),
@@ -199,12 +212,12 @@ abstract final class YorumYonu {
           'Bugün ev, aile ya da yakın çevrenle ilgili küçük gerginlikler yaşanabilir.',
         ],
         GunTonu.orta: <String>[
-          '{isim}, bugün sevdiklerinle ilgilenmek ve yaşadığın alanı düzenlemek sana iyi gelecek.',
-          'Bugün yakınlarına göstereceğin küçük bir ilgi, beklediğinden daha çok karşılık bulur.',
+          '{isim}, bugün sevdiklerinle ilgilenmek ve yaşadığın alanı düzenlemek seni rahatlatacak.',
+          'Bugün yakınlarına göstereceğin küçük bir ilgi beklediğinden çok karşılık bulur.',
         ],
         GunTonu.yuksek: <String>[
           '{isim}, bugün yakın ilişkilerin güçlendiği, sevgi ve desteğin karşılıklı aktığı bir gün.',
-          'Bugün aile, ev ve yakın ilişkiler konusunda güzel gelişmeler için uygun bir gün.',
+          'Bugün aile, ev ve yakın ilişkiler konusunda güzel gelişmelere açık bir gün.',
         ],
       },
     ),
@@ -216,8 +229,8 @@ abstract final class YorumYonu {
           'Bugün kafanda kurduğun senaryolar gerçekte olduğundan daha büyük görünebilir.',
         ],
         GunTonu.orta: <String>[
-          '{isim}, bugün biraz yavaşlamak, düşünmek ve kendine vakit ayırmak sana iyi gelecek.',
-          'Bugün bir konuyu derinlemesine incelemek ya da bir şey öğrenmek için uygun bir gün.',
+          '{isim}, bugün biraz yavaşlamak, düşünmek ve kendine vakit ayırmak seni toparlayacak.',
+          'Bugün bir konuyu derinlemesine incelemek ya da bir şey öğrenmek için zihnin hazır.',
         ],
         GunTonu.yuksek: <String>[
           '{isim}, bugün sezgilerin güçlü; uzun süredir düşündüğün bir konuda netlik bulabilirsin.',
@@ -229,12 +242,12 @@ abstract final class YorumYonu {
       istek: 'net kararlar almak ve somut sonuç peşinde koşmak',
       durum: <GunTonu, List<String>>{
         GunTonu.dusuk: <String>[
-          '{isim}, bugün iş ve para konularında engeller öne çıkabilir; aceleyle karar vermek için uygun bir gün değil.',
+          '{isim}, bugün iş ve para konularında engeller öne çıkabilir; aceleyle karar vermemek seni korur.',
           'Bugün kontrol edemediğin şeyler seni gerebilir; zorlamak yerine hesaplı hareket etmek daha doğru.',
         ],
         GunTonu.orta: <String>[
           '{isim}, bugün net bir hedef belirleyip ona odaklandığında sonuç almak mümkün.',
-          'Bugün iş ve para konularını gözden geçirmek, önceliklerini netleştirmek için uygun bir gün.',
+          'Bugün iş ve para konularını gözden geçirip önceliklerini netleştirmenin tam zamanı.',
         ],
         GunTonu.yuksek: <String>[
           '{isim}, bugün emeğinin karşılığını istemek, bir görüşme yapmak ya da önemli bir karar almak için güçlü bir gün.',
@@ -250,8 +263,8 @@ abstract final class YorumYonu {
           'Bugün bir şeyin bitmesi ya da istediğin gibi sonuçlanmaması canını sıkabilir.',
         ],
         GunTonu.orta: <String>[
-          '{isim}, bugün yarım kalan işleri bitirmek ve gereksiz yüklerden hafiflemek için uygun bir gün.',
-          'Bugün yeni bir şeye başlamaktan çok, elindekileri tamamlamak sana iyi gelecek.',
+          '{isim}, bugün yarım kalan işleri bitirip gereksiz yüklerden hafiflemenin zamanı.',
+          'Bugün yeni bir şeye başlamaktan çok elindekileri tamamlamak seni rahatlatacak.',
         ],
         GunTonu.yuksek: <String>[
           '{isim}, bugün uzun süredir uğraştığın bir konunun güzelce sonuçlanabileceği bir gün.',
@@ -262,97 +275,275 @@ abstract final class YorumYonu {
   };
 
   /// Buluşma türüne göre "bu gün seninle nasıl buluşuyor" cümleleri.
-  static const Map<BulusmaTuru, List<String>> bulusmaCumleleri =
-      <BulusmaTuru, List<String>>{
+  ///
+  /// Her gün kullanıldıkları için tür başına en az
+  /// [ContentConfig.enAzBulusmaVaryanti] varyant vardır.
+  static const Map<BulusmaTuru, List<String>>
+  bulusmaCumleleri = <BulusmaTuru, List<String>>{
     BulusmaTuru.uyumlu: <String>[
-      'Bugünün senden istediği şey, yani {gunIstegi}, zaten doğanda var; bu yüzden gün sana ağır değil, tanıdık gelecek.',
-      'Doğanda {doga} olduğu için bugünün temposuna kolayca uyum sağlarsın; başkalarının zorlandığı yerde sen rahat olabilirsin.',
+      'Günün senden istediği şey, yani {gunIstegi}, zaten doğanda var; bu yüzden gün sana ağır değil, tanıdık gelecek.',
+      'Doğanda {doga} olduğu için günün temposuna kolayca uyum sağlarsın; başkalarının zorlandığı yerde sen rahat olabilirsin.',
+      'Gün tam da senin dilinden konuşuyor: {gunIstegi}. Bu, en iyi yaptığın şeyi göstermen için bir alan.',
+      'Bu tür günlerde rahat edersin, çünkü {gunIstegi} senin için çaba değil, alışkanlık.',
+      'Sende zaten var olan {doga} eğilimi günün ritmiyle aynı yönde akıyor; zorlamadan ilerleyebilirsin.',
     ],
     BulusmaTuru.dengeli: <String>[
-      'Bugün öne çıkan şey {gunIstegi}; bu senin ilk tercihin olmasa da doğandaki {doga} isteğini güzelce tamamlayabilir.',
-      'Bugün senden {gunIstegi} bekleniyor; bunu kendi tarzınla, yani {doga} yoluyla yaparsan gün dengeli ve verimli geçer.',
+      'Öne çıkan şey {gunIstegi}; bu senin ilk tercihin olmasa da doğandaki {doga} isteğini güzelce tamamlayabilir.',
+      'Senden {gunIstegi} bekleniyor; bunu kendi tarzınla, yani {doga} yoluyla yaparsan gün dengeli ve verimli geçer.',
+      'Gün sana alışık olduğundan biraz farklı bir şey öneriyor: {gunIstegi}. Kendi doğanla birleştirdiğinde ortaya iyi bir karışım çıkar.',
+      'Senin doğan {doga} yönünde çalışıyor, gün ise {gunIstegi} istiyor; ikisi çatışmıyor, birbirini tamamlıyor.',
+      'Alışık olduğun ritimle günün ritmi arasında küçük bir fark var; bu fark sana yeni bir bakış açısı kazandırabilir.',
     ],
     BulusmaTuru.zorlayici: <String>[
-      'Senin doğanda {doga} var; bugün ise gün senden {gunIstegi} istiyor. Bu yüzden gün boyunca hafif bir sürtünme hissedersen şaşırma.',
-      'Bugün senden {gunIstegi} bekleniyor, oysa senin rahat ettiğin alan {doga}. Ritmin bugün biraz zorlanabilir; bu bir kötü gün değil, farklı bir gün.',
+      'Senin doğanda {doga} var; gün ise senden {gunIstegi} istiyor. Bu yüzden gün boyunca hafif bir sürtünme hissedersen şaşırma.',
+      'Senden {gunIstegi} bekleniyor, oysa senin rahat ettiğin alan {doga}. Ritmin biraz zorlanabilir; bu kötü bir gün değil, farklı bir gün.',
+      'Gün, alışık olduğun yoldan biraz uzak bir şey istiyor: {gunIstegi}. Bazı anlarda kendini yavaşlamış ya da sabırsız hissedebilirsin.',
+      'Doğal eğilimin {doga} olsa da gün başka bir kasını çalıştırmanı istiyor; zor gelen kısım aynı zamanda seni büyüten kısım.',
+      'Günün ritmi senin içgüdülerinle tam örtüşmüyor; bunu bilmek küçük aksiliklere daha sakin bakmanı sağlar.',
     ],
   };
 
   /// Günün temasının kişinin gündelik hayatında nerede görüneceği
   /// (tema × uğraş). Anahtar: [Ugras.name] ya da [genelAnahtar].
-  static const Map<int, Map<String, String>> gunSahneleri =
-      <int, Map<String, String>>{
-    1: <String, String>{
-      'calisiyor': 'İş tarafında bu, yeni bir görev üstlenmek ya da bir öneri sunmak anlamına gelebilir.',
-      'ogrenci': 'Derslerinde bu, yeni bir konuya ya da yeni bir çalışma düzenine başlamak anlamına gelebilir.',
-      'isArayan': 'İş arayışında bu, yeni bir başvuru yapmak ya da daha önce denemediğin bir alana bakmak anlamına gelebilir.',
-      'girisimci': 'İşinde bu, aklındaki yeni bir fikri denemek ya da ilk kez bir müşteriyle görüşmek anlamına gelebilir.',
-      'evde': 'Evde bu, uzun süredir düşündüğün bir değişikliğe ya da kendine ait yeni bir alışkanlığa başlamak anlamına gelebilir.',
-      'genel': 'Pratikte bu, uzun süredir ertelediğin bir işe ilk adımı atmak anlamına gelebilir.',
+  ///
+  /// Her temanın iki varyantı farklı cümle kalıpları kullanır; aynı
+  /// uğraştaki okur, tema ve varyant değiştikçe farklı bir yapı okur.
+  /// Varyantlar kişisel gün adımıyla döner (tema ~9 günde bir gelir).
+  static const Map<int, Map<String, List<String>>>
+  gunSahneleri = <int, Map<String, List<String>>>{
+    1: <String, List<String>>{
+      'calisiyor': <String>[
+        'İş tarafında bu, yeni bir görev üstlenmek ya da bir öneri sunmakla başlayabilir.',
+        'Toplantıda ilk söz alan ya da yeni bir fikri masaya koyan sen olabilirsin.',
+      ],
+      'ogrenci': <String>[
+        'Derslerinde bu, yeni bir konuya ya da yeni bir çalışma düzenine geçmekle kendini gösterebilir.',
+        'Uzun süredir ertelediğin bir konuya giriş yapmak sana hız kazandırabilir.',
+      ],
+      'isArayan': <String>[
+        'İş arayışında bu, yeni bir başvuru yapmak ya da daha önce denemediğin bir alana bakmakla başlayabilir.',
+        'Daha önce çekindiğin bir şirkete ya da kişiye ilk mesajı atmak sana cesaret verebilir.',
+      ],
+      'girisimci': <String>[
+        'İşinde bu, aklındaki yeni bir fikri denemek ya da ilk kez bir müşteriyle görüşmekle kendini gösterebilir.',
+        'Kafandaki yeni ürün ya da hizmet fikrinin ilk taslağını çıkarmak için içinde bir istek var.',
+      ],
+      'evde': <String>[
+        'Evde bu, uzun süredir düşündüğün bir değişikliğe ya da kendine ait yeni bir alışkanlığa başlamakla kendini gösterebilir.',
+        'Evde yeni bir düzen ya da yeni bir hobi için ilk malzemeyi almak güzel bir başlangıç olabilir.',
+      ],
+      'genel': <String>[
+        'Pratikte bu, uzun süredir ertelediğin bir işe ilk adımı atmakla başlayabilir.',
+        'Küçük de olsa yeni bir şeyin ilk adımını atmak gününe yön verebilir.',
+      ],
     },
-    2: <String, String>{
-      'calisiyor': 'İş tarafında bu, bir iş arkadaşınla birlikte çalışmak ya da gergin bir konuyu nazikçe konuşmak anlamına gelebilir.',
-      'ogrenci': 'Derslerinde bu, bir arkadaşınla birlikte çalışmak ya da takıldığın bir konuyu birine sormak anlamına gelebilir.',
-      'isArayan': 'İş arayışında bu, tanıdıklarından destek istemek ya da bir referans rica etmek anlamına gelebilir.',
-      'girisimci': 'İşinde bu, bir ortak, tedarikçi ya da müşteriyle anlaşma zemini aramak anlamına gelebilir.',
-      'evde': 'Evde bu, bir konuyu birlikte konuşup ortak karar almak anlamına gelebilir.',
-      'genel': 'Pratikte bu, bir konuyu tek başına çözmeye çalışmak yerine birinden destek istemek anlamına gelebilir.',
+    2: <String, List<String>>{
+      'calisiyor': <String>[
+        'İş tarafında bunun karşılığı, bir iş arkadaşınla birlikte çalışmak ya da gergin bir konuyu nazikçe konuşmak olabilir.',
+        'Bir iş arkadaşının fikrini önemsediğini göstermek ekipteki havayı yumuşatabilir.',
+      ],
+      'ogrenci': <String>[
+        'Derslerinde bunun karşılığı, bir arkadaşınla birlikte çalışmak ya da takıldığın bir konuyu birine sormak olabilir.',
+        'Bir grup çalışmasında fikirleri bir araya getiren kişi olmak sana iyi bir rol kazandırabilir.',
+      ],
+      'isArayan': <String>[
+        'İş arayışında bunun karşılığı, tanıdıklarından destek istemek ya da bir referans rica etmek olabilir.',
+        'Bir görüşmede karşındakini dikkatle dinlemek, konuşmaktan daha çok etki bırakabilir.',
+      ],
+      'girisimci': <String>[
+        'İşinde bunun karşılığı, bir ortak, tedarikçi ya da müşteriyle anlaşma zemini aramak olabilir.',
+        'Bir müşterinin ya da ortağın gerçekte ne istediğini sormak yeni bir anlaşmanın kapısını aralayabilir.',
+      ],
+      'evde': <String>[
+        'Evde bunun karşılığı, bir konuyu birlikte konuşup ortak karar almak olabilir.',
+        'Ev halkıyla birlikte yapılacak küçük bir iş aranızdaki uyumu güçlendirebilir.',
+      ],
+      'genel': <String>[
+        'Gündelik hayatta bunun karşılığı, bir konuyu tek başına çözmeye çalışmak yerine birinden destek istemek olabilir.',
+        'Birini dinlemek için ayıracağın birkaç dakika aranızdaki bağı sandığından çok güçlendirebilir.',
+      ],
     },
-    3: <String, String>{
-      'calisiyor': 'İş tarafında bu, bir fikrini paylaşmak, sunum yapmak ya da ekiple iletişimi güçlendirmek anlamına gelebilir.',
-      'ogrenci': 'Derslerinde bu, bir sunum, grup çalışması ya da yaratıcı bir ödev anlamına gelebilir.',
-      'isArayan': 'İş arayışında bu, özgeçmişini güncellemek ya da çevrene ne aradığını anlatmak anlamına gelebilir.',
-      'girisimci': 'İşinde bu, işini tanıtmak, paylaşım yapmak ya da yeni insanlarla tanışmak anlamına gelebilir.',
-      'evde': 'Evde bu, arkadaşlarla görüşmek ya da yaratıcı bir uğraşa vakit ayırmak anlamına gelebilir.',
-      'genel': 'Pratikte bu, bir arkadaşınla görüşmek ya da seni ifade eden bir işe vakit ayırmak anlamına gelebilir.',
+    3: <String, List<String>>{
+      'calisiyor': <String>[
+        'Bunu en çok bir fikrini paylaşırken, sunum yaparken ya da ekiple konuşurken fark edebilirsin.',
+        'Bir e-postada ya da toplantıda fikrini net ve sıcak bir dille anlatman fark yaratabilir.',
+      ],
+      'ogrenci': <String>[
+        'Bunu en çok bir sunumda, grup çalışmasında ya da yaratıcı bir ödevde fark edebilirsin.',
+        'Derste soru sormak ya da bir tartışmaya katılmak düşündüğünden daha çok dikkat çekebilir.',
+      ],
+      'isArayan': <String>[
+        'Bunu en çok özgeçmişini güncellerken ya da çevrene ne aradığını anlatırken fark edebilirsin.',
+        'Kendini anlatan kısa bir tanıtım cümlesi hazırlamak görüşmelerde işine yarayabilir.',
+      ],
+      'girisimci': <String>[
+        'Bunu en çok işini tanıtırken, paylaşım yaparken ya da yeni insanlarla tanışırken fark edebilirsin.',
+        'Müşterilerine işinin hikâyesini anlatmak reklamdan daha çok etki bırakabilir.',
+      ],
+      'evde': <String>[
+        'Bunu en çok arkadaşlarla görüşürken ya da yaratıcı bir uğraşa vakit ayırırken fark edebilirsin.',
+        'Bir arkadaşını arayıp uzun uzun sohbet etmek ya da bir şey üretmek ruhunu canlandırabilir.',
+      ],
+      'genel': <String>[
+        'Bunu en çok bir arkadaşınla konuşurken ya da seni ifade eden bir işe vakit ayırırken fark edebilirsin.',
+        'Bir duygunu ya da fikrini söze dökmek içindeki enerjiyi açığa çıkarabilir.',
+      ],
     },
-    4: <String, String>{
-      'calisiyor': 'İş tarafında bu, biriken e-postaları, dosyaları ya da yarım işleri toparlamak anlamına gelebilir.',
-      'ogrenci': 'Derslerinde bu, notlarını düzenlemek, bir çalışma planı yapmak ya da ertelediğin ödevi bitirmek anlamına gelebilir.',
-      'isArayan': 'İş arayışında bu, başvurularını bir listeye dökmek ve düzenli bir arama planı yapmak anlamına gelebilir.',
-      'girisimci': 'İşinde bu, hesapları, süreçleri ve yapılacaklar listesini düzene koymak anlamına gelebilir.',
-      'evde': 'Evde bu, bir köşeyi düzenlemek ya da haftanın planını çıkarmak anlamına gelebilir.',
-      'genel': 'Pratikte bu, masandaki, telefonundaki ya da aklındaki birikmiş işleri toparlamak anlamına gelebilir.',
+    4: <String, List<String>>{
+      'calisiyor': <String>[
+        'Somut bir başlangıç: biriken e-postaları, dosyaları ya da yarım işleri toparlamak.',
+        'Yapılacaklar listeni sıraya koymak ve bir işi baştan sona bitirmek sana kontrol hissi verebilir.',
+      ],
+      'ogrenci': <String>[
+        'Somut bir başlangıç: notlarını düzenlemek, bir çalışma planı yapmak ya da ertelediğin ödevi bitirmek.',
+        'Haftalık bir ders programı çıkarmak kafandaki dağınıklığı toparlayabilir.',
+      ],
+      'isArayan': <String>[
+        'Somut bir başlangıç: başvurularını bir listeye dökmek ve düzenli bir arama planı yapmak.',
+        'Her gün aynı saatte ilanlara bakmak gibi küçük bir düzen süreci daha az yorucu hâle getirebilir.',
+      ],
+      'girisimci': <String>[
+        'Somut bir başlangıç: hesapları, süreçleri ve yapılacaklar listesini düzene koymak.',
+        'Bir süreci yazıya dökmek ya da bir şablon hazırlamak ileride zaman kazandırabilir.',
+      ],
+      'evde': <String>[
+        'Somut bir başlangıç: evde bir köşeyi düzenlemek ya da haftanın planını çıkarmak.',
+        'Bir dolabı ya da çekmeceyi düzenlemek zihnindeki dağınıklığı da toparlayabilir.',
+      ],
+      'genel': <String>[
+        'Somut bir başlangıç: masandaki, telefonundaki ya da aklındaki birikmiş işleri toparlamak.',
+        'Küçük bir düzen kurmak kafandaki kalabalığı da sadeleştirebilir.',
+      ],
     },
-    5: <String, String>{
-      'calisiyor': 'İş tarafında bu, bir yöntemi değiştirmek ya da farklı bir görevde yer almak anlamına gelebilir.',
-      'ogrenci': 'Derslerinde bu, çalışma yerini ya da yöntemini değiştirip dikkatini tazelemek anlamına gelebilir.',
-      'isArayan': 'İş arayışında bu, daha önce düşünmediğin bir sektöre ya da pozisyona bakmak anlamına gelebilir.',
-      'girisimci': 'İşinde bu, ürününde ya da yaklaşımında küçük bir değişiklik denemek anlamına gelebilir.',
-      'evde': 'Evde bu, rutinin dışına çıkmak, kısa bir gezinti yapmak ya da yeni bir tarif denemek anlamına gelebilir.',
-      'genel': 'Pratikte bu, rutinin dışına çıkmak, farklı bir yoldan gitmek ya da yeni bir şey denemek anlamına gelebilir.',
+    5: <String, List<String>>{
+      'calisiyor': <String>[
+        'İşte bir yöntemi değiştirmek ya da farklı bir görevde yer almak zihnini tazeleyebilir.',
+        'Plan dışı bir görev ya da beklenmedik bir talep sana yeni bir beceri kazandırabilir.',
+      ],
+      'ogrenci': <String>[
+        'Çalışma yerini ya da yöntemini değiştirmek dikkatini tazeleyebilir.',
+        'Farklı bir kaynaktan ya da yöntemle çalışmak zor bir konuyu çözmeni kolaylaştırabilir.',
+      ],
+      'isArayan': <String>[
+        'Daha önce düşünmediğin bir sektöre ya da pozisyona göz atmak arayışına yeni bir yön verebilir.',
+        'Esnek ya da uzaktan çalışma seçeneklerine bakmak sana yeni kapılar gösterebilir.',
+      ],
+      'girisimci': <String>[
+        'Ürününde ya da yaklaşımında küçük bir değişiklik denemek işine taze bir soluk getirebilir.',
+        'Yeni bir satış kanalı ya da iş birliği fikri denemek işine hareket getirebilir.',
+      ],
+      'evde': <String>[
+        'Rutinin dışına çıkmak, kısa bir gezinti yapmak ya da yeni bir tarif denemek evdeki günü tazeleyebilir.',
+        'Eşyaların yerini değiştirmek ya da yakında yeni bir mekân keşfetmek gününe hareket katabilir.',
+      ],
+      'genel': <String>[
+        'Rutinin dışına çıkmak, farklı bir yoldan gitmek ya da yeni bir şey denemek zihnini tazeleyebilir.',
+        'Alışık olmadığın bir şeye evet demek gününe beklenmedik bir renk katabilir.',
+      ],
     },
-    6: <String, String>{
-      'calisiyor': 'İş tarafında bu, bir iş arkadaşına yardım etmek ya da ekipte sorumluluk almak anlamına gelebilir.',
-      'ogrenci': 'Derslerinde bu, bir arkadaşına yardım etmek; günün geri kalanında da ailene vakit ayırmak anlamına gelebilir.',
-      'isArayan': 'İş arayışında bu, seni bu süreçte destekleyen insanlarla vakit geçirip moral toplamak anlamına gelebilir.',
-      'girisimci': 'İşinde bu, müşterilerinle ya da ekibinle ilgilenmek ve onların ihtiyaçlarını dinlemek anlamına gelebilir.',
-      'evde': 'Evde bu, ev ve aile için yapacağın küçük bir güzellik anlamına gelebilir.',
-      'genel': 'Pratikte bu, bir yakınını aramak ya da evde küçük bir düzenleme yapmak anlamına gelebilir.',
+    6: <String, List<String>>{
+      'calisiyor': <String>[
+        'Bir iş arkadaşına yardım etmek ya da ekipte bir sorumluluğu üstlenmek küçük ama anlamlı bir adım olabilir.',
+        'Ekipte yükü ağır olan birine el uzatmak iş ortamındaki güveni büyütebilir.',
+      ],
+      'ogrenci': <String>[
+        'Bir arkadaşına ders konusunda yardım etmek ya da ailene vakit ayırmak küçük ama anlamlı bir adım olabilir.',
+        'Evde ya da yurtta ortak alan için küçük bir sorumluluk almak çevrene iyi hissettirebilir.',
+      ],
+      'isArayan': <String>[
+        'Bu süreçte seni destekleyen insanlarla vakit geçirip moral toplamak küçük ama anlamlı bir adım olabilir.',
+        'Ailenle ya da yakın bir arkadaşınla süreci paylaşmak yükünü hafifletebilir.',
+      ],
+      'girisimci': <String>[
+        'Müşterilerinle ya da ekibinle ilgilenip onların ihtiyaçlarını dinlemek küçük ama anlamlı bir adım olabilir.',
+        'Ekibine ya da müşterine gösterdiğin özen işinin en güçlü reklamı olabilir.',
+      ],
+      'evde': <String>[
+        'Ev ve aile için yapacağın küçük bir güzellik sandığından anlamlı bir adım olabilir.',
+        'Sıcak bir sofra ya da birlikte geçirilen bir akşam evin havasını değiştirebilir.',
+      ],
+      'genel': <String>[
+        'Bir yakınını aramak ya da evde küçük bir düzenleme yapmak küçük ama anlamlı bir adım olabilir.',
+        'Sevdiğin birine küçük bir iyilik yapmak sana da huzur verebilir.',
+      ],
     },
-    7: <String, String>{
-      'calisiyor': 'İş tarafında bu, kalabalık toplantılardan çok odaklanarak tek başına yürüttüğün işlere ağırlık vermek anlamına gelebilir.',
-      'ogrenci': 'Derslerinde bu, sessiz bir ortamda zor bir konuyu gerçekten anlamaya çalışmak anlamına gelebilir.',
-      'isArayan': 'İş arayışında bu, hangi işi gerçekten istediğini düşünmek ve bir alanda kendini geliştirmek anlamına gelebilir.',
-      'girisimci': 'İşinde bu, verileri incelemek, araştırma yapmak ve stratejini gözden geçirmek anlamına gelebilir.',
-      'evde': 'Evde bu, kendine sessiz bir saat ayırmak, kitap okumak ya da yürüyüş yapmak anlamına gelebilir.',
-      'genel': 'Pratikte bu, kendine sessiz bir zaman ayırmak ya da ilgini çeken bir konuyu araştırmak anlamına gelebilir.',
+    7: <String, List<String>>{
+      'calisiyor': <String>[
+        'Kalabalık toplantılardan çok, odaklanarak tek başına yürüttüğün işler sana daha çok şey kazandırır.',
+        'Bir sorunu çözmek için kalabalıktan uzaklaşıp tek başına düşünmek sana netlik kazandırabilir.',
+      ],
+      'ogrenci': <String>[
+        'Sessiz bir ortamda zor bir konuyu gerçekten anlamaya çalışmak sana beklediğinden fazlasını kazandırır.',
+        'Ezberlemek yerine bir konunun mantığını kavramaya çalışmak sana kalıcı bir kazanç sağlayabilir.',
+      ],
+      'isArayan': <String>[
+        'Hangi işi gerçekten istediğini düşünmek ve bir alanda kendini geliştirmek arayışını netleştirir.',
+        'Güçlü yanlarını bir kâğıda dökmek hangi işe yöneleceğini netleştirebilir.',
+      ],
+      'girisimci': <String>[
+        'Verileri incelemek, araştırma yapmak ve stratejini gözden geçirmek işine yön verir.',
+        'Rakiplerini ya da pazarını sakin kafayla incelemek sana yeni bir bakış açısı kazandırabilir.',
+      ],
+      'evde': <String>[
+        'Kendine sessiz bir saat ayırmak, kitap okumak ya da yürüyüş yapmak seni beklediğinden çok toparlar.',
+        'Telefonsuz geçirilen sakin bir saat zihnini dinlendirebilir.',
+      ],
+      'genel': <String>[
+        'Kendine sessiz bir zaman ayırmak ya da ilgini çeken bir konuyu araştırmak zihnini berraklaştırır.',
+        'Aklını kurcalayan bir soruya yazarak cevap aramak düşüncelerini netleştirebilir.',
+      ],
     },
-    8: <String, String>{
-      'calisiyor': 'İş tarafında bu, bir talebini dile getirmek, sorumluluk istemek ya da önemli bir görüşme yapmak anlamına gelebilir.',
-      'ogrenci': 'Derslerinde bu, hedeflerini netleştirmek ve sınav ya da proje takvimine ciddi bir plan koymak anlamına gelebilir.',
-      'isArayan': 'İş arayışında bu, görüşmelere hazırlanmak ve beklentini netleştirmek anlamına gelebilir.',
-      'girisimci': 'İşinde bu, fiyatlandırma, tahsilat ya da büyüme kararlarını ele almak anlamına gelebilir.',
-      'evde': 'Evde bu, ev bütçesini gözden geçirmek ve maddi bir kararı netleştirmek anlamına gelebilir.',
-      'genel': 'Pratikte bu, maddi konularını gözden geçirmek ve bir hedefi netleştirmek anlamına gelebilir.',
+    8: <String, List<String>>{
+      'calisiyor': <String>[
+        'Odaklanabileceğin şey belli: bir talebini dile getirmek, sorumluluk istemek ya da önemli bir görüşmeyi yapmak.',
+        'Hedeflerini yöneticinle ya da ekibinle netleştirmek emeğinin görünür olmasını sağlayabilir.',
+      ],
+      'ogrenci': <String>[
+        'Odaklanabileceğin şey belli: hedeflerini netleştirmek ve sınav ya da proje takvimini ciddi bir plana bağlamak.',
+        'Notlarını ve hedeflerini gözden geçirip gerçekçi bir başarı planı yapmak motivasyonunu artırabilir.',
+      ],
+      'isArayan': <String>[
+        'Odaklanabileceğin şey belli: görüşmelere hazırlanmak ve beklentini netleştirmek.',
+        'Maaş ve çalışma koşulları konusunda beklentini netleştirmek görüşmelerde elini güçlendirebilir.',
+      ],
+      'girisimci': <String>[
+        'Odaklanabileceğin şey belli: fiyatlandırma, tahsilat ya da büyüme kararlarını ele almak.',
+        'Gelir ve giderlerine kısa bir bakış atmak sana daha güçlü kararlar aldırabilir.',
+      ],
+      'evde': <String>[
+        'Odaklanabileceğin şey belli: ev bütçesini gözden geçirmek ve maddi bir kararı netleştirmek.',
+        'Ev için uzun vadeli bir hedef belirleyip ilk adımını planlamak sana güç verebilir.',
+      ],
+      'genel': <String>[
+        'Odaklanabileceğin şey belli: maddi konularını gözden geçirmek ve bir hedefi netleştirmek.',
+        'Bir hedefi yazıya dökmek ve ona bir tarih vermek kararlılığını artırabilir.',
+      ],
     },
-    9: <String, String>{
-      'calisiyor': 'İş tarafında bu, yarım kalan bir işi teslim etmek ya da artık işine yaramayan bir yükü bırakmak anlamına gelebilir.',
-      'ogrenci': 'Derslerinde bu, bir konuyu tamamlamak ya da eski notları ayıklamak anlamına gelebilir.',
-      'isArayan': 'İş arayışında bu, olmayan bir başvuruyu geride bırakıp enerjini yeni seçeneklere çevirmek anlamına gelebilir.',
-      'girisimci': 'İşinde bu, kazandırmayan bir işi ya da süreci sonlandırmayı düşünmek anlamına gelebilir.',
-      'evde': 'Evde bu, kullanmadığın eşyaları ayıklamak ya da bir konuyu kapatmak anlamına gelebilir.',
-      'genel': 'Pratikte bu, yarım kalan bir işi bitirmek ya da artık gerekmeyen bir şeyi bırakmak anlamına gelebilir.',
+    9: <String, List<String>>{
+      'calisiyor': <String>[
+        'Yarım kalan bir işi teslim etmek ya da artık işine yaramayan bir yükü bırakmak içini rahatlatabilir.',
+        'Bitmiş bir projeyi gözden geçirip ondan ne öğrendiğini not etmek seni bir sonraki işe hazırlar.',
+      ],
+      'ogrenci': <String>[
+        'Bir konuyu tamamlamak ya da eski notları ayıklamak içini rahatlatabilir.',
+        'Biten bir dönemi ya da sınavı geride bırakıp yeni hedefe odaklanmak sana hafiflik verebilir.',
+      ],
+      'isArayan': <String>[
+        'Olmayan bir başvuruyu geride bırakıp enerjini yeni seçeneklere çevirmek içini rahatlatabilir.',
+        'Sonuçlanmayan bir süreçten ders çıkarıp sayfayı çevirmek yeni fırsatlara yer açabilir.',
+      ],
+      'girisimci': <String>[
+        'Kazandırmayan bir işi ya da süreci sonlandırmayı düşünmek içini rahatlatabilir.',
+        'Artık işine yaramayan bir ürünü ya da hizmeti bırakmak enerjini yeni fırsatlara yönlendirebilir.',
+      ],
+      'evde': <String>[
+        'Kullanmadığın eşyaları ayıklamak ya da bir konuyu kapatmak içini rahatlatabilir.',
+        'Evde uzun zamandır duran bir eşyayı ihtiyacı olan birine vermek seni hafifletebilir.',
+      ],
+      'genel': <String>[
+        'Yarım kalan bir işi bitirmek ya da artık gerekmeyen bir şeyi bırakmak içini rahatlatabilir.',
+        'Sana artık iyi gelmeyen bir alışkanlığa veda etmek yeni bir sayfa açabilir.',
+      ],
     },
   };
 
@@ -360,542 +551,244 @@ abstract final class YorumYonu {
   static const String genelAnahtar = 'genel';
 
   /// Yaşam yolu karakterleri (1-9, 11, 22, 33).
-  static const Map<int, KarakterYonu> karakterler = <int, KarakterYonu>{
-    1: KarakterYonu(
-      doga: 'harekete geçmek ve yön vermek',
-      uyumluGunler: <int>{1, 5, 8},
-      zorlayiciGunler: <int>{2, 4, 7},
-      gucTavsiyesi: 'Bugün ilk adımı atan sen ol; beklemek yerine inisiyatif almak sana kazandırır.',
-      golgeTavsiyesi: 'Herkesin senin hızında gitmesini beklemek bugün seni yorar; bir kez durup başkalarını dinlemek işleri hızlandırır.',
-      dengeTavsiyesi: 'Bugün her şeyi tek başına üstlenmek yerine bir işi paylaşmayı dene; liderliğin azalmaz, güçlenir.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta ilgini belli etmekten çekinmezsin ama kendine ait alanına da düşkünsün.',
-        LuckCategory.para: 'Parayla ilişkin cesur; fırsatı erken görürsün, bazen hesabı sonraya bırakırsın.',
-        LuckCategory.saglik: 'Enerjin yüksektir ama kendini zorlamaya ve molaları atlamaya yatkınsın.',
-        LuckCategory.risk: 'Risk almaktan korkmazsın; asıl dikkat etmen gereken şey sabırsızlık.',
-        LuckCategory.sosyal: 'Sosyal ortamlarda yön veren taraf olursun; bazen dinlemek yerine yönlendirmeye geçersin.',
-      },
-    ),
-    2: KarakterYonu(
-      doga: 'insanları anlamak ve arabuluculuk yapmak',
-      uyumluGunler: <int>{2, 6, 7},
-      zorlayiciGunler: <int>{1, 5, 8},
-      gucTavsiyesi: 'Bugün sezgilerine güven; bir konuşmada söylenmeyeni fark etmen işleri kolaylaştıracak.',
-      golgeTavsiyesi: 'Bugün başkalarını memnun etmek için kendi isteğini geri planda bırakma; ne istediğini açıkça söyle.',
-      dengeTavsiyesi: 'Bugün uyum arayışını korurken bir kararı ertelemeden vermeye çalış.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta özenli ve sadıksın; duygularının karşılık görmesine ihtiyaç duyarsın.',
-        LuckCategory.para: 'Parada temkinli ve düzenlisin; ani kararlar yerine güvenli adımları seçersin.',
-        LuckCategory.saglik: 'Duygusal yükler bedenine çabuk yansır; gerginlikten uzak kalmak sana iyi gelir.',
-        LuckCategory.risk: 'Risk almadan önce herkesin fikrini tartmak istersin; bu seni korur ama bazen fırsatı kaçırtır.',
-        LuckCategory.sosyal: 'İnsanlar yanında rahatlar; sen de kalabalıktan çok samimi sohbetlerde parlarsın.',
-      },
-    ),
-    3: KarakterYonu(
-      doga: 'kendini ifade etmek ve ortamı canlandırmak',
-      uyumluGunler: <int>{1, 3, 5},
-      zorlayiciGunler: <int>{4, 7, 8},
-      gucTavsiyesi: 'Bugün bir fikrini ya da duygunu paylaş; ifade gücün kapıları açacak.',
-      golgeTavsiyesi: 'Bugün enerjini on farklı işe dağıtmak yerine birini bitirmeye odaklan.',
-      dengeTavsiyesi: 'Bugün neşeni korurken sözlerini biraz daha tartarak seç; yanlış anlaşılmanın önüne geçersin.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta eğlenceli ve sıcaksın; ilgi görmek ve takdir duymak senin için önemli.',
-        LuckCategory.para: 'Parayı kazanmakta yaratıcı, harcamakta cömertsin; bütçe tutmak sana zor gelebilir.',
-        LuckCategory.saglik: 'Ruh halin enerjini doğrudan etkiler; keyif aldığın bir hareket sana en iyi gelen şeydir.',
-        LuckCategory.risk: 'Yeni fikirlere hızla heveslenirsin; heyecan geçtikten sonra da istiyorsan devam etmek iyi olur.',
-        LuckCategory.sosyal: 'Sosyal ortamlarda doğal olarak dikkat çekersin; insanlar senin enerjinle canlanır.',
-      },
-    ),
-    4: KarakterYonu(
-      doga: 'düzen kurmak ve işi sağlam temele oturtmak',
-      uyumluGunler: <int>{2, 4, 8},
-      zorlayiciGunler: <int>{3, 5, 9},
-      gucTavsiyesi: 'Bugün bir planı adım adım uygula; sabrın ve düzenin somut sonuç getirecek.',
-      golgeTavsiyesi: 'Bugün plan dışı gelişmelere katılaşmak yerine esnek kalmayı dene; her şeyin kontrolünde olması gerekmiyor.',
-      dengeTavsiyesi: 'Bugün düzenini korurken küçük bir yeniliğe de yer aç; hem güven hem tazelik kazanırsın.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta güvenilir ve sadıksın; sevgini sözden çok yaptıklarınla gösterirsin.',
-        LuckCategory.para: 'Parayla ilişkin planlı ve sağlam; adım adım biriktirmek sana güven verir.',
-        LuckCategory.saglik: 'Düzenli bir rutin sana iyi gelir ama işe dalıp dinlenmeyi unutabilirsin.',
-        LuckCategory.risk: 'Bilmediğin bir şeye kolay girmezsin; bu temkin seni çoğu zaman korur.',
-        LuckCategory.sosyal: 'Sosyal çevren az ama sağlamdır; insanlar zor anda sana güvenir.',
-      },
-    ),
-    5: KarakterYonu(
-      doga: 'yeni deneyimlere açılmak ve özgürce hareket etmek',
-      uyumluGunler: <int>{1, 3, 5},
-      zorlayiciGunler: <int>{2, 4, 6},
-      gucTavsiyesi: 'Bugün farklı bir şey denemekten çekinme; merakın sana yeni bir kapı açacak.',
-      golgeTavsiyesi: 'Bugün sıkıldığın bir işi yarıda bırakma dürtüsüne karşı dur; bitirmek sana özgürlük kadar iyi gelecek.',
-      dengeTavsiyesi: 'Bugün yenilik isteğini sorumluluklarınla dengele; önce bir işi kapat, sonra yeni bir şeye yönel.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta heyecan ararsın; kısıtlandığını hissettiğinde geri çekilirsin.',
-        LuckCategory.para: 'Kazancın dalgalı olabilir; iyi günlerde bir kenara ayırmak özgürlüğünü korur.',
-        LuckCategory.saglik: 'Hareket etmek sana iyi gelir ama aşırılığa kaçmaya yatkınsın.',
-        LuckCategory.risk: 'Risk ve yenilik seni çeker; sınırını önceden koyduğunda en iyi sonucu alırsın.',
-        LuckCategory.sosyal: 'Farklı insanlarla kolay tanışırsın; geniş bir çevrede rahat edersin.',
-      },
-    ),
-    6: KarakterYonu(
-      doga: 'sevdiklerini korumak ve sorumluluk almak',
-      uyumluGunler: <int>{2, 6, 9},
-      zorlayiciGunler: <int>{1, 5, 7},
-      gucTavsiyesi: 'Bugün sevdiklerine göstereceğin ilgi beklediğinden fazla karşılık bulacak.',
-      golgeTavsiyesi: "Bugün herkesin yükünü taşımak zorunda değilsin; birine 'şimdi yapamam' demek de bir sevgi biçimi.",
-      dengeTavsiyesi: 'Bugün başkalarına verdiğin özenin bir kısmını kendine ayır.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta şefkatli ve bağlısın; aynı özeni geri görmediğinde çabuk yorulursun.',
-        LuckCategory.para: 'Parayı sevdiklerin için harcamaktan hoşlanırsın; kendine ayırmayı sık unutursun.',
-        LuckCategory.saglik: 'Başkalarıyla ilgilenirken kendi bakımını ikinci plana atmaya yatkınsın.',
-        LuckCategory.risk: 'Sevdiklerini etkileyecek risklerde çok temkinlisin; kendi isteklerinde ise daha cesur olabilirsin.',
-        LuckCategory.sosyal: 'Çevrendeki insanlar sana dert anlatır; sen de yakın ve güvenilir ilişkilerde huzur bulursun.',
-      },
-    ),
-    7: KarakterYonu(
-      doga: 'derinlemesine düşünmek ve kendi başına anlam aramak',
-      uyumluGunler: <int>{4, 7, 9},
-      zorlayiciGunler: <int>{3, 5, 6},
-      gucTavsiyesi: 'Bugün bir konuyu derinlemesine düşünmeye vakit ayır; bulduğun cevap işine yarayacak.',
-      golgeTavsiyesi: 'Bugün her şeyi kafanda çözmeye çalışma; güvendiğin biriyle konuşmak işleri hızlandırır.',
-      dengeTavsiyesi: 'Bugün analiz yeteneğini kullanırken sezgine de bir şans ver.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta yavaş açılır ama derin bağlanırsın; zihinsel yakınlık senin için şarttır.',
-        LuckCategory.para: 'Parada dikkatli ve araştırmacısın; bilmediğin bir işe kolay para koymazsın.',
-        LuckCategory.saglik: 'Zihinsel yorgunluk bedenine çabuk yansır; sessizlik ve uyku senin şarj kaynağın.',
-        LuckCategory.risk: 'Risk almadan önce her ayrıntıyı incelemek istersin; bazen fazla düşünmek fırsatı geçirir.',
-        LuckCategory.sosyal: 'Kalabalık yerine az ve derin ilişkileri tercih edersin; yalnız kalmaya da ihtiyaç duyarsın.',
-      },
-    ),
-    8: KarakterYonu(
-      doga: 'hedef koymak ve sonuç almak',
-      uyumluGunler: <int>{1, 4, 8},
-      zorlayiciGunler: <int>{2, 7, 9},
-      gucTavsiyesi: 'Bugün hedefini netleştir ve kararlılıkla ilerle; sonuç almaya yakınsın.',
-      golgeTavsiyesi: 'Bugün her şeyi kontrol etmeye çalışmak seni yorar; bazı işleri başkalarına bırakmayı dene.',
-      dengeTavsiyesi: 'Bugün hedefe odaklanırken yanındaki insanların ne hissettiğini de hesaba kat.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta koruyucu ve cömertsin; duygularını çoğu zaman sözden çok eylemle gösterirsin.',
-        LuckCategory.para: 'Parayla ilişkin güçlü ve hırslı; büyük düşünürsün, inişli çıkışlı dönemler de yaşayabilirsin.',
-        LuckCategory.saglik: 'Çok çalışmaya ve stresi içine atmaya yatkınsın; dinlenmek senin için bir ihtiyaç.',
-        LuckCategory.risk: 'Hesaplı risk almayı bilirsin; seni yönlendiren şey kaybetme korkusu değil, kazanma isteği.',
-        LuckCategory.sosyal: 'Sosyal ortamlarda doğal bir otorite taşırsın; insanlar senden yön bekler.',
-      },
-    ),
-    9: KarakterYonu(
-      doga: 'başkalarına şefkat göstermek ve büyük resmi görmek',
-      uyumluGunler: <int>{3, 6, 9},
-      zorlayiciGunler: <int>{1, 4, 8},
-      gucTavsiyesi: 'Bugün birine karşılıksız bir iyilik yap ya da destek ol; bu sana da anlam katacak.',
-      golgeTavsiyesi: 'Bugün geçmişte kalmış bir konuyu tekrar tekrar düşünmek yerine ona bir nokta koymayı dene.',
-      dengeTavsiyesi: 'Bugün başkalarına verdiğin desteği kendi ihtiyaçlarınla dengele.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta derin ve affedicisin; sevdiğin kişiyi olduğundan büyük görebilirsin.',
-        LuckCategory.para: 'Parayı bir amaç için kazanmak seni motive eder; verirken kendine pay ayırmak önemli.',
-        LuckCategory.saglik: 'Başkalarının derdini içine almak seni yorabilir; kendine sınır koymak iyi gelir.',
-        LuckCategory.risk: 'İdealist kararlar verebilirsin; bir fikre gönül vermeden önce gerçekçi yanlarını da düşün.',
-        LuckCategory.sosyal: 'Farklı insanları kolayca anlarsın; geniş ve çeşitli bir çevren olur.',
-      },
-    ),
-    11: KarakterYonu(
-      doga: 'sezgilerine güvenmek ve insanlara ilham vermek',
-      uyumluGunler: <int>{2, 7, 9},
-      zorlayiciGunler: <int>{4, 5, 8},
-      gucTavsiyesi: 'Bugün içinden gelen ilk hisse güven; sezgilerin seni doğru yere götürecek.',
-      golgeTavsiyesi: 'Bugün hassasiyetin kaygıya dönüşmesin; bir hissi gerçek sanmadan önce bir kez kontrol et.',
-      dengeTavsiyesi: 'Bugün sezgine güvenirken ayağını yere basan somut bir adım da at.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta ruhsal bir bağ ararsın; yüzeysel ilişkiler seni çabuk yorar.',
-        LuckCategory.para: 'Parayla ilişkin dalgalı olabilir; sezgin kadar sade bir bütçeye de güvenmek seni rahatlatır.',
-        LuckCategory.saglik: 'Uyaranlara karşı hassassın; gürültü ve yoğunluk enerjini hızla düşürür.',
-        LuckCategory.risk: 'Sezgilerin risk konusunda çoğu zaman haklı çıkar; yine de kaygıyla sezgiyi karıştırmamaya dikkat et.',
-        LuckCategory.sosyal: 'İnsanlar yanında ilham alır; ama kalabalıktan sonra toparlanmak için yalnız zamana ihtiyaç duyarsın.',
-      },
-    ),
-    22: KarakterYonu(
-      doga: 'büyük bir fikri adım adım gerçeğe dönüştürmek',
-      uyumluGunler: <int>{1, 4, 8},
-      zorlayiciGunler: <int>{3, 5, 9},
-      gucTavsiyesi: 'Bugün büyük hedefinin somut bir parçasını tamamla; küçük adım büyük yapıyı ilerletir.',
-      golgeTavsiyesi: 'Bugün her şeyin mükemmel olmasını beklemek seni durdurmasın; iyi olan bir adım yeterli.',
-      dengeTavsiyesi: 'Bugün büyük planlarını düşünürken günün küçük işlerini de ihmal etme.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta güvenilir ve ciddisin; birlikte bir gelecek kurabileceğin birini ararsın.',
-        LuckCategory.para: 'Parayı uzun vadeli ve sağlam planlarla büyütmeyi tercih edersin.',
-        LuckCategory.saglik: 'Sorumluluk yükünü bedeninde taşıyabilirsin; gerginliği biriktirmemeye dikkat et.',
-        LuckCategory.risk: 'Büyük düşünürsün ama riski planlı alırsın; hazırlıksız atılmayı sevmezsin.',
-        LuckCategory.sosyal: 'İnsanları ortak bir amaç etrafında toplamakta ustasın.',
-      },
-    ),
-    33: KarakterYonu(
-      doga: 'insanlara yol göstermek ve onları desteklemek',
-      uyumluGunler: <int>{3, 6, 9},
-      zorlayiciGunler: <int>{1, 5, 8},
-      gucTavsiyesi: 'Bugün bilgini ya da deneyimini biriyle paylaş; yol göstermek sana da güç verecek.',
-      golgeTavsiyesi: 'Bugün herkesin sorununu çözmek zorunda değilsin; bazen dinlemek yeterli.',
-      dengeTavsiyesi: 'Bugün başkalarını desteklerken kendine de aynı şefkati göster.',
-      kategoriTarzi: <LuckCategory, String>{
-        LuckCategory.ask: 'Aşkta fedakâr ve besleyicisin; kendi ihtiyaçlarını söylemeyi unutmamalısın.',
-        LuckCategory.para: 'Para senin için iyilik yapabilmenin aracıdır; kendine ayırdığın payı korumak önemli.',
-        LuckCategory.saglik: 'Başkalarına enerji verirken tükenmeye yatkınsın; kendi bakımına zaman ayırmalısın.',
-        LuckCategory.risk: 'Başkalarını etkileyecek kararlarda çok dikkatlisin; bu sorumluluk duygun seni korur.',
-        LuckCategory.sosyal: 'İnsanlar yanında öğrenir ve rahatlar; çevrende doğal bir rehber gibi görülürsün.',
-      },
-    ),
-  };
+  static const Map<int, KarakterYonu> karakterler = KarakterYonleri.hepsi;
 
   /// Kategori × kişinin durumu × ton: o alanda bugün ne oluyor.
   ///
   /// Durum anahtarı [durumAnahtari] ile bulunur; her kategoride
   /// [genelAnahtar] her zaman vardır.
   static const Map<LuckCategory, Map<String, Map<KategoriTonu, List<String>>>>
-      kategoriDurumlari =
-      <LuckCategory, Map<String, Map<KategoriTonu, List<String>>>>{
-    LuckCategory.ask: <String, Map<KategoriTonu, List<String>>>{
-      'bekar': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Aşk tarafında bugün beklediğin ilgi gelmeyebilir; bunu kendi değerinle ilgili bir işaret olarak görme.',
-          'Bugün yalnızlık hissi biraz daha belirgin olabilir; seni iyi hissettiren biriyle vakit geçirmek iyi gelir.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Aşk tarafında bugün sakin bir gün; tanıdık bir çevrede yeni bir yüzle sohbet başlayabilir.',
-          'Aşk tarafında bugün flört için zorlamak yerine doğal davranmak daha çekici.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Aşk tarafında bugün tanışmalar ve ilgi için açık bir gün; bir davete ya da sohbete evet demek güzel sonuç verebilir.',
-          'Aşk tarafında bugün çekiciliğin yüksek; ilgini çeken biriyle ilk adımı atmak için uygun bir gün.',
-        ],
-      },
-      'partnerli': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'İlişkinde bugün küçük bir konu kolayca büyüyebilir; önce dinlemek, sonra cevap vermek işleri yumuşatır.',
-          'Bugün partnerinle aranızda bir yorgunluk hissedebilirsin; bu bir kopuş değil, biraz alana ihtiyaç.',
-        ],
-        KategoriTonu.orta: <String>[
-          'İlişkinde bugün sıradan ama sıcak bir gün; küçük bir jest aranızdaki bağı güçlendirir.',
-          'İlişkinde bugün partnerinle birlikte yapacağınız basit bir iş, uzun bir konuşmadan daha çok yakınlaştırır.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'İlişkinde bugün yakınlık kolay; birlikte plan yapmak ya da güzel bir akşam geçirmek için elverişli bir gün.',
-          'İlişkinde bugün partnerine hissettiklerini söylemek için doğal bir akış var.',
-        ],
-      },
-      'genel': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Aşk tarafında bugün duygular hassas; yanlış anlaşılmaya açık konuşmaları ertelemek iyi olur.',
-          'Aşk tarafında bugün kalbini başkasının onayına bağlamak seni yorabilir.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Aşk tarafında bugün dengeli bir gün; küçük bir ilgi büyük yankı bulabilir.',
-          'Aşk tarafında bugün duygularını sakin bir dille ifade etmek ilişkilerine iyi gelir.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Aşk tarafında bugün sıcak ve açık bir gün; hissettiklerini göstermek karşılık bulur.',
-          'Aşk tarafında bugün duygusal yakınlık kurmak her zamankinden kolay.',
-        ],
-      },
-    },
-    LuckCategory.para: <String, Map<KategoriTonu, List<String>>>{
-      'calisiyor': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'İş ve para tarafında bugün beklenmedik bir aksilik ya da ek iş çıkabilir; önemli kararları yarına bırakmak daha güvenli.',
-          'Bugün işte emeğinin görünmediğini hissedebilirsin; şimdilik sabırlı olmak daha doğru.',
-        ],
-        KategoriTonu.orta: <String>[
-          'İş tarafında bugün sakin ve yönetilebilir bir gün; önceliklerini sıraya koymak yeterli.',
-          'İş tarafında bugün küçük ama düzenli bir ilerleme kaydedebilirsin.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'İş tarafında bugün emeğinin görünür olduğu bir gün; bir talebini dile getirmek için uygun bir zaman.',
-          'İş tarafında bugün bir fırsat ya da takdir gelebilir; kendini geri çekme.',
-        ],
-      },
-      'girisimci': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'İşinde bugün bir gecikme ya da beklenmedik bir gider canını sıkabilir; büyük harcamaları ertele.',
-          'İşinde bugün yeni harcama kararları yerine eldekini korumaya odaklanmak daha güvenli.',
-        ],
-        KategoriTonu.orta: <String>[
-          'İşinde bugün dengeli bir gün; müşterilerinle ilişkini güçlendirmek için uygun.',
-          'İşinde bugün hesapları gözden geçirip küçük iyileştirmeler yapmak kazandırır.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'İşinde bugün satış, anlaşma ya da yeni bir iş bağlantısı için elverişli bir gün.',
-          'İşinde bugün cesur bir teklif ya da fiyat kararı karşılık bulabilir.',
-        ],
-      },
-      'ogrenci': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Para tarafında bugün bütçeni zorlayacak küçük harcamalara dikkat.',
-          'Bugün dersler ve sorumluluklar üst üste gelebilir; önce en acil olanı bitir.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Dersler ve bütçe tarafında bugün sakin bir gün; küçük bir planlama işini kolaylaştırır.',
-          'Bugün bir sınava ya da projeye düzenli çalışmak karşılığını verir.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Dersler tarafında bugün verimli bir gün; zor bir konuyu çözmek ya da iyi bir sonuç almak için elverişli.',
-          'Bugün bir burs, staj ya da proje fırsatını kaçırmamak için etrafına dikkat et.',
-        ],
-      },
-      'isArayan': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'İş arayışında bugün beklediğin dönüş gelmeyebilir; bunu yeteneğinle ilgili bir işaret olarak görme.',
-          'Bugün moralin biraz düşük olabilir; başvuru yapmak yerine kendini toparlamak daha iyi.',
-        ],
-        KategoriTonu.orta: <String>[
-          'İş arayışında bugün düzenli bir gün; birkaç başvuruyu dikkatle hazırlamak iyi sonuç verir.',
-          'Bugün tanıdıklarına ne aradığını anlatmak beklenmedik bir kapı açabilir.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'İş arayışında bugün olumlu bir dönüş ya da görüşme daveti için elverişli bir gün.',
-          'Bugün bir görüşmede kendini anlatman her zamankinden etkili olabilir.',
-        ],
-      },
-      'evde': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Para tarafında bugün ev giderleri ya da beklenmedik bir masraf canını sıkabilir.',
-          'Para tarafında bugün alışverişte plansız harcamalara karşı dikkatli ol.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Para tarafında bugün sakin bir gün; ev bütçesini gözden geçirmek iyi gelir.',
-          'Para tarafında bugün küçük bir tasarruf fikri ay sonunu rahatlatabilir.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Para tarafında bugün ferah bir gün; ev için uzun süredir düşündüğün bir ihtiyacı değerlendirmek uygun olabilir.',
-          'Para tarafında bugün bir indirim, hediye ya da beklenmedik küçük bir kazanç gelebilir.',
-        ],
-      },
-      'genel': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Para tarafında bugün plansız harcamalar ve beklenmedik giderler öne çıkabilir.',
-          'Para tarafında bugün maddi bir kararı aceleyle vermek yerine bir gün beklemek daha güvenli.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Para tarafında bugün dengeli bir gün; büyük adımlar yerine küçük düzenlemeler yeterli.',
-          'Para tarafında bugün harcamalarını gözden geçirmek sana netlik kazandırır.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Para tarafında bugün fırsatlara açık bir gün; emeğinin karşılığını istemek için uygun.',
-          'Para tarafında bugün maddi konularda olumlu bir gelişme olabilir.',
-        ],
-      },
-    },
-    LuckCategory.saglik: <String, Map<KategoriTonu, List<String>>>{
-      'genel': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Enerjin bugün düşük olabilir; gün içinde kısa molalar vermek seni toparlar.',
-          'Bugün yorgunluk ve gerginlik bedeninde daha çok hissedilebilir; uykuna ve su içmeye özen göster.',
-          'Bugün kendini zorlamak yerine temponu düşürmek daha doğru.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Enerjin bugün dengede; düzenli beslenme ve kısa bir yürüyüş gününü güzelleştirir.',
-          'Bugün bedenin sana ne istediğini söylüyor; dinlenmeyle hareket arasında denge kur.',
-          'Bugün hafif bir egzersiz ya da temiz hava moralini de yükseltir.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Enerjin bugün yüksek; ertelediğin bir spora ya da uzun bir yürüyüşe başlamak için iyi bir gün.',
-          'Bugün kendini canlı ve dayanıklı hissedebilirsin; bu enerjiyi hareketle değerlendir.',
-          'Bugün yeni ve sağlıklı bir alışkanlığa başlamak için elverişli bir gün.',
-        ],
-      },
-    },
-    LuckCategory.risk: <String, Map<KategoriTonu, List<String>>>{
-      'kalp': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Kararlarında bugün duygularınla hızlı davranmak pişmanlık getirebilir; bir gece beklemek daha iyi.',
-          "Kararlarında bugün heyecanla verilen bir 'evet' yarın ağır gelebilir.",
-        ],
-        KategoriTonu.orta: <String>[
-          'Kararlarında bugün içinden geleni dinleyebilirsin ama rakamlara da bir göz at.',
-          'Kararlarında bugün küçük riskler alınabilir; büyük olanları birine danışarak ver.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Kararlarında bugün sezgilerin güçlü; içinden gelen cesur adım karşılık bulabilir.',
-          'Kararlarında bugün kalbinin evet dediği bir fırsatı değerlendirmek için elverişli bir gün.',
-        ],
-      },
-      'akil': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Kararlarında bugün hesapların bile seni yanıltabilir; önemli bir riski ertelemek daha güvenli.',
-          "Kararlarında bugün 'mantıklı görünüyor' dediğin bir teklifin arkasını bir kez daha kontrol et.",
-        ],
-        KategoriTonu.orta: <String>[
-          'Kararlarında bugün hesaplı riskler alınabilir; artıları ve eksileri yazmak işini kolaylaştırır.',
-          'Kararlarında bugün işin duygusal tarafını da hesaba katmak daha iyi sonuç verir.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Kararlarında bugün analizlerin isabetli; hesapladığın bir adımı atmak için uygun bir gün.',
-          'Kararlarında bugün planladığın bir riski almak için koşullar senden yana.',
-        ],
-      },
-      'genel': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Kararlarında bugün şansı zorlamak yerine elindekini korumak daha güvenli.',
-          'Kararlarında bugün büyük riskler için uygun bir gün değil; bekleyebiliyorsan bekle.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Kararlarında bugün küçük ve hesaplı riskler alınabilir.',
-          'Kararlarında bugün yeni bir şey denerken sınırını önceden belirlemek yeterli.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Kararlarında bugün cesaret karşılık buluyor; ertelediğin bir adımı atmak için uygun.',
-          'Kararlarında bugün şans cesur ama hazırlıklı olandan yana.',
-        ],
-      },
-    },
-    LuckCategory.sosyal: <String, Map<KategoriTonu, List<String>>>{
-      'iceDonuk': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Sosyal tarafta bugün kalabalık seni çabuk yorabilir; bir daveti ertelemekte sakınca yok.',
-          'Sosyal tarafta bugün uzun sohbetler yerine kendine ayırdığın sessiz bir zaman iyi gelir.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Sosyal tarafta bugün tek bir yakın dostla yapılacak sohbet sana iyi gelir.',
-          'Sosyal tarafta bugün küçük ve samimi bir buluşma, büyük bir kalabalıktan daha keyifli olur.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Sosyal tarafta bugün normalden daha açıksın; yeni biriyle tanışmak sandığından kolay olabilir.',
-          'Sosyal tarafta bugün bir grupta fikrini söylemek için içinden gelen cesareti değerlendir.',
-        ],
-      },
-      'disaDonuk': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Sosyal tarafta bugün herkese yetişmeye çalışmak seni yorabilir; planlarını azaltmak iyi gelir.',
-          'Sosyal tarafta bugün sözlerin yanlış anlaşılmaya açık; esprilerine dikkat et.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Sosyal tarafta bugün hareketli bir gün; arkadaşlarla kısa bir buluşma enerjini yükseltir.',
-          'Sosyal tarafta bugün yeni insanlarla tanışmak için makul bir fırsat var.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Sosyal tarafta bugün ortamın merkezinde olabilirsin; davetlere evet demek güzel bağlantılar getirir.',
-          'Sosyal tarafta bugün bir etkinlik ya da buluşma beklediğinden daha keyifli geçebilir.',
-        ],
-      },
-      'genel': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Sosyal tarafta bugün gerginliklere açık bir gün; tartışmaya girmemek seni korur.',
-          'Sosyal tarafta bugün kalabalık ortamlarda çabuk yorulabilirsin.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Sosyal tarafta bugün dengeli bir gün; eski bir dosta haber vermek iyi gelir.',
-          'Sosyal tarafta bugün insanlarla sakin ve samimi bir iletişim kurabilirsin.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Sosyal tarafta bugün insanlar sana karşı sıcak; yeni bağlantılar kurmak kolay.',
-          'Sosyal tarafta bugün bir buluşma ya da davet güzel bir fırsata dönüşebilir.',
-        ],
-      },
-    },
-  };
+  kategoriDurumlari = KategoriDurumlari.hepsi;
 
   /// Günün temasının her kategoriye etkisi (tema × kategori).
-  static const Map<int, Map<LuckCategory, String>> temaKategori =
-      <int, Map<LuckCategory, String>>{
+  static const Map<int, Map<LuckCategory, String>>
+  temaKategori = <int, Map<LuckCategory, String>>{
     1: <LuckCategory, String>{
-      LuckCategory.ask: 'Günün başlangıç havası aşkta yeni bir tanışmaya ya da ilişkinde yeni bir sayfaya işaret ediyor.',
-      LuckCategory.para: 'Günün başlangıç havası yeni bir gelir fikrine ya da birikim alışkanlığına başlamak için uygun.',
-      LuckCategory.saglik: 'Günün başlangıç havası yeni bir spora ya da sağlıklı bir alışkanlığa başlamayı destekliyor.',
-      LuckCategory.risk: 'Günün başlangıç havası yeni bir adım atma cesaretini artırıyor.',
-      LuckCategory.sosyal: 'Günün başlangıç havası yeni insanlarla tanışmayı kolaylaştırıyor.',
+      LuckCategory.ask:
+          'Başlangıç enerjisi aşkta yeni bir tanışmaya ya da ilişkinde yeni bir sayfaya kapı aralıyor.',
+      LuckCategory.para:
+          'Yeni bir gelir fikrini ya da birikim alışkanlığını başlatmak için zemin hazır.',
+      LuckCategory.saglik:
+          'Yeni bir spora ya da sağlıklı bir alışkanlığa başlamak için içinde bir kıpırtı var.',
+      LuckCategory.risk: 'İlk adımı atma cesaretin her zamankinden yüksek.',
+      LuckCategory.sosyal: 'Yeni insanlarla tanışmak bu sefer daha kolay.',
     },
     2: <LuckCategory, String>{
-      LuckCategory.ask: 'Günün uyum arayan havası aşkta anlayış ve sabır gerektiren konuşmalar için elverişli.',
-      LuckCategory.para: 'Günün uyum arayan havası ortaklık, anlaşma ve pazarlıklarda işine yarar.',
-      LuckCategory.saglik: 'Günün sakin havası bedenine dinlenme ve denge fırsatı veriyor.',
-      LuckCategory.risk: 'Günün sabır isteyen havası, aceleci risklerden çok beklemenin kazandırdığını hatırlatıyor.',
-      LuckCategory.sosyal: 'Günün uyum arayan havası ilişkilerde barışmak ve arabuluculuk için uygun.',
+      LuckCategory.ask:
+          'Sabır ve anlayış isteyen konuşmalar aşkta daha yumuşak ilerliyor.',
+      LuckCategory.para:
+          'Ortaklık, anlaşma ve pazarlıklarda uzlaşmacı tavrın işine yarar.',
+      LuckCategory.saglik:
+          'Sakin tempo bedenine dinlenme ve denge fırsatı veriyor.',
+      LuckCategory.risk:
+          'Aceleci risklerden çok beklemenin kazandırdığı bir zamandasın.',
+      LuckCategory.sosyal:
+          'Barışmak, arabuluculuk yapmak ya da bir kırgınlığı onarmak kolaylaşıyor.',
     },
     3: <LuckCategory, String>{
-      LuckCategory.ask: 'Günün paylaşım havası aşkta hislerini söze dökmeyi kolaylaştırıyor.',
-      LuckCategory.para: 'Günün paylaşım havası kendini ya da işini tanıtmaya yarıyor.',
-      LuckCategory.saglik: 'Günün neşeli havası, keyif aldığın bir hareketle sağlığına iyi gelir.',
-      LuckCategory.risk: 'Günün heyecanlı havası seni hevesle karar vermeye itebilir.',
-      LuckCategory.sosyal: 'Günün paylaşım havası sosyal ortamlarda seni öne çıkarıyor.',
+      LuckCategory.ask:
+          'Hislerini söze dökmek aşkta kolaylaşıyor; tek bir mesaj bile bağını ısıtabilir.',
+      LuckCategory.para:
+          'Kendini ya da işini tanıtmak, görünür olmak maddi tarafa da yansıyor.',
+      LuckCategory.saglik:
+          'Keyif aldığın bir hareket, zorunlu bir egzersizden daha çok enerji verir.',
+      LuckCategory.risk:
+          'Heyecan seni hevesle karar vermeye itebilir; bir gece beklemek zarar vermez.',
+      LuckCategory.sosyal:
+          'Paylaşma isteğin sosyal ortamlarda seni öne çıkarıyor.',
     },
     4: <LuckCategory, String>{
-      LuckCategory.ask: 'Günün düzen havası aşkta güven veren, istikrarlı adımları destekliyor.',
-      LuckCategory.para: 'Günün düzen havası bütçe, fatura ve birikim gibi somut işlere yarıyor.',
-      LuckCategory.saglik: 'Günün düzen havası uyku ve beslenme rutinini oturtmak için uygun.',
-      LuckCategory.risk: 'Günün düzen havası plansız risklerden çok hesaplı adımları ödüllendiriyor.',
-      LuckCategory.sosyal: 'Günün düzen havası sosyal planlarını netleştirmek ve sözlerini tutmak için uygun.',
+      LuckCategory.ask:
+          'Aşkta güven veren, istikrarlı adımlar daha çok karşılık buluyor.',
+      LuckCategory.para:
+          'Bütçe, fatura ve birikim gibi somut işler için zihnin net.',
+      LuckCategory.saglik:
+          'Uyku ve beslenme rutinini oturtmak için iyi bir fırsat var.',
+      LuckCategory.risk:
+          'Plansız risklerden çok hesaplı adımlar ödüllendiriliyor.',
+      LuckCategory.sosyal:
+          'Sosyal planlarını netleştirmek ve verdiğin sözleri tutmak öne çıkıyor.',
     },
     5: <LuckCategory, String>{
-      LuckCategory.ask: 'Günün hareketli havası aşkta sürprizlere ve rutinden çıkmaya işaret ediyor.',
-      LuckCategory.para: 'Günün hareketli havası beklenmedik bir fırsat ya da harcama getirebilir.',
-      LuckCategory.saglik: 'Günün hareketli havası yeni bir aktivite denemeyi destekliyor.',
-      LuckCategory.risk: 'Günün hareketli havası riski cazip gösteriyor; sınırını baştan koymak önemli.',
-      LuckCategory.sosyal: 'Günün hareketli havası yeni ortamlara ve tanışmalara kapı açıyor.',
+      LuckCategory.ask: 'Aşkta sürprizler ve rutinden çıkmak gündemde.',
+      LuckCategory.para:
+          'Beklenmedik bir fırsat ya da harcama kapıyı çalabilir.',
+      LuckCategory.saglik:
+          'Yeni bir aktivite denemek bedenini de zihnini de canlandırır.',
+      LuckCategory.risk:
+          'Risk cazip görünebilir; sınırını baştan koymak önemli.',
+      LuckCategory.sosyal: 'Yeni ortamlar ve tanışmalar için kapılar açık.',
     },
     6: <LuckCategory, String>{
-      LuckCategory.ask: 'Günün şefkatli havası aşkta özeni, ilgiyi ve bağlılığı güçlendiriyor.',
-      LuckCategory.para: 'Günün sorumluluk havası aile ve ev giderlerini öne çıkarıyor.',
-      LuckCategory.saglik: 'Günün şefkatli havası kendine iyi bakmayı hatırlatıyor.',
-      LuckCategory.risk: 'Günün sorumluluk havası sevdiklerini etkileyecek kararlarda temkinli olmayı öneriyor.',
-      LuckCategory.sosyal: 'Günün şefkatli havası yakınlarınla bağlarını güçlendiriyor.',
+      LuckCategory.ask: 'Özen, ilgi ve bağlılık aşkta her zamankinden değerli.',
+      LuckCategory.para:
+          'Aile ve ev giderleri gündemin üst sıralarına çıkabilir.',
+      LuckCategory.saglik:
+          'Kendine iyi bakmayı hatırlamak için güzel bir zaman.',
+      LuckCategory.risk:
+          'Sevdiklerini etkileyecek kararlarda temkinli olmak akıllıca.',
+      LuckCategory.sosyal:
+          'Yakınlarınla bağlarını güçlendirmek için doğal bir sıcaklık var.',
     },
     7: <LuckCategory, String>{
-      LuckCategory.ask: 'Günün içe dönük havası aşkta kendi duygularını anlamaya vakit ayırmayı öneriyor.',
-      LuckCategory.para: 'Günün düşünceli havası araştırma ve dikkatli değerlendirme için uygun.',
-      LuckCategory.saglik: 'Günün sakin havası zihinsel dinlenmeye ve uykuya öncelik vermeyi destekliyor.',
-      LuckCategory.risk: 'Günün düşünceli havası riskleri incelemek için uygun, ani adımlar için değil.',
-      LuckCategory.sosyal: 'Günün içe dönük havası kalabalık yerine az ve derin sohbetleri öne çıkarıyor.',
+      LuckCategory.ask:
+          'Aşkta önce kendi duygularını anlamaya vakit ayırmak işe yarar.',
+      LuckCategory.para:
+          'Araştırma ve dikkatli değerlendirme maddi kararlarında seni korur.',
+      LuckCategory.saglik: 'Zihinsel dinlenme ve uyku önceliğin olmalı.',
+      LuckCategory.risk:
+          'Riskleri incelemek için doğru zaman; ani adımlar için değil.',
+      LuckCategory.sosyal:
+          'Kalabalık yerine az ve derin sohbetler öne çıkıyor.',
     },
     8: <LuckCategory, String>{
-      LuckCategory.ask: 'Günün kararlı havası aşkta net konuşmayı ve ilişkinin yönünü belirlemeyi destekliyor.',
-      LuckCategory.para: 'Günün sonuç odaklı havası kazanç, tahsilat ve pazarlık için güçlü.',
-      LuckCategory.saglik: 'Günün yoğun havası seni çok çalışmaya itebilir; stresini boşaltmayı ihmal etme.',
-      LuckCategory.risk: 'Günün kararlı havası hesaplı risklerde işine yarıyor.',
-      LuckCategory.sosyal: 'Günün kararlı havası sosyal ortamlarda sözünün dinlenmesini kolaylaştırıyor.',
+      LuckCategory.ask:
+          'Net konuşmak ve ilişkinin yönünü belirlemek aşkta kolaylaşıyor.',
+      LuckCategory.para: 'Kazanç, tahsilat ve pazarlık konularında elin güçlü.',
+      LuckCategory.saglik:
+          'Yoğun tempo seni çok çalışmaya itebilir; stresini boşaltmayı ihmal etme.',
+      LuckCategory.risk: 'Hesaplı risklerde kararlılığın işine yarıyor.',
+      LuckCategory.sosyal: 'Sosyal ortamlarda sözünün dinlenmesi kolaylaşıyor.',
     },
     9: <LuckCategory, String>{
-      LuckCategory.ask: 'Günün kapanış havası aşkta eski bir konuyu kapatmak ya da affetmek için uygun.',
-      LuckCategory.para: 'Günün kapanış havası bir borcu kapatmak ya da yarım kalan bir ödemeyi bitirmek için uygun.',
-      LuckCategory.saglik: 'Günün kapanış havası seni yoran bir alışkanlığı bırakmayı destekliyor.',
-      LuckCategory.risk: 'Günün kapanış havası yeni risklerden çok eldeki işleri bitirmeyi öneriyor.',
-      LuckCategory.sosyal: 'Günün kapanış havası seni yoran bir ilişkiye mesafe koymak için uygun.',
+      LuckCategory.ask:
+          'Aşkta eski bir konuyu kapatmak ya da affetmek için zemin hazır.',
+      LuckCategory.para:
+          'Bir borcu kapatmak ya da yarım kalan bir ödemeyi bitirmek rahatlatıcı olabilir.',
+      LuckCategory.saglik:
+          'Seni yoran bir alışkanlığı bırakmak için içinden bir istek geliyor.',
+      LuckCategory.risk:
+          'Yeni risklerden çok eldeki işleri bitirmek daha çok kazandırıyor.',
+      LuckCategory.sosyal:
+          'Seni yoran bir ilişkiye mesafe koymak artık daha kolay.',
     },
   };
 
   /// Kişisel yıla göre yorumun sonundaki "bu dönem" cümlesi (sayı yok).
   static const Map<int, List<String>> donemCumleleri = <int, List<String>>{
     1: <String>[
-      'Genel olarak yeni başlangıçların dönemindesin; bugün attığın küçük adımlar önümüzdeki aylara yön veriyor.',
+      'Genel olarak yeni başlangıçların dönemindesin; attığın küçük adımlar önümüzdeki aylara yön veriyor.',
       'Bu yıl hayatında yeni bir sayfa açılıyor; cesur ama sabırlı olmak sana çok şey kazandırır.',
+      'Önündeki aylar yeni başlangıçlara açık; şimdi ektiğin tohumlar yıl boyunca filizlenebilir.',
+      'Bu yıl önceliğin kendi yolunu çizmek; başkalarının onayını beklemeden atılan adımlar daha çok kazandırıyor.',
     ],
     2: <String>[
       'Genel olarak ilişkilerin ve sabrın öne çıktığı bir dönemdesin; sonuçlar yavaş gelse de temeller sağlamlaşıyor.',
       'Bu yıl tek başına koşmak yerine birlikte ilerlemenin kazandırdığı bir dönemdesin.',
+      'Yıl boyunca acele etmeyen, ilişkilerine emek veren taraf kazanıyor; senin için de öyle.',
+      'İçinde bulunduğun yıl sabrı ödüllendiriyor; aceleye getirilmeyen işler daha sağlam sonuçlanıyor.',
     ],
     3: <String>[
-      'Genel olarak kendini ifade etmenin ve çevreni genişletmenin dönemindesin; bugün kurduğun bir bağlantı ileride işine yarayabilir.',
+      'Genel olarak kendini ifade etmenin ve çevreni genişletmenin dönemindesin; kurduğun bir bağlantı ileride işine yarayabilir.',
       'Bu yıl yaratıcılığın ve sosyal hayatın canlandığı bir dönemdesin; enerjini dağıtmadan kullanmak önemli.',
+      'Bu dönemin anahtarı kendini ifade etmek; sesini ne kadar duyurursan kapılar o kadar açılıyor.',
+      'Yıl boyunca çevrenin genişlemesi sürpriz fırsatlar getirebilir; yeni tanışmalara açık ol.',
     ],
     4: <String>[
-      'Genel olarak emek verip sağlam temeller kurduğun bir dönemdesin; bugünkü düzenli çaban uzun vadede karşılığını verecek.',
+      'Genel olarak emek verip sağlam temeller kurduğun bir dönemdesin; düzenli çaban uzun vadede karşılığını verecek.',
       'Bu yıl çalışmanın ve istikrarın ön planda olduğu bir dönemdesin; yorulduğunda kurduğun yapının değerini hatırla.',
+      'İçinde bulunduğun yıl bir inşa yılı; yorucu ama kalıcı.',
+      'Bu yıl attığın her düzenli adım, gelecek yıllar için bir temel taşı oluyor.',
     ],
     5: <String>[
       'Genel olarak değişimlerin ve yeni deneyimlerin dönemindesin; esnek kaldıkça fırsatlar çoğalıyor.',
       'Bu yıl hayatında hareketin arttığı bir dönemdesin; aceleci kararlar yerine bilinçli değişimler kazandırır.',
+      'Bu yılın ritmi hızlı ve değişken; esnek kalmak en büyük gücün.',
+      'Bu yıl kalıplarını esnetmek için bir fırsat; denediğin her yeni şey ufkunu biraz daha açıyor.',
     ],
     6: <String>[
       'Genel olarak aile, ev ve yakın ilişkilerin öne çıktığı bir dönemdesin; verdiğin emek sevdiklerinle bağında karşılık buluyor.',
       'Bu yıl sorumlulukların arttığı bir dönemdesin; başkalarına verirken kendini ihmal etmemek önemli.',
+      'Bu dönemde evin, ailen ve yakın ilişkilerin hayatının merkezine yerleşiyor.',
+      'Yıl boyunca sevgi ve sorumluluk dengesi gündeminde; ikisini birlikte taşımayı öğreniyorsun.',
     ],
     7: <String>[
       'Genel olarak içe dönmenin, öğrenmenin ve kendini tanımanın dönemindesin; sessiz geçen zamanlar sana yön kazandırıyor.',
       'Bu yıl düşünmenin ve derinleşmenin önemli olduğu bir dönemdesin; hızdan çok anlam arayışı kazandırıyor.',
+      'Bu yıl kendinle yeniden tanıştığın bir dönem; sessizliğin içinde önemli cevaplar var.',
+      'İçinde bulunduğun yıl hız değil derinlik istiyor; öğrendiklerin uzun süre işine yarayabilir.',
     ],
     8: <String>[
       'Genel olarak iş, para ve kariyer konularının öne çıktığı bir dönemdesin; kararlı adımların karşılık bulma ihtimali yüksek.',
       'Bu yıl emeğinin karşılığını alabileceğin bir dönemdesin; hedeflere odaklanırken dengeyi korumak önemli.',
+      'İçinde bulunduğun yıl bir hasat yılı gibi; emek verdiğin konularda somut sonuçlar görmek mümkün.',
+      'Bu yıl hedeflerin büyüyebilir; güçlü durmakla esnek kalmak arasındaki dengeyi korumak önemli.',
     ],
     9: <String>[
-      'Genel olarak kapanışların ve ayıklamanın dönemindesin; bugün bir şeyi tamamlamak ya da bırakmak içini rahatlatacak.',
+      'Genel olarak kapanışların ve ayıklamanın dönemindesin; bir şeyi tamamlamak ya da bırakmak içini rahatlatacak.',
       'Bu yıl artık sana iyi gelmeyenleri geride bıraktığın bir dönemdesin; hafifledikçe yeni başlangıçlara yer açılıyor.',
+      'Bu yıl bir döngünün son halkası; kapanan her kapı yeni başlangıçlara yer açıyor.',
+      'Yıl boyunca eski sayfalar kapanıyor; geride bıraktıkların yeni bir başlangıca hazırlık.',
     ],
   };
+
+  /// Kişisel aya göre yorumun sonundaki "bu ay" cümlesi (sayı yok).
+  ///
+  /// Kapanış havuzu dönem ve ay cümlelerinin birleşimidir; kişisel ay her
+  /// takvim ayında değiştiği için kapanış yıl boyunca aynı birkaç cümlede
+  /// takılı kalmaz.
+  static const Map<int, List<String>> ayCumleleri = <int, List<String>>{
+    1: <String>[
+      'Bu ay yeni bir şeye başlamak için içinde bir kıpırtı var; küçük de olsa ilk adım önemli.',
+      'Bu ayın havası taze başlangıçlardan yana; ertelenen bir planı yeniden masaya koyabilirsin.',
+      'Önündeki haftalar inisiyatif alanı ödüllendiriyor; beklemek yerine harekete geç.',
+      'Bu ayın sonunda geriye baktığında başlattığın bir şeyle gurur duyabilirsin.',
+    ],
+    2: <String>[
+      'Bu ay işler biraz yavaş ilerleyebilir; sabır ve iş birliği sana en çok kazandıracak şeyler.',
+      'Bu ayın havası ilişkilerden yana; yakınlaşmalar ve uzlaşmalar ön planda.',
+      'Önündeki haftalarda duyguların daha hassas olabilir; kendine ve sevdiklerine nazik davran.',
+      'Bu ay tek başına hızlanmaktansa doğru kişiyle yan yana yürümek daha çok kazandırıyor.',
+    ],
+    3: <String>[
+      'Bu ay sosyal hayatın canlanıyor; davetlere ve yeni bağlantılara açık ol.',
+      'Bu ayın havası yaratıcılıktan yana; aklındaki fikri paylaşmak için iyi bir dönem.',
+      'Önündeki haftalarda sözlerin her zamankinden etkili; ne söylediğin kadar nasıl söylediğin de önemli.',
+      'Bu ay kendini göstermekten çekinme; görünür oldukça fırsatlar da seni buluyor.',
+    ],
+    4: <String>[
+      'Bu ay emek ve düzen ayı; dağınık işleri toparlamak sana büyük rahatlık verebilir.',
+      'Bu ayın havası sağlam adımlardan yana; kısa yollar yerine adım adım ilerlemek kazandırır.',
+      'Önündeki haftalar yoğun geçebilir; dinlenmeyi de planının bir parçası yap.',
+      'Bu ay sabırla sürdürdüğün çaba, ay sonunda somut bir ilerlemeye dönüşebilir.',
+    ],
+    5: <String>[
+      'Bu ay hareketli geçebilir; plan değişikliklerine karşı esnek kalmak işini kolaylaştırır.',
+      'Bu ayın havası değişimden yana; yeni bir deneyim ya da kısa bir kaçamak seni tazeleyebilir.',
+      'Önündeki haftalarda beklenmedik fırsatlar çıkabilir; hızlı ama düşünerek karar ver.',
+      'Bu ay rutin dışı bir karar sana yeni bir pencere açabilir.',
+    ],
+    6: <String>[
+      'Bu ay ev, aile ve yakın ilişkiler gündeminde; verdiğin özen karşılık bulabilir.',
+      'Bu ayın havası sorumluluklardan yana; yük paylaştıkça hafifler.',
+      'Önündeki haftalarda birine destek olmak sana da anlam katabilir.',
+      'Bu ay bir sevdiğinle aranızdaki bağ küçük ilgilerle güçlenebilir.',
+    ],
+    7: <String>[
+      'Bu ay içe dönmek ve düşünmek için zaman ayırmak sana yön verebilir.',
+      'Bu ayın havası öğrenmekten ve araştırmaktan yana; merak ettiğin bir konuyu derinleştir.',
+      'Önündeki haftalarda kalabalıktan çok sessizlik seni besleyebilir.',
+      'Bu ay cevap aradığın bir soruya beklemediğin bir anda netlik gelebilir.',
+    ],
+    8: <String>[
+      'Bu ay iş ve para konuları öne çıkıyor; net hedefler koymak sonuç almanı kolaylaştırır.',
+      'Bu ayın havası kararlılıktan yana; emeğinin karşılığını istemekten çekinme.',
+      'Önündeki haftalarda sorumluluklar artabilir; önceliklerini netleştirmek seni rahatlatır.',
+      'Bu ay maddi ve mesleki konularda attığın net adımlar karşılık bulabilir.',
+    ],
+    9: <String>[
+      'Bu ay kapanışlar ayı; yarım kalan işleri bitirmek içini rahatlatabilir.',
+      'Bu ayın havası bırakmaktan yana; artık işine yaramayan bir alışkanlığa veda edebilirsin.',
+      'Önündeki haftalarda geçmişle ilgili konular gündeme gelebilir; onlara bir nokta koymak hafifletir.',
+      'Bu ay bir şeyi bitirmenin verdiği hafiflik yeni aya enerjiyle girmeni sağlayabilir.',
+    ],
+  };
+
+  /// Kişisel yıl ve aya göre kapanış cümlesi havuzu (dönem + ay).
+  static List<String> kapanisHavuzu(int kisiselYil, int kisiselAy) => <String>[
+    ...donemCumleleri[kisiselYil]!,
+    ...ayCumleleri[kisiselAy]!,
+  ];
 
   /// Okuyucunun durumuna göre [kategori] durum anahtarı.
   ///
@@ -903,9 +796,10 @@ abstract final class YorumYonu {
   /// tarzı; sağlık: her zaman genel. Bilinmeyen durumda [genelAnahtar].
   static String durumAnahtari(LuckCategory kategori, OkuyucuTercihleri t) {
     final String? anahtar = switch (kategori) {
-      LuckCategory.ask => t.iliski == null
-          ? null
-          : (t.iliski!.partnerliMi ? 'partnerli' : 'bekar'),
+      LuckCategory.ask =>
+        t.iliski == null
+            ? null
+            : (t.iliski!.partnerliMi ? 'partnerli' : 'bekar'),
       LuckCategory.para => t.ugras?.name,
       LuckCategory.risk => t.karar?.name,
       LuckCategory.sosyal => t.enerji?.name,

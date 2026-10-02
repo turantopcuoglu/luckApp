@@ -15,39 +15,51 @@ abstract final class KisiselHavuzlar {
       'Sevdiğin biriyle küçük bir anı paylaşmak için {saat} aralığı en tatlı zaman.',
       '{saat} arasında birine içten bir iltifat et; yankısı akşama kadar sürer.',
       'Duygusal bir konuşmayı açacaksan {saat} arasını seç.',
+      '{saat} arasında sevdiğin birine onu neden önemsediğini tek cümleyle söyle.',
+      'Bir buluşma planlayacaksan {saat} aralığını değerlendir.',
     ],
     LuckCategory.para: <String>[
       'Ertelediğin hesabı, faturayı ya da teklif cevabını {saat} arasında ele al.',
       '{saat} arasında {ugrasAlani} için tek bir önceliği netleştir.',
       'Maddi bir konuşma yapacaksan {saat} aralığı sana daha çok netlik veriyor.',
       '{saat} arasında küçük bir bütçe kontrolü yap; sürpriz bir tasarruf çıkabilir.',
+      '{saat} arasında beklenen bir ödemeyi ya da tahsilatı takip et.',
+      'Bir pazarlık ya da fiyat konuşması için {saat} aralığını seç.',
     ],
     LuckCategory.saglik: <String>[
       '{saat} arasında kısa bir yürüyüşe ya da esnemeye yer aç.',
       'Gün içindeki ilk gerçek molanı {saat} arasına koy.',
       '{saat} arasında ekranı bırakıp birkaç derin nefes al.',
       'Bedeninin istediği küçük bir iyiliği {saat} arasında yap: su, hava, sessizlik.',
+      '{saat} arasında bir bardak su iç ve omuzlarını gevşet.',
+      'Hafif bir hareket için {saat} aralığını kendine ayır.',
     ],
     LuckCategory.risk: <String>[
       'Bir karar vereceksen {saat} arasında önce artılarını ve eksilerini yaz.',
       '{saat} arasında yeni bir şey dene ama sınırını önceden belirle.',
       'Cesur bir adımı {saat} aralığına sakla; o saatte zihnin daha berrak.',
       '{saat} arasında bir fırsatı değerlendirirken ikinci bir görüş al.',
+      'Bekleyen bir kararı {saat} arasında sakin kafayla yeniden değerlendir.',
+      '{saat} arasında küçük bir deneme yap; büyük adımı sonuca göre at.',
     ],
     LuckCategory.sosyal: <String>[
       'Uzun zamandır konuşmadığın birine {saat} arasında bir selam gönder.',
       '{saat} arasında bir davete evet de ya da sen bir davet kur.',
       'Bir tanışma ya da buluşma planlıyorsan {saat} aralığı sana gülümsüyor.',
       '{saat} arasında birine yardım teklif et; bağınız güçlenecek.',
+      '{saat} arasında bir arkadaşını kısa bir kahveye çağır.',
+      'Bir gruba fikrini sunacaksan {saat} aralığını seç.',
     ],
   };
 
   /// En zayıf kategori bile yüksekse kullanılan "gölgesiz gün" notları.
+  ///
+  /// Okumanın ortasında yer aldıkları için "Bugün" ile başlamazlar.
   static const List<String> golgesizGun = <String>[
-    'Bugün belirgin bir zayıf alan görünmüyor; tek dikkat noktası, iyi giden bir şeyi fazla zorlamamak.',
-    'Bugün hayatının hiçbir alanında belirgin bir engel yok; yine de enerjini tek bir hedefe toplamak daha çok kazandırır.',
-    'Bugün işlerin genel olarak yolunda; bu rahatlığı sevdiğin birkaç kişiyle paylaşmak günü daha da güzelleştirir.',
-    'Bugün dikkat edilecek tek şey: fırsatların çokluğunda seçici kalmak.',
+    'Belirgin bir zayıf alan görünmüyor; tek dikkat noktası, iyi giden bir şeyi fazla zorlamamak.',
+    'Hayatının hiçbir alanında belirgin bir engel yok; yine de enerjini tek bir hedefe toplamak daha çok kazandırır.',
+    'İşlerin genel olarak yolunda; bu rahatlığı sevdiğin birkaç kişiyle paylaşmak günü daha da güzelleştirir.',
+    'Dikkat edilecek tek şey: fırsatların çokluğunda seçici kalmak.',
   ];
 
   /// Enerji tarzına göre günün tavsiyesine karışan kişisel tavsiyeler.

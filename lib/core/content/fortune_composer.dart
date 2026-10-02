@@ -69,8 +69,7 @@ Map<String, String> slotSozlugu(
     if (dongu != null) SlotAnahtarlari.kisiselGun: '${dongu.kisiselGun}',
     if (dongu != null) SlotAnahtarlari.kisiselYil: '${dongu.kisiselYil}',
     if (dongu != null)
-      SlotAnahtarlari.gunIstegi:
-          YorumYonu.gunTemalari[dongu.kisiselGun]!.istek,
+      SlotAnahtarlari.gunIstegi: YorumYonu.gunTemalari[dongu.kisiselGun]!.istek,
     if (gun != null) SlotAnahtarlari.yil: '${gun.year}',
     if (saat != null) SlotAnahtarlari.saat: saat.etiket,
     if (digerIsim != null) SlotAnahtarlari.digerIsim: digerIsim,
@@ -160,14 +159,41 @@ LuckCategory enZayifKategori(
 KarakterYonu _karakter(Okuyucu okuyucu) =>
     YorumYonu.karakterler[okuyucu.profil.yasamYolu.deger]!;
 
+/// [okuyucu]nun [kategori] alanındaki tarz cümlesi.
+///
+/// Tarz varyantları kategori başına döngüsel seçilir; [ek] verilirse
+/// (ör. detay sayfası) ayrı bir döngü kullanılır ki aynı gün kart ile
+/// detay aynı cümleyi göstermesin.
+String _tarz(
+  LuckEngine motor,
+  Okuyucu okuyucu,
+  DateTime gun,
+  LuckCategory kategori, {
+  String? ek,
+}) {
+  final String amac = ContentConfig.kategoriAmaci(
+    kategori,
+    ContentConfig.amacTarz,
+  );
+  return _sec(
+    motor,
+    okuyucu,
+    gun,
+    ek == null ? amac : '$amac:$ek',
+    _karakter(okuyucu).kategoriTarzi[kategori]!,
+  );
+}
+
 /// [kategori] alanında bugünün durum cümlesi varyantları.
 List<String> _durumHavuzu(
   Okuyucu okuyucu,
   LuckCategory kategori,
   KategoriTonu ton,
 ) =>
-    YorumYonu.kategoriDurumlari[kategori]![
-        YorumYonu.durumAnahtari(kategori, okuyucu.tercihler)]![ton]!;
+    YorumYonu.kategoriDurumlari[kategori]![YorumYonu.durumAnahtari(
+      kategori,
+      okuyucu.tercihler,
+    )]![ton]!;
 
 /// [okuyucu] için [sonuc] gününün tam, bölümlü okumasını üretir.
 ///
@@ -195,8 +221,12 @@ GunlukOkuma gunlukOkuma({
     gun: gun,
     kategori: parlayan,
   );
-  final Map<String, String> slotlar =
-      slotSozlugu(okuyucu, gun: gun, dongu: dongu, saat: saat);
+  final Map<String, String> slotlar = slotSozlugu(
+    okuyucu,
+    gun: gun,
+    dongu: dongu,
+    saat: saat,
+  );
   String doldur(String s) => slotDoldur(s, slotlar);
 
   // ---- Başlık ----
@@ -229,19 +259,41 @@ GunlukOkuma gunlukOkuma({
     '${ContentConfig.amacBulusma}:${bulusma.name}',
     YorumYonu.bulusmaCumleleri[bulusma]!,
   );
-  final Map<String, String> sahneler = YorumYonu.gunSahneleri[k]!;
-  final String sahne = sahneler[okuyucu.tercihler.ugras?.name] ??
-      sahneler[YorumYonu.genelAnahtar]!;
+  final Map<String, List<String>> sahneler = YorumYonu.gunSahneleri[k]!;
+  final String sahne = _sec(
+    motor,
+    okuyucu,
+    gun,
+    '${ContentConfig.amacSahne}:$k',
+    sahneler[okuyucu.tercihler.ugras?.name] ??
+        sahneler[YorumYonu.genelAnahtar]!,
+    adimGun: ContentConfig.kisiselGunAdimi,
+  );
+  // Öneri: buluşma türü ayın belirli kişisel günlerine denk geldiği için
+  // takvim günüyle dönen bir seçim aynı varyantı aynı günlere tekrar
+  // tekrar düşürür. Taban indeks kişisel gün adımıyla (~9 gün) döner,
+  // kişisel gün de ötelemeye eklenir: ardışık günler (k, k+1) farklı
+  // varyant alır, aynı kişisel gün sonraki dönemde başka varyant görür.
+  final List<String> oneriler = karakter.tavsiyeler(bulusma);
+  final int oneriTabani = motor.donguselIndeks(
+    kullanici: okuyucu.seed,
+    gun: gun,
+    amac: '${ContentConfig.amacOneri}:${bulusma.name}',
+    havuzBoyutu: oneriler.length,
+    adimGun: ContentConfig.kisiselGunAdimi,
+  );
+  final String oneri = oneriler[(oneriTabani + k) % oneriler.length];
   final String enerjiMetni = <String>[
     gunDurumu,
     bulusmaCumlesi,
     sahne,
-    karakter.tavsiye(bulusma),
+    oneri,
   ].map(doldur).join(' ');
 
   // ---- Öne çıkan alan: durum → günün etkisi → kişinin tarzı → eylem ----
-  final KategoriTonu parlayanTon =
-      KategoriTonu.tonuBul(sonuc.kategoriSkorlari[parlayan] ?? 0);
+  final KategoriTonu parlayanTon = KategoriTonu.tonuBul(
+    sonuc.kategoriSkorlari[parlayan] ?? 0,
+  );
   final String parlayanDurum = _sec(
     motor,
     okuyucu,
@@ -253,10 +305,16 @@ GunlukOkuma gunlukOkuma({
       begenilmeyenler,
     ),
   );
+  // Kişinin tarz cümlesi günde yalnızca bir paragrafta yer alır; hangisine
+  // düşeceği takvim gününe göre dönüşümlüdür. İki paragrafta birden yer
+  // aldığında neredeyse her gün öne çıkan bir kategorinin tarzı ayda
+  // 7-8 kez tekrar ediyordu.
+  final bool tarzParlayanda =
+      LuckEngine.gunNumarasi(gun) % ContentConfig.tarzDonusumu == 0;
   final String parlayanMetni = <String>[
     parlayanDurum,
     YorumYonu.temaKategori[k]![parlayan]!,
-    karakter.kategoriTarzi[parlayan]!,
+    if (tarzParlayanda) _tarz(motor, okuyucu, gun, parlayan),
     _sec(
       motor,
       okuyucu,
@@ -268,10 +326,13 @@ GunlukOkuma gunlukOkuma({
 
   // ---- Dikkat: zayıf alanın durumu (öneriyi zaten içerir) → kişinin
   // o alandaki eğilimi ("neden sende böyle hissedilir") ----
-  final LuckCategory zayif =
-      enZayifKategori(sonuc.kategoriSkorlari, haric: parlayan);
-  final KategoriTonu zayifTon =
-      KategoriTonu.tonuBul(sonuc.kategoriSkorlari[zayif] ?? 0);
+  final LuckCategory zayif = enZayifKategori(
+    sonuc.kategoriSkorlari,
+    haric: parlayan,
+  );
+  final KategoriTonu zayifTon = KategoriTonu.tonuBul(
+    sonuc.kategoriSkorlari[zayif] ?? 0,
+  );
   final String dikkatVaryanti;
   final String dikkatMetni;
   if (zayifTon == KategoriTonu.yuksek) {
@@ -301,17 +362,17 @@ GunlukOkuma gunlukOkuma({
     );
     dikkatMetni = <String>[
       dikkatVaryanti,
-      karakter.kategoriTarzi[zayif]!,
+      if (!tarzParlayanda) _tarz(motor, okuyucu, gun, zayif),
     ].map(doldur).join(' ');
   }
 
-  // ---- Dönem cümlesi, tavsiye, renk, sayı ----
+  // ---- Kapanış (dönem + ay cümlesi), tavsiye, renk, sayı ----
   final String donem = _sec(
     motor,
     okuyucu,
     gun,
-    '${ContentConfig.amacYil}:${dongu.kisiselYil}',
-    YorumYonu.donemCumleleri[dongu.kisiselYil]!,
+    '${ContentConfig.amacYil}:${dongu.kisiselYil}:${dongu.kisiselAy}',
+    YorumYonu.kapanisHavuzu(dongu.kisiselYil, dongu.kisiselAy),
   );
   final EnerjiTarzi? enerjiTarzi = okuyucu.tercihler.enerji;
   final String tavsiye = doldur(
@@ -334,7 +395,8 @@ GunlukOkuma gunlukOkuma({
     ContentConfig.amacRenk,
     FortunePools.sansRenkleri,
   );
-  final int sansliSayi = ContentConfig.sansliSayiMin +
+  final int sansliSayi =
+      ContentConfig.sansliSayiMin +
       motor.secimIndeksi(
         kullanici: okuyucu.seed,
         gun: gun,
@@ -458,14 +520,17 @@ KategoriOkumasi kategoriOkumasi({
     dogumTarihi: okuyucu.profil.dogumTarihi,
     gun: gun,
   );
-  final KarakterYonu karakter = _karakter(okuyucu);
   final SansliSaat saat = motor.sansliSaat(
     kullanici: okuyucu.seed,
     gun: gun,
     kategori: kategori,
   );
-  final Map<String, String> slotlar =
-      slotSozlugu(okuyucu, gun: gun, dongu: dongu, saat: saat);
+  final Map<String, String> slotlar = slotSozlugu(
+    okuyucu,
+    gun: gun,
+    dongu: dongu,
+    saat: saat,
+  );
   String doldur(String s) => slotDoldur(s, slotlar);
 
   final String paragraf = <String>[
@@ -473,11 +538,11 @@ KategoriOkumasi kategoriOkumasi({
       motor,
       okuyucu,
       gun,
-      '${ContentConfig.kategoriAmaci(kategori, ContentConfig.amacDurum)}:detay',
+      '${ContentConfig.kategoriAmaci(kategori, ContentConfig.amacDurum)}:${ContentConfig.amacDetayEki}',
       _durumHavuzu(okuyucu, kategori, ton),
     ),
     YorumYonu.temaKategori[dongu.kisiselGun]![kategori]!,
-    karakter.kategoriTarzi[kategori]!,
+    _tarz(motor, okuyucu, gun, kategori, ek: ContentConfig.amacDetayEki),
     _sec(
       motor,
       okuyucu,
@@ -492,7 +557,7 @@ KategoriOkumasi kategoriOkumasi({
       motor,
       okuyucu,
       gun,
-      '${ContentConfig.kategoriAmaci(kategori, ContentConfig.amacEylem)}:detay',
+      '${ContentConfig.kategoriAmaci(kategori, ContentConfig.amacEylem)}:${ContentConfig.amacDetayEki}',
       KisiselHavuzlar.eylemCumleleri[kategori]!,
     ),
   );
@@ -612,8 +677,10 @@ UyumOkumasi uyumOkumasi({
   required KaderProfili digerProfil,
 }) {
   final UyumSonucu sonuc = uyumHesapla(okuyucu.profil, digerProfil);
-  final Map<String, String> slotlar =
-      slotSozlugu(okuyucu, digerIsim: digerIsim);
+  final Map<String, String> slotlar = slotSozlugu(
+    okuyucu,
+    digerIsim: digerIsim,
+  );
   String doldur(String s) => slotDoldur(s, slotlar);
   // Varyant, çifte özgü skordan seçilir: simetrik ve deterministik.
   T sec<T>(List<T> havuz) => havuz[sonuc.skor % havuz.length];
