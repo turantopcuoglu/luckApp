@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/content/rapor_okumasi.dart';
+import '../../core/content/yillik_rapor.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/user_profile.dart';
 import '../daily_luck/daily_luck_providers.dart';
@@ -25,3 +26,12 @@ final Provider<RaporOkumasi> raporOkumasiProvider = Provider<RaporOkumasi>(
     gun: ref.watch(bugunProvider),
   ),
 );
+
+/// Aktif kullanıcının [yil] takvim yılı için Kişisel Yıl Raporu.
+final ProviderFamily<YillikRaporOkumasi, int> yillikRaporProvider =
+    Provider.family<YillikRaporOkumasi, int>(
+      (Ref ref, int yil) => yillikRaporOkumasi(
+        rapor: ref.watch(numerolojiRaporuProvider),
+        yil: yil,
+      ),
+    );

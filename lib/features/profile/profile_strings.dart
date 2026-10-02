@@ -104,6 +104,31 @@ abstract final class ProfileStrings {
   /// Zaman çizelgesinde zirve sayısı etiketi.
   static String zirveEtiketi(int zirve) => 'Zirve $zirve';
 
+  // ---- Kişisel Yıl Raporu ----
+
+  /// Ana ekran tanıtım kartı başlığı.
+  static String yilRaporuKartBaslik(int yil) => '$yil Kişisel Yıl Raporun';
+
+  /// Ana ekran tanıtım kartı açıklaması ("2027 senin için Tohum Yılı.").
+  static String yilRaporuKartAciklama(int yil, String yilLakabi) =>
+      '$yil senin için $yilLakabi. Yılın fırsatları, akışta olduğun aylar '
+      've ay ay rehberin hazır.';
+
+  /// Yıl raporu ekran başlığı.
+  static String yilRaporuBaslik(int yil) => '$yil Raporun';
+
+  /// Yıl raporu üst bilgisindeki etiket.
+  static const String kisiselYilEtiketi = 'Kişisel yılın';
+
+  /// Ay ay bölümü başlığı.
+  static String ayAyBaslik(int yil) => 'Ay ay $yil';
+
+  /// Akış ayı çipi.
+  static const String akisCipi = 'Akışta';
+
+  /// Zorlu ay çipi.
+  static const String zorluCipi = 'Zorlayıcı';
+
   /// Tam ad yokken rapor kartı başlığı.
   static const String raporTamAdEksikBaslik = 'Raporun yarım kaldı';
 

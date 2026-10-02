@@ -22,6 +22,7 @@ import '../legal/legal_texts.dart';
 import '../premium/kilit_secenekleri.dart';
 import '../premium/premium_providers.dart';
 import '../premium/reklam_politikasi.dart';
+import '../profile/yil_raporu_karti.dart';
 import '../share/share_button.dart';
 import 'daily_luck_config.dart';
 import 'daily_luck_providers.dart';
@@ -300,6 +301,8 @@ class _IcerikState extends ConsumerState<_Icerik>
                 NedenCipleri(nedenler: okuma.nedenler),
                 const SizedBox(height: AppSpacing.md),
                 SansOgeleriKarti(icerik: okuma),
+                const SizedBox(height: AppSpacing.md),
+                const YilRaporuKarti(),
                 if (aksamKarti) ...<Widget>[
                   const SizedBox(height: AppSpacing.md),
                   const _AksamKarti(),

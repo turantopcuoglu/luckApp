@@ -19,6 +19,7 @@ class KilitliBolumKarti extends StatelessWidget {
     required this.metin,
     required this.kilitli,
     required this.onKilidiAc,
+    this.etiket,
   });
 
   /// Kart başlığı.
@@ -32,6 +33,10 @@ class KilitliBolumKarti extends StatelessWidget {
 
   /// "Kilidi aç" düğmesine basılınca çağrılır.
   final VoidCallback onKilidiAc;
+
+  /// Başlık satırında, kilit ikonundan önce gösterilen küçük ek bilgi
+  /// (ör. ay kartındaki "Akışta" çipi). Kilitliyken de görünür.
+  final Widget? etiket;
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +63,18 @@ class KilitliBolumKarti extends StatelessWidget {
                     style: yazi.titleMedium?.copyWith(color: AppColors.gold),
                   ),
                 ),
-                if (kilitli)
+                if (etiket != null) ...<Widget>[
+                  const SizedBox(width: AppSpacing.sm),
+                  etiket!,
+                ],
+                if (kilitli) ...<Widget>[
+                  const SizedBox(width: AppSpacing.sm),
                   const Icon(
                     Icons.lock_rounded,
                     color: AppColors.gold,
                     size: AppSpacing.md + AppSpacing.xs,
                   ),
+                ],
               ],
             ),
             const SizedBox(height: AppSpacing.sm),
