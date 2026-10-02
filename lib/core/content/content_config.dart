@@ -277,6 +277,15 @@ abstract final class ContentConfig {
   /// fazla iki kez gelir.
   static const int yillikAyVaryanti = 2;
 
+  /// Keşfet araçlarının (ücretsiz, paylaşılabilir) numara metinlerinin en
+  /// az kelime sayısı: ücretli rapor metinlerinden kısa tutulur ki sonuç
+  /// kartı ve paylaşım görseli tek bakışta okunsun.
+  static const int aracMetniEnAzKelime = 25;
+
+  /// Bebek ismi uyum bantlarının alt eşikleri (yüksekten düşüğe;
+  /// `AracMetinleri.bebekBantlari` ile aynı sırada, son bant eşiksiz).
+  static const List<int> bebekBantEsikleri = <int>[90, 75, 65];
+
   /// Profil bölümü başına en az kelime sayısı (yüzeysel metin olmasın).
   static const int profilEnAzKelime = 18;
 
