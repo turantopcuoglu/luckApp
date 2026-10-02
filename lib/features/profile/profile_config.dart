@@ -8,4 +8,18 @@ abstract final class ProfileConfig {
 
   /// Kilitli bölümde bulanık gösterilen en fazla satır.
   static const int kilitliSatirSayisi = 3;
+
+  /// Uzun okuma metinlerinin satır yüksekliği çarpanı.
+  static const double metinSatirAraligi = 1.5;
+
+  // ---- Numeroloji raporu zaman çizelgesi ----
+
+  /// Dönem dairesinin çapı.
+  static const double donemDairesiCapi = 40;
+
+  /// Dönemleri birbirine bağlayan dikey çizginin kalınlığı.
+  static const double donemCizgiKalinligi = 2;
+
+  /// Aktif olmayan dönemlerin saydamlığı.
+  static const double pasifDonemOpakligi = 0.55;
 }

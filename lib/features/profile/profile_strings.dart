@@ -76,4 +76,46 @@ abstract final class ProfileStrings {
 
   /// Burç sınır uyarısı çipi.
   static const String sinirGunu = 'Burç sınırı';
+
+  // ---- Numeroloji raporu ----
+
+  /// Profilden rapora giriş kartının başlığı.
+  static const String raporGirisBaslik = 'Numeroloji Raporun';
+
+  /// Profilden rapora giriş kartının açıklaması.
+  static const String raporGirisAciklama =
+      'Hayatının dört dönemi, karmik sayıların ve isminin gizli anlamları.';
+
+  /// Rapor ekranı başlığı.
+  static const String raporBaslik = 'Numeroloji Raporun';
+
+  /// Rapor ekranı açıklaması.
+  static const String raporAciklama =
+      'Doğum tarihin ve tam adından hesaplanan, hayatının uzun dönemlerine '
+      'dair temalar. Bu rapor bir eğilim haritasıdır; olayları değil, '
+      'dönemlerin sana neyi öğretmeye çalıştığını anlatır.';
+
+  /// Zaman çizelgesi başlığı.
+  static const String zamanCizelgesiBaslik = 'Hayatının dört dönemi';
+
+  /// Aktif dönem etiketi.
+  static const String suAn = 'Şu an';
+
+  /// Zaman çizelgesinde zirve sayısı etiketi.
+  static String zirveEtiketi(int zirve) => 'Zirve $zirve';
+
+  /// Tam ad yokken rapor kartı başlığı.
+  static const String raporTamAdEksikBaslik = 'Raporun yarım kaldı';
+
+  /// Tam ad yokken rapor kartı açıklaması.
+  static const String raporTamAdEksikAciklama =
+      'Karmik derslerin, gizli tutkun, olgunluk sayın ve isminin harfleri '
+      'doğumdaki tam adından hesaplanır. Tam adını eklersen raporuna beş '
+      'yeni bölüm açılır.';
+
+  /// Rapor kilit açıklaması.
+  static const String raporKilitAciklamasi =
+      'Raporunun tamamı — bu dönemin dersi, sıradaki dönemin, karmik '
+      'borçların ve isminin gizli anlamları — Premium üyelere açık. İstersen '
+      'kısa bir reklam izleyerek bugün için de açabilirsin.';
 }

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +10,7 @@ import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/app_route.dart';
 import '../ads/banner_reklam_alani.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/tr_strings.dart';
@@ -18,6 +18,8 @@ import '../legal/legal_texts.dart';
 import '../premium/kilit_secenekleri.dart';
 import '../premium/premium_providers.dart';
 import 'hesap_metni.dart';
+import 'kilitli_bolum_karti.dart';
+import 'numeroloji_raporu_screen.dart';
 import 'profile_config.dart';
 import 'profile_strings.dart';
 import 'tam_ad_duzenle.dart';
@@ -74,10 +76,29 @@ class KaderProfiliScreen extends ConsumerWidget {
                 ),
               ),
             ],
+            const SizedBox(height: AppSpacing.md),
+            Card(
+              margin: EdgeInsets.zero,
+              child: ListTile(
+                leading: const Icon(
+                  Icons.auto_stories_rounded,
+                  color: AppColors.gold,
+                ),
+                title: const Text(ProfileStrings.raporGirisBaslik),
+                subtitle: const Text(ProfileStrings.raporGirisAciklama),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => unawaited(
+                  Navigator.of(context).push(
+                    fadeThroughRoute<void>(const NumerolojiRaporuScreen()),
+                  ),
+                ),
+              ),
+            ),
             const SizedBox(height: AppSpacing.lg),
             for (final ProfilBolumu bolum in bolumler) ...<Widget>[
-              _ProfilBolumKarti(
-                bolum: bolum,
+              KilitliBolumKarti(
+                baslik: bolum.baslik,
+                metin: bolum.metin,
                 kilitli: bolum.premium && kilitli,
                 onKilidiAc: () => unawaited(
                   kilitSecenekleriniGoster(
@@ -296,86 +317,6 @@ class _SayiKarosu extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Profil bölümü: kilitliyse ilk cümle görünür, gerisi bulanık.
-class _ProfilBolumKarti extends StatelessWidget {
-  const _ProfilBolumKarti({
-    required this.bolum,
-    required this.kilitli,
-    required this.onKilidiAc,
-  });
-
-  final ProfilBolumu bolum;
-  final bool kilitli;
-  final VoidCallback onKilidiAc;
-
-  @override
-  Widget build(BuildContext context) {
-    final TextTheme yazi = Theme.of(context).textTheme;
-    final TextStyle? metinStili = yazi.bodyLarge?.copyWith(height: 1.5);
-    final int nokta = bolum.metin.indexOf('. ');
-    final String ilkCumle =
-        nokta < 0 ? bolum.metin : bolum.metin.substring(0, nokta + 1);
-    final String kalan = nokta < 0 ? '' : bolum.metin.substring(nokta + 2);
-
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Text(
-                    bolum.baslik,
-                    style: yazi.titleMedium?.copyWith(color: AppColors.gold),
-                  ),
-                ),
-                if (kilitli)
-                  const Icon(
-                    Icons.lock_rounded,
-                    color: AppColors.gold,
-                    size: AppSpacing.md + AppSpacing.xs,
-                  ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            if (!kilitli)
-              Text(bolum.metin, style: metinStili)
-            else ...<Widget>[
-              Text(ilkCumle, style: metinStili),
-              if (kalan.isNotEmpty)
-                ClipRect(
-                  child: ImageFiltered(
-                    imageFilter: ImageFilter.blur(
-                      sigmaX: ProfileConfig.kilitBulanikligi,
-                      sigmaY: ProfileConfig.kilitBulanikligi,
-                    ),
-                    child: Text(
-                      kalan,
-                      style: metinStili,
-                      maxLines: ProfileConfig.kilitliSatirSayisi,
-                      overflow: TextOverflow.clip,
-                    ),
-                  ),
-                ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(
-                  onPressed: onKilidiAc,
-                  icon: const Icon(Icons.lock_open_rounded),
-                  label: const Text(ProfileStrings.kilidiAc),
-                ),
-              ),
-            ],
-          ],
         ),
       ),
     );
