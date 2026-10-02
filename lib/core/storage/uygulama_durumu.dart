@@ -13,7 +13,7 @@ class UygulamaDurumu {
     this.premiumUrunId,
     this.sonGecisReklami,
     this.gelistiriciPremium = false,
-    this.raporSahibi = false,
+    this.sahipOlunanUrunler = const <String>{},
   });
 
   /// Hive map'inden durum kurar.
@@ -24,7 +24,10 @@ class UygulamaDurumu {
     premiumUrunId: map[_premiumUrunId] as String?,
     sonGecisReklami: _tarih(map[_sonGecisReklami]),
     gelistiriciPremium: map[_gelistiriciPremium] as bool? ?? false,
-    raporSahibi: map[_raporSahibi] as bool? ?? false,
+    sahipOlunanUrunler: <String>{
+      ...(map[_sahipOlunanUrunler] as List<dynamic>? ?? const <dynamic>[])
+          .whereType<String>(),
+    },
   );
 
   static const String _ilkAcilis = 'ilkAcilis';
@@ -33,7 +36,7 @@ class UygulamaDurumu {
   static const String _premiumUrunId = 'premiumUrunId';
   static const String _sonGecisReklami = 'sonGecisReklami';
   static const String _gelistiriciPremium = 'gelistiriciPremium';
-  static const String _raporSahibi = 'raporSahibi';
+  static const String _sahipOlunanUrunler = 'sahipOlunanUrunler';
 
   static DateTime? _tarih(Object? ham) =>
       ham is String ? DateTime.tryParse(ham) : null;
@@ -56,10 +59,11 @@ class UygulamaDurumu {
   /// Yalnızca debug derlemede: premium simülasyonu açık mı?
   final bool gelistiriciPremium;
 
-  /// Mağazanın son bildirdiği Numeroloji Raporu (tek seferlik ürün)
-  /// sahipliği. Tek seferlik ürün süresiz olduğundan çevrimdışı tolerans
-  /// uygulanmaz; yalnızca geri yükleme sonucu (ör. iade) kapatır.
-  final bool raporSahibi;
+  /// Mağazanın son bildirdiği tek seferlik ürün sahiplikleri (ürün
+  /// kimlikleri: Numeroloji Raporu, yıl raporları). Tek seferlik ürünler
+  /// süresiz olduğundan çevrimdışı tolerans uygulanmaz; yalnızca geri
+  /// yükleme sonucu (ör. iade) bir ürünü listeden çıkarır.
+  final Set<String> sahipOlunanUrunler;
 
   /// Hive'a yazılacak map.
   Map<String, dynamic> toMap() => <String, dynamic>{
@@ -69,7 +73,7 @@ class UygulamaDurumu {
     _premiumUrunId: premiumUrunId,
     _sonGecisReklami: sonGecisReklami?.toIso8601String(),
     _gelistiriciPremium: gelistiriciPremium,
-    _raporSahibi: raporSahibi,
+    _sahipOlunanUrunler: sahipOlunanUrunler.toList()..sort(),
   };
 
   /// Seçili alanları değiştirilmiş kopya.
@@ -80,7 +84,7 @@ class UygulamaDurumu {
     String? premiumUrunId,
     DateTime? sonGecisReklami,
     bool? gelistiriciPremium,
-    bool? raporSahibi,
+    Set<String>? sahipOlunanUrunler,
   }) => UygulamaDurumu(
     ilkAcilis: ilkAcilis ?? this.ilkAcilis,
     premiumAktif: premiumAktif ?? this.premiumAktif,
@@ -88,7 +92,7 @@ class UygulamaDurumu {
     premiumUrunId: premiumUrunId ?? this.premiumUrunId,
     sonGecisReklami: sonGecisReklami ?? this.sonGecisReklami,
     gelistiriciPremium: gelistiriciPremium ?? this.gelistiriciPremium,
-    raporSahibi: raporSahibi ?? this.raporSahibi,
+    sahipOlunanUrunler: sahipOlunanUrunler ?? this.sahipOlunanUrunler,
   );
 }
 
@@ -134,14 +138,15 @@ class UygulamaDurumuRepository {
         premiumUrunId: aktif ? urunId : null,
         sonGecisReklami: mevcut.sonGecisReklami,
         gelistiriciPremium: mevcut.gelistiriciPremium,
-        raporSahibi: mevcut.raporSahibi,
+        sahipOlunanUrunler: mevcut.sahipOlunanUrunler,
       ),
     );
   }
 
-  /// Mağazanın bildirdiği Numeroloji Raporu sahipliğini önbelleğe yazar.
-  Future<void> raporuKaydet({required bool sahip}) =>
-      kaydet(durum.copyWith(raporSahibi: sahip));
+  /// Mağazanın bildirdiği tek seferlik ürün sahipliklerini önbelleğe
+  /// yazar (önceki listenin yerine geçer).
+  Future<void> tekSeferlikleriKaydet(Set<String> urunler) =>
+      kaydet(durum.copyWith(sahipOlunanUrunler: urunler));
 
   /// Geçiş reklamının gösterildiği anı yazar.
   Future<void> gecisReklamiGosterildi(DateTime an) =>

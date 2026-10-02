@@ -34,11 +34,18 @@ class SahteMagaza implements MagazaServisi {
   /// Satın alınmaya çalışılan tek seferlik ürünler.
   final List<TekSeferlikUrun> tekSeferlikAlinanlar = <TekSeferlikUrun>[];
 
-  /// Dönen rapor ürünü (null: mağazada yok).
-  TekSeferlikUrun? raporUrunu = const TekSeferlikUrun(
-    urunId: PremiumConfig.raporUrunId,
-    fiyatMetni: '₺149,99',
-  );
+  /// Mağazadaki tek seferlik ürünler (kimlik → ürün).
+  final Map<String, TekSeferlikUrun> tekSeferlikler =
+      <String, TekSeferlikUrun>{
+        PremiumConfig.raporUrunId: const TekSeferlikUrun(
+          urunId: PremiumConfig.raporUrunId,
+          fiyatMetni: '₺149,99',
+        ),
+        PremiumConfig.yilRaporuUrunId(2027): TekSeferlikUrun(
+          urunId: PremiumConfig.yilRaporuUrunId(2027),
+          fiyatMetni: '₺99,99',
+        ),
+      };
 
   /// Mağaza erişilebilir mi?
   bool kullanilabilir = true;
@@ -80,7 +87,7 @@ class SahteMagaza implements MagazaServisi {
 
   @override
   Future<TekSeferlikUrun?> tekSeferlikUrunGetir(String urunId) async =>
-      urunId == raporUrunu?.urunId ? raporUrunu : null;
+      tekSeferlikler[urunId];
 
   @override
   Future<bool> tekSeferlikSatinAl(TekSeferlikUrun urun) async {
@@ -265,7 +272,10 @@ void main() {
       expect(c.read(entitlementProvider), isFalse);
       expect(magaza.tamamlananlar.single.urunId, PremiumConfig.raporUrunId);
       await diskiBekle();
-      expect(UygulamaDurumuRepository(ortam.durum).durum.raporSahibi, isTrue);
+      expect(
+        UygulamaDurumuRepository(ortam.durum).durum.sahipOlunanUrunler,
+        <String>{PremiumConfig.raporUrunId},
+      );
     });
 
     test('rapor ve abonelik birlikte geri yüklenebilir', () async {
@@ -287,7 +297,7 @@ void main() {
       await diskiBekle();
       final UygulamaDurumu durum = UygulamaDurumuRepository(ortam.durum).durum;
       expect(durum.premiumAktif, isTrue);
-      expect(durum.raporSahibi, isTrue);
+      expect(durum.sahipOlunanUrunler, contains(PremiumConfig.raporUrunId));
     });
 
     test('Premium kullanıcıda rapor açık', () async {
@@ -306,10 +316,10 @@ void main() {
       final UygulamaDurumuRepository depo = UygulamaDurumuRepository(
         ortam.durum,
       );
-      await depo.raporuKaydet(sahip: true);
+      await depo.tekSeferlikleriKaydet(<String>{PremiumConfig.raporUrunId});
       // Abonelik önbelleği yazılırken rapor sahipliği korunur.
       await depo.premiumuKaydet(aktif: false, dogrulama: simdi);
-      expect(depo.durum.raporSahibi, isTrue);
+      expect(depo.durum.sahipOlunanUrunler, contains(PremiumConfig.raporUrunId));
 
       magaza.kullanilabilir = false;
       simdi = simdi.add(const Duration(days: 365));
@@ -324,16 +334,16 @@ void main() {
       await bekle();
       expect(c2.read(raporAcikProvider), isFalse);
       await diskiBekle();
-      expect(depo.durum.raporSahibi, isFalse);
+      expect(depo.durum.sahipOlunanUrunler, isEmpty);
     });
 
-    test('raporuSatinAl tek seferlik akışı başlatır; satın alma olayı '
+    test('tekSeferlikSatinAl rapor için akışı başlatır; satın alma olayı '
         'raporu açar', () async {
       final ProviderContainer c = kapsayici();
       await c.read(premiumKontrolcuProvider.notifier).baslat();
       await bekle();
 
-      await c.read(premiumKontrolcuProvider.notifier).raporuSatinAl();
+      await c.read(premiumKontrolcuProvider.notifier).tekSeferlikSatinAl(PremiumConfig.raporUrunId);
       expect(
         magaza.tekSeferlikAlinanlar.single.urunId,
         PremiumConfig.raporUrunId,
@@ -350,12 +360,12 @@ void main() {
     });
 
     test('ürün mağazada yoksa satın alma başlamaz, hata gösterilir', () async {
-      magaza.raporUrunu = null;
+      magaza.tekSeferlikler.clear();
       final ProviderContainer c = kapsayici();
       await c.read(premiumKontrolcuProvider.notifier).baslat();
       await bekle();
 
-      await c.read(premiumKontrolcuProvider.notifier).raporuSatinAl();
+      await c.read(premiumKontrolcuProvider.notifier).tekSeferlikSatinAl(PremiumConfig.raporUrunId);
       expect(magaza.tekSeferlikAlinanlar, isEmpty);
       expect(
         c.read(premiumKontrolcuProvider).hataMesaji,
@@ -406,6 +416,151 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(PremiumStrings.raporKilitBaslik), findsNothing);
       expect(find.text(PremiumStrings.raporAcildi), findsOneWidget);
+    });
+  });
+
+  group('Kişisel Yıl Raporu (tek seferlik ürün)', () {
+    final String yil2027 = PremiumConfig.yilRaporuUrunId(2027);
+
+    test('ürün kimliği ve tanıma: satıştaki yıl ve eski yıllar', () {
+      expect(yil2027, 'kader_yil_2027');
+      expect(
+        PremiumConfig.satistakiTekSeferlikler,
+        contains(PremiumConfig.yilRaporuUrunId(PremiumConfig.satistakiYil)),
+      );
+      expect(PremiumConfig.tekSeferlikMi('kader_yil_2026'), isTrue);
+      expect(PremiumConfig.tekSeferlikMi(PremiumConfig.raporUrunId), isTrue);
+      expect(PremiumConfig.tekSeferlikMi(PremiumConfig.aylikUrunId), isFalse);
+    });
+
+    test('yıl raporu satın alınınca yalnızca o yıl açılır; Numeroloji '
+        'Raporu ve Premium açılmaz', () async {
+      final ProviderContainer c = kapsayici();
+      await c.read(premiumKontrolcuProvider.notifier).baslat();
+      await bekle();
+      expect(
+        c.read(premiumKontrolcuProvider).tekSeferlikUrunler[yil2027]?.fiyatMetni,
+        '₺99,99',
+      );
+
+      await c.read(premiumKontrolcuProvider.notifier).tekSeferlikSatinAl(yil2027);
+      expect(magaza.tekSeferlikAlinanlar.single.urunId, yil2027);
+      magaza.yayinla(<SatinAlmaGuncellemesi>[
+        SatinAlmaGuncellemesi(
+          urunId: yil2027,
+          durum: SatinAlmaDurumu.satinAlindi,
+          tamamlanmaBekliyor: true,
+        ),
+      ]);
+      await bekle();
+      await bekle();
+
+      expect(c.read(yilRaporuAcikProvider(2027)), isTrue);
+      expect(c.read(yilRaporuAcikProvider(2028)), isFalse);
+      expect(c.read(raporAcikProvider), isFalse);
+      expect(c.read(entitlementProvider), isFalse);
+      await diskiBekle();
+      expect(
+        UygulamaDurumuRepository(ortam.durum).durum.sahipOlunanUrunler,
+        <String>{yil2027},
+      );
+    });
+
+    test('satın alma olayı mevcut sahipliklere ekler; geri yükleme listesi '
+        'tamamının yerine geçer', () async {
+      magaza.geriYuklenecek = <SatinAlmaGuncellemesi>[
+        const SatinAlmaGuncellemesi(
+          urunId: PremiumConfig.raporUrunId,
+          durum: SatinAlmaDurumu.geriYuklendi,
+          tamamlanmaBekliyor: false,
+        ),
+        const SatinAlmaGuncellemesi(
+          urunId: 'kader_yil_2026',
+          durum: SatinAlmaDurumu.geriYuklendi,
+          tamamlanmaBekliyor: false,
+        ),
+      ];
+      final ProviderContainer c = kapsayici();
+      await c.read(premiumKontrolcuProvider.notifier).baslat();
+      await bekle();
+      await bekle();
+      expect(c.read(premiumKontrolcuProvider).sahipOlunanlar, <String>{
+        PremiumConfig.raporUrunId,
+        'kader_yil_2026',
+      });
+      expect(c.read(yilRaporuAcikProvider(2026)), isTrue);
+
+      magaza.yayinla(<SatinAlmaGuncellemesi>[
+        SatinAlmaGuncellemesi(
+          urunId: yil2027,
+          durum: SatinAlmaDurumu.satinAlindi,
+          tamamlanmaBekliyor: false,
+        ),
+      ]);
+      await bekle();
+      expect(c.read(premiumKontrolcuProvider).sahipOlunanlar, hasLength(3));
+
+      // Sonraki geri yükleme yalnızca raporu içeriyorsa yıl raporları
+      // iade edilmiş sayılır.
+      magaza.geriYuklenecek = <SatinAlmaGuncellemesi>[
+        const SatinAlmaGuncellemesi(
+          urunId: PremiumConfig.raporUrunId,
+          durum: SatinAlmaDurumu.geriYuklendi,
+          tamamlanmaBekliyor: false,
+        ),
+      ];
+      await c.read(premiumKontrolcuProvider.notifier).geriYukle();
+      await bekle();
+      await bekle();
+      expect(c.read(premiumKontrolcuProvider).sahipOlunanlar, <String>{
+        PremiumConfig.raporUrunId,
+      });
+      await diskiBekle();
+    });
+
+    test('Premium kullanıcıda her yılın raporu açık', () async {
+      await UygulamaDurumuRepository(ortam.durum).premiumuKaydet(
+        aktif: true,
+        dogrulama: simdi,
+        urunId: PremiumConfig.yillikUrunId,
+      );
+      final ProviderContainer c = kapsayici();
+      expect(c.read(yilRaporuAcikProvider(2027)), isTrue);
+      expect(c.read(yilRaporuAcikProvider(2030)), isTrue);
+    });
+
+    testWidgets('yıl raporu kilit sheet\'i kendi fiyatını ve başlığını '
+        'gösterir', (WidgetTester tester) async {
+      final ProviderContainer c = kapsayici();
+      await tester.runAsync(() async {
+        await c.read(premiumKontrolcuProvider.notifier).baslat();
+        await bekle();
+      });
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: c,
+          child: MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (BuildContext context) => TextButton(
+                  onPressed: () => yilRaporuKilidiniGoster(context, 2027),
+                  child: const Text('aç'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('aç'));
+      await tester.pumpAndSettle();
+
+      expect(find.text(PremiumStrings.yilRaporuKilitBaslik(2027)), findsOneWidget);
+      expect(find.text(PremiumStrings.yilRaporuPremiumSecenegi), findsOneWidget);
+      expect(find.text(PremiumStrings.reklamlaAc), findsNothing);
+      await tester.tap(find.text(PremiumStrings.raporuSatinAl('₺99,99')));
+      await tester.pump();
+      expect(magaza.tekSeferlikAlinanlar.single.urunId, yil2027);
+      await tester.runAsync(diskiBekle);
     });
   });
 

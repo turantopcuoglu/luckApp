@@ -4,6 +4,7 @@ import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/providers.dart';
 import '../ads/ads_providers.dart';
 import '../daily_luck/daily_luck_providers.dart';
+import 'premium_config.dart';
 import 'premium_kontrolcu.dart';
 
 /// Premium yetki durumu — kilit kontrollerinin TEK doğruluk noktası.
@@ -56,18 +57,34 @@ final Provider<bool> profilKilitliProvider = Provider<bool>(
       !ref.watch(reklamKilidiAcikProvider(KilitAnahtarlari.profil)),
 );
 
-/// Numeroloji Raporu'nun tamamı açık mı? (Premium ya da tek seferlik
-/// rapor satın alımı).
+/// [urunId] tek seferlik ürününün içeriği açık mı? (Premium ya da o
+/// ürünün satın alımı).
 ///
-/// Ödüllü reklamla AÇILMAZ: rapor ayrı satılan bir üründür; günlük reklam
-/// kilidi onu değersizleştirirdi.
+/// Ödüllü reklamla AÇILMAZ: raporlar ayrı satılan ürünlerdir; günlük
+/// reklam kilidi onları değersizleştirirdi.
+final ProviderFamily<bool, String> tekSeferlikAcikProvider =
+    Provider.family<bool, String>(
+      (Ref ref, String urunId) =>
+          ref.watch(entitlementProvider) ||
+          ref.watch(
+            premiumKontrolcuProvider.select(
+              (PremiumDurumu d) => d.sahipMi(urunId),
+            ),
+          ),
+    );
+
+/// Numeroloji Raporu'nun tamamı açık mı?
 final Provider<bool> raporAcikProvider = Provider<bool>(
-  (Ref ref) =>
-      ref.watch(entitlementProvider) ||
-      ref.watch(
-        premiumKontrolcuProvider.select((PremiumDurumu d) => d.raporSahibi),
-      ),
+  (Ref ref) => ref.watch(tekSeferlikAcikProvider(PremiumConfig.raporUrunId)),
 );
+
+/// [yil] Kişisel Yıl Raporu'nun tamamı açık mı?
+final ProviderFamily<bool, int> yilRaporuAcikProvider =
+    Provider.family<bool, int>(
+      (Ref ref, int yil) => ref.watch(
+        tekSeferlikAcikProvider(PremiumConfig.yilRaporuUrunId(yil)),
+      ),
+    );
 
 /// Numeroloji Raporu'nun premium bölümleri şu an kilitli mi?
 final Provider<bool> raporKilitliProvider = Provider<bool>(

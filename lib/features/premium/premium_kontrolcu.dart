@@ -29,8 +29,8 @@ class PremiumDurumu {
     this.planlarYukleniyor = false,
     this.magazaKullanilabilir = true,
     this.hataMesaji,
-    this.raporSahibi = false,
-    this.raporUrunu,
+    this.sahipOlunanlar = const <String>{},
+    this.tekSeferlikUrunler = const <String, TekSeferlikUrun>{},
   });
 
   /// Kullanıcının premium hakkı var mı?
@@ -51,13 +51,24 @@ class PremiumDurumu {
   /// Kullanıcıya gösterilecek son hata (varsa).
   final String? hataMesaji;
 
-  /// Kullanıcı Numeroloji Raporu'nu (tek seferlik ürün) satın almış mı?
+  /// Kullanıcının sahip olduğu tek seferlik ürünlerin kimlikleri
+  /// (Numeroloji Raporu, yıl raporları).
   ///
-  /// Premium yetkisi DEĞİLDİR; yalnızca raporun kilidini açar.
-  final bool raporSahibi;
+  /// Premium yetkisi DEĞİLDİR; yalnızca ilgili raporun kilidini açar.
+  final Set<String> sahipOlunanlar;
 
-  /// Mağazadan gelen rapor ürünü (yüklenmediyse ya da yoksa null).
-  final TekSeferlikUrun? raporUrunu;
+  /// Mağazadan fiyatıyla yüklenen tek seferlik ürünler (kimlik → ürün).
+  final Map<String, TekSeferlikUrun> tekSeferlikUrunler;
+
+  /// Kullanıcı [urunId] tek seferlik ürününe sahip mi?
+  bool sahipMi(String urunId) => sahipOlunanlar.contains(urunId);
+
+  /// Kullanıcı Numeroloji Raporu'nu satın almış mı?
+  bool get raporSahibi => sahipMi(PremiumConfig.raporUrunId);
+
+  /// Mağazadan gelen Numeroloji Raporu ürünü (yoksa null).
+  TekSeferlikUrun? get raporUrunu =>
+      tekSeferlikUrunler[PremiumConfig.raporUrunId];
 
   /// Seçili alanları değiştirilmiş kopya. [hataMesaji] her çağrıda
   /// sıfırlanır (verilmediyse null).
@@ -68,8 +79,8 @@ class PremiumDurumu {
     bool? planlarYukleniyor,
     bool? magazaKullanilabilir,
     String? hataMesaji,
-    bool? raporSahibi,
-    TekSeferlikUrun? raporUrunu,
+    Set<String>? sahipOlunanlar,
+    Map<String, TekSeferlikUrun>? tekSeferlikUrunler,
   }) => PremiumDurumu(
     aktif: aktif ?? this.aktif,
     islemde: islemde ?? this.islemde,
@@ -77,8 +88,8 @@ class PremiumDurumu {
     planlarYukleniyor: planlarYukleniyor ?? this.planlarYukleniyor,
     magazaKullanilabilir: magazaKullanilabilir ?? this.magazaKullanilabilir,
     hataMesaji: hataMesaji,
-    raporSahibi: raporSahibi ?? this.raporSahibi,
-    raporUrunu: raporUrunu ?? this.raporUrunu,
+    sahipOlunanlar: sahipOlunanlar ?? this.sahipOlunanlar,
+    tekSeferlikUrunler: tekSeferlikUrunler ?? this.tekSeferlikUrunler,
   );
 }
 
@@ -104,7 +115,7 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
     final UygulamaDurumu durum = _depo.durum;
     return PremiumDurumu(
       aktif: _onbellektenAktifMi(durum),
-      raporSahibi: durum.raporSahibi,
+      sahipOlunanlar: durum.sahipOlunanUrunler,
     );
   }
 
@@ -135,31 +146,37 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
     }
     await geriYukle(sessiz: true);
     await planlariYukle();
-    await raporUrunuYukle();
+    await tekSeferlikUrunleriYukle();
   }
 
-  /// Numeroloji Raporu ürününü (fiyatıyla) mağazadan yükler.
-  Future<void> raporUrunuYukle() async {
-    try {
-      final TekSeferlikUrun? urun = await ref
-          .read(magazaServisiProvider)
-          .tekSeferlikUrunGetir(PremiumConfig.raporUrunId);
-      if (urun != null) {
-        state = state.copyWith(raporUrunu: urun);
+  /// Satıştaki tek seferlik ürünleri (fiyatlarıyla) mağazadan yükler;
+  /// bulunamayanlar atlanır.
+  Future<void> tekSeferlikUrunleriYukle() async {
+    final MagazaServisi magaza = ref.read(magazaServisiProvider);
+    final Map<String, TekSeferlikUrun> urunler = <String, TekSeferlikUrun>{
+      ...state.tekSeferlikUrunler,
+    };
+    for (final String urunId in PremiumConfig.satistakiTekSeferlikler) {
+      try {
+        final TekSeferlikUrun? urun = await magaza.tekSeferlikUrunGetir(urunId);
+        if (urun != null) {
+          urunler[urunId] = urun;
+        }
+      } on Exception catch (hata) {
+        debugPrint('$urunId yüklenemedi: $hata');
       }
-    } on Exception catch (hata) {
-      debugPrint('Rapor ürünü yüklenemedi: $hata');
     }
+    state = state.copyWith(tekSeferlikUrunler: urunler);
   }
 
-  /// Numeroloji Raporu için tek seferlik satın alma akışını başlatır.
+  /// [urunId] tek seferlik ürünü için satın alma akışını başlatır.
   ///
   /// Ürün henüz yüklenmediyse önce yüklemeyi dener.
-  Future<void> raporuSatinAl() async {
-    if (state.raporUrunu == null) {
-      await raporUrunuYukle();
+  Future<void> tekSeferlikSatinAl(String urunId) async {
+    if (!state.tekSeferlikUrunler.containsKey(urunId)) {
+      await tekSeferlikUrunleriYukle();
     }
-    final TekSeferlikUrun? urun = state.raporUrunu;
+    final TekSeferlikUrun? urun = state.tekSeferlikUrunler[urunId];
     if (urun == null) {
       state = state.copyWith(hataMesaji: PremiumHatalari.raporUrunuYok);
       return;
@@ -231,7 +248,7 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
     // okunamaz.
     final UygulamaDurumuRepository depo = _depo;
     bool aktifBulundu = false;
-    bool raporBulundu = false;
+    final Set<String> bulunanTekSeferlikler = <String>{};
     String? aktifUrun;
     String? hata;
 
@@ -243,8 +260,8 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
           if (abonelik) {
             aktifBulundu = true;
             aktifUrun = g.urunId;
-          } else if (g.urunId == PremiumConfig.raporUrunId) {
-            raporBulundu = true;
+          } else if (PremiumConfig.tekSeferlikMi(g.urunId)) {
+            bulunanTekSeferlikler.add(g.urunId);
           }
         case SatinAlmaDurumu.hata:
           hata = PremiumHatalari.satinAlmaHatasi;
@@ -265,24 +282,29 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
 
     // Abonelik: satın alındı/geri yüklendiyse açık; geri yükleme listesinde
     // yoksa süresi dolmuş ya da iptal edilmiş (debug simülasyonu korunur).
-    // Rapor: tek seferlik ürün; geri yükleme listesinde yoksa iade edilmiş.
+    // Tek seferlik ürünler: geri yükleme listesi sahipliklerin tamamıdır
+    // (listede olmayan iade edilmiştir); satın alma olayı ise listeye ekler.
     // Diğer olaylarda (ör. yalnızca hata) iki durum da değişmez.
     final bool? yeniAktif = aktifBulundu
         ? true
         : (geriYuklemeSonucu
               ? kDebugMode && depo.durum.gelistiriciPremium
               : null);
-    final bool? yeniRapor = raporBulundu
-        ? true
-        : (geriYuklemeSonucu ? false : null);
+    final Set<String>? yeniSahiplikler = geriYuklemeSonucu
+        ? bulunanTekSeferlikler
+        : (bulunanTekSeferlikler.isEmpty
+              ? null
+              : <String>{...state.sahipOlunanlar, ...bulunanTekSeferlikler});
 
     // Durum önce güncellenir, önbellek sonra yazılır: disk yazması
     // sürerken gelen yeni bir olay, eski bir sonucun üzerine yazılmasın.
     state = state.copyWith(
       aktif: yeniAktif,
-      raporSahibi: yeniRapor,
+      sahipOlunanlar: yeniSahiplikler,
       islemde: false,
-      hataMesaji: aktifBulundu || raporBulundu ? null : hata,
+      hataMesaji: aktifBulundu || bulunanTekSeferlikler.isNotEmpty
+          ? null
+          : hata,
     );
     if (aktifBulundu) {
       await depo.premiumuKaydet(
@@ -293,8 +315,11 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
     } else if (geriYuklemeSonucu) {
       await depo.premiumuKaydet(aktif: false, dogrulama: simdi);
     }
-    if (yeniRapor != null) {
-      await depo.raporuKaydet(sahip: yeniRapor);
+    if (yeniSahiplikler != null) {
+      // Hesaplanan küme değil, yazma anındaki GÜNCEL durum yazılır: önceki
+      // bir olayın (ör. açılış geri yüklemesi) disk yazması sürerken gelen
+      // satın alma, geç biten eski yazmayla önbellekten silinmesin.
+      await depo.tekSeferlikleriKaydet(state.sahipOlunanlar);
     }
   }
 
@@ -331,7 +356,7 @@ abstract final class PremiumHatalari {
   static const String odemeBekleniyor =
       'Ödemen onay bekliyor. Onaylandığında Premium otomatik açılacak.';
 
-  /// Rapor ürünü mağazada bulunamadı.
+  /// Tek seferlik ürün mağazada bulunamadı.
   static const String raporUrunuYok =
       'Rapor şu an satın alınamıyor. Uygulamanın Google Play üzerinden '
       'yüklendiğinden ve internet bağlantının açık olduğundan emin ol.';

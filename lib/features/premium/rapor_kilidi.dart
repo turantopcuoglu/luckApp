@@ -8,52 +8,105 @@ import '../../core/theme/app_dimens.dart';
 import '../../shared/widgets/app_route.dart';
 import 'magaza_servisi.dart';
 import 'paywall_screen.dart';
+import 'premium_config.dart';
 import 'premium_kontrolcu.dart';
 import 'premium_providers.dart';
 import 'premium_strings.dart';
 
-/// Numeroloji Raporu'nun kilitli bölümüne dokunulunca açılan seçenekler:
-/// raporu tek seferlik ödemeyle aç ya da Premium'a geç.
-///
-/// Ödüllü reklam seçeneği bilinçli olarak yoktur (bkz.
-/// [raporAcikProvider]). Rapor açıldığında sheet kendiliğinden kapanır.
+/// Numeroloji Raporu'nun kilitli bölümüne dokunulunca açılan seçenekler.
 ///
 /// Döndürdüğü değer: rapor bu akışla açıldıysa true.
-Future<bool> raporKilidiniGoster(BuildContext context) async {
+Future<bool> raporKilidiniGoster(BuildContext context) => _kilidiGoster(
+  context,
+  const _KilitIcerigi(
+    urunId: PremiumConfig.raporUrunId,
+    baslik: PremiumStrings.raporKilitBaslik,
+    aciklama: PremiumStrings.raporKilitAciklama,
+    premiumSecenegi: PremiumStrings.raporPremiumSecenegi,
+  ),
+);
+
+/// [yil] Kişisel Yıl Raporu'nun kilitli bölümüne dokunulunca açılan
+/// seçenekler.
+///
+/// Döndürdüğü değer: rapor bu akışla açıldıysa true.
+Future<bool> yilRaporuKilidiniGoster(BuildContext context, int yil) =>
+    _kilidiGoster(
+      context,
+      _KilitIcerigi(
+        urunId: PremiumConfig.yilRaporuUrunId(yil),
+        baslik: PremiumStrings.yilRaporuKilitBaslik(yil),
+        aciklama: PremiumStrings.yilRaporuKilitAciklama,
+        premiumSecenegi: PremiumStrings.yilRaporuPremiumSecenegi,
+      ),
+    );
+
+Future<bool> _kilidiGoster(BuildContext context, _KilitIcerigi icerik) async {
   final bool? sonuc = await showModalBottomSheet<bool>(
     context: context,
     backgroundColor: AppColors.surface,
     showDragHandle: true,
     isScrollControlled: true,
-    builder: (BuildContext _) => const _RaporKilidiSheet(),
+    builder: (BuildContext _) => _TekSeferlikKilitSheet(icerik: icerik),
   );
   return sonuc ?? false;
 }
 
-class _RaporKilidiSheet extends ConsumerStatefulWidget {
-  const _RaporKilidiSheet();
+/// Kilit sheet'inin ürüne özgü metinleri.
+class _KilitIcerigi {
+  const _KilitIcerigi({
+    required this.urunId,
+    required this.baslik,
+    required this.aciklama,
+    required this.premiumSecenegi,
+  });
 
-  @override
-  ConsumerState<_RaporKilidiSheet> createState() => _RaporKilidiSheetState();
+  final String urunId;
+  final String baslik;
+  final String aciklama;
+  final String premiumSecenegi;
 }
 
-class _RaporKilidiSheetState extends ConsumerState<_RaporKilidiSheet> {
+/// Tek seferlik bir raporun kilidi: ürünü fiyatıyla satın al ya da
+/// Premium'a geç.
+///
+/// Ödüllü reklam seçeneği bilinçli olarak yoktur (bkz.
+/// [raporAcikProvider]). Ürün açıldığında sheet kendiliğinden kapanır.
+class _TekSeferlikKilitSheet extends ConsumerStatefulWidget {
+  const _TekSeferlikKilitSheet({required this.icerik});
+
+  final _KilitIcerigi icerik;
+
+  @override
+  ConsumerState<_TekSeferlikKilitSheet> createState() =>
+      _TekSeferlikKilitSheetState();
+}
+
+class _TekSeferlikKilitSheetState
+    extends ConsumerState<_TekSeferlikKilitSheet> {
   @override
   void initState() {
     super.initState();
     // Ürün açılışta yüklenemediyse (ör. ağ yoktu) burada yeniden denenir.
-    if (ref.read(premiumKontrolcuProvider).raporUrunu == null) {
-      unawaited(ref.read(premiumKontrolcuProvider.notifier).raporUrunuYukle());
+    final PremiumDurumu durum = ref.read(premiumKontrolcuProvider);
+    if (!durum.tekSeferlikUrunler.containsKey(widget.icerik.urunId)) {
+      unawaited(
+        ref.read(premiumKontrolcuProvider.notifier).tekSeferlikUrunleriYukle(),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final TextTheme yazi = Theme.of(context).textTheme;
+    final _KilitIcerigi icerik = widget.icerik;
     final PremiumDurumu durum = ref.watch(premiumKontrolcuProvider);
-    final TekSeferlikUrun? urun = durum.raporUrunu;
+    final TekSeferlikUrun? urun = durum.tekSeferlikUrunler[icerik.urunId];
 
-    ref.listen<bool>(raporAcikProvider, (bool? eski, bool yeni) {
+    ref.listen<bool>(tekSeferlikAcikProvider(icerik.urunId), (
+      bool? eski,
+      bool yeni,
+    ) {
       if (yeni && !(eski ?? false)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text(PremiumStrings.raporAcildi)),
@@ -77,13 +130,13 @@ class _RaporKilidiSheetState extends ConsumerState<_RaporKilidiSheet> {
             const Icon(Icons.auto_stories_rounded, color: AppColors.gold),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              PremiumStrings.raporKilitBaslik,
+              icerik.baslik,
               style: yazi.titleLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              PremiumStrings.raporKilitAciklama,
+              icerik.aciklama,
               style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
@@ -102,7 +155,7 @@ class _RaporKilidiSheetState extends ConsumerState<_RaporKilidiSheet> {
                   : () => unawaited(
                       ref
                           .read(premiumKontrolcuProvider.notifier)
-                          .raporuSatinAl(),
+                          .tekSeferlikSatinAl(icerik.urunId),
                     ),
               child: durum.islemde
                   ? const SizedBox.square(
@@ -130,7 +183,7 @@ class _RaporKilidiSheetState extends ConsumerState<_RaporKilidiSheet> {
                 side: const BorderSide(color: AppColors.gold),
                 foregroundColor: AppColors.gold,
               ),
-              child: const Text(PremiumStrings.raporPremiumSecenegi),
+              child: Text(icerik.premiumSecenegi),
             ),
             const SizedBox(height: AppSpacing.md),
             Text(

@@ -13,6 +13,7 @@ abstract final class PremiumStrings {
     'Tam Kader Profili: gölge yanın, aşk, iş, yaşam dersin, iç sesin',
     'Kişisel yıl okuması ve yılın teması',
     'Numeroloji Raporunun tamamı: hayatının dört dönemi ve karmik sayıların',
+    'Her yıl Kişisel Yıl Raporu: ay ay rehberin',
     'Sınırsız uyum hesabı',
     'Reklamsız deneyim',
   ];
@@ -117,6 +118,19 @@ abstract final class PremiumStrings {
       'Tek seferlik ödemedir, abonelik değildir. Rapor bu Google hesabında '
       'kalıcı olarak açık kalır; cihaz değiştirdiğinde "Satın alımları geri '
       'yükle" ile yeniden açabilirsin.';
+
+  /// Yıl raporu kilit sheet başlığı.
+  static String yilRaporuKilitBaslik(int yil) => '$yil raporunun tamamını aç';
+
+  /// Yıl raporu kilit sheet açıklaması.
+  static const String yilRaporuKilitAciklama =
+      'Yılın fırsatları ve tuzakları, aşk ile iş ve para rehberin, akışta '
+      'olduğun ve zorlanabileceğin aylar, ay ay okuma ve yılın sorusu — '
+      'tek seferlik bir ödemeyle kalıcı olarak açılır.';
+
+  /// Yıl raporu sheet: Premium seçeneği.
+  static const String yilRaporuPremiumSecenegi =
+      'Premium\'a geç — her yılın raporu dahil';
 
   /// Rapor açıldı mesajı.
   static const String raporAcildi = 'Raporun açıldı ✨';
