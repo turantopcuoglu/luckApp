@@ -38,6 +38,8 @@ export 'modifiers.dart';
 export 'numeroloji.dart';
 export 'sansli_saat.dart';
 export 'score_transform.dart';
+export 'turkiye_illeri.dart';
+export 'turkiye_saat_dilimi.dart';
 export 'user_seed.dart';
 export 'uyum.dart';
 
