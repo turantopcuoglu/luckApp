@@ -269,6 +269,14 @@ abstract final class ContentConfig {
   /// sayısı.
   static const int raporKisaEnAzKelime = 8;
 
+  /// Kişisel Yıl Raporu'nda ücretsiz gösterilen ay sayısı (Ocak'tan
+  /// itibaren).
+  static const int yillikUcretsizAy = 1;
+
+  /// Kişisel ay metinlerinin varyant sayısı: 12 ayda aynı kişisel ay en
+  /// fazla iki kez gelir.
+  static const int yillikAyVaryanti = 2;
+
   /// Profil bölümü başına en az kelime sayısı (yüzeysel metin olmasın).
   static const int profilEnAzKelime = 18;
 
