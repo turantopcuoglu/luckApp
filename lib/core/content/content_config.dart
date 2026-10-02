@@ -261,6 +261,14 @@ abstract final class ContentConfig {
     'iyi gelecek',
   ];
 
+  /// Rapordaki ayrıntılı metinlerin (zirve, zorluk, karmik borç) en az
+  /// kelime sayısı.
+  static const int raporUzunEnAzKelime = 35;
+
+  /// Rapordaki kısa metinlerin (isim analizleri, özetler) en az kelime
+  /// sayısı.
+  static const int raporKisaEnAzKelime = 8;
+
   /// Profil bölümü başına en az kelime sayısı (yüzeysel metin olmasın).
   static const int profilEnAzKelime = 18;
 
