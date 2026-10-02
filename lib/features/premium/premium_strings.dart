@@ -12,6 +12,7 @@ abstract final class PremiumStrings {
     'Aşk ve Para kategorileri her gün açık',
     'Tam Kader Profili: gölge yanın, aşk, iş, yaşam dersin, iç sesin',
     'Kişisel yıl okuması ve yılın teması',
+    'Numeroloji Raporunun tamamı: hayatının dört dönemi ve karmik sayıların',
     'Sınırsız uyum hesabı',
     'Reklamsız deneyim',
   ];
@@ -81,8 +82,7 @@ abstract final class PremiumStrings {
       'Şu an gösterilecek reklam bulunamadı. Biraz sonra tekrar deneyebilirsin.';
 
   /// Kilit sheet: reklam yarıda kaldı.
-  static const String odulYok =
-      'Reklam tamamlanmadığı için içerik açılamadı.';
+  static const String odulYok = 'Reklam tamamlanmadığı için içerik açılamadı.';
 
   /// Kilit sheet: açıldı.
   static const String acildi = 'Bugün için açıldı ✨';
@@ -91,6 +91,35 @@ abstract final class PremiumStrings {
   static const String kisiSiniri =
       'Ücretsiz sürümde bir kişiyle uyum hesaplayabilirsin. Sınırsız kişi '
       'için Premium\'a geçebilirsin.';
+
+  // ---- Numeroloji Raporu (tek seferlik ürün) ----
+
+  /// Rapor kilit sheet başlığı.
+  static const String raporKilitBaslik = 'Raporunun tamamını aç';
+
+  /// Rapor kilit sheet açıklaması.
+  static const String raporKilitAciklama =
+      'Bu dönemin dersi, sıradaki dönemin, karmik borçların, isminde eksik '
+      'sayıların, gizli tutkun, olgunluk sayın ve isminin harfleri — '
+      'raporunun tamamı tek seferlik bir ödemeyle kalıcı olarak açılır.';
+
+  /// Rapor satın alma butonu.
+  static String raporuSatinAl(String fiyat) => 'Raporu aç · $fiyat';
+
+  /// Rapor fiyatı yüklenirken buton metni.
+  static const String raporFiyatYukleniyor = 'Fiyat yükleniyor…';
+
+  /// Rapor sheet: Premium seçeneği.
+  static const String raporPremiumSecenegi = 'Premium\'a geç — rapor dahil';
+
+  /// Tek seferlik ödeme bilgisi.
+  static const String raporOdemeBilgisi =
+      'Tek seferlik ödemedir, abonelik değildir. Rapor bu Google hesabında '
+      'kalıcı olarak açık kalır; cihaz değiştirdiğinde "Satın alımları geri '
+      'yükle" ile yeniden açabilirsin.';
+
+  /// Rapor açıldı mesajı.
+  static const String raporAcildi = 'Raporun açıldı ✨';
 
   /// Abonelik yönetimi bilgisi.
   static const String yonetimBilgisi =

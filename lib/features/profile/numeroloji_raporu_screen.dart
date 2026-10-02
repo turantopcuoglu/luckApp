@@ -9,8 +9,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../legal/legal_texts.dart';
-import '../premium/kilit_secenekleri.dart';
 import '../premium/premium_providers.dart';
+import '../premium/rapor_kilidi.dart';
 import 'kilitli_bolum_karti.dart';
 import 'profile_config.dart';
 import 'profile_providers.dart';
@@ -21,7 +21,8 @@ import 'tam_ad_duzenle.dart';
 /// analizleri.
 ///
 /// Zaman çizelgesi ve şu anki dönemin zirvesi ücretsizdir; diğer bölümler
-/// profil ile aynı kilidi paylaşır (Premium ya da günlük ödüllü reklam).
+/// Premium ya da tek seferlik rapor satın alımıyla açılır (reklamla
+/// açılmaz, bkz. `raporAcikProvider`).
 class NumerolojiRaporuScreen extends ConsumerWidget {
   /// Varsayılan kurucu.
   const NumerolojiRaporuScreen({super.key});
@@ -31,7 +32,7 @@ class NumerolojiRaporuScreen extends ConsumerWidget {
     final TextTheme yazi = Theme.of(context).textTheme;
     final UserProfile profil = ref.watch(aktifProfilProvider);
     final RaporOkumasi okuma = ref.watch(raporOkumasiProvider);
-    final bool kilitli = ref.watch(profilKilitliProvider);
+    final bool kilitli = ref.watch(raporKilitliProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text(ProfileStrings.raporBaslik)),
@@ -66,14 +67,7 @@ class NumerolojiRaporuScreen extends ConsumerWidget {
                 baslik: bolum.baslik,
                 metin: bolum.metin,
                 kilitli: bolum.premium && kilitli,
-                onKilidiAc: () => unawaited(
-                  kilitSecenekleriniGoster(
-                    context,
-                    ref,
-                    kilitAnahtari: KilitAnahtarlari.profil,
-                    aciklama: ProfileStrings.raporKilitAciklamasi,
-                  ),
-                ),
+                onKilidiAc: () => unawaited(raporKilidiniGoster(context)),
               ),
               const SizedBox(height: AppSpacing.md),
             ],

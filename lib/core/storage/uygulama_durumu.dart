@@ -13,17 +13,19 @@ class UygulamaDurumu {
     this.premiumUrunId,
     this.sonGecisReklami,
     this.gelistiriciPremium = false,
+    this.raporSahibi = false,
   });
 
   /// Hive map'inden durum kurar.
   factory UygulamaDurumu.fromMap(Map<dynamic, dynamic> map) => UygulamaDurumu(
-        ilkAcilis: _tarih(map[_ilkAcilis]),
-        premiumAktif: map[_premiumAktif] as bool? ?? false,
-        premiumDogrulama: _tarih(map[_premiumDogrulama]),
-        premiumUrunId: map[_premiumUrunId] as String?,
-        sonGecisReklami: _tarih(map[_sonGecisReklami]),
-        gelistiriciPremium: map[_gelistiriciPremium] as bool? ?? false,
-      );
+    ilkAcilis: _tarih(map[_ilkAcilis]),
+    premiumAktif: map[_premiumAktif] as bool? ?? false,
+    premiumDogrulama: _tarih(map[_premiumDogrulama]),
+    premiumUrunId: map[_premiumUrunId] as String?,
+    sonGecisReklami: _tarih(map[_sonGecisReklami]),
+    gelistiriciPremium: map[_gelistiriciPremium] as bool? ?? false,
+    raporSahibi: map[_raporSahibi] as bool? ?? false,
+  );
 
   static const String _ilkAcilis = 'ilkAcilis';
   static const String _premiumAktif = 'premiumAktif';
@@ -31,6 +33,7 @@ class UygulamaDurumu {
   static const String _premiumUrunId = 'premiumUrunId';
   static const String _sonGecisReklami = 'sonGecisReklami';
   static const String _gelistiriciPremium = 'gelistiriciPremium';
+  static const String _raporSahibi = 'raporSahibi';
 
   static DateTime? _tarih(Object? ham) =>
       ham is String ? DateTime.tryParse(ham) : null;
@@ -53,15 +56,21 @@ class UygulamaDurumu {
   /// Yalnızca debug derlemede: premium simülasyonu açık mı?
   final bool gelistiriciPremium;
 
+  /// Mağazanın son bildirdiği Numeroloji Raporu (tek seferlik ürün)
+  /// sahipliği. Tek seferlik ürün süresiz olduğundan çevrimdışı tolerans
+  /// uygulanmaz; yalnızca geri yükleme sonucu (ör. iade) kapatır.
+  final bool raporSahibi;
+
   /// Hive'a yazılacak map.
   Map<String, dynamic> toMap() => <String, dynamic>{
-        _ilkAcilis: ilkAcilis?.toIso8601String(),
-        _premiumAktif: premiumAktif,
-        _premiumDogrulama: premiumDogrulama?.toIso8601String(),
-        _premiumUrunId: premiumUrunId,
-        _sonGecisReklami: sonGecisReklami?.toIso8601String(),
-        _gelistiriciPremium: gelistiriciPremium,
-      };
+    _ilkAcilis: ilkAcilis?.toIso8601String(),
+    _premiumAktif: premiumAktif,
+    _premiumDogrulama: premiumDogrulama?.toIso8601String(),
+    _premiumUrunId: premiumUrunId,
+    _sonGecisReklami: sonGecisReklami?.toIso8601String(),
+    _gelistiriciPremium: gelistiriciPremium,
+    _raporSahibi: raporSahibi,
+  };
 
   /// Seçili alanları değiştirilmiş kopya.
   UygulamaDurumu copyWith({
@@ -71,15 +80,16 @@ class UygulamaDurumu {
     String? premiumUrunId,
     DateTime? sonGecisReklami,
     bool? gelistiriciPremium,
-  }) =>
-      UygulamaDurumu(
-        ilkAcilis: ilkAcilis ?? this.ilkAcilis,
-        premiumAktif: premiumAktif ?? this.premiumAktif,
-        premiumDogrulama: premiumDogrulama ?? this.premiumDogrulama,
-        premiumUrunId: premiumUrunId ?? this.premiumUrunId,
-        sonGecisReklami: sonGecisReklami ?? this.sonGecisReklami,
-        gelistiriciPremium: gelistiriciPremium ?? this.gelistiriciPremium,
-      );
+    bool? raporSahibi,
+  }) => UygulamaDurumu(
+    ilkAcilis: ilkAcilis ?? this.ilkAcilis,
+    premiumAktif: premiumAktif ?? this.premiumAktif,
+    premiumDogrulama: premiumDogrulama ?? this.premiumDogrulama,
+    premiumUrunId: premiumUrunId ?? this.premiumUrunId,
+    sonGecisReklami: sonGecisReklami ?? this.sonGecisReklami,
+    gelistiriciPremium: gelistiriciPremium ?? this.gelistiriciPremium,
+    raporSahibi: raporSahibi ?? this.raporSahibi,
+  );
 }
 
 /// app_state kutusu üzerinde okuma/yazma.
@@ -124,9 +134,14 @@ class UygulamaDurumuRepository {
         premiumUrunId: aktif ? urunId : null,
         sonGecisReklami: mevcut.sonGecisReklami,
         gelistiriciPremium: mevcut.gelistiriciPremium,
+        raporSahibi: mevcut.raporSahibi,
       ),
     );
   }
+
+  /// Mağazanın bildirdiği Numeroloji Raporu sahipliğini önbelleğe yazar.
+  Future<void> raporuKaydet({required bool sahip}) =>
+      kaydet(durum.copyWith(raporSahibi: sahip));
 
   /// Geçiş reklamının gösterildiği anı yazar.
   Future<void> gecisReklamiGosterildi(DateTime an) =>

@@ -7,7 +7,10 @@
 ///    İKİ abonelik oluştur; her birine bir "temel plan" ekle (otomatik
 ///    yenilenen, aylık / yıllık) ve etkinleştir. İstersen yıllık plana
 ///    ücretsiz deneme teklifi ekle.
-/// 3. Ayarlar > Lisans testi bölümüne test Google hesabını ekle; bu hesapla
+/// 3. Para kazanma > Ürünler > Uygulama içi ürünler bölümünde
+///    [raporUrunId] kimliğiyle TEK SEFERLİK bir ürün oluştur, fiyatını
+///    belirle ve etkinleştir (Numeroloji Raporu kalıcı kilidi).
+/// 4. Ayarlar > Lisans testi bölümüne test Google hesabını ekle; bu hesapla
 ///    yapılan satın alımlar ücretlendirilmez ve yenileme süreleri kısalır.
 abstract final class PremiumConfig {
   /// Aylık abonelik ürün kimliği.
@@ -15,6 +18,12 @@ abstract final class PremiumConfig {
 
   /// Yıllık abonelik ürün kimliği.
   static const String yillikUrunId = 'kader_premium_yillik';
+
+  /// Numeroloji Raporu'nu kalıcı olarak açan tek seferlik ürün kimliği.
+  ///
+  /// Abonelik değildir: [urunKimlikleri] içinde yer almaz ve Premium
+  /// yetkisi vermez; yalnızca raporun kilidini açar.
+  static const String raporUrunId = 'kader_rapor_tam';
 
   /// Uygulamanın tanıdığı tüm abonelik kimlikleri (gösterim sırası).
   static const List<String> urunKimlikleri = <String>[

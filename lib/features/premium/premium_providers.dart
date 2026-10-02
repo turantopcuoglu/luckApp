@@ -10,8 +10,9 @@ import 'premium_kontrolcu.dart';
 ///
 /// Kilit kontrolü yapan widget'lar yalnızca bunu (veya aşağıdaki türev
 /// provider'ları) dinler; mağaza ayrıntılarını bilmez.
-final Provider<bool> entitlementProvider =
-    Provider<bool>((Ref ref) => ref.watch(premiumKontrolcuProvider).aktif);
+final Provider<bool> entitlementProvider = Provider<bool>(
+  (Ref ref) => ref.watch(premiumKontrolcuProvider).aktif,
+);
 
 /// Premium olmadan kilitli görünen kategoriler.
 const Set<LuckCategory> kilitliKategoriler = <LuckCategory>{
@@ -31,20 +32,22 @@ abstract final class KilitAnahtarlari {
 /// [anahtar] içeriği bugün reklamla açılmış mı?
 final ProviderFamily<bool, String> reklamKilidiAcikProvider =
     Provider.family<bool, String>(
-  (Ref ref, String anahtar) => ref
-      .watch(luckHistoryRepositoryProvider)
-      .reklamKilidiAcikMi(ref.watch(bugunProvider), anahtar),
-);
+      (Ref ref, String anahtar) => ref
+          .watch(luckHistoryRepositoryProvider)
+          .reklamKilidiAcikMi(ref.watch(bugunProvider), anahtar),
+    );
 
 /// [kategori] şu an kilitli mi? (kilitli listede + premium değil +
 /// bugün reklamla açılmamış).
 final ProviderFamily<bool, LuckCategory> kategoriKilitliProvider =
     Provider.family<bool, LuckCategory>(
-  (Ref ref, LuckCategory kategori) =>
-      kilitliKategoriler.contains(kategori) &&
-      !ref.watch(entitlementProvider) &&
-      !ref.watch(reklamKilidiAcikProvider(KilitAnahtarlari.kategori(kategori))),
-);
+      (Ref ref, LuckCategory kategori) =>
+          kilitliKategoriler.contains(kategori) &&
+          !ref.watch(entitlementProvider) &&
+          !ref.watch(
+            reklamKilidiAcikProvider(KilitAnahtarlari.kategori(kategori)),
+          ),
+    );
 
 /// Profilin premium bölümleri şu an kilitli mi?
 final Provider<bool> profilKilitliProvider = Provider<bool>(
@@ -53,9 +56,28 @@ final Provider<bool> profilKilitliProvider = Provider<bool>(
       !ref.watch(reklamKilidiAcikProvider(KilitAnahtarlari.profil)),
 );
 
+/// Numeroloji Raporu'nun tamamı açık mı? (Premium ya da tek seferlik
+/// rapor satın alımı).
+///
+/// Ödüllü reklamla AÇILMAZ: rapor ayrı satılan bir üründür; günlük reklam
+/// kilidi onu değersizleştirirdi.
+final Provider<bool> raporAcikProvider = Provider<bool>(
+  (Ref ref) =>
+      ref.watch(entitlementProvider) ||
+      ref.watch(
+        premiumKontrolcuProvider.select((PremiumDurumu d) => d.raporSahibi),
+      ),
+);
+
+/// Numeroloji Raporu'nun premium bölümleri şu an kilitli mi?
+final Provider<bool> raporKilitliProvider = Provider<bool>(
+  (Ref ref) => !ref.watch(raporAcikProvider),
+);
+
 /// Banner reklam gösterilebilir mi? (premium değil + SDK hazır)
 final Provider<bool> bannerGosterilebilirProvider = Provider<bool>(
-  (Ref ref) => !ref.watch(entitlementProvider) && ref.watch(reklamHazirProvider),
+  (Ref ref) =>
+      !ref.watch(entitlementProvider) && ref.watch(reklamHazirProvider),
 );
 
 /// Bugün reklamla bir içerik açıldığında ilgili provider'ları tazeler.

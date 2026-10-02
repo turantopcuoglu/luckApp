@@ -112,10 +112,4 @@ abstract final class ProfileStrings {
       'Karmik derslerin, gizli tutkun, olgunluk sayın ve isminin harfleri '
       'doğumdaki tam adından hesaplanır. Tam adını eklersen raporuna beş '
       'yeni bölüm açılır.';
-
-  /// Rapor kilit açıklaması.
-  static const String raporKilitAciklamasi =
-      'Raporunun tamamı — bu dönemin dersi, sıradaki dönemin, karmik '
-      'borçların ve isminin gizli anlamları — Premium üyelere açık. İstersen '
-      'kısa bir reklam izleyerek bugün için de açabilirsin.';
 }

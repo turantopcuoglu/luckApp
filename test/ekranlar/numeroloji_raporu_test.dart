@@ -8,6 +8,7 @@ import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/features/legal/legal_texts.dart';
+import 'package:kader/features/premium/premium_strings.dart';
 import 'package:kader/features/profile/kader_profili_screen.dart';
 import 'package:kader/features/profile/numeroloji_raporu_screen.dart';
 import 'package:kader/features/profile/profile_providers.dart';
@@ -92,6 +93,24 @@ void main() {
       );
       expect(find.text(ProfileStrings.kilidiAc), findsWidgets);
       expect(find.byIcon(Icons.lock_rounded), findsWidgets);
+    });
+
+    testWidgets('kilit rapor satın alma penceresini açar; reklam seçeneği yok',
+        (WidgetTester tester) async {
+      await tester.runAsync(hazirla);
+      await ac(tester, const NumerolojiRaporuScreen());
+
+      await tester.scrollUntilVisible(
+        find.text('Sıradaki dönem · 41-50 yaş'),
+        200,
+      );
+      await tester.tap(find.text(ProfileStrings.kilidiAc).first);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+
+      expect(find.text(PremiumStrings.raporKilitBaslik), findsOneWidget);
+      expect(find.text(PremiumStrings.raporPremiumSecenegi), findsOneWidget);
+      expect(find.text(PremiumStrings.reklamlaAc), findsNothing);
     });
 
     testWidgets('premium kullanıcıda kilit yok, tüm bölümler okunur', (

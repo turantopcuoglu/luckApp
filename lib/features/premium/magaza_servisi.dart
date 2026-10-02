@@ -39,6 +39,25 @@ class AbonelikPlani {
   final Object? ham;
 }
 
+/// Satın alınabilir tek seferlik (süresiz) bir ürün.
+class TekSeferlikUrun {
+  /// Tüm alanlarıyla ürün oluşturur.
+  const TekSeferlikUrun({
+    required this.urunId,
+    required this.fiyatMetni,
+    this.ham,
+  });
+
+  /// Mağaza ürün kimliği.
+  final String urunId;
+
+  /// Yerelleştirilmiş fiyat ("₺149,99").
+  final String fiyatMetni;
+
+  /// Mağazaya özgü ham ürün nesnesi (satın alma için).
+  final Object? ham;
+}
+
 /// Mağazadan gelen satın alma olayının durumu.
 enum SatinAlmaDurumu {
   /// Ödeme bekleniyor (ör. nakit ödeme yöntemi).
@@ -101,6 +120,13 @@ abstract class MagazaServisi {
   /// [plan] için satın alma akışını başlatır; akış başladıysa true.
   Future<bool> satinAl(AbonelikPlani plan);
 
+  /// [urunId] kimlikli tek seferlik ürünü getirir; bulunamazsa null.
+  Future<TekSeferlikUrun?> tekSeferlikUrunGetir(String urunId);
+
+  /// [urun] için tek seferlik satın alma akışını başlatır; akış başladıysa
+  /// true.
+  Future<bool> tekSeferlikSatinAl(TekSeferlikUrun urun);
+
   /// Önceki satın alımları geri yükler (sonuç [guncellemeler]'den gelir).
   Future<void> geriYukle();
 
@@ -121,11 +147,16 @@ class BosMagazaServisi implements MagazaServisi {
   Future<bool> kullanilabilirMi() async => false;
 
   @override
-  Future<List<AbonelikPlani>> planlariGetir() async =>
-      const <AbonelikPlani>[];
+  Future<List<AbonelikPlani>> planlariGetir() async => const <AbonelikPlani>[];
 
   @override
   Future<bool> satinAl(AbonelikPlani plan) async => false;
+
+  @override
+  Future<TekSeferlikUrun?> tekSeferlikUrunGetir(String urunId) async => null;
+
+  @override
+  Future<bool> tekSeferlikSatinAl(TekSeferlikUrun urun) async => false;
 
   @override
   Future<void> geriYukle() async {}
@@ -137,7 +168,8 @@ class BosMagazaServisi implements MagazaServisi {
 /// Google Play Faturalandırma (in_app_purchase) uygulaması.
 class PlayMagazaServisi implements MagazaServisi {
   /// [iap] verilmezse eklentinin tekil örneği kullanılır.
-  PlayMagazaServisi({InAppPurchase? iap}) : _iap = iap ?? InAppPurchase.instance;
+  PlayMagazaServisi({InAppPurchase? iap})
+    : _iap = iap ?? InAppPurchase.instance;
 
   final InAppPurchase _iap;
 
@@ -150,18 +182,18 @@ class PlayMagazaServisi implements MagazaServisi {
       );
 
   SatinAlmaGuncellemesi _cevir(PurchaseDetails p) => SatinAlmaGuncellemesi(
-        urunId: p.productID,
-        durum: switch (p.status) {
-          PurchaseStatus.pending => SatinAlmaDurumu.beklemede,
-          PurchaseStatus.purchased => SatinAlmaDurumu.satinAlindi,
-          PurchaseStatus.restored => SatinAlmaDurumu.geriYuklendi,
-          PurchaseStatus.canceled => SatinAlmaDurumu.iptal,
-          PurchaseStatus.error => SatinAlmaDurumu.hata,
-        },
-        tamamlanmaBekliyor: p.pendingCompletePurchase,
-        hataMesaji: p.error?.message,
-        ham: p,
-      );
+    urunId: p.productID,
+    durum: switch (p.status) {
+      PurchaseStatus.pending => SatinAlmaDurumu.beklemede,
+      PurchaseStatus.purchased => SatinAlmaDurumu.satinAlindi,
+      PurchaseStatus.restored => SatinAlmaDurumu.geriYuklendi,
+      PurchaseStatus.canceled => SatinAlmaDurumu.iptal,
+      PurchaseStatus.error => SatinAlmaDurumu.hata,
+    },
+    tamamlanmaBekliyor: p.pendingCompletePurchase,
+    hataMesaji: p.error?.message,
+    ham: p,
+  );
 
   @override
   Future<bool> kullanilabilirMi() async {
@@ -175,8 +207,9 @@ class PlayMagazaServisi implements MagazaServisi {
 
   @override
   Future<List<AbonelikPlani>> planlariGetir() async {
-    final ProductDetailsResponse cevap =
-        await _iap.queryProductDetails(PremiumConfig.urunKimlikleri.toSet());
+    final ProductDetailsResponse cevap = await _iap.queryProductDetails(
+      PremiumConfig.urunKimlikleri.toSet(),
+    );
     if (cevap.error != null) {
       debugPrint('Ürünler alınamadı: ${cevap.error!.message}');
     }
@@ -253,11 +286,47 @@ class PlayMagazaServisi implements MagazaServisi {
       return false;
     }
     final PurchaseParam param = ham is GooglePlayProductDetails
-        ? GooglePlayPurchaseParam(productDetails: ham, offerToken: ham.offerToken)
+        ? GooglePlayPurchaseParam(
+            productDetails: ham,
+            offerToken: ham.offerToken,
+          )
         : PurchaseParam(productDetails: ham);
     try {
       // Abonelikler Play'de "non-consumable" akışıyla satın alınır.
       return await _iap.buyNonConsumable(purchaseParam: param);
+    } on PlatformException catch (hata) {
+      debugPrint('Satın alma başlatılamadı: $hata');
+      return false;
+    }
+  }
+
+  @override
+  Future<TekSeferlikUrun?> tekSeferlikUrunGetir(String urunId) async {
+    final ProductDetailsResponse cevap = await _iap.queryProductDetails(
+      <String>{urunId},
+    );
+    if (cevap.error != null) {
+      debugPrint('Ürün alınamadı: ${cevap.error!.message}');
+    }
+    for (final ProductDetails d in cevap.productDetails) {
+      if (d.id == urunId) {
+        return TekSeferlikUrun(urunId: urunId, fiyatMetni: d.price, ham: d);
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<bool> tekSeferlikSatinAl(TekSeferlikUrun urun) async {
+    final Object? ham = urun.ham;
+    if (ham is! ProductDetails) {
+      return false;
+    }
+    try {
+      // Tek seferlik ve süresiz: tüketilmez, geri yüklemede yeniden gelir.
+      return await _iap.buyNonConsumable(
+        purchaseParam: PurchaseParam(productDetails: ham),
+      );
     } on PlatformException catch (hata) {
       debugPrint('Satın alma başlatılamadı: $hata');
       return false;

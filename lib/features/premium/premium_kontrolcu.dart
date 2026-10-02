@@ -10,8 +10,9 @@ import 'premium_config.dart';
 
 /// Mağaza servisi. Üretimde `main` içinde [PlayMagazaServisi] ile
 /// override edilir; override edilmezse satın alma yok.
-final Provider<MagazaServisi> magazaServisiProvider =
-    Provider<MagazaServisi>((Ref ref) => const BosMagazaServisi());
+final Provider<MagazaServisi> magazaServisiProvider = Provider<MagazaServisi>(
+  (Ref ref) => const BosMagazaServisi(),
+);
 
 /// Şimdiki zaman kaynağı (testlerde sabitlenir).
 final Provider<DateTime Function()> saatProvider =
@@ -28,6 +29,8 @@ class PremiumDurumu {
     this.planlarYukleniyor = false,
     this.magazaKullanilabilir = true,
     this.hataMesaji,
+    this.raporSahibi = false,
+    this.raporUrunu,
   });
 
   /// Kullanıcının premium hakkı var mı?
@@ -48,6 +51,14 @@ class PremiumDurumu {
   /// Kullanıcıya gösterilecek son hata (varsa).
   final String? hataMesaji;
 
+  /// Kullanıcı Numeroloji Raporu'nu (tek seferlik ürün) satın almış mı?
+  ///
+  /// Premium yetkisi DEĞİLDİR; yalnızca raporun kilidini açar.
+  final bool raporSahibi;
+
+  /// Mağazadan gelen rapor ürünü (yüklenmediyse ya da yoksa null).
+  final TekSeferlikUrun? raporUrunu;
+
   /// Seçili alanları değiştirilmiş kopya. [hataMesaji] her çağrıda
   /// sıfırlanır (verilmediyse null).
   PremiumDurumu copyWith({
@@ -57,15 +68,18 @@ class PremiumDurumu {
     bool? planlarYukleniyor,
     bool? magazaKullanilabilir,
     String? hataMesaji,
-  }) =>
-      PremiumDurumu(
-        aktif: aktif ?? this.aktif,
-        islemde: islemde ?? this.islemde,
-        planlar: planlar ?? this.planlar,
-        planlarYukleniyor: planlarYukleniyor ?? this.planlarYukleniyor,
-        magazaKullanilabilir: magazaKullanilabilir ?? this.magazaKullanilabilir,
-        hataMesaji: hataMesaji,
-      );
+    bool? raporSahibi,
+    TekSeferlikUrun? raporUrunu,
+  }) => PremiumDurumu(
+    aktif: aktif ?? this.aktif,
+    islemde: islemde ?? this.islemde,
+    planlar: planlar ?? this.planlar,
+    planlarYukleniyor: planlarYukleniyor ?? this.planlarYukleniyor,
+    magazaKullanilabilir: magazaKullanilabilir ?? this.magazaKullanilabilir,
+    hataMesaji: hataMesaji,
+    raporSahibi: raporSahibi ?? this.raporSahibi,
+    raporUrunu: raporUrunu ?? this.raporUrunu,
+  );
 }
 
 /// Premium abonelik durumunu yöneten tek kontrolcü.
@@ -87,7 +101,11 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
   @override
   PremiumDurumu build() {
     ref.onDispose(() => _abonelik?.cancel());
-    return PremiumDurumu(aktif: _onbellektenAktifMi(_depo.durum));
+    final UygulamaDurumu durum = _depo.durum;
+    return PremiumDurumu(
+      aktif: _onbellektenAktifMi(durum),
+      raporSahibi: durum.raporSahibi,
+    );
   }
 
   bool _onbellektenAktifMi(UygulamaDurumu durum) {
@@ -117,14 +135,54 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
     }
     await geriYukle(sessiz: true);
     await planlariYukle();
+    await raporUrunuYukle();
+  }
+
+  /// Numeroloji Raporu ürününü (fiyatıyla) mağazadan yükler.
+  Future<void> raporUrunuYukle() async {
+    try {
+      final TekSeferlikUrun? urun = await ref
+          .read(magazaServisiProvider)
+          .tekSeferlikUrunGetir(PremiumConfig.raporUrunId);
+      if (urun != null) {
+        state = state.copyWith(raporUrunu: urun);
+      }
+    } on Exception catch (hata) {
+      debugPrint('Rapor ürünü yüklenemedi: $hata');
+    }
+  }
+
+  /// Numeroloji Raporu için tek seferlik satın alma akışını başlatır.
+  ///
+  /// Ürün henüz yüklenmediyse önce yüklemeyi dener.
+  Future<void> raporuSatinAl() async {
+    if (state.raporUrunu == null) {
+      await raporUrunuYukle();
+    }
+    final TekSeferlikUrun? urun = state.raporUrunu;
+    if (urun == null) {
+      state = state.copyWith(hataMesaji: PremiumHatalari.raporUrunuYok);
+      return;
+    }
+    state = state.copyWith(islemde: true);
+    final bool basladi = await ref
+        .read(magazaServisiProvider)
+        .tekSeferlikSatinAl(urun);
+    if (!basladi) {
+      state = state.copyWith(
+        islemde: false,
+        hataMesaji: PremiumHatalari.satinAlmaBaslamadi,
+      );
+    }
   }
 
   /// Planları mağazadan (yeniden) yükler.
   Future<void> planlariYukle() async {
     state = state.copyWith(planlarYukleniyor: true);
     try {
-      final List<AbonelikPlani> planlar =
-          await ref.read(magazaServisiProvider).planlariGetir();
+      final List<AbonelikPlani> planlar = await ref
+          .read(magazaServisiProvider)
+          .planlariGetir();
       state = state.copyWith(planlar: planlar, planlarYukleniyor: false);
     } on Exception catch (hata) {
       debugPrint('Planlar yüklenemedi: $hata');
@@ -168,18 +226,25 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
   Future<void> _guncellemeleriIsle(List<SatinAlmaGuncellemesi> liste) async {
     final MagazaServisi magaza = ref.read(magazaServisiProvider);
     final DateTime simdi = ref.read(saatProvider)();
+    // Depo, beklemelerden ÖNCE alınır: mağaza onayı ve disk yazmaları
+    // sürerken kontrolcü kapanırsa (ör. ekran/test sonu) ref artık
+    // okunamaz.
+    final UygulamaDurumuRepository depo = _depo;
     bool aktifBulundu = false;
+    bool raporBulundu = false;
     String? aktifUrun;
     String? hata;
 
     for (final SatinAlmaGuncellemesi g in liste) {
-      final bool bizim = PremiumConfig.urunKimlikleri.contains(g.urunId);
+      final bool abonelik = PremiumConfig.urunKimlikleri.contains(g.urunId);
       switch (g.durum) {
         case SatinAlmaDurumu.satinAlindi:
         case SatinAlmaDurumu.geriYuklendi:
-          if (bizim) {
+          if (abonelik) {
             aktifBulundu = true;
             aktifUrun = g.urunId;
+          } else if (g.urunId == PremiumConfig.raporUrunId) {
+            raporBulundu = true;
           }
         case SatinAlmaDurumu.hata:
           hata = PremiumHatalari.satinAlmaHatasi;
@@ -198,29 +263,39 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
     final bool geriYuklemeSonucu = _geriYuklemeBekleniyor;
     _geriYuklemeBekleniyor = false;
 
+    // Abonelik: satın alındı/geri yüklendiyse açık; geri yükleme listesinde
+    // yoksa süresi dolmuş ya da iptal edilmiş (debug simülasyonu korunur).
+    // Rapor: tek seferlik ürün; geri yükleme listesinde yoksa iade edilmiş.
+    // Diğer olaylarda (ör. yalnızca hata) iki durum da değişmez.
+    final bool? yeniAktif = aktifBulundu
+        ? true
+        : (geriYuklemeSonucu
+              ? kDebugMode && depo.durum.gelistiriciPremium
+              : null);
+    final bool? yeniRapor = raporBulundu
+        ? true
+        : (geriYuklemeSonucu ? false : null);
+
     // Durum önce güncellenir, önbellek sonra yazılır: disk yazması
     // sürerken gelen yeni bir olay, eski bir sonucun üzerine yazılmasın.
+    state = state.copyWith(
+      aktif: yeniAktif,
+      raporSahibi: yeniRapor,
+      islemde: false,
+      hataMesaji: aktifBulundu || raporBulundu ? null : hata,
+    );
     if (aktifBulundu) {
-      state = state.copyWith(aktif: true, islemde: false);
-      await _depo.premiumuKaydet(
+      await depo.premiumuKaydet(
         aktif: true,
         dogrulama: simdi,
         urunId: aktifUrun,
       );
-      return;
+    } else if (geriYuklemeSonucu) {
+      await depo.premiumuKaydet(aktif: false, dogrulama: simdi);
     }
-    if (geriYuklemeSonucu) {
-      // Geri yükleme listesinde aktif abonelik yok: süresi dolmuş ya da
-      // iptal edilmiş. Debug simülasyonu açıksa ona dokunulmaz.
-      state = state.copyWith(
-        aktif: kDebugMode && _depo.durum.gelistiriciPremium,
-        islemde: false,
-        hataMesaji: hata,
-      );
-      await _depo.premiumuKaydet(aktif: false, dogrulama: simdi);
-      return;
+    if (yeniRapor != null) {
+      await depo.raporuKaydet(sahip: yeniRapor);
     }
-    state = state.copyWith(islemde: false, hataMesaji: hata);
   }
 
   /// Yalnızca debug derlemede: premium simülasyonunu aç/kapat.
@@ -256,6 +331,11 @@ abstract final class PremiumHatalari {
   static const String odemeBekleniyor =
       'Ödemen onay bekliyor. Onaylandığında Premium otomatik açılacak.';
 
+  /// Rapor ürünü mağazada bulunamadı.
+  static const String raporUrunuYok =
+      'Rapor şu an satın alınamıyor. Uygulamanın Google Play üzerinden '
+      'yüklendiğinden ve internet bağlantının açık olduğundan emin ol.';
+
   /// Geri yükleme hatası.
   static const String geriYuklenemedi =
       'Satın alımlar geri yüklenemedi. Aynı Google hesabıyla giriş yaptığından '
@@ -264,5 +344,6 @@ abstract final class PremiumHatalari {
 
 /// Premium kontrolcüsü.
 final NotifierProvider<PremiumKontrolcu, PremiumDurumu>
-    premiumKontrolcuProvider =
-    NotifierProvider<PremiumKontrolcu, PremiumDurumu>(PremiumKontrolcu.new);
+premiumKontrolcuProvider = NotifierProvider<PremiumKontrolcu, PremiumDurumu>(
+  PremiumKontrolcu.new,
+);
