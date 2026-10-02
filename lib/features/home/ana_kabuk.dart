@@ -6,9 +6,10 @@ import '../compatibility/uyum_screen.dart';
 import '../daily_luck/daily_luck_screen.dart';
 import '../profile/kader_profili_screen.dart';
 import '../settings/ayarlar_screen.dart';
+import '../tools/tools_screen.dart';
 import 'ana_sekme.dart';
 
-/// Onboarding sonrası uygulamanın kabuğu: dört sekme + alt gezinme.
+/// Onboarding sonrası uygulamanın kabuğu: beş sekme + alt gezinme.
 ///
 /// Sekmeler [IndexedStack] içinde yaşar ki ana ekrandaki kart açılışı ve
 /// kaydırma konumu sekme değişiminde kaybolmasın. Reklamlar gezinme
@@ -28,6 +29,7 @@ class AnaKabuk extends ConsumerWidget {
           DailyLuckScreen(),
           KaderProfiliScreen(),
           UyumScreen(),
+          ToolsScreen(),
           AyarlarScreen(),
         ],
       ),

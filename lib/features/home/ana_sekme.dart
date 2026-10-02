@@ -12,6 +12,9 @@ enum AnaSekme {
   /// Uyum.
   uyum(etiket: 'Uyum', ikon: Icons.favorite_border_rounded),
 
+  /// Keşfet araçları (isim, numara, bebek ismi).
+  kesfet(etiket: 'Keşfet', ikon: Icons.explore_outlined),
+
   /// Ayarlar.
   ayarlar(etiket: 'Ayarlar', ikon: Icons.settings_outlined);
 
