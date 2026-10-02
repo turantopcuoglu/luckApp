@@ -56,6 +56,19 @@ abstract final class EngineConfig {
   /// İndirgenmeden korunan usta sayılar.
   static const Set<int> ustaSayilar = <int>{11, 22, 33};
 
+  /// Karmik borç sayıları: bir hesabın indirgenme zincirinde (ya da doğum
+  /// gününde) görüldüklerinde "karmik borç" olarak raporlanır.
+  static const Set<int> karmikBorcSayilari = <int>{13, 14, 16, 19};
+
+  /// İlk zirve döneminin bittiği yaş = bu taban − yaşam yolu (tek hane).
+  static const int zirveIlkBitisTabani = 36;
+
+  /// İkinci ve üçüncü zirve dönemlerinin uzunluğu (yıl).
+  static const int zirveDonemYili = 9;
+
+  /// Zirve/zorluk dönemi sayısı.
+  static const int zirveDonemSayisi = 4;
+
   // ---- Ay evresi ----
 
   /// Sinodik ayın bölündüğü evre sayısı (yeni ay … küçülen hilal).

@@ -26,6 +26,7 @@ import 'user_seed.dart';
 
 export 'ay_evresi.dart';
 export 'burc.dart';
+export 'derin_numeroloji.dart';
 export 'engine_config.dart';
 export 'kader_profili.dart';
 export 'luck_category.dart';
