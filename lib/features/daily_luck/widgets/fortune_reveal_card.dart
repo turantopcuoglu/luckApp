@@ -127,7 +127,7 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
               ..setEntry(3, 2, DailyLuckConfig.kartFlipPerspektifi)
               ..rotateY(aci)
               // Ölçek aynı matriste: yaklaşma/düşme flip merkezinden.
-              ..scale(_olcek.value);
+              ..scaleByDouble(_olcek.value, _olcek.value, _olcek.value, 1);
 
             return Column(
               mainAxisSize: MainAxisSize.min,

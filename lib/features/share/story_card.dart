@@ -18,10 +18,14 @@ import 'share_strings.dart';
 /// off-screen render ağacında asenkron font yüklemesine güvenilmez.
 class StoryCard extends StatelessWidget {
   /// Günün [sonuc]u ile kart oluşturur.
-  const StoryCard({required this.sonuc, super.key});
+  const StoryCard({required this.sonuc, this.baslik, super.key});
 
   /// Paylaşılan günün sonucu.
   final LuckResult sonuc;
+
+  /// Günün kişisel başlığı; paylaşılabilir kimlik etiketi olarak tarihin
+  /// altına yazılır (yoksa gösterilmez).
+  final String? baslik;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +59,15 @@ class StoryCard extends StatelessWidget {
                   letterSpacing: 2,
                 ),
               ),
+              if (baslik != null)
+                Text(
+                  baslik!,
+                  style: const TextStyle(
+                    fontSize: ShareConfig.baslikPunto,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
               const Spacer(),
 
               // Orta: dev skor halkası + dev sayı.

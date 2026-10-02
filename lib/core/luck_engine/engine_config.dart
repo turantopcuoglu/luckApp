@@ -47,4 +47,69 @@ abstract final class EngineConfig {
 
   /// Şanslı saat aralığının uzunluğu (saat).
   static const int sansliSaatSuresi = 2;
+
+  // ---- Numeroloji ----
+
+  /// Tek haneli numeroloji tabanı: sayılar 1..9'a indirgenir.
+  static const int numerolojiTabani = 9;
+
+  /// İndirgenmeden korunan usta sayılar.
+  static const Set<int> ustaSayilar = <int>{11, 22, 33};
+
+  // ---- Ay evresi ----
+
+  /// Sinodik ayın bölündüğü evre sayısı (yeni ay … küçülen hilal).
+  static const int ayEvresiSayisi = 8;
+
+  // ---- Burç ----
+
+  /// Burç sınırına bu kadar gün yakın doğanlar için "sınır günü"
+  /// uyarısı gösterilir (burç, doğum saatine göre değişebilir).
+  static const int burcSinirToleransiGun = 1;
+
+  // ---- Uyum hesabı ----
+
+  /// Uyum skorunun başlangıç tabanı.
+  static const int uyumTaban = 52;
+
+  /// Aynı yaşam yolu sayısı ("ayna") katkısı.
+  static const int uyumAynaPuani = 16;
+
+  /// Aynı uyum grubundaki yaşam yolları katkısı.
+  static const int uyumAyniGrupPuani = 22;
+
+  /// Destekleyici gruplardaki yaşam yolları katkısı.
+  static const int uyumDestekleyiciPuani = 8;
+
+  /// Aynı element katkısı.
+  static const int uyumAyniElementPuani = 12;
+
+  /// Tamamlayıcı elementler (ateş-hava, toprak-su) katkısı.
+  static const int uyumTamamlayiciElementPuani = 10;
+
+  /// Zıt elementler (ateş-su, toprak-hava) katkısı.
+  static const int uyumZitElementPuani = -4;
+
+  /// Ruh sayıları aynı gruptaysa katkı.
+  static const int uyumRuhPuani = 8;
+
+  /// Çiftlere özgü deterministik küçük sapmanın mutlak sınırı.
+  static const int uyumSapmaSiniri = 3;
+
+  /// Uyum skorunun alt sınırı.
+  static const int uyumMin = 35;
+
+  /// Uyum skorunun üst sınırı.
+  static const int uyumMaks = 98;
+
+  /// Bu skor ve üstü "güçlü uyum".
+  static const int uyumGucluEsik = 80;
+
+  /// Bu skor ve üstü "dengeli uyum" (altı "geliştiren uyum").
+  static const int uyumDengeliEsik = 62;
+
+  // ---- Tekrarsız içerik seçimi ----
+
+  /// Döngüsel indekste gün numarasının sayıldığı referans yıl (1 Ocak).
+  static const int donguReferansYili = 2000;
 }

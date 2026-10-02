@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/content/fortune_composer.dart';
-import '../../core/content/gunun_icerigi.dart';
+import '../../core/content/gunluk_okuma.dart';
 import '../../core/luck_engine/luck_engine.dart';
+import '../../core/storage/daily_record.dart';
 import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import 'tr_strings.dart';
@@ -15,8 +16,9 @@ final Provider<DateTime> bugunProvider =
 
 /// Aktif kullanıcı profili.
 ///
-/// Onboarding (Session 6) tamamlanana kadar kayıtlı profil yoksa
-/// misafir profiline düşer; böylece ekran her koşulda çalışır.
+/// Onboarding tamamlanana kadar kayıtlı profil yoksa misafir profiline
+/// düşer; böylece ekran her koşulda çalışır. Profil düzenlendiğinde
+/// yazan taraf bu provider'ı invalidate eder.
 final Provider<UserProfile> aktifProfilProvider = Provider<UserProfile>(
   (Ref ref) =>
       ref.watch(userRepositoryProvider).profil() ??
@@ -41,17 +43,34 @@ final FutureProvider<LuckResult> gununSansiProvider =
       );
 });
 
-/// Bugünün zenginleştirilmiş içeriği: yorum, şans rengi, şanslı sayı
-/// ve günün tavsiyesi.
+/// Bugünün kişiye özel, bölümlü okuması.
 ///
-/// Persist edilmez; saklanan [LuckResult] + deterministik içerik
-/// tohumundan her açılışta aynı şekilde yeniden türetilir (kural 8).
-final FutureProvider<GununIcerigi> gununIcerigiProvider =
-    FutureProvider<GununIcerigi>((Ref ref) async {
+/// Persist edilmez; saklanan [LuckResult] + sabit profil + ÖNCEKİ
+/// günlerin bölüm geri bildirimlerinden her açılışta aynı şekilde
+/// yeniden türetilir (kural 8). Bugün verilen geri bildirim bugünün
+/// metnini değiştirmez.
+final FutureProvider<GunlukOkuma> gunlukOkumaProvider =
+    FutureProvider<GunlukOkuma>((Ref ref) async {
   final LuckResult sonuc = await ref.watch(gununSansiProvider.future);
-  return gununIcerigi(
+  return gunlukOkuma(
     motor: ref.watch(luckEngineProvider),
-    kullanici: ref.watch(aktifProfilProvider).seed,
+    okuyucu: ref.watch(aktifProfilProvider).okuyucu,
     sonuc: sonuc,
+    begenilmeyenler: ref
+        .watch(luckHistoryRepositoryProvider)
+        .begenilmeyenKimlikler(once: ref.watch(bugunProvider)),
   );
 });
+
+/// Bugünün kaydı (bölüm cevapları ve akşam geri bildirimi için).
+///
+/// Yazan taraf invalidate eder; kayıt henüz yoksa null. Günün sonucu
+/// üretilip kaydedildiğinde de yeniden okunsun diye onu dinler.
+final Provider<DailyRecord?> bugunKaydiProvider = Provider<DailyRecord?>(
+  (Ref ref) {
+    ref.watch(gununSansiProvider);
+    return ref
+        .watch(luckHistoryRepositoryProvider)
+        .getir(ref.watch(bugunProvider));
+  },
+);

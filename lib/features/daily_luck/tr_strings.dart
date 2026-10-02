@@ -80,4 +80,40 @@ abstract final class TrStrings {
     'Kaderin kapıda, açmayan bilemez 🚪',
     'Şans perileri mesaini tamamladı, rapor hazır 🧚',
   ];
+
+  // ---- Günlük okuma ----
+
+  /// Yorum geri bildirim sorusu.
+  static const String seniAnlattiMi = 'Bu yorum seni anlattı mı?';
+
+  /// Olumlu cevap ipucu.
+  static const String evet = 'Evet';
+
+  /// Olumsuz cevap ipucu.
+  static const String hayir = 'Hayır';
+
+  /// Olumlu bölüm cevabı teşekkürü.
+  static const String anlattiTesekkur = 'Güzel! Bu tarz yorumları sevdiğini not ettik ✨';
+
+  /// Olumsuz bölüm cevabı teşekkürü.
+  static const String anlatmadiTesekkur =
+      'Teşekkürler. Önümüzdeki günlerde bu yorumu sana tekrar göstermeyeceğiz.';
+
+  /// "Neden bugün?" başlığı.
+  static const String nedenBugun = 'Neden bugün?';
+
+  /// Neden sayfasının alt notu.
+  static const String nedenNotu =
+      'Skorun ve yorumun bu hesaplardan gelir. Aynı gün, aynı sonucu verir.';
+
+  /// Akşam kartı sorusu.
+  static const String aksamKartiBaslik = 'Günün nasıldı?';
+
+  /// Akşam kartı açıklaması.
+  static const String aksamKartiAciklama =
+      'Bugün gerçekten şanslı mıydın? Cevabın Kader\'in sana olan '
+      'isabetini takip etmesine yardım eder.';
+
+  /// Akşam kartı butonu.
+  static const String aksamKartiButon = 'Cevapla';
 }

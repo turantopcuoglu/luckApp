@@ -44,6 +44,9 @@ abstract final class ShareConfig {
   /// Kategori barının kalınlığı.
   static const double barYuksekligi = 18;
 
-  /// Alt köşedeki uygulama adı puntosu.
+  /// Tarihin altındaki kişisel gün başlığının puntosu.
+  static const double baslikPunto = 72;
+
+  /// Alt köşedeki marka yazısının puntosu.
   static const double markaPunto = 52;
 }

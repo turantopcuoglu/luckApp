@@ -88,6 +88,16 @@ class NotificationService {
     }
   }
 
+  /// Planlanmış tüm bildirimleri iptal eder ("Verilerimi sil" akışı).
+  Future<void> hepsiniIptalEt() async {
+    try {
+      await _eklenti.cancelAll();
+      // ignore: avoid_catches_without_on_clauses - bkz. baslat.
+    } catch (_) {
+      // Eklenti yoksa iptal edilecek bildirim de yoktur.
+    }
+  }
+
   /// Günlük bildirimleri (yeniden) planlar.
   ///
   /// - Akşam 21:00: her gün tekrar eden tek bildirim (dokunulunca

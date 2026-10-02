@@ -11,13 +11,14 @@ import '../../main.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/hero_tags.dart';
 import '../daily_luck/daily_luck_providers.dart';
-import '../daily_luck/daily_luck_screen.dart';
 import '../feedback/feedback_strings.dart';
 import '../feedback/notification_service.dart';
+import '../home/ana_kabuk.dart';
+import '../home/ana_sekme.dart';
 import 'onboarding_config.dart';
 import 'onboarding_strings.dart';
 
-/// Onboarding adım 3: "Kaderin hesaplanıyor..." sahte hesaplama ekranı.
+/// Onboarding son adımı: "Kaderin hesaplanıyor..." sahte hesaplama ekranı.
 ///
 /// 2.5 sn'lik parçacık animasyonu (50 partikül merkezden dağılıp
 /// toplanır) biter bitmez onboarding tamamlanır ve ana ekrana Hero
@@ -87,9 +88,10 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
     // yeni profil okunsun diye tazelenir.
     ref
       ..invalidate(aktifProfilProvider)
-      ..invalidate(gununSansiProvider);
+      ..invalidate(gununSansiProvider)
+      ..invalidate(anaSekmeProvider);
     Navigator.of(context).pushAndRemoveUntil(
-      fadeThroughRoute<void>(const DailyLuckScreen()),
+      fadeThroughRoute<void>(const AnaKabuk()),
       (Route<dynamic> route) => false,
     );
   }

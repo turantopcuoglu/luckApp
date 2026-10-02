@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/content/fortune_composer.dart' as composer;
+import '../../core/content/gunluk_okuma.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
@@ -10,12 +11,13 @@ import '../../shared/widgets/app_icons.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/tr_strings.dart';
 import '../daily_luck/widgets/score_ring.dart';
+import '../legal/legal_texts.dart';
 import 'categories_config.dart';
 import 'categories_strings.dart';
 
-/// Kategori detay sayfası: kategori skoru, kategoriye özel 2 cümle
-/// yorum ve deterministik "şanslı saat aralığı" (plan Session 9,
-/// madde 1).
+/// Kategori detay sayfası: kategori skoru, kişiye özel paragraf (açılış +
+/// burç elementi + ilişki durumu + tavsiye), şanslı saatli eylem önerisi
+/// ve düşük günlerde dikkat notu.
 class CategoryDetailScreen extends ConsumerWidget {
   /// Detayı gösterilecek [kategori] ile sayfa oluşturur.
   const CategoryDetailScreen({required this.kategori, super.key});
@@ -27,13 +29,6 @@ class CategoryDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final AsyncValue<LuckResult> sonuc = ref.watch(gununSansiProvider);
-
-    // Şanslı saat, skordan bağımsız deterministik motor çağrısıdır.
-    final SansliSaat sansliSaat = ref.watch(luckEngineProvider).sansliSaat(
-          kullanici: ref.watch(aktifProfilProvider).seed,
-          gun: ref.watch(bugunProvider),
-          kategori: kategori,
-        );
 
     return Scaffold(
       appBar: AppBar(
@@ -55,78 +50,80 @@ class CategoryDetailScreen extends ConsumerWidget {
             child: CircularProgressIndicator(color: AppColors.gold),
           ),
           error: (Object hata, StackTrace iz) => Center(
-            child: Text(
-              TrStrings.hataMetni,
-              style: yaziTemasi.bodyMedium,
-            ),
+            child: Text(TrStrings.hataMetni, style: yaziTemasi.bodyMedium),
           ),
           data: (LuckResult veri) {
-            final int skor = veri.kategoriSkorlari[kategori] ?? 0;
-            // Yorum, saklanan sonuç + bağımsız içerik tohumundan
-            // deterministik seçilir (şanslı saatle aynı sözleşme).
-            final String yorum = composer.kategoriYorumu(
+            // Okuma, saklanan sonuç + profil + bağımsız içerik tohumundan
+            // deterministik seçilir.
+            final KategoriOkumasi okuma = composer.kategoriOkumasi(
               motor: ref.watch(luckEngineProvider),
-              kullanici: ref.watch(aktifProfilProvider).seed,
+              okuyucu: ref.watch(aktifProfilProvider).okuyucu,
               sonuc: veri,
               kategori: kategori,
             );
-            return SingleChildScrollView(
+            return ListView(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  const SizedBox(height: AppSpacing.lg),
-                  Center(
-                    child: ScoreRing(
-                      skor: skor,
-                      boyut: CategoriesConfig.detayHalkaCapi,
-                      kalinlik: CategoriesConfig.detayHalkaKalinligi,
-                      etiket: kategori.etiket.toUpperCase(),
+              children: <Widget>[
+                const SizedBox(height: AppSpacing.md),
+                Center(
+                  child: ScoreRing(
+                    skor: okuma.skor,
+                    boyut: CategoriesConfig.detayHalkaCapi,
+                    kalinlik: CategoriesConfig.detayHalkaKalinligi,
+                    etiket: kategori.etiket.toUpperCase(),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                // Orijinal tek yorum kartı: paragraf ve eylem önerisi.
+                Card(
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Text(
+                      '${okuma.paragraf}\n\n${okuma.eylem}',
+                      style: yaziTemasi.bodyMedium,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xl),
-                  Card(
-                    margin: EdgeInsets.zero,
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: Text(
-                        yorum,
-                        style: yaziTemasi.bodyMedium,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Card(
-                    margin: EdgeInsets.zero,
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: Row(
-                        children: <Widget>[
-                          const Icon(
-                            Icons.schedule_rounded,
-                            color: AppColors.purple,
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Expanded(
-                            child: Text(
-                              CategoriesStrings.sansliSaatBaslik,
-                              style: yaziTemasi.bodyMedium?.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Card(
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Row(
+                      children: <Widget>[
+                        const Icon(
+                          Icons.schedule_rounded,
+                          color: AppColors.purple,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            CategoriesStrings.sansliSaatBaslik,
+                            style: yaziTemasi.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
                             ),
                           ),
-                          Text(
-                            sansliSaat.etiket,
-                            style: yaziTemasi.titleMedium?.copyWith(
-                              color: AppColors.gold,
-                            ),
+                        ),
+                        Text(
+                          okuma.sansliSaat.etiket,
+                          style: yaziTemasi.titleMedium?.copyWith(
+                            color: AppColors.gold,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  YasalMetinler.kisaNot,
+                  style: yaziTemasi.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             );
           },
         ),

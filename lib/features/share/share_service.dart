@@ -21,9 +21,11 @@ class ShareService {
   /// Varsayılan kurucu.
   ShareService();
 
-  /// Günün [sonuc]unu story kartı olarak paylaşır.
-  Future<void> paylas({required LuckResult sonuc}) async {
-    final Uint8List png = await kartPngUret(StoryCard(sonuc: sonuc));
+  /// Günün [sonuc]unu (ve varsa kişisel [baslik]ını) story kartı olarak
+  /// paylaşır.
+  Future<void> paylas({required LuckResult sonuc, String? baslik}) async {
+    final Uint8List png =
+        await kartPngUret(StoryCard(sonuc: sonuc, baslik: baslik));
     await Share.shareXFiles(
       <XFile>[
         XFile.fromData(

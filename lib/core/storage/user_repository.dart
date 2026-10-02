@@ -36,4 +36,14 @@ class UserRepository {
     }
     return kaydet(mevcut.copyWith(onboardingTamam: true));
   }
+  /// Kabul edilen uyarı/koşullar sürümünü profile işler.
+  ///
+  /// Profil yoksa [StateError] fırlatır.
+  Future<void> uyariKabulEt(int surum) {
+    final UserProfile? mevcut = profil();
+    if (mevcut == null) {
+      throw StateError('Uyarı kabulü kaydedilemez: kayıtlı profil yok.');
+    }
+    return kaydet(mevcut.copyWith(uyariKabulSurumu: surum));
+  }
 }

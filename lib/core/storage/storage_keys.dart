@@ -11,6 +11,15 @@ abstract final class StorageKeys {
 
   /// user_profile kutusunda profil map'inin saklandığı tek anahtar.
   static const String profilKaydi = 'profil';
+
+  /// Uygulama durumu kutusu: premium önbelleği, reklam sıklığı vb.
+  static const String appStateBox = 'app_state';
+
+  /// Kayıtlı kişiler kutusu (uyum ekranı): kişi kimliği → kişi.
+  static const String kisilerBox = 'kisiler';
+
+  /// app_state kutusunda durum map'inin saklandığı tek anahtar.
+  static const String durumKaydi = 'durum';
 }
 
 /// [gun] tarihini saatten bağımsız `yyyy-MM-dd` kutu anahtarına çevirir.

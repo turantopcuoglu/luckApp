@@ -1,0 +1,284 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:kader/core/content/burc_metinleri.dart';
+import 'package:kader/core/content/category_pools.dart';
+import 'package:kader/core/content/content_config.dart';
+import 'package:kader/core/content/dongu_metinleri.dart';
+import 'package:kader/core/content/fortune_pools.dart';
+import 'package:kader/core/content/kisisel_havuzlar.dart';
+import 'package:kader/core/content/okuyucu.dart';
+import 'package:kader/core/content/sayi_metinleri.dart';
+import 'package:kader/core/content/slot_doldurucu.dart';
+import 'package:kader/core/content/uyum_metinleri.dart';
+import 'package:kader/core/content/yorum_yonu.dart';
+import 'package:kader/core/luck_engine/luck_engine.dart';
+
+import 'fortune_pools_test.dart' show havuzuDogrula;
+
+/// Numerolojide geçerli tüm yaşam yolu sayıları.
+const List<int> _tumSayilar = <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 22, 33];
+
+/// Kullanıcıya gösterilen tüm metinler (yasaklı ifade ve slot taraması).
+List<String> _tumMetinler() {
+  final List<String> m = <String>[];
+  void ekle(Iterable<String> x) => m.addAll(x);
+
+  for (final SayiKarakteri k in SayiMetinleri.yasamYolu.values) {
+    ekle(<String>[
+      k.oz,
+      k.gucluYanlar,
+      k.golgeYan,
+      k.askta,
+      k.isteVeParada,
+      k.yasamDersi,
+      k.iliskide,
+    ]);
+  }
+  ekle(SayiMetinleri.ruhSayisi.values);
+  ekle(SayiMetinleri.isimSayisi.values);
+  ekle(SayiMetinleri.kisilikSayisi.values);
+  DonguMetinleri.gunBasliklari.values.forEach(ekle);
+  for (final KisiselYilMetni y in DonguMetinleri.kisiselYil.values) {
+    ekle(<String>[y.uzun, ...y.gunluk]);
+  }
+  DonguMetinleri.ayEvresi.values.forEach(ekle);
+  ekle(BurcMetinleri.oz.values);
+  ekle(<String>[BurcMetinleri.sinirNotu]);
+  KisiselHavuzlar.eylemCumleleri.values.forEach(ekle);
+  ekle(KisiselHavuzlar.golgesizGun);
+  KisiselHavuzlar.enerjiTavsiyeleri.values.forEach(ekle);
+  ekle(KisiselHavuzlar.profilIliskiEki.values);
+  ekle(KisiselHavuzlar.profilUgrasEki.values);
+  UyumMetinleri.yasamYolu.values.forEach(ekle);
+  ekle(UyumMetinleri.element.values);
+  ekle(UyumMetinleri.ruh.values);
+  UyumMetinleri.tavsiye.values.forEach(ekle);
+  // v3 yorum yönü.
+  for (final GunTemasi t in YorumYonu.gunTemalari.values) {
+    t.durum.values.forEach(ekle);
+  }
+  YorumYonu.bulusmaCumleleri.values.forEach(ekle);
+  for (final Map<String, String> s in YorumYonu.gunSahneleri.values) {
+    ekle(s.values);
+  }
+  for (final KarakterYonu k in YorumYonu.karakterler.values) {
+    ekle(<String>[k.gucTavsiyesi, k.golgeTavsiyesi, k.dengeTavsiyesi]);
+    ekle(k.kategoriTarzi.values);
+  }
+  for (final Map<String, Map<KategoriTonu, List<String>>> d
+      in YorumYonu.kategoriDurumlari.values) {
+    for (final Map<KategoriTonu, List<String>> tonlar in d.values) {
+      tonlar.values.forEach(ekle);
+    }
+  }
+  for (final Map<LuckCategory, String> t in YorumYonu.temaKategori.values) {
+    ekle(t.values);
+  }
+  YorumYonu.donemCumleleri.values.forEach(ekle);
+  // Kullanılmaya devam eden v1 havuzları.
+  ekle(FortunePools.gununTavsiyeleri);
+  CategoryPools.kategoriTavsiyeleri.values.forEach(ekle);
+  return m;
+}
+
+int _kelimeSayisi(String metin) =>
+    metin.split(RegExp(r'\s+')).where((String k) => k.isNotEmpty).length;
+
+void main() {
+  group('Sayı metinleri', () {
+    test('tüm sayılar için tüm alanlar dolu ve yeterince uzun', () {
+      for (final int sayi in _tumSayilar) {
+        final SayiKarakteri? k = SayiMetinleri.yasamYolu[sayi];
+        expect(k, isNotNull, reason: 'yaşam yolu $sayi eksik');
+        expect(k!.anahtarlar.length, 3);
+        for (final String metin in <String>[
+          k.oz,
+          k.gucluYanlar,
+          k.golgeYan,
+          k.askta,
+          k.isteVeParada,
+          k.yasamDersi,
+        ]) {
+          expect(
+            _kelimeSayisi(metin),
+            greaterThanOrEqualTo(ContentConfig.profilEnAzKelime),
+            reason: 'yaşam yolu $sayi metni kısa: "$metin"',
+          );
+        }
+        expect(SayiMetinleri.ruhSayisi[sayi], contains('$sayi'));
+        expect(SayiMetinleri.isimSayisi[sayi], contains('$sayi'));
+        expect(SayiMetinleri.kisilikSayisi[sayi], contains('$sayi'));
+      }
+    });
+  });
+
+  group('Yorum yönü (v3)', () {
+    test('her kişisel gün için istek ve her tonda en az iki durum', () {
+      for (int k = 1; k <= 9; k++) {
+        final GunTemasi? t = YorumYonu.gunTemalari[k];
+        expect(t, isNotNull, reason: 'tema $k');
+        expect(t!.istek.trim(), isNotEmpty);
+        expect(t.istek.endsWith('.'), isFalse, reason: 'istek mastar öbeği');
+        for (final GunTonu ton in GunTonu.values) {
+          expect(
+            t.durum[ton]!.length,
+            greaterThanOrEqualTo(ContentConfig.enAzDurumVaryanti),
+          );
+          havuzuDogrula('durum[$k][$ton]', t.durum[ton]!);
+        }
+        expect(DonguMetinleri.gunBasliklari[k], isNotEmpty);
+      }
+    });
+
+    test('karakterler: 12 sayı, günler uyumlu/zorlayıcı/dengeli olarak '
+        'ayrışır ve kendi sayısı her zaman uyumludur', () {
+      for (final int sayi in _tumSayilar) {
+        final KarakterYonu? k = YorumYonu.karakterler[sayi];
+        expect(k, isNotNull, reason: 'karakter $sayi');
+        expect(k!.uyumluGunler.intersection(k.zorlayiciGunler), isEmpty);
+        expect(k.uyumluGunler.length, 3, reason: '$sayi uyumlu');
+        expect(k.zorlayiciGunler.length, 3, reason: '$sayi zorlayıcı');
+        for (final int g in <int>{...k.uyumluGunler, ...k.zorlayiciGunler}) {
+          expect(g, inInclusiveRange(1, 9));
+        }
+        expect(
+          k.bulusma(Numeroloji.tabanSayi(sayi)),
+          BulusmaTuru.uyumlu,
+          reason: '$sayi kendi gününde uyumlu olmalı',
+        );
+        expect(k.doga.endsWith('.'), isFalse);
+        for (final LuckCategory kat in LuckCategory.values) {
+          expect(k.kategoriTarzi[kat], isNotNull, reason: '$sayi $kat');
+        }
+      }
+    });
+
+    test('her tema × uğraş sahnesi mevcut (genel dahil)', () {
+      for (int k = 1; k <= 9; k++) {
+        final Map<String, String> s = YorumYonu.gunSahneleri[k]!;
+        expect(s.containsKey(YorumYonu.genelAnahtar), isTrue);
+        for (final Ugras u in Ugras.values) {
+          expect(s[u.name], isNotNull, reason: 'sahne $k ${u.name}');
+        }
+      }
+    });
+
+    test('her kategori için durum anahtarları ve üç ton mevcut', () {
+      for (final LuckCategory kat in LuckCategory.values) {
+        final Map<String, Map<KategoriTonu, List<String>>> d =
+            YorumYonu.kategoriDurumlari[kat]!;
+        expect(d.containsKey(YorumYonu.genelAnahtar), isTrue, reason: '$kat');
+        for (final MapEntry<String, Map<KategoriTonu, List<String>>> e
+            in d.entries) {
+          for (final KategoriTonu ton in KategoriTonu.values) {
+            final List<String> havuz = e.value[ton]!;
+            expect(
+              havuz.length,
+              greaterThanOrEqualTo(ContentConfig.enAzDurumVaryanti),
+            );
+            havuzuDogrula('durum[$kat][${e.key}][$ton]', havuz);
+          }
+        }
+        for (int k = 1; k <= 9; k++) {
+          expect(YorumYonu.temaKategori[k]![kat], isNotNull);
+        }
+      }
+    });
+
+    test('durum anahtarı kişinin durumuna göre değişir', () {
+      const OkuyucuTercihleri t = OkuyucuTercihleri(
+        iliski: IliskiDurumu.evli,
+        ugras: Ugras.ogrenci,
+        karar: KararTarzi.akil,
+        enerji: EnerjiTarzi.disaDonuk,
+      );
+      expect(YorumYonu.durumAnahtari(LuckCategory.ask, t), 'partnerli');
+      expect(YorumYonu.durumAnahtari(LuckCategory.para, t), 'ogrenci');
+      expect(YorumYonu.durumAnahtari(LuckCategory.risk, t), 'akil');
+      expect(YorumYonu.durumAnahtari(LuckCategory.sosyal, t), 'disaDonuk');
+      expect(YorumYonu.durumAnahtari(LuckCategory.saglik, t), 'genel');
+      expect(
+        YorumYonu.durumAnahtari(LuckCategory.ask, const OkuyucuTercihleri()),
+        'genel',
+      );
+    });
+
+    test('dönem cümleleri 1-9, eylem cümleleri şanslı saati taşır', () {
+      for (int k = 1; k <= 9; k++) {
+        expect(YorumYonu.donemCumleleri[k], isNotEmpty);
+      }
+      for (final List<String> eylemler
+          in KisiselHavuzlar.eylemCumleleri.values) {
+        for (final String c in eylemler) {
+          expect(slotlariBul(c), contains(SlotAnahtarlari.saat), reason: c);
+        }
+      }
+    });
+  });
+
+  group('Tüm metinler: güvenlik ve biçim', () {
+    final List<String> metinler = _tumMetinler();
+
+    test('yasaklı ifade içermez (kesinlik, teşhis, yatırım, korku)', () {
+      for (final String metin in metinler) {
+        final String kucuk = metin.toLowerCase();
+        for (final String yasak in ContentConfig.yasakliIfadeler) {
+          // Kelime başı eşleşmesi: öncesinde harf olmamalı ("bölüm" serbest).
+          final RegExp desen =
+              RegExp('(^|[^a-zçğıöşüâîû])${RegExp.escape(yasak)}');
+          expect(
+            desen.hasMatch(kucuk),
+            isFalse,
+            reason: '"$yasak" yasaklı: "$metin"',
+          );
+        }
+      }
+    });
+
+    test('ana yorum metinleri numeroloji jargonu içermez', () {
+      // Kişisel gün, yaşam yolu ve ay evresi terimleri yalnızca "Neden
+      // bugün?" açıklamalarında geçer; günlük okuma günlük dille yazılır.
+      final List<String> gunlukMetinler = <String>[
+        for (final GunTemasi t in YorumYonu.gunTemalari.values)
+          ...t.durum.values.expand((List<String> l) => l),
+        ...YorumYonu.bulusmaCumleleri.values.expand((List<String> l) => l),
+        for (final Map<String, String> s in YorumYonu.gunSahneleri.values)
+          ...s.values,
+        ...YorumYonu.donemCumleleri.values.expand((List<String> l) => l),
+      ];
+      for (final String metin in gunlukMetinler) {
+        final String kucuk = metin.toLowerCase();
+        for (final String terim in <String>[
+          'kişisel gün',
+          'yaşam yolu',
+          'yıldız',
+          'evren',
+          'sayın',
+        ]) {
+          // Kelime başı eşleşmesi ("çevren" içindeki "evren" serbest).
+          final RegExp desen =
+              RegExp('(^|[^a-zçğıöşüâîû])${RegExp.escape(terim)}');
+          expect(desen.hasMatch(kucuk), isFalse, reason: '"$terim": $metin');
+        }
+      }
+    });
+
+    test('yalnızca tanımlı yer tutucular kullanılır', () {
+      for (final String metin in metinler) {
+        for (final String slot in slotlariBul(metin)) {
+          expect(
+            SlotAnahtarlari.hepsi,
+            contains(slot),
+            reason: 'Tanımsız yer tutucu {$slot}: "$metin"',
+          );
+        }
+      }
+    });
+
+    test('çift boşluk ya da boş metin yok', () {
+      for (final String metin in metinler) {
+        expect(metin.trim(), isNotEmpty);
+        expect(metin.contains('  '), isFalse, reason: 'Çift boşluk: "$metin"');
+      }
+    });
+  });
+}

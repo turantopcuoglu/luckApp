@@ -100,4 +100,14 @@ abstract final class DailyLuckConfig {
 
   /// Desenin ekran köşesinden dışarı taşma miktarı (negatif konum).
   static const double yildizDesenTasmasi = -60;
+  // ---- Günlük okuma v2 ----
+
+  /// Okuma bölüm kartı ikon boyutu.
+  static const double bolumIkonBoyutu = 18;
+
+  /// Büyük harfli bölüm etiketlerinin harf aralığı.
+  static const double etiketHarfAraligi = 1.2;
+
+  /// Bu saatten sonra (akşam) geri bildirim kartı gösterilir.
+  static const int aksamKartiSaati = 18;
 }

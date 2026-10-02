@@ -1,73 +1,53 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive/hive.dart';
 import 'package:kader/core/content/fortune_composer.dart' as composer;
+import 'package:kader/core/content/gunluk_okuma.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
-import 'package:kader/core/storage/providers.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/features/categories/categories_strings.dart';
 import 'package:kader/features/categories/category_detail_screen.dart';
-import 'package:kader/features/categories/entitlement.dart';
-import 'package:kader/features/categories/paywall_screen.dart';
-import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
 import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
+import 'package:kader/features/premium/paywall_screen.dart';
+import 'package:kader/features/premium/premium_providers.dart';
+import 'package:kader/features/premium/premium_strings.dart';
+
+import '../test_ortami.dart';
 
 void main() {
-  late Directory geciciDizin;
-  late Box<Map<dynamic, dynamic>> profilKutusu;
-  late Box<Map<dynamic, dynamic>> kayitKutusu;
-
+  final TestOrtami ortam = TestOrtami();
   final DateTime sabitGun = DateTime(2026, 7, 6);
-  final UserProfile misafir = UserProfile(
-    isim: 'Misafir',
-    dogumTarihi: DateTime(2000),
-  );
   const LuckEngine motor = LuckEngine();
+  final UserProfile profil = UserProfile(
+    isim: 'Mert',
+    dogumTarihi: DateTime(1991, 7, 30),
+    onboardingTamam: true,
+  );
 
-  setUp(() async {
-    geciciDizin = await Directory.systemTemp.createTemp('categories_test');
-    Hive.init(geciciDizin.path);
-    profilKutusu = await Hive.openBox<Map<dynamic, dynamic>>(
-      StorageKeys.userProfileBox,
-    );
-    kayitKutusu = await Hive.openBox<Map<dynamic, dynamic>>(
-      StorageKeys.dailyRecordsBox,
-    );
-    // Bugünün kaydı tohumlanır: ekranlar diske yazmadan okusun.
-    final LuckResult sonuc =
-        motor.hesapla(kullanici: misafir.seed, gun: sabitGun);
-    await kayitKutusu.put(
+  Future<void> hazirla({Set<String> kilitler = const <String>{}}) async {
+    await ortam.kur('categories_test');
+    await ortam.profil.put(StorageKeys.profilKaydi, profil.toMap());
+    await ortam.kayit.put(
       gunAnahtari(sabitGun),
-      DailyRecord(sonuc: sonuc).toMap(),
+      DailyRecord(
+        sonuc: motor.hesapla(kullanici: profil.seed, gun: sabitGun),
+        reklamKilitleri: kilitler,
+      ).toMap(),
     );
-  });
+  }
 
-  tearDown(() async {
-    await profilKutusu.deleteFromDisk();
-    await kayitKutusu.deleteFromDisk();
-    await geciciDizin.delete(recursive: true);
-  });
-
-  List<Override> temelOverridelar({bool premium = false}) => <Override>[
-        userProfileBoxProvider.overrideWithValue(profilKutusu),
-        dailyRecordsBoxProvider.overrideWithValue(kayitKutusu),
-        bugunProvider.overrideWithValue(sabitGun),
-        if (premium)
-          entitlementProvider.overrideWith((Ref ref) => true),
-      ];
-
-  Future<void> ekraniAc(WidgetTester tester, Widget ev,
-      {bool premium = false}) async {
+  Future<void> ekraniAc(
+    WidgetTester tester,
+    Widget ev, {
+    bool premium = false,
+  }) async {
     await tester.runAsync(() async {
       await tester.pumpWidget(
         ProviderScope(
-          overrides: temelOverridelar(premium: premium),
+          overrides: ortam.overridelar(gun: sabitGun, premium: premium),
           child: MaterialApp(home: ev),
         ),
       );
@@ -76,16 +56,28 @@ void main() {
     await tester.pump();
   }
 
+  Future<void> anaEkraniAcVeKartiCevir(
+    WidgetTester tester, {
+    bool premium = false,
+  }) async {
+    await ekraniAc(tester, const DailyLuckScreen(), premium: premium);
+    await tester.tap(find.byType(FortuneRevealCard));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1200));
+    await tester.pump(const Duration(milliseconds: 1500));
+    await tester.pump(const Duration(milliseconds: 500));
+  }
+
   group('CategoryDetailScreen', () {
-    testWidgets('skor, 2 cümle yorum ve şanslı saat gösterilir',
+    testWidgets('skor, kişisel paragraf, eylem ve şanslı saat gösterilir',
         (WidgetTester tester) async {
+      await tester.runAsync(hazirla);
       final LuckResult sonuc =
-          motor.hesapla(kullanici: misafir.seed, gun: sabitGun);
-      final int beklenenSkor =
-          sonuc.kategoriSkorlari[LuckCategory.saglik]!;
-      final SansliSaat beklenenSaat = motor.sansliSaat(
-        kullanici: misafir.seed,
-        gun: sabitGun,
+          motor.hesapla(kullanici: profil.seed, gun: sabitGun);
+      final KategoriOkumasi beklenen = composer.kategoriOkumasi(
+        motor: motor,
+        okuyucu: profil.okuyucu,
+        sonuc: sonuc,
         kategori: LuckCategory.saglik,
       );
 
@@ -94,55 +86,61 @@ void main() {
         const CategoryDetailScreen(kategori: LuckCategory.saglik),
       );
 
-      expect(find.text('$beklenenSkor'), findsWidgets);
+      expect(find.text('${beklenen.skor}'), findsWidgets);
       expect(find.text('SAĞLIK'), findsOneWidget);
+      // Orijinal düzen: tek yorum kartı (paragraf + eylem) ve saat kartı.
       expect(
-        find.text(
-          composer.kategoriYorumu(
-            motor: motor,
-            kullanici: misafir.seed,
-            sonuc: sonuc,
-            kategori: LuckCategory.saglik,
-          ),
-        ),
+        find.text('${beklenen.paragraf}\n\n${beklenen.eylem}'),
         findsOneWidget,
       );
       expect(find.text(CategoriesStrings.sansliSaatBaslik), findsOneWidget);
-      expect(find.text(beklenenSaat.etiket), findsOneWidget);
+      expect(find.text(beklenen.sansliSaat.etiket), findsOneWidget);
     });
   });
 
-  group('premium gate (ana ekran)', () {
-    Future<void> anaEkraniAcVeKartiCevir(WidgetTester tester,
-        {bool premium = false}) async {
-      await ekraniAc(tester, const DailyLuckScreen(), premium: premium);
-      await tester.tap(find.byType(FortuneRevealCard));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 1200));
-      await tester.pump(const Duration(milliseconds: 1500));
-      await tester.pump(const Duration(milliseconds: 500));
-    }
-
+  group('premium kilidi (ana ekran)', () {
     testWidgets('aşk ve para kutuları kilit ikonu taşır',
         (WidgetTester tester) async {
+      await tester.runAsync(hazirla);
       await ekraniAc(tester, const DailyLuckScreen());
       expect(find.byIcon(Icons.lock_rounded), findsNWidgets(2));
     });
 
-    testWidgets('kilitli kutuya dokunmak paywall açar',
+    testWidgets('kilitli kutu kilit seçeneklerini, oradan paywall açılır',
         (WidgetTester tester) async {
+      await tester.runAsync(hazirla);
       await anaEkraniAcVeKartiCevir(tester);
 
       await tester.tap(find.text(LuckCategory.ask.etiket));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
+      expect(find.text(PremiumStrings.kilitBaslik), findsOneWidget);
+      expect(
+        find.text(CategoriesStrings.kilitAciklamasi(LuckCategory.ask.etiket)),
+        findsOneWidget,
+      );
+      // Reklam SDK'sı hazır değilken reklam seçeneği gösterilmez.
+      expect(find.text(PremiumStrings.reklamlaAc), findsNothing);
+
+      await tester.tap(find.text(PremiumStrings.premiumaGec));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+
       expect(find.byType(PaywallScreen), findsOneWidget);
-      expect(find.text(CategoriesStrings.paywallBaslik), findsOneWidget);
+      expect(find.text(PremiumStrings.baslik), findsOneWidget);
+      // Mağaza yok (test): plan bulunamadı mesajı ve yenileme bilgisi.
+      expect(find.text(PremiumStrings.planYok), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text(PremiumStrings.yenilemeBilgisi),
+        100,
+      );
+      expect(find.text(PremiumStrings.yenilemeBilgisi), findsOneWidget);
     });
 
     testWidgets('kilitsiz kutuya dokunmak detay sayfası açar',
         (WidgetTester tester) async {
+      await tester.runAsync(hazirla);
       await anaEkraniAcVeKartiCevir(tester);
 
       await tester.tap(find.text(LuckCategory.saglik.etiket));
@@ -150,11 +148,11 @@ void main() {
       await tester.pump(const Duration(milliseconds: 400));
 
       expect(find.byType(CategoryDetailScreen), findsOneWidget);
-      expect(find.byType(PaywallScreen), findsNothing);
     });
 
     testWidgets('premium yetkisi kilidi kaldırır: aşk detaya gider',
         (WidgetTester tester) async {
+      await tester.runAsync(hazirla);
       await anaEkraniAcVeKartiCevir(tester, premium: true);
 
       expect(find.byIcon(Icons.lock_rounded), findsNothing);
@@ -164,6 +162,17 @@ void main() {
       await tester.pump(const Duration(milliseconds: 400));
 
       expect(find.byType(CategoryDetailScreen), findsOneWidget);
+    });
+
+    testWidgets('bugün reklamla açılan kategori kilitsiz görünür',
+        (WidgetTester tester) async {
+      await tester.runAsync(
+        () => hazirla(
+          kilitler: <String>{KilitAnahtarlari.kategori(LuckCategory.ask)},
+        ),
+      );
+      await ekraniAc(tester, const DailyLuckScreen());
+      expect(find.byIcon(Icons.lock_rounded), findsOneWidget);
     });
   });
 }

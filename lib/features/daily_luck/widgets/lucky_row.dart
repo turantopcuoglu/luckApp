@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/content/gunun_icerigi.dart';
+import '../../../core/content/gunluk_okuma.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../daily_luck_config.dart';
@@ -9,11 +9,11 @@ import '../tr_strings.dart';
 /// Günün şans ögelerini gösteren kart: şans rengi + şanslı sayı üstte
 /// yan yana, günün tavsiyesi altta tam satır.
 class SansOgeleriKarti extends StatelessWidget {
-  /// [icerik] paketindeki renk/sayı/tavsiye ile kart oluşturur.
+  /// [icerik] okumasındaki renk/sayı/tavsiye ile kart oluşturur.
   const SansOgeleriKarti({required this.icerik, super.key});
 
   /// Gösterilecek günün içeriği.
-  final GununIcerigi icerik;
+  final GunlukOkuma icerik;
 
   @override
   Widget build(BuildContext context) {

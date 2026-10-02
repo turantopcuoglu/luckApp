@@ -88,4 +88,76 @@ class LuckHistoryRepository {
       mevcut.copyWith(feedbackPozitif: pozitif, feedbackEmoji: emoji),
     );
   }
+  /// [gun] kaydına bir okuma bölümünün "beni anlattı mı?" cevabını işler.
+  ///
+  /// Aynı bölüme ikinci cevap öncekinin üzerine yazar. Kayıt yoksa
+  /// [StateError] fırlatır.
+  Future<void> bolumGeriBildirimiKaydet(
+    DateTime gun, {
+    required String bolumKimligi,
+    required bool anlatti,
+  }) {
+    final DailyRecord? mevcut = getir(gun);
+    if (mevcut == null) {
+      throw StateError('Bölüm geri bildirimi kaydedilemez: $gun için kayıt yok.');
+    }
+    return kaydet(
+      mevcut.copyWith(
+        bolumGeriBildirimleri: <String, bool>{
+          ...mevcut.bolumGeriBildirimleri,
+          bolumKimligi: anlatti,
+        },
+      ),
+    );
+  }
+
+  /// [gun]DEN ÖNCEKİ günlerde "beni anlatmadı" denen bölüm kimlikleri.
+  ///
+  /// Bugünün cevapları bilinçli olarak dahil edilmez: bugün verilen geri
+  /// bildirim bugünün metnini değiştirmemeli (CLAUDE.md kural 8); etkisi
+  /// yarından itibaren görünür. Sonradan "anlattı" denen kimlik listeden
+  /// çıkar (en son cevap geçerlidir).
+  Set<String> begenilmeyenKimlikler({required DateTime once}) {
+    final String sinir = gunAnahtari(once);
+    // Anahtarlar yyyy-MM-dd olduğundan sözlük sırası takvim sırasıdır.
+    final List<String> anahtarlar = _box.keys
+        .cast<String>()
+        .where((String a) => a.compareTo(sinir) < 0)
+        .toList()
+      ..sort();
+    final Map<String, bool> sonCevap = <String, bool>{};
+    for (final String anahtar in anahtarlar) {
+      final Map<dynamic, dynamic>? map = _box.get(anahtar);
+      if (map == null) {
+        continue;
+      }
+      sonCevap.addAll(DailyRecord.fromMap(map).bolumGeriBildirimleri);
+    }
+    return <String>{
+      for (final MapEntry<String, bool> e in sonCevap.entries)
+        if (!e.value) e.key,
+    };
+  }
+
+  /// [gun] için ödüllü reklamla [anahtar] içeriğini açık olarak işaretler.
+  ///
+  /// Kayıt yoksa [StateError] fırlatır.
+  Future<void> reklamKilidiAc(DateTime gun, String anahtar) {
+    final DailyRecord? mevcut = getir(gun);
+    if (mevcut == null) {
+      throw StateError('Reklam kilidi açılamaz: $gun için kayıt yok.');
+    }
+    return kaydet(
+      mevcut.copyWith(
+        reklamKilitleri: <String>{...mevcut.reklamKilitleri, anahtar},
+      ),
+    );
+  }
+
+  /// [gun] için [anahtar] içeriği reklamla açılmış mı?
+  bool reklamKilidiAcikMi(DateTime gun, String anahtar) =>
+      getir(gun)?.reklamKilitleri.contains(anahtar) ?? false;
+
+  /// Kayıtlı gün sayısı (kullanım süresi politikaları için).
+  int get kayitliGunSayisi => _box.length;
 }

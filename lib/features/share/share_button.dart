@@ -12,16 +12,19 @@ import 'share_strings.dart';
 /// sistem paylaşım menüsüne verir (plan Session 7, madde 1).
 class ShareButton extends ConsumerWidget {
   /// Paylaşılacak [sonuc] ile buton oluşturur.
-  const ShareButton({required this.sonuc, super.key});
+  const ShareButton({required this.sonuc, this.baslik, super.key});
 
   /// Günün sonucu.
   final LuckResult sonuc;
+
+  /// Günün kişisel başlığı ("Temel Atma Günü"); karta yazılır.
+  final String? baslik;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return OutlinedButton.icon(
       onPressed: () =>
-          unawaited(ref.read(shareServiceProvider).paylas(sonuc: sonuc)),
+          unawaited(ref.read(shareServiceProvider).paylas(sonuc: sonuc, baslik: baslik)),
       icon: const Icon(Icons.ios_share, color: AppColors.gold),
       label: Text(
         ShareStrings.paylas,

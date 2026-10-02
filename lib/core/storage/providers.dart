@@ -2,8 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 
 import '../luck_engine/luck_engine.dart';
+import 'kayitli_kisi.dart';
 import 'luck_history_repository.dart';
 import 'user_repository.dart';
+import 'uygulama_durumu.dart';
 
 /// Açık user_profile kutusunu sağlar.
 ///
@@ -41,3 +43,32 @@ final Provider<LuckHistoryRepository> luckHistoryRepositoryProvider =
     Provider<LuckHistoryRepository>(
   (Ref ref) => LuckHistoryRepository(ref.watch(dailyRecordsBoxProvider)),
 );
+
+/// Açık app_state kutusunu sağlar (override kuralı yukarıdakiyle aynı).
+final Provider<Box<Map<dynamic, dynamic>>> appStateBoxProvider =
+    Provider<Box<Map<dynamic, dynamic>>>(
+  (Ref ref) => throw UnimplementedError(
+    'appStateBoxProvider açılışta override edilmelidir.',
+  ),
+);
+
+/// Açık kisiler kutusunu sağlar (override kuralı yukarıdakiyle aynı).
+final Provider<Box<Map<dynamic, dynamic>>> kisilerBoxProvider =
+    Provider<Box<Map<dynamic, dynamic>>>(
+  (Ref ref) => throw UnimplementedError(
+    'kisilerBoxProvider açılışta override edilmelidir.',
+  ),
+);
+
+/// Uygulama durumu repository'si.
+final Provider<UygulamaDurumuRepository> uygulamaDurumuRepositoryProvider =
+    Provider<UygulamaDurumuRepository>(
+  (Ref ref) => UygulamaDurumuRepository(ref.watch(appStateBoxProvider)),
+);
+
+/// Kayıtlı kişiler repository'si.
+final Provider<KisiRepository> kisiRepositoryProvider =
+    Provider<KisiRepository>(
+  (Ref ref) => KisiRepository(ref.watch(kisilerBoxProvider)),
+);
+

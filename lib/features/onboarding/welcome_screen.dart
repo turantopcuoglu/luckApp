@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../shared/widgets/app_icons.dart';
 import '../../shared/widgets/app_route.dart';
+import '../legal/uyari_screen.dart';
 import 'onboarding_config.dart';
 import 'onboarding_strings.dart';
 import 'profile_form_screen.dart';
 
 /// Onboarding adım 1: uygulama ikonu + slogan + "Başla" butonu.
 ///
+/// "Başla" önce uyarı/onay ekranını açar; onay verilmeden profil formuna
+/// geçilemez (eğlence amaçlı uyarısı ve koşulların kabulü başta alınır).
 /// Geri tuşu burada varsayılan davranıştadır (uygulamadan çıkar).
 class WelcomeScreen extends StatelessWidget {
   /// Varsayılan kurucu.
@@ -45,10 +49,25 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                OnboardingStrings.karsilamaAciklama,
+                style: yaziTemasi.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
               const Spacer(),
               FilledButton(
                 onPressed: () => Navigator.of(context).push(
-                  fadeThroughRoute<void>(const ProfileFormScreen()),
+                  fadeThroughRoute<void>(
+                    UyariScreen(
+                      onKabul: (BuildContext c, WidgetRef ref) =>
+                          Navigator.of(c).push(
+                        fadeThroughRoute<void>(const ProfileFormScreen()),
+                      ),
+                    ),
+                  ),
                 ),
                 child: const Text(OnboardingStrings.basla),
               ),

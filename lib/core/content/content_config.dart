@@ -146,4 +146,75 @@ abstract final class ContentConfig {
   /// Örn. `kategoriAmaci(LuckCategory.ask, 'acilis')` → `'ask:acilis'`.
   static String kategoriAmaci(LuckCategory kategori, String alan) =>
       '${kategori.name}:$alan';
+
+  // ---- Günlük okuma amaç etiketleri ----
+
+  /// Günün başlığı.
+  static const String amacBaslik = 'baslik';
+
+  /// Günün durum cümlesi (tema × ton).
+  static const String amacEnerji = 'enerji';
+
+  /// Günün teması ile kişinin doğasının buluşma cümlesi.
+  static const String amacBulusma = 'bulusma';
+
+  /// Kategori durum cümlesi (kategori × kişinin durumu × ton).
+  static const String amacDurum = 'durum';
+
+  /// Dönem (kişisel yıl) cümlesi.
+  static const String amacYil = 'yil';
+
+  /// Şanslı saatli eylem cümlesi.
+  static const String amacEylem = 'eylem';
+
+  /// Dikkat cümlesi.
+  static const String amacDikkat = 'dikkat';
+
+  // ---- Günlük okuma ayarları ----
+
+  /// Kişisel güne bağlı havuzların yaklaşık kullanım aralığı (gün):
+  /// kişisel gün sayısı 1-9 arasında döndüğü için ~9 günde bir gelir.
+  static const int kisiselGunAdimi = 9;
+
+  /// Beğenilmeyen varyantlar çıkarıldıktan sonra havuzda kalması gereken
+  /// en az varyant; daha azı kalırsa filtre uygulanmaz. İki varyantlı
+  /// havuzlarda "beni anlatmadı" denen varyantın bir daha gelmemesi için 1.
+  static const int enAzKalanVaryant = 1;
+
+  /// Durum havuzlarında (tema/kategori × ton) en az varyant.
+  static const int enAzDurumVaryanti = 2;
+
+  /// Kategori başına en az eylem ve dikkat cümlesi.
+  static const int enAzEylemDikkat = 4;
+
+  /// Profil bölümü başına en az kelime sayısı (yüzeysel metin olmasın).
+  static const int profilEnAzKelime = 18;
+
+  /// Tüm profil okumasının toplam en az kelime sayısı.
+  static const int profilToplamEnAzKelime = 300;
+
+  /// Günlük okuma toplamı için en az kelime sayısı.
+  static const int gunlukEnAzKelime = 90;
+
+  /// Uygun olmayan içerik testinde yasaklı ifadeler (küçük harf).
+  ///
+  /// Kelime başında eşleşir ("ölüm" yasak, "bölüm" serbest). Kesinlik
+  /// vaadi, sağlık teşhisi/tedavisi, yatırım yönlendirmesi ve
+  /// korku üreten ifadeler yorum metinlerinde kullanılamaz.
+  static const List<String> yasakliIfadeler = <String>[
+    'kesinlikle',
+    'garanti ederim',
+    'mutlaka',
+    'teşhis',
+    'ilaç',
+    'yatırım yap',
+    'borsa',
+    'kripto',
+    'hisse senedi',
+    'hastalık',
+    'ölüm',
+    'kaza geçir',
+    'kazası',
+    '%100',
+  ];
 }

@@ -24,14 +24,19 @@ import 'sansli_saat.dart';
 import 'score_transform.dart';
 import 'user_seed.dart';
 
+export 'ay_evresi.dart';
+export 'burc.dart';
 export 'engine_config.dart';
+export 'kader_profili.dart';
 export 'luck_category.dart';
 export 'luck_modifier.dart';
 export 'luck_result.dart';
 export 'modifiers.dart';
+export 'numeroloji.dart';
 export 'sansli_saat.dart';
 export 'score_transform.dart';
 export 'user_seed.dart';
+export 'uyum.dart';
 
 /// Deterministik günlük şans skoru üreticisi.
 ///
@@ -76,12 +81,16 @@ class LuckEngine {
     }
 
     // 4) Modifiyer toplamı tüm kategorilere uygulanır ve 0-100'e kırpılır.
-    final int toplamEtki =
-        modifiyerler.fold(0, (int toplam, LuckModifier m) => toplam + m.etki);
+    final int toplamEtki = modifiyerler.fold(
+      0,
+      (int toplam, LuckModifier m) => toplam + m.etki,
+    );
     final Map<LuckCategory, int> skorlar = <LuckCategory, int>{
       for (final MapEntry<LuckCategory, int> e in hamSkorlar.entries)
-        e.key: (e.value + toplamEtki)
-            .clamp(EngineConfig.skorMin, EngineConfig.skorMaks),
+        e.key: (e.value + toplamEtki).clamp(
+          EngineConfig.skorMin,
+          EngineConfig.skorMaks,
+        ),
     };
 
     // 5) Genel skor: kategori ağırlıklarıyla ortalama.
@@ -113,11 +122,11 @@ class LuckEngine {
     final Random rnd = Random(
       _seedUret(kullanici, tarih, ek: ':saat:${kategori.name}'),
     );
-    final int aralik = EngineConfig.sansliSaatEnGecBaslangic -
+    final int aralik =
+        EngineConfig.sansliSaatEnGecBaslangic -
         EngineConfig.sansliSaatEnErken +
         1;
-    final int baslangic =
-        EngineConfig.sansliSaatEnErken + rnd.nextInt(aralik);
+    final int baslangic = EngineConfig.sansliSaatEnErken + rnd.nextInt(aralik);
     return SansliSaat(
       baslangicSaati: baslangic,
       bitisSaati: baslangic + EngineConfig.sansliSaatSuresi,
@@ -147,11 +156,70 @@ class LuckEngine {
       );
     }
     final DateTime tarih = DateTime(gun.year, gun.month, gun.day);
-    final Random rnd = Random(
-      _seedUret(kullanici, tarih, ek: ':icerik:$amac'),
-    );
+    final Random rnd = Random(_seedUret(kullanici, tarih, ek: ':icerik:$amac'));
     return rnd.nextInt(havuzBoyutu);
   }
+
+  /// [kullanici] için [gun] gününde [amac] havuzundan TEKRARSIZ
+  /// deterministik indeks üretir: `0 <= sonuç < havuzBoyutu`.
+  ///
+  /// Takvim günleri [havuzBoyutu] uzunluğunda döngülere bölünür; her
+  /// döngü için (kullanıcı, amaç, döngü no) tohumlu bir permütasyon
+  /// karıştırılır ve gün, döngü içindeki konumuyla permütasyondan eleman
+  /// alır. Böylece bir döngü içinde aynı eleman iki kez gelmez ("hep aynı
+  /// cümle" algısı oluşmaz) ve aynı (kullanıcı, gün, amaç, boyut) her
+  /// zaman aynı indeksi verir (CLAUDE.md kural 8).
+  ///
+  /// Not: Döngü sınırında (bir döngünün son günü ile sonrakinin ilk
+  /// günü) tekrar olasılığı 1/[havuzBoyutu]'dur.
+  ///
+  /// [adimGun]: Havuz her gün değil yaklaşık her N günde bir kullanılıyorsa
+  /// (ör. kişisel gün sayısına bağlı havuzlar ~9 günde bir) N verilir;
+  /// takvim günleri N'lik bloklara indirgenir ki ardışık KULLANIMLAR
+  /// döngüde ardışık konumlara düşsün ve tekrarsızlık korunabilsin.
+  int donguselIndeks({
+    required UserSeed kullanici,
+    required DateTime gun,
+    required String amac,
+    required int havuzBoyutu,
+    int adimGun = 1,
+  }) {
+    if (havuzBoyutu < 1) {
+      throw ArgumentError.value(
+        havuzBoyutu,
+        'havuzBoyutu',
+        'Havuz en az 1 eleman içermelidir',
+      );
+    }
+    if (adimGun < 1) {
+      throw ArgumentError.value(adimGun, 'adimGun', 'En az 1 olmalıdır');
+    }
+    // Taban bölme: negatif gün numaralarında da blok sınırları kaymaz.
+    final int hamGunNo = gunNumarasi(gun);
+    final int gunNo = (hamGunNo - hamGunNo % adimGun) ~/ adimGun;
+    // Negatif gün numaralarında da doğru döngü için taban bölme.
+    final int konum = gunNo % havuzBoyutu;
+    final int dongu = (gunNo - konum) ~/ havuzBoyutu;
+
+    final Random rnd = Random(
+      _seedUret(
+        kullanici,
+        DateTime(EngineConfig.donguReferansYili),
+        ek: ':dongu:$amac:$havuzBoyutu:$dongu',
+      ),
+    );
+    final List<int> permutasyon = List<int>.generate(havuzBoyutu, (int i) => i)
+      ..shuffle(rnd);
+    return permutasyon[konum];
+  }
+
+  /// [gun]ün referans günden (1 Ocak [EngineConfig.donguReferansYili])
+  /// bu yana geçen takvim günü sayısı; saat ve yaz saatinden bağımsızdır.
+  static int gunNumarasi(DateTime gun) => DateTime.utc(
+    gun.year,
+    gun.month,
+    gun.day,
+  ).difference(DateTime.utc(EngineConfig.donguReferansYili)).inDays;
 
   /// (kullanıcı, gün) çiftinden deterministik RNG tohumu üretir.
   ///
@@ -160,7 +228,8 @@ class LuckEngine {
   /// aynı günden farklı tohum türetebilsin). SHA-256 özetinin ilk 8
   /// baytı big-endian int'e çevrilir.
   int _seedUret(UserSeed kullanici, DateTime gun, {String ek = ''}) {
-    final String girdi = kullanici.isimHash +
+    final String girdi =
+        kullanici.isimHash +
         kullanici.dogumTarihi.toIso8601String() +
         _gunAnahtari(gun) +
         ek;
@@ -190,12 +259,11 @@ class LuckEngine {
     }
     final double ortalama =
         sonUcGunSkorlari.reduce((int a, int b) => a + b) /
-            sonUcGunSkorlari.length;
+        sonUcGunSkorlari.length;
     if (ortalama >= EngineConfig.dusukSeriEsigi) {
       return null;
     }
-    final int aralik =
-        EngineConfig.seriBiasMaks - EngineConfig.seriBiasMin + 1;
+    final int aralik = EngineConfig.seriBiasMaks - EngineConfig.seriBiasMin + 1;
     final int etki = EngineConfig.seriBiasMin + rnd.nextInt(aralik);
     return LuckModifier(ad: seriDengesiAdi, etki: etki);
   }

@@ -1,14 +1,5 @@
-import '../../core/luck_engine/luck_engine.dart';
-
-/// Kategori detay ve premium iskeletine özgü sabitler.
+/// Kategori detay sayfasına özgü sabitler.
 abstract final class CategoriesConfig {
-  /// Premium olmadan kilitli görünen kategoriler (plan Session 9,
-  /// madde 2: aşk ve para).
-  static const Set<LuckCategory> kilitliKategoriler = <LuckCategory>{
-    LuckCategory.ask,
-    LuckCategory.para,
-  };
-
   /// Kilitli kutulardaki blur şiddeti.
   static const double blurSigma = 3;
 
@@ -23,7 +14,4 @@ abstract final class CategoriesConfig {
 
   /// Detay sayfasındaki kategori ikonunun boyutu.
   static const double detayIkonBoyutu = 32;
-
-  /// Paywall'daki kristal küre illüstrasyonunun boyutu.
-  static const double paywallIllustrasyonBoyutu = 140;
 }
