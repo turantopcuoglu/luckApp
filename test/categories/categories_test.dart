@@ -63,7 +63,7 @@ void main() {
     await ekraniAc(tester, const DailyLuckScreen(), premium: premium);
     await tester.tap(find.byType(FortuneRevealCard));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 1200));
+    await tester.pump(const Duration(milliseconds: 2100));
     await tester.pump(const Duration(milliseconds: 1500));
     await tester.pump(const Duration(milliseconds: 500));
   }
@@ -111,6 +111,7 @@ void main() {
       await tester.runAsync(hazirla);
       await anaEkraniAcVeKartiCevir(tester);
 
+      await tester.ensureVisible(find.text(LuckCategory.ask.etiket));
       await tester.tap(find.text(LuckCategory.ask.etiket));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
@@ -143,6 +144,7 @@ void main() {
       await tester.runAsync(hazirla);
       await anaEkraniAcVeKartiCevir(tester);
 
+      await tester.ensureVisible(find.text(LuckCategory.saglik.etiket));
       await tester.tap(find.text(LuckCategory.saglik.etiket));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
@@ -157,6 +159,7 @@ void main() {
 
       expect(find.byIcon(Icons.lock_rounded), findsNothing);
 
+      await tester.ensureVisible(find.text(LuckCategory.ask.etiket));
       await tester.tap(find.text(LuckCategory.ask.etiket));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));

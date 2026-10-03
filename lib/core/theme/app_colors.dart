@@ -28,4 +28,38 @@ abstract final class AppColors {
 
   /// Hata durumları.
   static const Color error = Color(0xFFE57373);
+
+  /// Işık dikişi ve kıvılcımların sıcak beyaz çekirdeği.
+  static const Color isikCekirdegi = Color(0xFFFFF8E6);
+
+  /// Kart kanatlarının döndükçe kararan gölge rengi.
+  static const Color golge = Color(0xFF000000);
+
+  // ---- Skor sahnesi vurguları (ışık şeritleri, hale) ----
+
+  /// Yüksek skor sahnesinin turkuaz ışığı.
+  static const Color sahneYuksek = Color(0xFF6FE6DA);
+
+  /// Orta skor sahnesinin altın ışığı.
+  static const Color sahneOrta = Color(0xFFFFD27A);
+
+  /// Düşük skor sahnesinin lavanta ışığı.
+  static const Color sahneDusuk = Color(0xFFC3B2F5);
+
+  // ---- Kategori karo renkleri ----
+
+  /// Aşk kategorisi (pembe).
+  static const Color kategoriAsk = Color(0xFFEC7BA6);
+
+  /// Para kategorisi (sıcak altın).
+  static const Color kategoriPara = Color(0xFFE8B957);
+
+  /// Sağlık kategorisi (yeşil).
+  static const Color kategoriSaglik = Color(0xFF72C98F);
+
+  /// Sosyal kategorisi (mavi).
+  static const Color kategoriSosyal = Color(0xFF6AAEEA);
+
+  /// Risk kategorisi (turuncu).
+  static const Color kategoriRisk = Color(0xFFF29A52);
 }

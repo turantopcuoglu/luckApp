@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/content/gunluk_okuma.dart';
@@ -10,7 +11,7 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/hero_tags.dart';
 import '../ads/banner_reklam_alani.dart';
@@ -18,6 +19,7 @@ import '../categories/categories_strings.dart';
 import '../categories/category_detail_screen.dart';
 import '../categories/widgets/premium_gate.dart';
 import '../feedback/feedback_screen.dart';
+import '../home/ana_sekme.dart';
 import '../legal/legal_texts.dart';
 import '../premium/kilit_secenekleri.dart';
 import '../premium/premium_providers.dart';
@@ -26,21 +28,24 @@ import '../profile/yil_raporu_karti.dart';
 import '../share/share_button.dart';
 import 'daily_luck_config.dart';
 import 'daily_luck_providers.dart';
+import 'skor_sahnesi.dart';
 import 'tr_strings.dart';
-import 'widgets/animated_score_ring.dart';
 import 'widgets/category_card.dart';
 import 'widgets/comment_card.dart';
 import 'widgets/fortune_reveal_card.dart';
+import 'widgets/gunun_puani.dart';
 import 'widgets/kutu_acilisi.dart';
 import 'widgets/lucky_row.dart';
 import 'widgets/neden_cipleri.dart';
+import 'widgets/sahne_arka_plani.dart';
 
-/// Ana ekran: üstte tarih + selamlama + profil özeti, ortada kapalı kader
-/// kartı, altında kapalı kategori kutuları; kart açılınca kişiye özel
-/// bölümlü okuma belirir.
+/// Ana ekran: yaşayan bir gece sahnesinin önünde tarih + selamlama,
+/// ortada kapalı kader kartı, altında kapalı kategori karoları; kart
+/// açılınca skor sahnesi gelir ve kişiye özel bölümlü okuma belirir.
 ///
-/// Akış: karta dokun → 3D flip → ekrana yaklaşıp "düşme" → skor
-/// count-up → kutular tek tek flip'le açılır → okuma belirir.
+/// Akış: karta (ya da "Kartımı aç"a) dokun → mühür → ışık dikişi →
+/// kart iki kanat hâlinde açılır, arka plan skor sahnesine geçer, skor
+/// sayar → karolar tek tek flip'le açılır → okuma belirir.
 class DailyLuckScreen extends ConsumerWidget {
   /// Varsayılan kurucu.
   const DailyLuckScreen({super.key});
@@ -51,60 +56,51 @@ class DailyLuckScreen extends ConsumerWidget {
     // Okuma saklanan sonuçtan senkron türetilir; iki provider birlikte
     // beklenir ki _Icerik null dalı olmadan tam veriyle kurulsun.
     final AsyncValue<GunlukOkuma> okuma = ref.watch(gunlukOkumaProvider);
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          const _YildizArkaPlani(),
-          SafeArea(
-            child: sonuc.when(
-              data: (LuckResult veri) => okuma.when(
-                data: (GunlukOkuma o) => _Icerik(sonuc: veri, okuma: o),
-                loading: () => const _Yukleniyor(),
-                error: (Object hata, StackTrace iz) => const _Hata(),
-              ),
-              loading: () => const _Yukleniyor(),
-              error: (Object hata, StackTrace iz) => const _Hata(),
-            ),
+    // Ana kabuk sekmeleri IndexedStack'te canlı kalır; sekme görünmezken
+    // sahne/kart döngüleri durur ki pil harcanmasın.
+    final bool gorunur =
+        ref.watch(anaSekmeProvider) == AnaSekme.bugun.index;
+    return TickerMode(
+      enabled: gorunur,
+      child: Scaffold(
+        body: sonuc.when(
+          data: (LuckResult veri) => okuma.when(
+            data: (GunlukOkuma o) => _Icerik(sonuc: veri, okuma: o),
+            loading: () => const _SahneliDurum(child: _Yukleniyor()),
+            error: (Object hata, StackTrace iz) =>
+                const _SahneliDurum(child: _Hata()),
           ),
-        ],
+          loading: () => const _SahneliDurum(child: _Yukleniyor()),
+          error: (Object hata, StackTrace iz) =>
+              const _SahneliDurum(child: _Hata()),
+        ),
       ),
     );
   }
 }
 
-/// Köşelerde soluk yıldız/parçacık deseni (Session 4 asset'i).
-class _YildizArkaPlani extends StatelessWidget {
-  const _YildizArkaPlani();
+/// Yükleme/hata durumları: kapalı sahnenin önünde ortalanmış içerik.
+class _SahneliDurum extends StatelessWidget {
+  const _SahneliDurum({required this.child});
+
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-            top: DailyLuckConfig.yildizDesenTasmasi,
-            right: DailyLuckConfig.yildizDesenTasmasi,
-            child: AppIllustrations.yildizDeseni(
-              boyut: DailyLuckConfig.yildizDesenBoyutu,
-            ),
-          ),
-          Positioned(
-            bottom: DailyLuckConfig.yildizDesenTasmasi,
-            left: DailyLuckConfig.yildizDesenTasmasi,
-            child: AppIllustrations.yildizDeseni(
-              boyut: DailyLuckConfig.yildizDesenBoyutu,
-            ),
-          ),
-        ],
-      ),
+    return Stack(
+      children: <Widget>[
+        const Positioned.fill(child: SahneArkaPlani.kapali()),
+        SafeArea(child: child),
+      ],
     );
   }
 }
 
 /// Başarılı durumda ekranın tam içeriği ve açılış orkestrasyonu.
 ///
-/// Kutu/okuma açılış controller'ı burada yaşar; kart açılışı bitince
-/// (onAcilisTamam) tetiklenir. setState kullanılmaz — controller'ı
+/// İki controller burada yaşar: kart açılışı (arka plan sahnesi, kart ve
+/// kartın altındaki metinler aynı zaman çizgisine bağlı) ve ardından
+/// gelen karo/okuma açılışı. setState kullanılmaz — controller'ları
 /// dinleyen alt widget'lar kendi kendini boyar (kural 5).
 class _Icerik extends ConsumerStatefulWidget {
   const _Icerik({required this.sonuc, required this.okuma});
@@ -119,16 +115,42 @@ class _Icerik extends ConsumerStatefulWidget {
 }
 
 class _IcerikState extends ConsumerState<_Icerik>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   /// Kutu açılışları + okuma belirmesinin toplam süresi.
   static final Duration _kutuKontrolSuresi =
       DailyLuckConfig.kutuGecikmesi * (LuckCategory.values.length - 1) +
           DailyLuckConfig.kutuAcilisSuresi +
           DailyLuckConfig.yorumBelirmeSuresi;
 
+  /// Kart açılışının zaman çizgisi (Mühür → Işık → Açılış → Yerleşme).
+  late final AnimationController _kartKontrol = AnimationController(
+    vsync: this,
+    duration: DailyLuckConfig.kartAcilisSuresi,
+  );
+
   late final AnimationController _kutuKontrol = AnimationController(
     vsync: this,
     duration: _kutuKontrolSuresi,
+  );
+
+  /// Arka planın kapalı sahneden skor sahnesine geçişi.
+  late final Animation<double> _sahneGecisi = CurvedAnimation(
+    parent: _kartKontrol,
+    curve: const Interval(
+      DailyLuckConfig.sahneGecisBaslangici,
+      DailyLuckConfig.sahneGecisSonu,
+      curve: Curves.easeInOut,
+    ),
+  );
+
+  /// Skor count-up'ı ve ışık kemeri çizimi.
+  late final Animation<double> _skorSayaci = CurvedAnimation(
+    parent: _kartKontrol,
+    curve: const Interval(
+      DailyLuckConfig.skorSayacBaslangici,
+      1,
+      curve: DailyLuckConfig.skorSayacEgrisi,
+    ),
   );
 
   /// Okumanın belirme dilimi: sürenin sonundaki fade parçası.
@@ -143,10 +165,65 @@ class _IcerikState extends ConsumerState<_Icerik>
     ),
   );
 
+  /// Arka planın kaydırmayla kararması için ekran kaydırıcısı.
+  final ScrollController _kaydirma = ScrollController();
+
+  /// Kanatlar açılırken verilen hafif titreşim bir kez çalsın.
+  bool _kanatTitresimiVerildi = false;
+
+  /// Günün skor sahnesi (görsel + vurgu rengi).
+  SkorSahnesi get _sahne => SkorSahnesi.skordan(widget.sonuc.genelSkor);
+
+  @override
+  void initState() {
+    super.initState();
+    _kartKontrol
+      ..addListener(_kanatTitresimi)
+      ..addStatusListener((AnimationStatus durum) {
+        if (durum == AnimationStatus.completed) {
+          _kutuKontrol.forward();
+        }
+      });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Açılışta görsel geç yüklenip sahne "boş" geçmesin diye önden çöz.
+    unawaited(precacheImage(AssetImage(_sahne.gorsel), context));
+    unawaited(
+      precacheImage(const AssetImage(AppImages.kartArkaYuzu), context),
+    );
+  }
+
   @override
   void dispose() {
+    _kartKontrol.dispose();
     _kutuKontrol.dispose();
+    _kaydirma.dispose();
     super.dispose();
+  }
+
+  /// Kartı açar: yalnız kapalıyken; "tok dokunuş" titreşimiyle başlar.
+  /// "Hareketi azalt" açıksa koreografi kısa bir geçişe iner.
+  void _kartiAc() {
+    if (_kartKontrol.value > 0 || _kartKontrol.isAnimating) {
+      return;
+    }
+    unawaited(HapticFeedback.mediumImpact());
+    _kartKontrol.duration = MediaQuery.disableAnimationsOf(context)
+        ? DailyLuckConfig.azaltilmisAcilisSuresi
+        : DailyLuckConfig.kartAcilisSuresi;
+    _kartKontrol.forward();
+  }
+
+  /// Kanatlar ayrılmaya başladığı an hafif bir titreşim verir.
+  void _kanatTitresimi() {
+    if (!_kanatTitresimiVerildi &&
+        _kartKontrol.value >= DailyLuckConfig.isikSonu) {
+      _kanatTitresimiVerildi = true;
+      unawaited(HapticFeedback.lightImpact());
+    }
   }
 
   /// Kategori kutusuna dokunma: kilitliyse kilit seçenekleri, değilse
@@ -206,129 +283,186 @@ class _IcerikState extends ConsumerState<_Icerik>
     final UserProfile profil = ref.watch(aktifProfilProvider);
     final DailyRecord? kayit = ref.watch(bugunKaydiProvider);
     final GunlukOkuma okuma = widget.okuma;
+    final SkorSahnesi sahne = _sahne;
     final bool aksamKarti = bugun.hour >= DailyLuckConfig.aksamKartiSaati &&
         kayit?.feedbackPozitif == null;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          // Üst blok: tarih, selamlama ve sabit profil özeti.
-          Text(
-            TrStrings.tarihMetni(bugun),
-            style: yaziTemasi.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+    return Stack(
+      children: <Widget>[
+        // Sabit, yaşayan arka plan: içerik üzerinde kayar.
+        Positioned.fill(
+          child: SahneArkaPlani(
+            acikSahne: sahne.gorsel,
+            gecis: _sahneGecisi,
+            kaydirma: _kaydirma,
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            TrStrings.selamlama(profil.isim),
-            style: yaziTemasi.headlineMedium,
-          ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Orta blok: kapalı kader kartı (deste kartı oranında).
-          // Hero: onboarding'deki küçük halka bu karta uçar.
-          Center(
-            child: Hero(
-              tag: HeroTags.skorHalkasi,
-              child: FortuneRevealCard(
-                arkaYuz: const _KapaliKartYuzu(),
-                onYuz: _AcikKartYuzu(skor: widget.sonuc.genelSkor),
-                onAcilisTamam: _kutuKontrol.forward,
-              ),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Kategori kutuları — kapalı (yalnız ikon) başlar, kart açılınca
-          // tek tek flip'le açılır.
-          SizedBox(
-            height: DailyLuckConfig.kategoriListeYuksekligi,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: LuckCategory.values.length,
-              separatorBuilder: (BuildContext context, int i) =>
-                  const SizedBox(width: AppSpacing.sm),
-              itemBuilder: (BuildContext context, int i) {
-                final LuckCategory kategori = LuckCategory.values[i];
-                final bool kilitli =
-                    ref.watch(kategoriKilitliProvider(kategori));
-                return GestureDetector(
-                  onTap: () => unawaited(_kategoriyeDokun(kategori)),
-                  child: PremiumGate(
-                    kilitli: kilitli,
-                    child: KutuAcilisi(
-                      animasyon: _kutuKontrol,
-                      kontrolSuresi: _kutuKontrolSuresi,
-                      indeks: i,
-                      kapali: KapaliKategoriKutusu(kategori: kategori),
-                      acik: CategoryCard(
-                        kategori: kategori,
-                        skor: widget.sonuc.kategoriSkorlari[kategori]!,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Okuma + şans ögeleri + paylaş: kutular açıldıktan sonra
-          // birlikte belirir.
-          FadeTransition(
-            opacity: _okumaOpakligi,
+        ),
+        SafeArea(
+          child: SingleChildScrollView(
+            controller: _kaydirma,
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
+                // Üst blok: tarih ve selamlama.
                 Text(
-                  okuma.baslik,
-                  style: yaziTemasi.titleLarge?.copyWith(
-                    color: AppColors.gold,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                // Mevcut yorum kartı korunur; içerik paragraflar hâlinde.
-                CommentCard(metin: okuma.kartMetni),
-                _AnlattiMiSatiri(
-                  cevap: kayit?.bolumGeriBildirimleri[
-                      okuma.bolumler.first.kimlik],
-                  onCevap: (bool anlatti) =>
-                      _okumayaCevapVer(okuma, anlatti: anlatti),
-                ),
-                NedenCipleri(nedenler: okuma.nedenler),
-                const SizedBox(height: AppSpacing.md),
-                SansOgeleriKarti(icerik: okuma),
-                const SizedBox(height: AppSpacing.md),
-                const YilRaporuKarti(),
-                if (aksamKarti) ...<Widget>[
-                  const SizedBox(height: AppSpacing.md),
-                  const _AksamKarti(),
-                ],
-                const SizedBox(height: AppSpacing.md),
-                Center(
-                  child: ShareButton(
-                    sonuc: widget.sonuc,
-                    baslik: okuma.baslik,
-                  ),
-                ),
-                BannerReklamAlani(
-                  goster: ref.watch(bannerGosterilebilirProvider),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Text(
-                  YasalMetinler.kisaNot,
+                  TrStrings.tarihMetni(bugun),
+                  textAlign: TextAlign.center,
                   style: yaziTemasi.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  TrStrings.selamlama(profil.isim),
                   textAlign: TextAlign.center,
+                  style: yaziTemasi.headlineMedium,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+
+                // Orta blok: kader kartı (deste kartı oranında).
+                // Hero: onboarding'deki küçük halka bu karta uçar.
+                Center(
+                  child: Hero(
+                    tag: HeroTags.skorHalkasi,
+                    child: FortuneRevealCard(
+                      acilis: _kartKontrol,
+                      vurgu: sahne.vurgu,
+                      onDokun: _kartiAc,
+                      arkaYuz: const _KapaliKartYuzu(),
+                      onYuz: GununPuani(
+                        skor: widget.sonuc.genelSkor,
+                        ilerleme: _skorSayaci,
+                        vurgu: sahne.vurgu,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+
+                // Kartın altı: önce davet + "Kartımı aç", açılınca günün
+                // başlığı.
+                _KartAltiMetni(
+                  acilis: _kartKontrol,
+                  baslik: okuma.baslik,
+                  onAc: _kartiAc,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+
+                // Kategori karoları — kapalı (yalnız ikon) başlar, kart
+                // açılınca tek tek flip'le açılır. Beşi bir satırı paylaşır.
+                SizedBox(
+                  height: DailyLuckConfig.kategoriKaroYuksekligi,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      for (int i = 0;
+                          i < LuckCategory.values.length;
+                          i++) ...<Widget>[
+                        if (i > 0) const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: _KategoriKarosu(
+                            indeks: i,
+                            kategori: LuckCategory.values[i],
+                            skor: widget.sonuc
+                                .kategoriSkorlari[LuckCategory.values[i]]!,
+                            animasyon: _kutuKontrol,
+                            kontrolSuresi: _kutuKontrolSuresi,
+                            onDokun: _kategoriyeDokun,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+
+                // Okuma + şans ögeleri + paylaş: karolar açıldıktan sonra
+                // birlikte belirir.
+                FadeTransition(
+                  opacity: _okumaOpakligi,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      // Mevcut yorum kartı korunur; içerik paragraflar hâlinde.
+                      CommentCard(metin: okuma.kartMetni),
+                      _AnlattiMiSatiri(
+                        cevap: kayit?.bolumGeriBildirimleri[
+                            okuma.bolumler.first.kimlik],
+                        onCevap: (bool anlatti) =>
+                            _okumayaCevapVer(okuma, anlatti: anlatti),
+                      ),
+                      NedenCipleri(nedenler: okuma.nedenler),
+                      const SizedBox(height: AppSpacing.md),
+                      SansOgeleriKarti(icerik: okuma),
+                      const SizedBox(height: AppSpacing.md),
+                      const YilRaporuKarti(),
+                      if (aksamKarti) ...<Widget>[
+                        const SizedBox(height: AppSpacing.md),
+                        const _AksamKarti(),
+                      ],
+                      const SizedBox(height: AppSpacing.md),
+                      Center(
+                        child: ShareButton(
+                          sonuc: widget.sonuc,
+                          baslik: okuma.baslik,
+                        ),
+                      ),
+                      BannerReklamAlani(
+                        goster: ref.watch(bannerGosterilebilirProvider),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      Text(
+                        YasalMetinler.kisaNot,
+                        style: yaziTemasi.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Tek kategori karosu: dokunma, premium kilidi ve sırası gelince flip.
+class _KategoriKarosu extends ConsumerWidget {
+  const _KategoriKarosu({
+    required this.indeks,
+    required this.kategori,
+    required this.skor,
+    required this.animasyon,
+    required this.kontrolSuresi,
+    required this.onDokun,
+  });
+
+  final int indeks;
+  final LuckCategory kategori;
+  final int skor;
+  final Animation<double> animasyon;
+  final Duration kontrolSuresi;
+  final Future<void> Function(LuckCategory) onDokun;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool kilitli = ref.watch(kategoriKilitliProvider(kategori));
+    return GestureDetector(
+      onTap: () => unawaited(onDokun(kategori)),
+      child: PremiumGate(
+        kilitli: kilitli,
+        child: KutuAcilisi(
+          animasyon: animasyon,
+          kontrolSuresi: kontrolSuresi,
+          indeks: indeks,
+          kapali: KapaliKategoriKutusu(kategori: kategori),
+          acik: CategoryCard(kategori: kategori, skor: skor),
+        ),
       ),
     );
   }
@@ -418,7 +552,8 @@ class _AksamKarti extends StatelessWidget {
   }
 }
 
-/// Kader kartının kapalı yüzü: mor zemin, altın işlemeler (SVG).
+/// Kader kartının kapalı yüzü: lacivert mermer, altın mühür ve ortadan
+/// dikey altın dikiş (açılışta kart bu dikişten ikiye ayrılır).
 class _KapaliKartYuzu extends StatelessWidget {
   const _KapaliKartYuzu();
 
@@ -426,36 +561,156 @@ class _KapaliKartYuzu extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.md),
-      child: AppIllustrations.kartArkaYuzu(
-        genislik: DailyLuckConfig.kartGenisligi,
-        yukseklik: DailyLuckConfig.kartYuksekligi,
+      child: Image.asset(
+        AppImages.kartArkaYuzu,
+        width: DailyLuckConfig.kartGenisligi,
+        height: DailyLuckConfig.kartYuksekligi,
+        fit: BoxFit.cover,
+        gaplessPlayback: true,
+        excludeFromSemantics: true,
+        // Yüklenene kadar koyu yüzey: kart yerinde "boş" görünmez.
+        frameBuilder: (
+          BuildContext context,
+          Widget child,
+          int? kare,
+          bool senkronYuklendi,
+        ) =>
+            kare == null && !senkronYuklendi
+                ? const ColoredBox(color: AppColors.surface)
+                : child,
       ),
     );
   }
 }
 
-/// Kader kartının açık yüzü: skor halkası (count-up kart açılırken
-/// başlar, kart inişiyle birlikte sayar).
-class _AcikKartYuzu extends StatelessWidget {
-  const _AcikKartYuzu({required this.skor});
+/// Kartın altındaki metin bloğu: kapalıyken "Bugünün kartı hazır" daveti
+/// ve altın "Kartımı aç" butonu; açılınca günün başlığı.
+///
+/// İki blok aynı yerde üst üste durur (yükseklik sabit kalır, altındaki
+/// karolar zıplamaz); [acilis] zaman çizgisine göre biri söner, öbürü
+/// belirir. Görünmeyen blok dokunuş ve ekran okuyucudan gizlenir.
+class _KartAltiMetni extends StatelessWidget {
+  const _KartAltiMetni({
+    required this.acilis,
+    required this.baslik,
+    required this.onAc,
+  });
 
-  final int skor;
+  /// Kart açılış zaman çizgisi.
+  final Animation<double> acilis;
+
+  /// Günün başlığı (okumanın başlığı).
+  final String baslik;
+
+  /// "Kartımı aç" dokunuşu.
+  final VoidCallback onAc;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: DailyLuckConfig.kartGenisligi,
-      height: DailyLuckConfig.kartYuksekligi,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.gold),
-      ),
-      child: Center(
-        child: AnimatedScoreRing(
-          skor: skor,
-          boyut: DailyLuckConfig.kartHalkaCapi,
-          kalinlik: DailyLuckConfig.kartHalkaKalinligi,
+    final TextTheme yazi = Theme.of(context).textTheme;
+    final Widget davet = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          TrStrings.kartHazir,
+          textAlign: TextAlign.center,
+          style: yazi.headlineMedium,
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          TrStrings.kendineBirDakika,
+          textAlign: TextAlign.center,
+          style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _AltinButon(metin: TrStrings.kartimiAc, onPressed: onAc),
+      ],
+    );
+    final Widget gununBasligi = Text(
+      baslik,
+      textAlign: TextAlign.center,
+      style: yazi.headlineMedium,
+    );
+
+    return AnimatedBuilder(
+      animation: acilis,
+      builder: (BuildContext context, Widget? child) {
+        final double t = acilis.value;
+        // Davet dokunuşla (mühür fazında) söner; başlık yerleşmede belirir.
+        final double davetOpakligi =
+            1 - (t / DailyLuckConfig.muhurSonu).clamp(0.0, 1.0);
+        final double baslikOpakligi = Curves.easeOut.transform(
+          ((t - DailyLuckConfig.acilisSonu) / (1 - DailyLuckConfig.acilisSonu))
+              .clamp(0.0, 1.0),
+        );
+        return Stack(
+          alignment: Alignment.topCenter,
+          children: <Widget>[
+            IgnorePointer(
+              ignoring: t > 0,
+              child: ExcludeSemantics(
+                excluding: t > 0,
+                child: Opacity(opacity: davetOpakligi, child: davet),
+              ),
+            ),
+            ExcludeSemantics(
+              excluding: baslikOpakligi == 0,
+              child: Opacity(
+                opacity: baslikOpakligi,
+                // Başlık yerleşirken hafifçe yukarı süzülür.
+                child: Transform.translate(
+                  offset: Offset(0, AppSpacing.sm * (1 - baslikOpakligi)),
+                  child: gununBasligi,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Altın gradyanlı, hafif parlayan hap buton.
+class _AltinButon extends StatelessWidget {
+  const _AltinButon({required this.metin, required this.onPressed});
+
+  final String metin;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: DailyLuckConfig.acButonGenisligi,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.full),
+          gradient: const LinearGradient(
+            colors: <Color>[AppColors.goldAcik, AppColors.gold],
+          ),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: AppColors.gold.withValues(
+                alpha: DailyLuckConfig.acButonGolgeOpakligi,
+              ),
+              blurRadius: DailyLuckConfig.acButonGolgesi,
+            ),
+          ],
+        ),
+        child: FilledButton(
+          onPressed: onPressed,
+          style: FilledButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(metin),
+              const SizedBox(width: AppSpacing.xs),
+              const Icon(Icons.chevron_right_rounded),
+            ],
+          ),
         ),
       ),
     );

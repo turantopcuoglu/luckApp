@@ -6,26 +6,47 @@ import '../../../core/theme/app_dimens.dart';
 import '../../../shared/widgets/app_icons.dart';
 import '../daily_luck_config.dart';
 
-/// Kapalı kategori kutusu: yalnızca ortada büyük kategori ikonu,
+/// [kategori]'nin karo rengi (pembe aşk, altın para, yeşil sağlık,
+/// mavi sosyal, turuncu risk).
+Color kategoriRengi(LuckCategory kategori) => switch (kategori) {
+  LuckCategory.ask => AppColors.kategoriAsk,
+  LuckCategory.para => AppColors.kategoriPara,
+  LuckCategory.saglik => AppColors.kategoriSaglik,
+  LuckCategory.sosyal => AppColors.kategoriSosyal,
+  LuckCategory.risk => AppColors.kategoriRisk,
+};
+
+/// Kapalı kategori karosu: koyu cam zeminde yalnızca soluk altın ikon,
 /// metin yok. Kart açılışından sonra [CategoryCard]'a flip'lenir.
+///
+/// Genişliği ebeveyn belirler (ana ekranda beş karo bir satırı paylaşır).
 class KapaliKategoriKutusu extends StatelessWidget {
-  /// [kategori] ikonu ile kapalı kutu oluşturur.
+  /// [kategori] ikonu ile kapalı karo oluşturur.
   const KapaliKategoriKutusu({required this.kategori, super.key});
 
-  /// Kutunun temsil ettiği kategori.
+  /// Karonun temsil ettiği kategori.
   final LuckCategory kategori;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: DailyLuckConfig.kategoriKartGenisligi,
-      child: Card(
-        margin: EdgeInsets.zero,
-        child: Center(
-          child: AppIcons.kategori(
-            kategori,
-            boyut: DailyLuckConfig.kapaliKutuIkonBoyutu,
-            renk: AppColors.gold,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(
+          alpha: DailyLuckConfig.kapaliKaroOpakligi,
+        ),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: AppColors.gold.withValues(
+            alpha: DailyLuckConfig.karoZeminOpakligi,
+          ),
+        ),
+      ),
+      child: Center(
+        child: AppIcons.kategori(
+          kategori,
+          boyut: DailyLuckConfig.kapaliKutuIkonBoyutu,
+          renk: AppColors.gold.withValues(
+            alpha: DailyLuckConfig.kapaliIkonOpakligi,
           ),
         ),
       ),
@@ -33,9 +54,10 @@ class KapaliKategoriKutusu extends StatelessWidget {
   }
 }
 
-/// Tek bir kategorinin mini kartı: ikon + ad, skor ve ince ilerleme barı.
+/// Açık kategori karosu: kategori renginde hafif tonlu cam zemin, renkli
+/// ikon, ad ve büyük skor.
 class CategoryCard extends StatelessWidget {
-  /// [kategori] ve 0-100 arası [skor] ile kart oluşturur.
+  /// [kategori] ve 0-100 arası [skor] ile karo oluşturur.
   const CategoryCard({required this.kategori, required this.skor, super.key});
 
   /// Gösterilen kategori.
@@ -46,56 +68,56 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextTheme yaziTemasi = Theme.of(context).textTheme;
-    return SizedBox(
-      width: DailyLuckConfig.kategoriKartGenisligi,
-      child: Card(
-        margin: EdgeInsets.zero,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.sm + AppSpacing.xs),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  AppIcons.kategori(
-                    kategori,
-                    boyut: DailyLuckConfig.kategoriIkonBoyutu,
-                    renk: AppColors.textSecondary,
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  // Uzun etiketler (ör. "Sağlık") kart genişliğini
-                  // aşabilir; Expanded + ellipsis taşmayı önler.
-                  Expanded(
-                    child: Text(
-                      kategori.etiket,
-                      overflow: TextOverflow.ellipsis,
-                      style: yaziTemasi.labelMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ],
+    final TextTheme yazi = Theme.of(context).textTheme;
+    final Color renk = kategoriRengi(kategori);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        // Üstten kategori rengi, alta doğru koyu yüzeye inen ton.
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[
+            renk.withValues(alpha: DailyLuckConfig.karoZeminOpakligi),
+            AppColors.surface.withValues(
+              alpha: DailyLuckConfig.kapaliKaroOpakligi,
+            ),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: renk.withValues(alpha: DailyLuckConfig.karoKenarOpakligi),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            AppIcons.kategori(
+              kategori,
+              boyut: DailyLuckConfig.kategoriIkonBoyutu,
+              renk: renk,
+            ),
+            // Dar karoda "Sağlık" gibi uzun adlar küçülerek sığar.
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                kategori.etiket,
+                style: yazi.labelSmall?.copyWith(color: AppColors.textPrimary),
               ),
-              const Spacer(),
-              Text(
-                '$skor',
-                style: yaziTemasi.headlineSmall?.copyWith(
-                  color: AppColors.gold,
+            ),
+            Text(
+              '$skor',
+              style: yazi.titleLarge?.copyWith(
+                color: Color.lerp(
+                  renk,
+                  AppColors.textPrimary,
+                  DailyLuckConfig.karoSkorAcikligi,
                 ),
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(height: AppSpacing.xs),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadius.full),
-                child: LinearProgressIndicator(
-                  value: skor / EngineConfig.skorMaks,
-                  minHeight: DailyLuckConfig.kategoriBarYuksekligi,
-                  color: AppColors.gold,
-                  backgroundColor: AppColors.background,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -11,7 +11,7 @@ import 'package:kader/features/daily_luck/daily_luck_screen.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
 import 'package:kader/features/daily_luck/widgets/comment_card.dart';
 import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
-import 'package:kader/features/daily_luck/widgets/score_ring.dart';
+import 'package:kader/features/daily_luck/widgets/gunun_puani.dart';
 import 'package:kader/features/share/share_button.dart';
 import 'package:kader/features/share/share_service.dart';
 
@@ -62,11 +62,12 @@ void main() {
     await tester.pump();
   }
 
-  /// Kader kartına dokunur ve tüm açılış zincirini pompalar.
+  /// Kader kartına dokunur ve tüm açılış zincirini pompalar: 2 sn kart
+  /// koreografisi, ardından karo açılışları ve okumanın belirmesi.
   Future<void> kartiAc(WidgetTester tester) async {
     await tester.tap(find.byType(FortuneRevealCard));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 1200));
+    await tester.pump(const Duration(milliseconds: 2100));
     await tester.pump(const Duration(milliseconds: 1500));
     await tester.pump(const Duration(milliseconds: 500));
   }
@@ -78,7 +79,9 @@ void main() {
     expect(find.text('6 Temmuz 2026, Pazartesi'), findsOneWidget);
     expect(find.text(TrStrings.selamlama('Ayşe')), findsOneWidget);
     expect(find.byType(FortuneRevealCard), findsOneWidget);
-    expect(find.byType(ScoreRing), findsNothing);
+    expect(find.byType(GununPuani), findsNothing);
+    expect(find.text(TrStrings.kartHazir), findsOneWidget);
+    expect(find.text(TrStrings.kartimiAc), findsOneWidget);
   });
 
   testWidgets('karta dokununca kayıtlı skor halkada yazar',
@@ -90,7 +93,62 @@ void main() {
 
     expect(
       find.descendant(
-        of: find.byType(ScoreRing),
+        of: find.byType(GununPuani),
+        matching: find.text('${beklenen.genelSkor}'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('"Kartımı aç" butonu da kartı açar; ikinci dokunuş yok sayılır',
+      (WidgetTester tester) async {
+    final LuckResult beklenen =
+        motor.hesapla(kullanici: ayse.seed, gun: sabitGun);
+    await ekraniAc(tester);
+
+    await tester.tap(find.text(TrStrings.kartimiAc));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1000));
+    // Açılış sürerken karta dokunmak koreografiyi baştan başlatmaz.
+    await tester.tap(find.byType(FortuneRevealCard), warnIfMissed: false);
+    await tester.pump(const Duration(milliseconds: 1100));
+
+    expect(
+      find.descendant(
+        of: find.byType(GununPuani),
+        matching: find.text('${beklenen.genelSkor}'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('"Hareketi azalt" açıkken kart kısa bir geçişle açılır',
+      (WidgetTester tester) async {
+    final LuckResult beklenen =
+        motor.hesapla(kullanici: ayse.seed, gun: sabitGun);
+    await tester.runAsync(() async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: ortam.overridelar(gun: sabitGun),
+          child: const MaterialApp(
+            home: MediaQuery(
+              data: MediaQueryData(disableAnimations: true),
+              child: DailyLuckScreen(),
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    });
+    await tester.pump();
+
+    await tester.tap(find.byType(FortuneRevealCard));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 350));
+
+    expect(
+      find.descendant(
+        of: find.byType(GununPuani),
         matching: find.text('${beklenen.genelSkor}'),
       ),
       findsOneWidget,

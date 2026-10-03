@@ -39,8 +39,24 @@ abstract final class TrStrings {
   /// Skor yüklenirken gösterilen metin.
   static const String yukleniyor = 'Kaderin hesaplanıyor...';
 
-  /// Kapalı kader kartının altındaki dokunma ipucu.
-  static const String kartIpucu = 'Bugünün kaderini görmek için kartına dokun';
+  /// Kapalı kartın altındaki başlık.
+  static const String kartHazir = 'Bugünün kartı hazır';
+
+  /// Kapalı kartın altındaki davet cümlesi.
+  static const String kendineBirDakika = 'Kendine bir dakika ayır.';
+
+  /// Kartı açan altın buton (ve kartın erişilebilirlik etiketi).
+  static const String kartimiAc = 'Kartımı aç';
+
+  /// Açık karttaki skorun altındaki etiket.
+  static const String gununSansPuani = 'Günün şans puanı';
+
+  /// Skorun paydası: "/ 100".
+  static String puanPaydasi(int maks) => '/ $maks';
+
+  /// Ekran okuyucu için skor cümlesi.
+  static String puanSemantik(int skor, int maks) =>
+      '$gununSansPuani: $skor / $maks';
 
   /// Beklenmeyen hata metni.
   static const String hataMetni =

@@ -1,60 +1,24 @@
 import 'package:flutter/animation.dart';
+import 'package:flutter/painting.dart';
 
 /// Ana ekrana (daily_luck) özgü ölçü, eşik ve animasyon sabitleri.
 ///
 /// Magic number yasağı gereği ekrandaki tüm özel ölçüler buradan okunur;
 /// genel boşluk/radius değerleri `core/theme/app_dimens.dart`tan gelir.
 abstract final class DailyLuckConfig {
-  /// Skor halkasının dış çapı.
+  /// Skor halkasının dış çapı (kategori detay ve uyum ekranlarının
+  /// varsayılanı; [ScoreRing] bunu okur).
   static const double halkaCapi = 220;
 
   /// Skor halkasının çizgi kalınlığı.
   static const double halkaKalinligi = 18;
-
-  /// Kategori mini kartının genişliği.
-  static const double kategoriKartGenisligi = 116;
-
-  /// Yatay kategori listesinin yüksekliği.
-  static const double kategoriListeYuksekligi = 116;
-
-  /// Kategori kartındaki skor barının kalınlığı.
-  static const double kategoriBarYuksekligi = 4;
-
-  /// Kategori kartındaki ikonun kenar uzunluğu.
-  static const double kategoriIkonBoyutu = 16;
 
   // ---- Şans ögeleri kartı (renk / sayı / tavsiye) ----
 
   /// Şans rengi yuvarlağının çapı.
   static const double sansRengiCapi = 28;
 
-  // ---- Animasyon sabitleri (Session 5) ----
-
-  /// Skor count-up ve halka dolumunun süresi.
-  static const Duration skorSayacSuresi = Duration(milliseconds: 1200);
-
-  /// Skor count-up eğrisi.
-  static const Curve skorSayacEgrisi = Curves.easeOutCubic;
-
-  /// Yorum kartı flip süresi.
-  static const Duration kartFlipSuresi = Duration(milliseconds: 500);
-
-  /// Yorum kartı flip eğrisi (hafif taşmalı, "fizikli" his).
-  static const Curve kartFlipEgrisi = Curves.easeInOutBack;
-
-  /// 3D flip perspektif katsayısı (Matrix4 satır 3, sütun 2).
-  static const double kartFlipPerspektifi = 0.001;
-
-  /// Kategori kartları arasındaki sahneye giriş gecikmesi.
-  static const Duration kategoriGecikmesi = Duration(milliseconds: 80);
-
-  /// Tek bir kategori kartının giriş (fade+slide) süresi.
-  static const Duration kategoriGirisSuresi = Duration(milliseconds: 400);
-
-  /// Kategori kartının başladığı dikey ofset (yükseklik oranı).
-  static const double kategoriSlideOrani = 0.35;
-
-  // ---- Kader kartı (kapalı kart açılış akışı) ----
+  // ---- Kader kartı ölçüleri ----
 
   /// Kader kartının genişliği (deste kartı oranı: 2:3).
   static const double kartGenisligi = 220;
@@ -62,24 +26,306 @@ abstract final class DailyLuckConfig {
   /// Kader kartının yüksekliği.
   static const double kartYuksekligi = 330;
 
-  /// Kart ön yüzündeki skor halkasının çapı.
-  static const double kartHalkaCapi = 170;
+  /// 3D dönüşlerin perspektif katsayısı (Matrix4 satır 3, sütun 2).
+  static const double kartFlipPerspektifi = 0.001;
 
-  /// Kart ön yüzündeki skor halkasının çizgi kalınlığı.
-  static const double kartHalkaKalinligi = 12;
+  // ---- Kart açılışı: Mühür → Işık → Açılış → Yerleşme ----
+  //
+  // Tasarımdaki hareket taslağı: 0-250 ms mühür, 250-650 ms ışık,
+  // 650-1300 ms açılış, 1300-2000 ms yerleşme. Aşağıdaki oranlar
+  // tek controller'ın (0→1) bu dilimlere bölünmesidir.
 
-  /// Kartın "ekrana yaklaşma + düşme" (iniş) efektinin süresi;
-  /// flip süresi [kartFlipSuresi]'dir, toplam açılış ikisinin toplamı.
-  static const Duration kartInisSuresi = Duration(milliseconds: 600);
+  /// Kart açılışının toplam süresi.
+  static const Duration kartAcilisSuresi = Duration(milliseconds: 2000);
 
-  /// Yaklaşma anındaki azami ölçek (karta "ekrana geliyor" hissi).
-  static const double kartYaklasmaOlcegi = 1.30;
+  /// "Hareketi azalt" açıkken açılışın süresi (yalnız kısa geçiş).
+  static const Duration azaltilmisAcilisSuresi = Duration(milliseconds: 300);
 
-  /// Ekrana "düşme" anındaki sıkışma ölçeği (çarpma hissi).
-  static const double kartCarpmaOlcegi = 0.965;
+  /// Mühür fazının bitişi (250 ms / 2000 ms).
+  static const double muhurSonu = 0.125;
 
-  /// Kapalı kategori kutusundaki büyük ikonun boyutu.
-  static const double kapaliKutuIkonBoyutu = 32;
+  /// Işık (dikiş) fazının bitişi (650 ms / 2000 ms).
+  static const double isikSonu = 0.325;
+
+  /// Kanatların açılma fazının bitişi (1300 ms / 2000 ms).
+  static const double acilisSonu = 0.65;
+
+  /// Arka plan sahnesinin kapalı sahneden skor sahnesine geçiş dilimi.
+  static const double sahneGecisBaslangici = 0.30;
+
+  /// Sahne geçişinin bitişi.
+  static const double sahneGecisSonu = 0.80;
+
+  /// Skor count-up'ının başladığı an (kanatlar aralanırken).
+  static const double skorSayacBaslangici = 0.40;
+
+  /// Skor count-up eğrisi.
+  static const Curve skorSayacEgrisi = Curves.easeOutCubic;
+
+  /// Mühüre basılınca kartın sıkıştığı ölçek ("tok dokunuş").
+  static const double muhurBasmaOlcegi = 0.955;
+
+  /// Işık fazında kartın hafifçe yükseldiği ölçek.
+  static const double isikYukselmeOlcegi = 1.03;
+
+  /// Kanatların açılmada ulaştığı taşma açısı (radyan, ~82°).
+  static const double kanatTasmaAcisi = 1.43;
+
+  /// Kanatların yerleşmede oturduğu son açı (radyan, ~70°).
+  static const double kanatSonAcisi = 1.22;
+
+  /// Yerleşmede her kanadın dışa kayma miktarı (kart genişliği oranı).
+  static const double kanatKaymaOrani = 0.22;
+
+  /// Kanat döndükçe yüzüne inen azami gölge opaklığı.
+  static const double kanatGolgeOpakligi = 0.55;
+
+  /// Yerleşme sonunda kanatların kalan opaklığı (sahnenin kapıları
+  /// görünür kalsın diye kanatlar neredeyse tamamen söner).
+  static const double kanatSonOpakligi = 0.0;
+
+  /// Işık dikişinin çekirdek kalınlığı.
+  static const double dikisKalinligi = 2.5;
+
+  /// Işık dikişi halesinin bulanıklık yarıçapı.
+  static const double dikisHaleBulanikligi = 10;
+
+  /// Işık dikişi halesinin kalınlığı.
+  static const double dikisHaleKalinligi = 14;
+
+  /// Mühür parıltısının yarıçapı (kart genişliği oranı).
+  static const double muhurParlamaOrani = 0.42;
+
+  /// Bekleme sırasında mühür parıltısının en düşük opaklığı.
+  static const double muhurNefesMin = 0.18;
+
+  /// Bekleme sırasında mühür parıltısının en yüksek opaklığı.
+  static const double muhurNefesMaks = 0.45;
+
+  /// Bir bekleme döngüsünde mühürün kaç kez "nefes aldığı".
+  static const double muhurNefesKati = 2;
+
+  /// Mühür halesinin en küçük yarıçap çarpanı (parlaklık 0 iken).
+  static const double muhurHaleMinCarpani = 0.8;
+
+  /// Mühür halesinin parlaklıkla büyüme payı.
+  static const double muhurHaleBuyumesi = 0.4;
+
+  /// Radyal halelerde iç renk durağının konumu (0-1).
+  static const double haleIcDuragi = 0.38;
+
+  /// Radyal halelerde iç durağın dış renge göre opaklık çarpanı.
+  static const double haleIcOpakligi = 0.45;
+
+  /// Açılış anındaki ışık patlamasının yarıçapı (kart genişliği oranı).
+  static const double patlamaYaricapOrani = 1.1;
+
+  /// Açık yüzün (skor) belirmeye başladığı ölçek.
+  static const double onYuzBaslangicOlcegi = 0.9;
+
+  /// Açılışta saçılan kıvılcım sayısı.
+  static const int kivilcimSayisi = 32;
+
+  /// Kıvılcımların gidebileceği azami mesafe (kart genişliği oranı).
+  static const double kivilcimMesafeOrani = 0.95;
+
+  /// Kıvılcım çapı üst sınırı.
+  static const double kivilcimMaksCapi = 2.6;
+
+  /// Kıvılcım dağılımının sabit tohumu. Yalnızca görseldir; skorla
+  /// ilgisi yoktur (her açılışta aynı desen).
+  static const int kivilcimTohumu = 7;
+
+  /// En yavaş kıvılcımın hızının en hızlıya oranı.
+  static const double kivilcimMinHizOrani = 0.35;
+
+  /// En küçük kıvılcımın çapının [kivilcimMaksCapi]'na oranı.
+  static const double kivilcimMinCapOrani = 0.4;
+
+  /// Kıvılcımların dikiş boyunca doğduğu dikey yayılım (kart yüksekliği
+  /// oranı, merkezden her iki yöne).
+  static const double kivilcimDogumYayilimi = 0.35;
+
+  /// Kıvılcım sönüm eğrisinin üssü ((1 - t)^n).
+  static const double kivilcimSonumUssu = 1.5;
+
+  /// Kıvılcım halesinin çapının çekirdeğe oranı.
+  static const double kivilcimHaleCarpani = 2;
+
+  /// Kıvılcım halesinin bulanıklığı.
+  static const double kivilcimBulanikligi = 3;
+
+  /// Açılışta kartın önünden geçen ışık şeritlerinin sayısı.
+  static const int seritSayisi = 2;
+
+  /// Işık şeridinin çizgi kalınlığı.
+  static const double seritKalinligi = 2;
+
+  /// Işık şeridi halesinin kalınlığının çekirdeğe oranı.
+  static const double seritHaleCarpani = 3;
+
+  /// Işık şeridi halesinin bulanıklığı.
+  static const double seritBulanikligi = 6;
+
+  /// Işık şeridinin genliği (kart yüksekliği oranı).
+  static const double seritGenligi = 0.12;
+
+  /// Şerit eğrisinin örnekleme adımı (nokta sayısı).
+  static const int seritAdimSayisi = 40;
+
+  /// Şeridin kartın solundan taşarak başladığı yer (kart genişliği oranı).
+  static const double seritBaslangicX = -0.35;
+
+  /// Şeridin yatay boyu (kart genişliği oranı; kartın iki yanından taşar).
+  static const double seritYatayBoyu = 1.7;
+
+  /// İlk şeridin dikey merkezi (kart yüksekliği oranı).
+  static const double seritIlkMerkezY = 0.42;
+
+  /// Ardışık şeritlerin dikey aralığı (kart yüksekliği oranı).
+  static const double seritAraligi = 0.16;
+
+  /// Şerit halesinin tepe opaklığı.
+  static const double seritHaleOpakligi = 0.6;
+
+  /// Şerit çekirdeğinin tepe opaklığı.
+  static const double seritCekirdekOpakligi = 0.8;
+
+  // ---- Kapalı kartın bekleme (idle) hareketi ----
+
+  /// Bekleme döngüsünün periyodu (yörünge turu + nefes).
+  static const Duration beklemeDongusu = Duration(seconds: 7);
+
+  /// Kartın süzülme genliği (dikey, piksel).
+  static const double suzulmeGenligi = 4;
+
+  /// Yörünge elipsinin genişliği (kart genişliği oranı).
+  static const double yorungeGenislikOrani = 1.6;
+
+  /// Yörünge elipsinin yüksekliği (kart genişliği oranı).
+  static const double yorungeYukseklikOrani = 0.38;
+
+  /// Yörünge elipsinin eğimi (radyan).
+  static const double yorungeEgimi = -0.32;
+
+  /// Yörüngedeki küçük gezegenin çapı.
+  static const double gezegenCapi = 8;
+
+  /// Gezegen halesinin yarıçapının gezegen yarıçapına oranı.
+  static const double gezegenHaleCarpani = 2.5;
+
+  /// Gezegen halesinin opaklığı.
+  static const double gezegenHaleOpakligi = 0.35;
+
+  /// Gezegen üzerindeki parlak noktanın konumu (ışık sol üstten).
+  static const Alignment gezegenIsikNoktasi = Alignment(-0.4, -0.4);
+
+  /// Yörünge çizgisinin kalınlığı.
+  static const double yorungeKalinligi = 1;
+
+  /// Yörünge çizgisinin opaklığı.
+  static const double yorungeOpakligi = 0.55;
+
+  // ---- Günün puanı (kart açılınca görünen skor) ----
+
+  /// Skor rakamının yazı boyutu.
+  static const double puanYaziBoyutu = 76;
+
+  /// Işık kemerinin çizgi kalınlığı.
+  static const double kemerKalinligi = 1.6;
+
+  /// Kemer halesinin kalınlığının çekirdeğe oranı.
+  static const double kemerHaleCarpani = 2;
+
+  /// Işık kemeri halesinin bulanıklığı.
+  static const double kemerBulanikligi = 5;
+
+  /// Işık kemerinin iç kenar boşluğu (kart genişliği oranı).
+  static const double kemerKenarOrani = 0.08;
+
+  /// Skorun arkasındaki yumuşak ışık halesinin opaklığı.
+  static const double puanHaleOpakligi = 0.35;
+
+  // ---- Sahne arka planı ----
+
+  /// Ken Burns (yavaş yakınlaşma/kayma) ve parıltı döngüsünün periyodu.
+  static const Duration sahneDongusu = Duration(seconds: 24);
+
+  /// Ken Burns'ün ulaştığı azami ölçek.
+  static const double kenBurnsOlcegi = 1.06;
+
+  /// Ken Burns yatay kayması (ekran genişliği oranı).
+  static const double kenBurnsKaymasi = 0.012;
+
+  /// Ekranda parıldayan yıldız sayısı.
+  static const int yildizSayisi = 40;
+
+  /// Yıldızların yerleştiği üst bölge (ekran yüksekliği oranı).
+  static const double yildizBolgesiOrani = 0.55;
+
+  /// Yıldız çapı üst sınırı.
+  static const double yildizMaksCapi = 1.9;
+
+  /// Bir sahne döngüsünde her yıldızın parıldama sayısı (tam sayı:
+  /// döngü sonunda desen kesintisiz başa sarar).
+  static const int parildamaKati = 6;
+
+  /// Yıldız konumlarının sabit tohumu (yalnızca görsel).
+  static const int yildizTohumu = 11;
+
+  /// En küçük yıldızın çapının [yildizMaksCapi]'na oranı.
+  static const double yildizMinCapOrani = 0.4;
+
+  /// Sönükken yıldızın çapının tam parlak çapa oranı.
+  static const double yildizSonukCapOrani = 0.6;
+
+  /// Parıltı eğrisinin keskinliği (sin^n): büyüdükçe yıldız kısa
+  /// süre parlar, uzun süre söner.
+  static const double parildamaKeskinligi = 4;
+
+  /// Bu parlaklığın altındaki yıldızlar hiç çizilmez (performans).
+  static const double yildizCizimEsigi = 0.02;
+
+  /// Yıldız halesinin bulanıklık yarıçapı.
+  static const double yildizBulanikligi = 1.2;
+
+  /// Alt karartma geçişinin başladığı yükseklik (ekran oranı).
+  static const double altKarartmaBaslangici = 0.48;
+
+  /// Alt karartmanın tamamen opak olduğu yükseklik (ekran oranı).
+  static const double altKarartmaSonu = 0.92;
+
+  /// Bu kadar kaydırınca arka plan azami karartmaya ulaşır.
+  static const double kaydirmaKarartmaMesafesi = 420;
+
+  /// Kaydırmayla inen azami karartma opaklığı.
+  static const double kaydirmaKarartmaMaks = 0.72;
+
+  // ---- Kategori karoları ----
+
+  /// Kategori karosunun yüksekliği.
+  static const double kategoriKaroYuksekligi = 96;
+
+  /// Açık karodaki kategori ikonunun boyutu.
+  static const double kategoriIkonBoyutu = 22;
+
+  /// Kapalı karodaki ikonun boyutu.
+  static const double kapaliKutuIkonBoyutu = 26;
+
+  /// Açık karo zeminindeki kategori renginin opaklığı.
+  static const double karoZeminOpakligi = 0.20;
+
+  /// Açık karo kenar çizgisinin opaklığı.
+  static const double karoKenarOpakligi = 0.55;
+
+  /// Karo skor rakamının kategori renginden beyaza açılma oranı.
+  static const double karoSkorAcikligi = 0.35;
+
+  /// Kapalı karo zemininin opaklığı (cam görünümü).
+  static const double kapaliKaroOpakligi = 0.55;
+
+  /// Kapalı karodaki ikonun opaklığı.
+  static const double kapaliIkonOpakligi = 0.7;
 
   /// Kutunun açılış (mini flip) süresi.
   static const Duration kutuAcilisSuresi = Duration(milliseconds: 350);
@@ -90,16 +336,17 @@ abstract final class DailyLuckConfig {
   /// Yorum kartının kutulardan sonra belirme (fade) süresi.
   static const Duration yorumBelirmeSuresi = Duration(milliseconds: 400);
 
-  /// Kart ile "Kartına dokun" ipucu metni arasındaki dikey boşluk.
-  static const double ipucuBoslugu = 12;
+  // ---- "Kartımı aç" çağrısı ----
 
-  // ---- Arka plan yıldız deseni yerleşimi ----
+  /// Altın butonun yatay genişliği.
+  static const double acButonGenisligi = 220;
 
-  /// Köşelere yerleştirilen yıldız desen karosunun boyutu.
-  static const double yildizDesenBoyutu = 280;
+  /// Altın buton gölgesinin bulanıklığı.
+  static const double acButonGolgesi = 18;
 
-  /// Desenin ekran köşesinden dışarı taşma miktarı (negatif konum).
-  static const double yildizDesenTasmasi = -60;
+  /// Altın buton gölgesinin opaklığı.
+  static const double acButonGolgeOpakligi = 0.35;
+
   // ---- Günlük okuma v2 ----
 
   /// Okuma bölüm kartı ikon boyutu.
