@@ -54,8 +54,34 @@ abstract final class OnboardingStrings {
   /// İsim boş bırakıldığında gösterilen uyarı.
   static const String isimBosUyarisi = 'Devam etmek için adını yazmalısın.';
 
-  /// Sahte hesaplama ekranındaki metin.
-  static const String hesaplaniyor = 'Kaderin hesaplanıyor...';
+  /// Karşılama ve hazırlık ekranlarının alt notu.
+  static const String rituelNotu = 'Günlük bir ilham ritüeli.';
+
+  /// Işık dolumu ekranının başlığı.
+  static const String kartHazirlaniyor = 'Kartın hazırlanıyor';
+
+  /// Işık dolumu kontrol listesi (sırası [OnboardingConfig.adimEsikleri]
+  /// ile eşleşir).
+  static const List<String> hazirlikAdimlari = <String>[
+    'Profil hazır',
+    'Günlük kart hazırlanıyor',
+    'Son dokunuşlar',
+  ];
+
+  /// Işık dolumu ekranının alt notu.
+  static const String kendineAlanAc = 'Kendine küçük bir alan aç.';
+
+  /// Hazır kart başlığı.
+  static const String kartinHazir = 'Kartın hazır';
+
+  /// Hazır kart alt başlığı.
+  static const String kartinHazirAlt = 'Bugün kendin için küçük bir adım seç.';
+
+  /// Hazırlık tamamlandı rozeti.
+  static const String hazirlikTamamlandi = 'Hazırlık tamamlandı';
+
+  /// Ana ekrana geçiş butonu.
+  static const String kartimaGec = 'Kartıma geç';
 
   /// Tanışma başlığı.
   static const String tanismaBaslik = 'Seni biraz tanıyalım';

@@ -35,6 +35,19 @@ abstract final class FeedbackConfig {
   static const String kanalAciklama =
       'Sabah kader hazır ve akşam geri bildirim hatırlatmaları';
 
+  /// Android bildirim simgesi: tek renk kapı kemeri + yıldız
+  /// (`res/drawable/ic_stat_kader.xml`, kaynak `assets/svg/bildirim_kapi.svg`).
+  static const String bildirimSimgesi = '@drawable/ic_stat_kader';
+
+  /// Akşam sahnesinin alt karartmasının başladığı yükseklik (ekran oranı).
+  static const double karartmaBaslangici = 0.18;
+
+  /// Akşam sahnesinin tam opak olduğu yükseklik (ekran oranı).
+  static const double karartmaSonu = 0.6;
+
+  /// Akşam kartı görselinin üstündeki karartma opaklığı.
+  static const double aksamKartiKarartmasi = 0.55;
+
   /// Feedback ekranındaki büyük seçim butonlarının boyutu.
   static const double secimButonBoyutu = 96;
 

@@ -22,10 +22,10 @@
 | Bilgi | Değer |
 |---|---|
 | Tarih | 3 Ekim 2026 |
-| Son kod commit'i | `638cb17` Bugün ekranı: sahne arka planı ve kart açılış koreografisi (V1) |
-| Testler | 351 test, tamamı yeşil |
+| Son kod commit'i | `626910c` (V2–V16 entegrasyonu henüz commit'lenmedi; Turan isteyince atılacak) |
+| Testler | 377 test, tamamı yeşil (+26: koleksiyon motoru, deposu ve ekranları, görsel yolları, paylaşım temaları) |
 | Analiz | `flutter analyze` → No issues found |
-| Görsel durumu | Bugün ekranı yeni stilde. Diğer tüm ekranlar hâlâ düz lacivert zemin + Material ikonları. |
+| Görsel durumu | Tüm ekranlar yeni stilde. Üretilen 54 PNG + 16 eski koleksiyon kartı işlenip bağlandı (V1–V16). V17 (ses) K3 kararı bekliyor. |
 
 ### Tamamlanan görsel işler
 
@@ -33,13 +33,59 @@
   4 fazlı kart açılışı, skora göre 3 sahne, yeni kategori karoları,
   "Kartımı aç" butonu, erişilebilirlik ("hareketi azalt"), sekme gizliyken
   animasyonların durması. Ayrıntı Bölüm 3.
+- **3 Ekim 2026, tek oturumda V2–V16** (Turan "hepsine başla" dedi; kural 1
+  bilinçli olarak esnetildi, her V adımı ayrı doğrulandı):
+  - **Görsel işleme:** 122 MB kaynak PNG → 12 MB (opak JPEG q82–84, şeffaf
+    WebP). Izgaralar parçalandı (5 kategori glifi, 3 Büyük Üçlü, 12 burç,
+    8 ay evresi). Kaynaklar depo dışında: `../luckApp_gorsel_kaynak/`.
+  - **V2** ortak altyapı `lib/shared/widgets/`: `SahneArkaPlani` (+ ön plan
+    paralaksı, sprite yıldızlar), `SahneliZemin`, `AltinButon`, `CamPanel`,
+    `GorselBant`, `GorselAfis`, `KilitAmblemi`, `HataGorunumu`,
+    `PariltiSprite`, sabitler `SahneConfig`. Kartlar tema üzerinden cam
+    stile geçti (`AppColors.camYuzey/camKenar`).
+  - **V3** uygulama ikonu (`ikon_sade`): Android eski tip + uyarlanabilir
+    ikon, iOS AppIcon seti; bildirim simgesi `ic_stat_kader` (vektör);
+    Android açılış ekranı lacivert + amblem (beyaz parlama yok).
+  - **V4** mühür ayrı katman (salınır, nefes alır, dokununca döner, kanatlarla
+    ikiye bölünür), ön plan sütunları paralaksı, parıltı sprite'lı kıvılcım
+    ve yıldızlar, yeni kategori glifleri, orta skor için kapılı sahne.
+  - **V5** paywall (açık altın kapı sahnesi, yan yana planlar, altın CTA,
+    "Premium, şans puanını değiştirmez"), kilit amblemi, rapor kilidinde kitap.
+  - **V6** onboarding: ortak sahne, dönen astrolab, ışıkla dolan küre +
+    3 adımlı liste, "Kartın hazır" → "Kartıma geç" (kart Hero ile ana
+    ekrandaki karta uçar); uyarı ekranı aynı sahnede.
+  - **V7** "Kartını paylaş" ekranı: canlı önizleme, Gece/Işık/Mor tema,
+    "Skoru gizle"; hikâye kartı tema görselli (off-screen için görsel önden
+    çözülür), Keşfet kartı da gece temalı.
+  - **V8** profil başlık bandı + baş harfli avatar, burç madalyonu,
+    Büyük Üçlü madalyonları, sayı madalyonu karoları, harita başlığı.
+  - **V9** yıl afişi (rapor başlığı + ana ekran kartı), numeroloji raporunda
+    kitap başlığı ve ay evreli dönem çizelgesi.
+  - **V10** uyum: iki yörüngeli kahraman görsel, kişi listesinde burç
+    madalyonu, sonuç ekranında dereceye göre köprü sahnesi.
+  - **V11** Keşfet: üç araç afiş kartı.
+  - **V12** ayarlar/kategori detay sahneli zemin, akşam geri bildirimi akşam
+    sahnesinde (ana ekrandaki akşam kartı da), hata görünümü, "Neden bugün?"
+    ay evresi çipinde günün ayı.
+  - **V13** gezinme: 5 sekme korundu (K1), altın vurgulu yeni alt çubuk,
+    görünmeyen sekmelerin animasyonları `TickerMode` ile durur.
+  - **V14–V16** Koleksiyon (K2): motor `gununKarti` (tekrarsız 24 günlük döngü
+    + 1/8 nadir), `KoleksiyonRepository` (app_state kutusu, `koleksiyon`
+    anahtarı), koleksiyon ekranı, kart detayı, ana ekranda "Bugünün kartı",
+    profilde özet. Kart açılınca o günün kartı koleksiyona katılır.
 
 ### Turan'ın bekleyen işleri
 
-- [ ] V1'i emülatörde dene: kart açılışı akıcı mı (özellikle orta seviye
-      Android), arka plan Ken Burns rahatsız ediyor mu, alt menüyle çakışma var mı.
-- [ ] `GORSEL_URETIM_REHBERI.md` P1 görsellerini GPT ile çizdir.
-- [ ] Bölüm 4'teki açık kararları ver (özellikle K1 gezinme, K2 Koleksiyon).
+- [ ] Emülatör/cihaz turu: Bugün açılışı (mühür, sütun paralaksı), onboarding
+      dolumu + Hero, paylaşım PNG'si (3 tema, skoru gizle), uyarlanabilir
+      ikon (yuvarlak/kare maske), bildirim simgesi, açılış ekranı.
+- [ ] Orta seviye Android'de akıcılık: sahne arka planları her sekmede
+      Ken Burns döndürüyor (gizli sekmeler durur); takılma olursa bildir.
+- [ ] Play Console: öne çıkan görsel `../luckApp_gorsel_kaynak/play_ozellik_1024x500.png`.
+- [ ] iOS açılış ekranı (LaunchScreen.storyboard) hâlâ varsayılan; Xcode'da
+      lacivert zemin + amblem yapılmalı.
+- [ ] K3 (ses) ve K4 (Ayarlar'da ses/titreşim/hareket anahtarları) kararları.
+- [ ] Bu oturumun commit'i (istendiğinde).
 
 ---
 
@@ -88,34 +134,49 @@
 
 ### 2.4 Bileşen kalıpları
 
-- **Altın CTA:** hap şekli, `goldAcik → gold` gradyanı + altın hale gölgesi
-  (`daily_luck_screen.dart` → `_AltinButon`). Başka ekranlarda gerekirse
-  `shared/widgets`'a taşınmalı (V2).
-- **Cam karo:** `surface` %55 opak + ince altın/kategori rengi kenar,
-  `AppRadius.md` (`category_card.dart`).
-- **Tam ekran sahne:** `SahneArkaPlani` (görsel + Ken Burns + yıldızlar +
-  alt karartma + kaydırma karartması).
+Hepsi `lib/shared/widgets/`'ta; sabitleri `SahneConfig`'te.
+
+| Bileşen | Ne zaman |
+|---|---|
+| `AltinButon(metin, onPressed, genislik?, basIkon?, sonIkon?)` | Ekranın ana eylemi. `genislik: null` tam genişlik; `onPressed: null` pasif. İçinde `FilledButton` var (testler `find.byType(FilledButton)` ile bulabilir). |
+| `CamPanel(child, mermer?, bulanik?, onTap?)` | Sahne üstünde özel panel. İçine ListTile konabilir (şeffaf Material sarar). Sıradan `Card`'lar da tema sayesinde cam görünür. |
+| `SahneArkaPlani(gorsel, acikGorsel?, gecis?, kaydirma?, onPlan?, altKarartma…, hizalama?)` | Tam ekran yaşayan zemin. `onPlan: AppImages.onPlanSutunlar` paralaks sütunlar (yalnız Bugün). |
+| `SahneliZemin(gorsel, child, altKarartma…)` | Sahne + üstünde şeffaf Material'lı içerik; liste ekranları için kısa yol. Yoğun metinde `SahneConfig.yogunKarartma*`, uzun listede `listeKarartma*`. |
+| `GorselBant(gorsel, child?)` | Üstte zemine eriyen yatay bant (profil). |
+| `GorselAfis(gorsel, child, yukseklik?)` | "Sol %45 yazı, sağda sahne" afiş/kart (yıl afişi, Keşfet). |
+| `KilitAmblemi(boyut)` | Her kilit gösterimi (Material kilit ikonu kullanılmaz). Testte `find.byType(KilitAmblemi)`. |
+| `HataGorunumu(metin)` | Hata/boş durum. |
+| `PariltiSprite.yukle/ciz` | CustomPainter içinde dört uçlu parıltı çizmek. |
 
 ---
 
-## 3. Teknik notlar (V1'de kurulanlar)
+## 3. Teknik notlar
 
 | Konu | Ayrıntı |
 |---|---|
-| Asset klasörü | `assets/images/` (pubspec'te kayıtlı, kullanıcı onayıyla). Opak sahneler JPEG (kalite 84), şeffaflar PNG kalacak. Yollar `lib/shared/widgets/app_images.dart` → `AppImages`. |
-| Görsel boyutları | Tam ekran sahne ~948×1659 (~300 KB), kart 720×1080 (~270 KB). Telefon 3x ekran için yeterli. |
-| Skor → sahne | `lib/features/daily_luck/skor_sahnesi.dart` → `SkorSahnesi.skordan(skor)`; eşikler `SkorBandi` (content) ile aynı. Testi: `test/daily_luck/skor_sahnesi_test.dart`. |
-| Kart | `widgets/fortune_reveal_card.dart`: `FortuneRevealCard(acilis, arkaYuz, onYuz, onDokun, vurgu)`. Açılış controller'ı ebeveynde (`_IcerikState._kartKontrol`). Kart ≤ ışık fazında tek parça, sonra `OverflowBox` ile kırpılmış iki `_Kanat`. |
-| Skor | `widgets/gunun_puani.dart`: count-up + ışık kemeri, şeffaf zemin. |
-| Arka plan | `widgets/sahne_arka_plani.dart`: `SahneArkaPlani(acikSahne, gecis, kaydirma)` ve `SahneArkaPlani.kapali()`. Diğer ekranlar kullanacaksa önce `shared/widgets`'a taşınmalı (V2). |
-| Sabitler | Tüm süre/oran/ölçüler `daily_luck_config.dart`'ta (kural 6). |
-| Silinenler | `animated_score_ring.dart` (kart artık halka değil büyük rakam gösteriyor). `ScoreRing` hâlâ kategori detay ve uyum sonucunda kullanılıyor. |
-| Eski SVG'ler | `AppIllustrations.kartArkaYuzu` ve `yildizDeseni` artık kullanılmıyor ama silinmedi (`app_icons.dart`); `kristalKure` paywall'da hâlâ var (V5'te kalkacak). |
+| Asset klasörü | `assets/images/` (düz klasör; pubspec yalnız bunu kaydeder, alt klasör açma). Opak görseller JPEG, şeffaflar WebP (alfa). Kaynak PNG konmaz (`test/shared/app_images_test.dart` engeller). Yollar `AppImages`. |
+| Kaynak PNG'ler | `../luckApp_gorsel_kaynak/` (depo dışında, 54 PNG + SVG + istem/kontrol JSON'ları). `GORSEL_SETI.html` oraya bakar. 16 eski koleksiyon kartının kaynağı Codex klasöründe (Rehber §6). |
+| Boyutlar | Tam ekran sahne 948×1660 / 948×1422 (q84), kart 720×1080, koleksiyon kartı + çerçeve 600×900 (q82), yatay afiş 1200×800, glif 160, madalyon/burç 256, ay 160, mühür 512, küre/astrolab 640, sütunlar 720×1080. Toplam ~12 MB. |
+| Dosya adları | Izgara parçaları: `kategori_<ask/para/saglik/sosyal/risk>`, `madalyon_<gunes/ay/yukselen>`, `burc_<Burc.name>`, `ay_evresi_<AyEvresi.index>`. Koleksiyon: `koleksiyon_<id>.jpg` (id = katalog kimliği). |
+| Skor → sahne | `SkorSahnesi.skordan(skor)`; orta bant artık `sahne_orta_kapili` (üç sahnede kapılar aynı yerde). Eski `sahne_orta.jpg` silindi. |
+| Kart + mühür | `FortuneRevealCard(..., muhur: Image.asset(AppImages.muhur))`. Mühür kapalı yüzün üstünde ayrı katman; çap `DailyLuckConfig.muhurCapOrani`; bölünmede her kanat kendi yarısını taşır. Eski tek parça `kart_arka_yuzu.jpg` silindi. |
+| Paylaşım render'ı | Off-screen render tek kare: `Image.asset` çözülmeden çizilir. Bu yüzden `ShareService.gorselCoz` görseli önden `ui.Image` yapar, kart `RawImage` ile çizer. Ekrandaki önizleme `Image.asset` kullanır (`StoryCard.arkaPlan` widget alır). |
+| Koleksiyon | Motor: `LuckEngine.gununKarti` (`koleksiyon_secimi.dart`, `donguselIndeks` + bağımsız 1/8 nadir). Depo: `KoleksiyonRepository` (app_state kutusu, `StorageKeys.koleksiyonKaydi`), aynı gün idempotent. UI: `lib/features/koleksiyon/`. **Katalog sırası değişmez**, yeni kart yalnız sona eklenir. |
+| İkon kaynakları | Android `mipmap-*/ic_launcher.png` (eski tip, zeminli) + `ic_launcher_foreground.png` (108 dp) + `mipmap-anydpi-v26/ic_launcher.xml`; zemin `drawable/ic_launcher_background.xml`, renkler `values/colors.xml`. Bildirim: `drawable/ic_stat_kader.xml` (+ `raw/keep.xml`, R8 silmesin), kod `FeedbackConfig.bildirimSimgesi`. iOS AppIcon seti opak (alfa yok). Üretim betiği aşağıda (§3.1). |
+| Silinenler | SVG: kategori ikonları, yıldız deseni, kristal küre, yonca ikonu, eski kart arka yüzü (`AppIllustrations` sınıfı kalktı). `assets/svg/` yalnız `bildirim_kapi.svg` (kaynak). `flutter_svg` paketi artık kodda kullanılmıyor; kaldırmak pubspec değişikliği (Turan'a sorulmalı). |
+| Sekme pili | `AnaKabuk` her sekmeyi `TickerMode(enabled: seçili)` ile sarar; sahneli sekmeler gizliyken animasyon çalışmaz. |
 
 ### 3.1 Görsel işleme hattı (Windows, Python yok)
 
-GPT'nin PNG'leri PowerShell + System.Drawing ile küçültülür. Opak sahneler
-için (JPEG):
+2026-10 setinde kullanılan araçlar: PowerShell + `System.Drawing` (kırp,
+küçült; alfa doğru ölçeklenir) ve **ffmpeg** (WinGet ile kurulu;
+`libwebp` ile WebP). Akış: şeffaf görselin alfa kutusu bulunur (eşik 24;
+burç ızgarasında komşu haleler değdiği için 128), kare kutuya %1–4 pay
+eklenip küçültülür → geçici PNG → `ffmpeg -c:v libwebp -quality 88
+-pix_fmt yuva420p`. Izgaralar satır/sütun alfa izdüşümündeki boşluklardan
+otomatik bölünür (parça sayısı beklenenden farklıysa betik durur). Kırpma
+kutusu kaynağın dışına taşarsa taşan kısım şeffaf kalır (aynalama yok).
+Eski tek dosyalık JPEG fonksiyonu:
 
 ```powershell
 Add-Type -AssemblyName System.Drawing
@@ -152,6 +213,11 @@ Kritik noktalar:
 - Kare almak: kökü `RepaintBoundary(key: anahtar)` ile sar; `runAsync` içinde `toImage(pixelRatio: 1)` → `toByteData(png)` → dosya.
 - Material ikon fontu testte yok; ikonlar kare (□) görünür, normaldir.
 - Çıktı klasörünü ortam değişkeniyle ver (`ONIZLEME_DIZINI`), scratchpad'e yaz; repoya PNG koyma.
+- `ThemeData.dark()` kullanıldığı için önizlemede AppBar opak ve kartlar düz
+  görünür; cam kart görmek için önizleme temasına `cardTheme` (camYuzey/
+  camKenar) ve şeffaf `appBarTheme` ekle.
+- Birden çok ekran: `ac(tester, ekran, hazirla: ...)` yardımcısı; `hazirla`
+  kutular kurulduktan sonra (ör. koleksiyona kart ekleme) çalışır.
 
 ---
 
@@ -159,12 +225,12 @@ Kritik noktalar:
 
 | # | Karar | Seçenekler / not | Cevap |
 |---|---|---|---|
-| K1 | Alt gezinme | Mockup'lar 3 sekme gösteriyor (Bugün · Koleksiyon · Profil; Ayarlar profilin içinde). Şu an 5 sekme (Bugün, Profilim, Uyum, Keşfet, Ayarlar). Uyum ve Keşfet nereye gider? | |
-| K2 | Koleksiyon özelliği | Her gün bir kart "kazanılır" (deterministik seçim, luck_engine + storage + UI = 3 oturum). Mevcut 16 kart görseli hazır. Yapılsın mı? | |
+| K1 | Alt gezinme | Mockup'lar 3 sekme gösteriyor (Bugün · Koleksiyon · Profil; Ayarlar profilin içinde). Şu an 5 sekme (Bugün, Profilim, Uyum, Keşfet, Ayarlar). Uyum ve Keşfet nereye gider? | **5 sekme kalsın, yeni stil** (3 Eki). Koleksiyona Profil'deki özet ve ana ekrandaki "Bugünün kartı" panelinden girilir. |
+| K2 | Koleksiyon özelliği | Her gün bir kart "kazanılır" (deterministik seçim, luck_engine + storage + UI = 3 oturum). Mevcut 16 kart görseli hazır. Yapılsın mı? | **Evet** (3 Eki) — yapıldı (V14–V16). |
 | K3 | Ses | `audioplayers` (ya da `just_audio`) paketi + 4 kısa ses (dokunuş, ışık, çan, ortam). Ses dosyalarını kim üretecek? | |
 | K4 | Ayarlar'da "Ses / Titreşim / Hareketi azalt" anahtarları | Mockup'ta var. Uygulama içi "hareketi azalt" sistem ayarına ek olarak tutulsun mu? (storage alanı gerekir) | |
-| K5 | Uygulama ikonu üretimi | `flutter_launcher_icons` (dev paketi, onay) ya da Claude elle mipmap PNG'leri üretir. | |
-| K6 | Premium kahraman görseli | `2dca1663` (ışıklı kapı) mı, yeni çizim mi? | |
+| K5 | Uygulama ikonu üretimi | `flutter_launcher_icons` (dev paketi, onay) ya da Claude elle mipmap PNG'leri üretir. | **Claude elle üretti** (3 Eki), paket eklenmedi. |
+| K6 | Premium kahraman görseli | `2dca1663` (ışıklı kapı) mı, yeni çizim mi? | **`sahne_orta_kapili`** (3 Eki). |
 
 ---
 
@@ -176,37 +242,37 @@ Her satır tek oturum (CLAUDE.md kural 1). "Görsel" sütunu, oturumdan önce
 mevcut görsellerle yapılabilir ama sonra tekrar ele alınır.
 
 - [x] **V1 — Bugün ekranı: sahne + kart açılışı** (daily_luck). Görsel: mevcut set.
-- [ ] **V2 — Ortak sahne altyapısı** (shared). `SahneArkaPlani`, `_AltinButon`
+- [x] **V2 — Ortak sahne altyapısı** (shared). `SahneArkaPlani`, `_AltinButon`
       ve cam panel kalıbını `lib/shared/widgets/`'a taşı (genel API: görsel
       yolu, opsiyonel ön plan katmanı, karartma ayarları); daily_luck onları
       kullansın. Davranış değişmez, testler yeşil kalır. Görsel: yok.
-- [ ] **V3 — Marka: uygulama ikonu + bildirim ikonu** (android/ios kaynakları
+- [x] **V3 — Marka: uygulama ikonu + bildirim ikonu** (android/ios kaynakları
       + `feedback/notification_service.dart`). K5 kararı gerekir. Görsel:
       `784120f8`, `122a7f6e` (P1-M1); bildirim ikonunu Claude vektör çizer.
-- [ ] **V4 — Bugün cilası** (daily_luck). Mühür ayrı katman: dokununca döner,
+- [x] **V4 — Bugün cilası** (daily_luck). Mühür ayrı katman: dokununca döner,
       ışık fazında ikiye çatlar; ön plan sütunları ile paralaks; parıltı
       sprite'lı kıvılcımlar; yeni kategori glifleri; orta sahne kapılı sürüm.
       Görsel: P1-B1…B5.
-- [ ] **V5 — Premium + rapor kilidi** (premium). Paywall'ı mockup `9635f67f`
+- [x] **V5 — Premium + rapor kilidi** (premium). Paywall'ı mockup `9635f67f`
       4. ekrana göre yenile, kristal küreyi kaldır; rapor kilidinde kitap
       görseli. Görsel: K6, P2-R2, P2-R3.
-- [ ] **V6 — Onboarding** (onboarding + legal/uyari ekranı görünümü).
+- [x] **V6 — Onboarding** (onboarding + legal/uyari ekranı görünümü).
       Mockup `ee9545f3`: sahne arka planı, dönen astrolab, ışıkla dolan küre +
       3 adımlı kontrol listesi, "Kartın hazır" kartı → ana ekran kartına Hero.
       Görsel: P1-O1…O4.
-- [ ] **V7 — Paylaşım kartları** (share). 3 tema seçimi (Gece/Işık/Mor),
+- [x] **V7 — Paylaşım kartları** (share). 3 tema seçimi (Gece/Işık/Mor),
       "Skoru gizle" anahtarı (mockup `9635f67f` 1. ekran). Görsel: P1-S1.
-- [ ] **V8 — Kader Profili + doğum haritası** (profile). Başlık sahnesi,
+- [x] **V8 — Kader Profili + doğum haritası** (profile). Başlık sahnesi,
       Büyük Üçlü madalyonları, burç madalyonları. Görsel: P1-P1…P3.
-- [ ] **V9 — Yıl raporu + numeroloji raporu** (profile). 9 yıl afişi, rapor
+- [x] **V9 — Yıl raporu + numeroloji raporu** (profile). 9 yıl afişi, rapor
       kitabı, kilitli bölüm görünümü. Görsel: P2-R1…R3.
-- [ ] **V10 — Uyum** (compatibility). Görsel: P2-U1, P2-U2.
-- [ ] **V11 — Keşfet** (tools). Görsel: P2-K1.
-- [ ] **V12 — Ayarlar + geri bildirim + kategori detay** (settings, feedback,
+- [x] **V10 — Uyum** (compatibility). Görsel: P2-U1, P2-U2.
+- [x] **V11 — Keşfet** (tools). Görsel: P2-K1.
+- [x] **V12 — Ayarlar + geri bildirim + kategori detay** (settings, feedback,
       categories): ortak sahne arka planı, akşam sahnesi. Görsel: P3-2.
-- [ ] **V13 — Gezinme** (home). K1 kararına göre alt menü yeniden düzeni ve
+- [x] **V13 — Gezinme** (home). K1 kararına göre alt menü yeniden düzeni ve
       mockup'taki altın vurgulu menü stili.
-- [ ] **V14–V16 — Koleksiyon** (K2 onayıyla): V14 luck_engine (günün kartı
+- [x] **V14–V16 — Koleksiyon** (K2 onayıyla): V14 luck_engine (günün kartı
       seçimi, deterministik, unit test), V15 storage (kazanılan kartlar),
       V16 UI (ızgara, kart detayı, nadirlik çerçevesi). Görsel: 16 mevcut kart, P2-C1, P2-C2.
 - [ ] **V17 — Ses ve haptik** (K3 onayıyla).
@@ -224,6 +290,9 @@ mevcut görsellerle yapılabilir ama sonra tekrar ele alınır.
 | G5 | "Hareketi azalt" yolu her yeni animasyonda çalışır ve test edilir. | erişilebilirlik |
 | G6 | Testlerin beklediği akış: ana ekran testleri kartı açtıktan sonra ~3,6 sn pompalar (`kartiAc`: 2100 + 1500 + 500 ms). Açılış süresi uzarsa bu yardımcılar güncellenir (`daily_luck_screen_test.dart`, `categories_test.dart`). | |
 | G7 | Fal çağrışımlı görsel yok (677 sayılı Kanun riski; konumlandırma "eğlence / kendini keşif"). | |
+| G8 | Koleksiyon kataloğunun (`KoleksiyonKatalogu.kartlar`) sırası değişmez; yeni kart yalnız sona eklenir. Kart kimlikleri depolamada ve dosya adında kullanılır, yeniden adlandırılmaz. | kural 8, kullanıcı verisi |
+| G9 | Onboarding "Kartın hazır" ekranında durur; ana ekrana "Kartıma geç" ile gidilir (`onboarding_flow_test.dart` buna göre). | |
+| G10 | `assets/images/`'a ham GPT PNG'si konmaz; önce §3.1 hattıyla küçültülür (`app_images_test.dart` engeller). | paket boyutu |
 
 ---
 
@@ -261,6 +330,23 @@ güncelle. Commit'i ben isteyince at.
 - Bash'te Türkçe karakterli `awk length` bayt sayar; satır uzunluğu için
   güvenilmez (lint zaten uzunluk denetlemiyor).
 - Kiril harf karışması: md'lerde dosya adı yazarken dikkat (`URETIM`).
+- Widget testi ekranı **yatay** 800×600: genişliğe oranlı büyük öğeler
+  (kart önizlemesi, afiş, koleksiyon kartı) çok uzar ve sonraki öğeler
+  ListView'in önbellek alanının dışında kalıp hiç kurulmaz. Büyük görsellerin
+  boyunu ekran yüksekliğiyle de sınırla (`min(genişlik·oran, yükseklik·oran)`).
+- `scrollUntilVisible` önbellekte kurulmuş öğeyi "görünür" sayıp kaydırmaz;
+  dokunmadan önce `ensureVisible`. Altta başka rota varsa (ör. profil formu
+  → tanışma) `scrollable:` parametresiyle doğru listeyi seç.
+- Aynı rotada aynı Hero etiketi iki kez olamaz (koleksiyonda öne çıkan kart
+  Hero'suz, etiket ızgarada).
+- Renkli `DecoratedBox` içindeki `ListTile` assert verir: arada şeffaf
+  `Material` olmalı (`CamPanel`/`SahneliZemin` bunu yapar).
+- Off-screen paylaşım render'ında `Image.asset` boş çıkar: görseli önden
+  `ui.Image` olarak çöz (`ShareService.gorselCoz`).
+- Bash aracında `'$...'` içeren uzun heredoc'lar bazen "unexpected EOF"
+  veriyor; Dart dosyalarını Write aracıyla yaz. Perl değiştirmelerinde
+  yerine-koymada `\$1` yazma (tek tırnakta düz `$1` metni kalır).
+- WebP: ffmpeg'de `-alpha_quality` yok; `-quality 88 -pix_fmt yuva420p` yeterli.
 
 ---
 
@@ -270,10 +356,15 @@ güncelle. Commit'i ben isteyince at.
 |---|---|
 | Ana ekran | `lib/features/daily_luck/daily_luck_screen.dart` |
 | Kart koreografisi | `lib/features/daily_luck/widgets/fortune_reveal_card.dart` |
-| Sahne arka planı | `lib/features/daily_luck/widgets/sahne_arka_plani.dart` |
+| Sahne arka planı, ortak bileşenler | `lib/shared/widgets/` (`sahne_arka_plani.dart`, `altin_buton.dart`, `cam_panel.dart`, `gorsel_afis.dart`, `sahne_config.dart` …) |
 | Skor gösterimi | `lib/features/daily_luck/widgets/gunun_puani.dart` |
 | Ana ekran sabitleri | `lib/features/daily_luck/daily_luck_config.dart` |
 | Renkler / tema | `lib/core/theme/app_colors.dart`, `app_theme.dart` |
-| Görsel yolları | `lib/shared/widgets/app_images.dart` (raster), `app_icons.dart` (SVG) |
+| Görsel yolları | `lib/shared/widgets/app_images.dart` (raster), `app_icons.dart` (kategori glifleri) |
+| Onboarding | `lib/features/onboarding/` (`widgets/astrolab.dart`, `widgets/isik_kuresi.dart`, `calculating_screen.dart`) |
+| Paylaşım | `lib/features/share/paylasim_screen.dart`, `story_card.dart`, `paylasim_temasi.dart` |
+| Koleksiyon | `lib/core/luck_engine/koleksiyon_secimi.dart`, `lib/core/storage/koleksiyon_repository.dart`, `lib/features/koleksiyon/` |
+| Gezinme | `lib/features/home/ana_kabuk.dart` |
 | Görseller | `assets/images/` |
 | Mockup'lar | kaynak klasörde `42699425`, `9f0eb26b`, `ee9545f3`, `9635f67f` |
+

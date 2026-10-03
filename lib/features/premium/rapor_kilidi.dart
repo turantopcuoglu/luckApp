@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import 'magaza_servisi.dart';
 import 'paywall_screen.dart';
@@ -127,7 +128,13 @@ class _TekSeferlikKilitSheetState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const Icon(Icons.auto_stories_rounded, color: AppColors.gold),
+            Center(
+              child: Image.asset(
+                AppImages.raporKitap,
+                height: PaywallConfig.raporKitapBoyutu,
+                excludeFromSemantics: true,
+              ),
+            ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               icerik.baslik,

@@ -13,6 +13,7 @@ import 'package:kader/features/profile/kader_profili_screen.dart';
 import 'package:kader/features/profile/numeroloji_raporu_screen.dart';
 import 'package:kader/features/profile/profile_providers.dart';
 import 'package:kader/features/profile/profile_strings.dart';
+import 'package:kader/shared/widgets/kilit_amblemi.dart';
 
 import '../test_ortami.dart';
 
@@ -92,7 +93,7 @@ void main() {
         200,
       );
       expect(find.text(ProfileStrings.kilidiAc), findsWidgets);
-      expect(find.byIcon(Icons.lock_rounded), findsWidgets);
+      expect(find.byType(KilitAmblemi), findsWidgets);
     });
 
     testWidgets('kilit rapor satın alma penceresini açar; reklam seçeneği yok',
@@ -158,6 +159,8 @@ void main() {
         find.text(ProfileStrings.raporGirisBaslik),
         200,
       );
+      await tester.ensureVisible(find.text(ProfileStrings.raporGirisBaslik));
+      await tester.pump();
       await tester.tap(find.text(ProfileStrings.raporGirisBaslik));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));

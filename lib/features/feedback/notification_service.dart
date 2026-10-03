@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/data/latest.dart' as tz_veri;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../core/theme/app_colors.dart';
 import '../daily_luck/tr_strings.dart';
 import 'feedback_config.dart';
 import 'feedback_strings.dart';
@@ -35,7 +36,7 @@ class NotificationService {
       tz_veri.initializeTimeZones();
 
       const InitializationSettings ayarlar = InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        android: AndroidInitializationSettings(FeedbackConfig.bildirimSimgesi),
         iOS: DarwinInitializationSettings(
           // İzin, onboarding sonunda açıkça istenir (izinIste).
           requestAlertPermission: false,
@@ -116,6 +117,8 @@ class NotificationService {
           channelDescription: FeedbackConfig.kanalAciklama,
           importance: Importance.high,
           priority: Priority.high,
+          icon: FeedbackConfig.bildirimSimgesi,
+          color: AppColors.gold,
         ),
         iOS: DarwinNotificationDetails(),
       );

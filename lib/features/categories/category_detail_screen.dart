@@ -8,8 +8,13 @@ import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/app_images.dart';
+import '../../shared/widgets/hata_gorunumu.dart';
+import '../../shared/widgets/sahne_arka_plani.dart';
+import '../../shared/widgets/sahne_config.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/tr_strings.dart';
+import '../daily_luck/widgets/category_card.dart';
 import '../daily_luck/widgets/score_ring.dart';
 import '../legal/legal_texts.dart';
 import 'categories_config.dart';
@@ -31,6 +36,8 @@ class CategoryDetailScreen extends ConsumerWidget {
     final AsyncValue<LuckResult> sonuc = ref.watch(gununSansiProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,
@@ -38,94 +45,99 @@ class CategoryDetailScreen extends ConsumerWidget {
             AppIcons.kategori(
               kategori,
               boyut: CategoriesConfig.detayIkonBoyutu,
+              renk: kategoriRengi(kategori),
             ),
             const SizedBox(width: AppSpacing.sm),
             Text(kategori.etiket),
           ],
         ),
       ),
-      body: SafeArea(
-        child: sonuc.when(
-          loading: () => const Center(
-            child: CircularProgressIndicator(color: AppColors.gold),
-          ),
-          error: (Object hata, StackTrace iz) => Center(
-            child: Text(TrStrings.hataMetni, style: yaziTemasi.bodyMedium),
-          ),
-          data: (LuckResult veri) {
-            // Okuma, saklanan sonuç + profil + bağımsız içerik tohumundan
-            // deterministik seçilir.
-            final KategoriOkumasi okuma = composer.kategoriOkumasi(
-              motor: ref.watch(luckEngineProvider),
-              okuyucu: ref.watch(aktifProfilProvider).okuyucu,
-              sonuc: veri,
-              kategori: kategori,
-            );
-            return ListView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              children: <Widget>[
-                const SizedBox(height: AppSpacing.md),
-                Center(
-                  child: ScoreRing(
-                    skor: okuma.skor,
-                    boyut: CategoriesConfig.detayHalkaCapi,
-                    kalinlik: CategoriesConfig.detayHalkaKalinligi,
-                    etiket: kategori.etiket.toUpperCase(),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                // Orijinal tek yorum kartı: paragraf ve eylem önerisi.
-                Card(
-                  margin: EdgeInsets.zero,
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: Text(
-                      '${okuma.paragraf}\n\n${okuma.eylem}',
-                      style: yaziTemasi.bodyMedium,
+      body: SahneliZemin(
+        gorsel: AppImages.sahneKapali,
+        altKarartmaBaslangici: SahneConfig.yogunKarartmaBaslangici,
+        altKarartmaSonu: SahneConfig.yogunKarartmaSonu,
+        child: SafeArea(
+          child: sonuc.when(
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: AppColors.gold),
+            ),
+            error: (Object hata, StackTrace iz) =>
+                const HataGorunumu(metin: TrStrings.hataMetni),
+            data: (LuckResult veri) {
+              // Okuma, saklanan sonuç + profil + bağımsız içerik tohumundan
+              // deterministik seçilir.
+              final KategoriOkumasi okuma = composer.kategoriOkumasi(
+                motor: ref.watch(luckEngineProvider),
+                okuyucu: ref.watch(aktifProfilProvider).okuyucu,
+                sonuc: veri,
+                kategori: kategori,
+              );
+              return ListView(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                children: <Widget>[
+                  const SizedBox(height: AppSpacing.md),
+                  Center(
+                    child: ScoreRing(
+                      skor: okuma.skor,
+                      boyut: CategoriesConfig.detayHalkaCapi,
+                      kalinlik: CategoriesConfig.detayHalkaKalinligi,
+                      etiket: kategori.etiket.toUpperCase(),
                     ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Card(
-                  margin: EdgeInsets.zero,
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: Row(
-                      children: <Widget>[
-                        const Icon(
-                          Icons.schedule_rounded,
-                          color: AppColors.purple,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            CategoriesStrings.sansliSaatBaslik,
-                            style: yaziTemasi.bodyMedium?.copyWith(
-                              color: AppColors.textSecondary,
+                  const SizedBox(height: AppSpacing.xl),
+                  // Orijinal tek yorum kartı: paragraf ve eylem önerisi.
+                  Card(
+                    margin: EdgeInsets.zero,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Text(
+                        '${okuma.paragraf}\n\n${okuma.eylem}',
+                        style: yaziTemasi.bodyMedium,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Card(
+                    margin: EdgeInsets.zero,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Row(
+                        children: <Widget>[
+                          const Icon(
+                            Icons.schedule_rounded,
+                            color: AppColors.purple,
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              CategoriesStrings.sansliSaatBaslik,
+                              style: yaziTemasi.bodyMedium?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           ),
-                        ),
-                        Text(
-                          okuma.sansliSaat.etiket,
-                          style: yaziTemasi.titleMedium?.copyWith(
-                            color: AppColors.gold,
+                          Text(
+                            okuma.sansliSaat.etiket,
+                            style: yaziTemasi.titleMedium?.copyWith(
+                              color: AppColors.gold,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Text(
-                  YasalMetinler.kisaNot,
-                  style: yaziTemasi.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    YasalMetinler.kisaNot,
+                    style: yaziTemasi.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

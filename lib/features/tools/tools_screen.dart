@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
+import '../../shared/widgets/gorsel_afis.dart';
+import '../../shared/widgets/sahne_config.dart';
 import 'bebek_ismi_screen.dart';
 import 'isim_analizi_screen.dart';
 import 'numara_analizi_screen.dart';
+import 'tools_config.dart';
 import 'tools_strings.dart';
 
 /// Keşfet sekmesi: paylaşmaya uygun numeroloji araçları.
@@ -21,22 +25,22 @@ class ToolsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme yazi = Theme.of(context).textTheme;
-    final List<(IconData, String, String, Widget)> araclar =
-        <(IconData, String, String, Widget)>[
+    final List<(String, String, String, Widget)> araclar =
+        <(String, String, String, Widget)>[
           (
-            Icons.badge_outlined,
+            AppImages.aracIsim,
             ToolsStrings.isimBaslik,
             ToolsStrings.isimAciklama,
             const IsimAnaliziScreen(),
           ),
           (
-            Icons.dialpad_rounded,
+            AppImages.aracNumara,
             ToolsStrings.numaraBaslik,
             ToolsStrings.numaraAciklama,
             const NumaraAnaliziScreen(),
           ),
           (
-            Icons.child_care_rounded,
+            AppImages.aracBebek,
             ToolsStrings.bebekBaslik,
             ToolsStrings.bebekAciklama,
             const BebekIsmiScreen(),
@@ -55,23 +59,87 @@ class ToolsScreen extends StatelessWidget {
               style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: AppSpacing.lg),
-            for (final (IconData, String, String, Widget) a in araclar)
+            for (final (String, String, String, Widget) a in araclar)
               Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                child: Card(
-                  margin: EdgeInsets.zero,
-                  child: ListTile(
-                    leading: Icon(a.$1, color: AppColors.gold),
-                    title: Text(a.$2),
-                    subtitle: Text(a.$3),
-                    trailing: const Icon(Icons.chevron_right_rounded),
-                    onTap: () => unawaited(
-                      Navigator.of(context).push(fadeThroughRoute<void>(a.$4)),
-                    ),
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                child: _AracKarti(
+                  gorsel: a.$1,
+                  baslik: a.$2,
+                  aciklama: a.$3,
+                  onTap: () => unawaited(
+                    Navigator.of(context).push(fadeThroughRoute<void>(a.$4)),
                   ),
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Araç kartı: sağda aracın sahnesi (kemer içinde ışık şeridi, takımyıldız,
+/// hilal beşik), solda başlık ve açıklama.
+class _AracKarti extends StatelessWidget {
+  const _AracKarti({
+    required this.gorsel,
+    required this.baslik,
+    required this.aciklama,
+    required this.onTap,
+  });
+
+  final String gorsel;
+  final String baslik;
+  final String aciklama;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme yazi = Theme.of(context).textTheme;
+    return Semantics(
+      button: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(color: AppColors.camKenar),
+          ),
+          child: GorselAfis(
+            gorsel: gorsel,
+            yukseklik: SahneConfig.afisKartYuksekligi,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Flexible(
+                      child: Text(
+                        baslik,
+                        style: yazi.titleMedium?.copyWith(
+                          color: AppColors.goldAcik,
+                        ),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      color: AppColors.gold,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  aciklama,
+                  maxLines: ToolsConfig.kartAciklamaSatiri,
+                  overflow: TextOverflow.ellipsis,
+                  style: yazi.bodySmall?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -1,0 +1,472 @@
+{
+  "date": "2026-10-03",
+  "method": "built-in image_gen",
+  "assets": [
+    {
+      "file": "assets/images/arac_bebek.png",
+      "prompt": "Edit this baby-name tool banner. Keep composition and left45%dark empty sky. Replace SMALL crescent inside RIGHT arch with a LARGE GOLD CRADLE-SHAPED CRESCENT cradling a brilliant tiny four-point star. Crescent lies horizontally like a bowl, both points upward, center at(x77%,y49%), width24%canvas. Soft pale clouds underneath the floating cradle. The luminous star rests INSIDE crescent bowl. No actual baby/person, no text. Landscape1536x1024.",
+      "transparent": false,
+      "references": [
+        "C:/Trisenix/MobileApps/luckApp/assets/images/arac_bebek.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-41085e11-714e-4203-b4a0-5e34fbd7b218.png"
+    },
+    {
+      "file": "assets/images/arac_isim.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. long ribbon of light with blank engraved gold plaques along it, no letters",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-a3f5fc15-6a45-4d9e-b373-e9126a94e814.png"
+    },
+    {
+      "file": "assets/images/arac_numara.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. EXACTLY12 glowing points connected in3columns4rows keypad constellation above water, no digits",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-1a4223bb-52db-4107-b6e0-bc8b9287c463.png"
+    },
+    {
+      "file": "assets/images/astrolab_cekirdek.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1024x1024 animation layer centered exactly (512,512). Only a small luminous elongated four-point star almond crystal, bright white gold center fading pale blue, tiny nearby sparkles. Crystal height40% canvas and width16%. No rings. Will align with separately drawn orbit rings centered same point.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-09728e21-216b-44cd-8353-98c7bffaa199.png"
+    },
+    {
+      "file": "assets/images/astrolab_halkalar.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1024x1024 animation layer centered exactly (512,512). Only three thin polished gold elliptical orbit rings tilted different angles like armillary sphere, each one tiny gold bead, outer diameter78%canvas. Center empty transparent, no core or sphere.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-22e6a83a-9268-4552-a23b-c76bfd4e48a6.png"
+    },
+    {
+      "file": "assets/images/ay_evreleri.png",
+      "prompt": "Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 2048x1024 grid4columns2rows,8 realistic lunar phases centered in512x512cells, same moon diameter and texture, faint gold white glow. Order: new (dark barely visible disc), waxing crescent (right lit), first quarter (right half lit), waxing gibbous (mostly right lit); full, waning gibbous (mostly left lit), last quarter (left half lit), waning crescent (left lit). No stars labels or words.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-e57079cf-0a62-438f-9f61-e67fe1679568.png"
+    },
+    {
+      "file": "assets/images/burc_seti.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 2048x1536 precisely4columns3rows zodiac medallion grid, each512x512cell8%padding. Same antique gold double thin ring tiny dots navy marble center. Raised classic astrological glyph ONLY, ordered Aries ♈, Taurus ♉, Gemini ♊, Cancer ♋; Leo ♌, Virgo ♍, Libra ♎, Scorpio ♏; Sagittarius ♐, Capricorn ♑, Aquarius ♒, Pisces ♓. Virgo ends in inward loop, Scorpio outward arrow. No animal drawings, no names. Bold readable40px.",
+      "transparent": true,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-38f451fb-e1ad-4199-b376-6a462614bc48.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-8813fb35-3b1b-4da0-b63c-171715b00dcc.png"
+    },
+    {
+      "file": "assets/images/buyuk_uclu_seti.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1536x512 horizontal strip of exactly3 matching round antique gold medallions centered in each third, each460px diameter. Thin double gold ring with tiny dots, dark blue marble disc, raised gold symbol: sun disc straight and wavy rays; crescent moon tiny four-point star; half sun over horizon three short rays and upward chevron. No words.",
+      "transparent": true,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-38f451fb-e1ad-4199-b376-6a462614bc48.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-bdaaccb1-566a-4387-baee-418ffb9d027e.png"
+    },
+    {
+      "file": "assets/images/cerceve_nadir.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1024x1536 card frame overlay, rounded rectangle border within outer6%rim. Entire inside beyond6%inset completely EMPTY transparent. Thicker glowing gold border, engraved filigree corners, tiny four-point star at top center, soft teal sparkles",
+      "transparent": true,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-38f451fb-e1ad-4199-b376-6a462614bc48.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-ba3af017-d9d7-423b-a6b5-cf5c6e9326d0.png"
+    },
+    {
+      "file": "assets/images/cerceve_normal.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1024x1536 card frame overlay, rounded rectangle border within outer6%rim. Entire inside beyond6%inset completely EMPTY transparent. Thin double antique gold border, small corner ornaments",
+      "transparent": true,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-38f451fb-e1ad-4199-b376-6a462614bc48.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-bee951b9-3254-4418-8948-63c2ff26fd49.png"
+    },
+    {
+      "file": "assets/images/hata_durumu.png",
+      "prompt": "A SIMPLE isolated small cloud partly covering a crescent moon, three tiny gold sparkles. ONLY the cloud, crescent and three sparkles. Calm friendly premium photorealistic fantasy rendering, pale blue gray fluffy cloud and soft warm gold moon. Centered on square canvas, object occupies50%width, large transparent empty margins. Absolutely NO architecture, NO arches, NO buildings, NO rocks, NO lake, NO island, NO pedestal, NO scenery. Genuine transparent background PNG alpha1024x1024.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-8431a70c-5ee0-4071-8fb2-dd3a627b4da7.png"
+    },
+    {
+      "file": "assets/images/ikon_sade.png",
+      "prompt": "Use case: precise-object-edit. Simplify attached app emblem for48px readability: retain gold arch gate, four-point gold star cyan gem, one orbit ring. Remove tiny engravings, thin side details and ALL checkerboard pixels from reference. Thick polished gold strokes. Entire emblem fits centered circle66%canvas diameter.1024x1024square. Genuine transparent PNG alpha outside isolated emblem, no background, no checkerboard texture. No text no letters. Quiet premium gold/navy/cyan.",
+      "transparent": true,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-784120f8-c050-4922-9b35-9d69c62cfa6d.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-be2a7f35-8c61-4b1c-b19f-376133be6b3b.png"
+    },
+    {
+      "file": "assets/images/kart_acik_pencere.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Collectible portrait1024x1536 illustration, exact reference style arch framing,crescent moon,reflective water. Subject: open arched window with sheer curtains of light, path on water beyond",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-6b515471-91f0-4940-80e6-1b982a8069ef.png"
+    },
+    {
+      "file": "assets/images/kart_altin_tuy.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Collectible portrait1024x1536 illustration, exact reference style arch framing,crescent moon,reflective water. Subject: single golden feather gliding slowly through air above water",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-cba2f12e-25cf-436d-8b72-173f9c400d36.png"
+    },
+    {
+      "file": "assets/images/kart_arka_yuzu_muhursuz.png",
+      "prompt": "Use case: precise-object-edit. Edit target attached card. Recreate exactly the blue marble pattern, ornate thin gold border, corner star ornaments, central vertical glowing gold seam, same portrait ratio 1024x1536. Remove ONLY central medallion; marble and seam continue through center with no trace of circular emblem. Opaque PNG. No text.",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-38f451fb-e1ad-4199-b376-6a462614bc48.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-83790d9b-85eb-4903-8ea6-06411da6c5a3.png"
+    },
+    {
+      "file": "assets/images/kart_ay_salincagi.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Collectible portrait1024x1536 illustration, exact reference style arch framing,crescent moon,reflective water. Subject: empty swing on gold chains hanging from crescent moon over lake",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-9e8c821a-7cff-4bcb-82c2-cc15be403423.png"
+    },
+    {
+      "file": "assets/images/kart_cam_merdiven.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Collectible portrait1024x1536 illustration, exact reference style arch framing,crescent moon,reflective water. Subject: spiral staircase of glass and gold rising from lake into stars",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-b837bd23-372a-456a-ab91-13141dc4edc3.png"
+    },
+    {
+      "file": "assets/images/kart_hazir.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Portrait1024x1536 opaque card front. Same dark blue marble, gold border and corner ornaments as reference. Tall arched window center showing glowing gate of light and tiny path on water, thin gold rays small stars above arch. Bottom12% empty dark marble for later text. No letters.",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-38f451fb-e1ad-4199-b376-6a462614bc48.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-f0f2f58c-e2e1-41f6-a855-369db4df6a29.png"
+    },
+    {
+      "file": "assets/images/kart_kum_saati.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Collectible portrait1024x1536 illustration, exact reference style arch framing,crescent moon,reflective water. Subject: tall glass hourglass on marble pedestal, glittering star dust falls inside",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-3521a9f8-4c9d-4969-a7b6-ea7d5038c68d.png"
+    },
+    {
+      "file": "assets/images/kart_pusula.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Collectible portrait1024x1536 illustration, exact reference style arch framing,crescent moon,reflective water. Subject: antique gold compass open on still water, glowing needle, no letters or numerals",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-da71f6e6-aa1e-453d-96eb-22c83d28ff54.png"
+    },
+    {
+      "file": "assets/images/kart_yildiz_cesmesi.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Collectible portrait1024x1536 illustration, exact reference style arch framing,crescent moon,reflective water. Subject: marble fountain with water made of tiny rising falling stars",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-7c7c62eb-4f4b-40cb-a66b-90d03c24cb7f.png"
+    },
+    {
+      "file": "assets/images/kart_yuzen_fener.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Collectible portrait1024x1536 illustration, exact reference style arch framing,crescent moon,reflective water. Subject: single gold lantern floating on lake, reflection forms path of light",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-335c72de-d1c6-4be6-8d93-e0ed31fb6e94.png"
+    },
+    {
+      "file": "assets/images/kategori_seti.png",
+      "prompt": "Create a FLAT VECTOR-STYLE monochrome icon sprite sheet. Five solid white #FFFFFF glyphs on fully transparent background. 3icons top row,2icons centered bottom row. Heart; three coins stack with visible transparent gaps; leaf with transparent central vein; two overlapping shoulder silhouettes no faces; lightning bolt. Each one tiny detached four-point star. All identical optical weight and12%padding. Crisp hard silhouettes, like exported SVG pictograms. NO GLOW, NO BLOOM, NO LIGHT EFFECTS, NO SHADOW, NO GRADIENT, NO GREY, NO TEXTURE, NO 3D, NO photograph. White filled shapes only; outside silhouettes completely transparent with clean antialias at edge.1536x1024.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-123c4680-c2b4-430d-8272-230463359b12.png"
+    },
+    {
+      "file": "assets/images/kilit.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 512x512 small ornate antique gold padlock front view, four-point star engraved body, soft gold glow,10%padding, simple readable silhouette.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-97862975-4049-4608-a070-d6064f5aea63.png"
+    },
+    {
+      "file": "assets/images/kure_cam.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1024x1024 glass orb animation layer. Empty clear glass sphere, diameter78% canvas exactly, centered(512,512). Only subtle rim highlights reflections and refraction, otherwise see-through. No liquid, stars, rings, stand or scene.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-4801238e-d5e3-467b-b320-82a9f56b1ef6.png"
+    },
+    {
+      "file": "assets/images/kure_cerceve.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1024x1024 orb frame animation layer centered(512,512). ONLY thin gold orbit ring surrounding imaginary sphere of diameter78%canvas, gold bead top and bottom, short vertical light beams above/below contained within canvas. Entire middle transparent, no sphere or liquid.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-d49fbaf6-a7d4-4f1a-bb95-b24c0aa51ae9.png"
+    },
+    {
+      "file": "assets/images/kure_sivi.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1024x1024 orb interior animation layer. Perfect circular disc diameter78% canvas exactly centered(512,512), interior COMPLETELY FILLED edge-to-edge with deep blue liquid light, tiny gold stars and swirling cyan light. No water surface line, no glass rim, orbit rings or scene. Outside circle transparent. Will be masked vertically in code.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-dd71e0b5-2296-498a-bfd1-51cf5ae56362.png"
+    },
+    {
+      "file": "assets/images/mermer_doku.png",
+      "prompt": "A very subdued low-contrast seamless tileable square texture of very dark midnight BLUE marble base #131A2E. Sparse hairline muted gold and faint white veins only, occupying less than3%surface. Flat even lighting, zero vignette, no large bright crystalline chunks. Opposite edges continuous and matching for infinite tiled repeat. Quiet dark panel background behind readable UI text. Entire texture close to uniform dark navy from a distance.1024x1024opaque PNG. No objects no borders no writing.",
+      "transparent": false,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-5e07cf57-b653-40d9-bb0f-9aa252e2bf58.png"
+    },
+    {
+      "file": "assets/images/muhur.png",
+      "prompt": "Use case: background-extraction. Edit target: the attached blue marble card back. Isolate ONLY its central circular gold compass-star medallion: eight-pointed gold star with pearl center, engraved radial-ray disc, dark inner ring with tiny gold dots, two thin outer gold rings, four small side spikes. Preserve original materials, straight-on view, lighting and detail. Remove all marble/card/background and the vertical seam outside medallion. Genuine transparent background PNG alpha, centered on square 1024x1024 canvas with 8% empty padding; gold glow entirely inside canvas. No text.",
+      "transparent": true,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-38f451fb-e1ad-4199-b376-6a462614bc48.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-79a5a461-5462-4b91-bf29-2612449f41aa.png"
+    },
+    {
+      "file": "assets/images/on_plan_sutunlar.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. Portrait 1024x1536 foreground overlay: two tall dark stone gold columns on very left and right edges joined at top by shallow grand arch, tiny hanging lanterns. Entire center from x18% to82% AND bottom30% empty transparent; columns finish by y70%. Warm inner rim light. No floor, water, vines.",
+      "transparent": true,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-3fb4a097-6e9a-4325-a36a-5688fd0f21fb.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-4d9e68e6-25b4-44b3-9992-a22bbac68334.png"
+    },
+    {
+      "file": "assets/images/parilti.png",
+      "prompt": "Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. Single four-point sparkle: long thin vertical and horizontal rays, shorter diagonal rays, tiny intense warm-white center, soft golden glow. 512x512 centered, nothing else.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-fa726286-8662-4ba0-9cf5-a61a2df2a468.png"
+    },
+    {
+      "file": "assets/images/paylasim_gece.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Portrait1024x1536 Instagram story background. Grand arch frames scene. CENTRAL rectangle x15%-85%, y25%-75% calm slightly darker open sky so huge white score will be legible. Bottom15% calm water. Deep blue night, crescent moon upper right, silver gold lanterns",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-bb412f6b-32c0-4162-a9de-80c0ee2513cd.png"
+    },
+    {
+      "file": "assets/images/paylasim_isik.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Portrait1024x1536 Instagram story background. Grand arch frames scene. CENTRAL rectangle x15%-85%, y25%-75% calm slightly darker open sky so huge white score will be legible. Bottom15% calm water. Golden-white dawn light pouring around arch edges and clouds; central text area remains darker muted blue",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-9ef38445-76ad-4810-a8b5-f4582b430b14.png"
+    },
+    {
+      "file": "assets/images/paylasim_mor.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Portrait1024x1536 Instagram story background. Grand arch frames scene. CENTRAL rectangle x15%-85%, y25%-75% calm slightly darker open sky so huge white score will be legible. Bottom15% calm water. Violet lavender nebula, soft pink gold glow",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-d171887e-ea85-4a66-a638-aee2cb21acc6.png"
+    },
+    {
+      "file": "assets/images/play_ozellik.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. Store banner. On right golden arch emblem with four-point star cyan gem orbit ring floats inside softly glowing open gate above lake, teal gold ribbons. Keep ALL important content within vertical middle50% for crop to1024x500. No text.",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-37f95a85-c5ca-4b59-ad6c-9f96d5f0cffc.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-cb00e605-743c-4393-b5d1-5f59d696d30b.png"
+    },
+    {
+      "file": "assets/images/rapor_kitap.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1024x1024 ornate deep blue marble covered book, gold corner engravings compass-star clasp, cover barely ajar with warm gold light sparkles escaping pages. Three-quarter front view,10%padding. No writing anywhere.",
+      "transparent": true,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-38f451fb-e1ad-4199-b376-6a462614bc48.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-57ea2363-2b49-4fa3-8357-1d614410e0ea.png"
+    },
+    {
+      "file": "assets/images/sahne_aksam.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Portrait 1024x1536 PNG. Important content inside middle 66% width; top 15% calm sky, bottom 40% calm water for UI. 6% crop allowance. Same lake arch world at dusk, last violet amber light on horizon first stars, quiet, bottom45%calm dark water.",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-3fb4a097-6e9a-4325-a36a-5688fd0f21fb.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-3b03bf79-f952-4f81-b02e-e8d273db866d.png"
+    },
+    {
+      "file": "assets/images/sahne_onboarding.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Portrait 1024x1536 PNG. Important content inside middle 66% width; top 15% calm sky, bottom 40% calm water for UI. 6% crop allowance. Dim colonnade of arches receding into starry night, still mirror lake below, soft horizon clouds. Faint gold glow center of upper third for later floating object. Bottom55% very low detail and calm dark navy for form fields.",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-3fb4a097-6e9a-4325-a36a-5688fd0f21fb.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-50d8d2b6-9173-44e8-9567-828a307f3dda.png"
+    },
+    {
+      "file": "assets/images/sahne_orta_kapili.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Portrait 1024x1536 PNG. Important content inside middle 66% width; top 15% calm sky, bottom 40% calm water for UI. 6% crop allowance. Match reference gate positions and door sizes exactly. Two ornate open doors toward viewer, golden arch, side columns and small planets, lake and distant spires. Change light color to warm amber #FFD27A, soft dawn glow through gate, gentle gold ribbons; balanced calm.",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-37f95a85-c5ca-4b59-ad6c-9f96d5f0cffc.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-2247a29e-69aa-4eee-8d57-8a6fa0d8bfe1.png"
+    },
+    {
+      "file": "assets/images/sahne_profil.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Wide1536x1024 night sky, huge faint gold astrolabe-like ring with EXACTLY12 evenly spaced dots and thin engraved lines, NO zodiac glyphs, empty center for avatar, calm lake, arches far left/right. Bottom30% fades dark navy.",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-3fb4a097-6e9a-4325-a36a-5688fd0f21fb.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-18a997c1-be39-4b87-8576-ff246d1a2e3c.png"
+    },
+    {
+      "file": "assets/images/sayi_madalyonu.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1024x1024 empty round antique gold medallion with engraved rim navy marble center. Center completely blank for code-rendered number, no symbol or text.",
+      "transparent": true,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-38f451fb-e1ad-4199-b376-6a462614bc48.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-46e86e65-a23e-43fa-9d61-6d1a6e57ab79.png"
+    },
+    {
+      "file": "assets/images/uyum_bos.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Genuine transparent background PNG with alpha, no checkerboard painted, no background scene. Glow contained within canvas, clean edges, 8% padding. 1024x1024 two small light orbs one gold one lavender on two thin intersecting gold orbit rings, dotted light line connects them, soft glow at crossing, much empty space.",
+      "transparent": true,
+      "references": [],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-0f7dfbbb-6a0e-42d7-b2bd-c592e069ec58.png"
+    },
+    {
+      "file": "assets/images/uyum_dengeli.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Portrait 1024x1536 PNG. Important content inside middle 66% width; top 15% calm sky, bottom 40% calm water for UI. 6% crop allowance. Two separate arches on mirror lake, bridge of light joins them. Both arches and bridge inside middle66%width, bottom40%calm water. Complete softly glowing amber bridge, calm steady",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-3fb4a097-6e9a-4325-a36a-5688fd0f21fb.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-f9dd4f5c-aaf8-4038-be01-89eaff28aca4.png"
+    },
+    {
+      "file": "assets/images/uyum_gelistiren.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Portrait 1024x1536 PNG. Important content inside middle 66% width; top 15% calm sky, bottom 40% calm water for UI. 6% crop allowance. Two separate arches on mirror lake, bridge of light joins them. Both arches and bridge inside middle66%width, bottom40%calm water. Bridge forming from floating stones of light, lavender glow, hopeful",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-3fb4a097-6e9a-4325-a36a-5688fd0f21fb.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-c9051ac1-1714-4f3c-9605-5919cdc566e4.png"
+    },
+    {
+      "file": "assets/images/uyum_guclu.png",
+      "prompt": "Edit this strong compatibility scene. Preserve exquisite dark-blue stone gold architecture night stars and reflective lake style. Move both complete arches inward, each entire arch must fit between x18%and82%, bridge joins them in upper middle y30%-58%. Bottom40%calm low-detail water. Replace white/amber bridge radiance with clearly TURQUOISE #6FE6DA radiant light, cyan reflections and brilliant warm gold highlights. Color distinction from balanced amber scene must be obvious. Portrait1024x1536 no text.",
+      "transparent": false,
+      "references": [
+        "C:/Trisenix/MobileApps/luckApp/assets/images/uyum_guclu.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-cf52d311-655b-4c19-a0e3-d2f976735460.png"
+    },
+    {
+      "file": "assets/images/yil_1.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. single glowing seed sprouting small luminous plant on marble pedestal in water, sunrise behind arch",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-8ed5ad45-2340-4d9e-827b-676dc75c2a3e.png"
+    },
+    {
+      "file": "assets/images/yil_2.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. two facing crescent moons forming bridge of light over water, one star between them",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-5883ea96-0b99-447d-ab7a-f3b4946d613d.png"
+    },
+    {
+      "file": "assets/images/yil_3.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. blooming flower of light, petals become sparkles spreading outward",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-893049bf-6293-4426-97f4-88f91dd6fd86.png"
+    },
+    {
+      "file": "assets/images/yil_4.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. stable stair of marble and gold blocks rising from water toward steady star",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-943440de-19bd-4d14-a0c5-9a0587c8f927.png"
+    },
+    {
+      "file": "assets/images/yil_5.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. golden paper plane gliding along swirling teal wind ribbons through open gate",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-69912019-c658-4243-86ee-ed3f32444405.png"
+    },
+    {
+      "file": "assets/images/yil_6.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. small warmly lit pavilion on island with heart-shaped orbit of light",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-7e9c7bed-29ec-41b8-808f-e0bfa119bad1.png"
+    },
+    {
+      "file": "assets/images/yil_7.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. perfectly still lake reflecting crescent moon, one floating lantern, deep silence",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-f3640618-a3c2-446f-8926-17f7a6bc27f7.png"
+    },
+    {
+      "file": "assets/images/yil_8.png",
+      "prompt": "Use case: stylized-concept. Kader premium daily ritual app. One coherent photorealistic fantasy cinematic night realm, crisp blue marble with white/gold veins, antique polished gold filigree, glass, starlight, calm mirror lake, arches, crescent moon, hopeful quiet luxury. Deep navy #0A0E1A, blue #131A2E/#1C2A4F, gold #F4C95D highlights #FFE9B8. Light originates inside scene with warm gold core and cool blue falloff, rich navy shadows, gentle bloom. No text, letters, digits, logos, watermarks, people, faces, hands, animals, tarot, occult or religious symbols. No UI. Landscape 1536x1024 PNG. LEFT 45% calm dark sky over still water for future text, focal subject on RIGHT inside softly glowing arch. golden wheat of light in circle around infinity-shaped glass ribbon",
+      "transparent": false,
+      "references": [
+        "C:/Users/Superuser/.codex/generated_images/01a06197-d23e-74a0-b368-6a1331013a95/exec-769f7a6f-9153-4554-ba7c-91df3dd82f3c.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-1cc27264-1855-4d10-a270-0fa6f5bcaee4.png"
+    },
+    {
+      "file": "assets/images/yil_9.png",
+      "prompt": "Edit attached completion-year banner. Keep entire existing composition and materials unchanged, except ADD a large complete circular ring of warm golden light on the far horizon INSIDE THE RIGHT ARCH, centered x76% y53%, diameter25%image height. Full circle symbolizes completion, reflected on lake, with leaves of light drifting away. Circle should be clearly visible, not merely the sun. Left45% empty dark sky as existing.1536x1024 no text.",
+      "transparent": false,
+      "references": [
+        "C:/Trisenix/MobileApps/luckApp/assets/images/yil_9.png"
+      ],
+      "source": "C:\\Users\\Superuser\\.codex\\generated_images\\01a0ff75-3737-71b1-bb11-7ee0acd2a493\\exec-6bc2223d-329f-444e-ad8a-e215ae8b8b61.png"
+    }
+  ],
+  "checks": {
+    "analyze": "No issues found",
+    "tests": 351
+  }
+}

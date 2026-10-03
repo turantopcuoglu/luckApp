@@ -49,102 +49,119 @@ class AracPaylasimi {
 /// off-screen render ağacında asenkron font yüklemesine güvenilmez.
 class AracStoryCard extends StatelessWidget {
   /// [paylasim] verisiyle kart oluşturur.
-  const AracStoryCard({required this.paylasim, super.key});
+  const AracStoryCard({required this.paylasim, this.arkaPlan, super.key});
 
   /// Kartta gösterilecek veri.
   final AracPaylasimi paylasim;
+
+  /// Kartı kaplayan tema görseli (null ise lacivert-mor gradyan). Üstüne
+  /// uzun metin yazıldığı için düz bir karartmayla koyulaştırılır.
+  final Widget? arkaPlan;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: ShareConfig.kartBoyutu.width,
       height: ShareConfig.kartBoyutu.height,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: ShareConfig.gradyanRenkleri,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(ShareConfig.kenarBoslugu),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                paylasim.ustEtiket,
-                style: const TextStyle(
-                  fontSize: ShareConfig.tarihPunto,
-                  color: AppColors.textSecondary,
-                  letterSpacing: ShareConfig.etiketHarfAraligi,
+      child: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          if (arkaPlan != null) ...<Widget>[
+            arkaPlan!,
+            ColoredBox(
+              color: AppColors.background.withValues(
+                alpha: ShareConfig.aracKarartma,
+              ),
+            ),
+          ] else
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: ShareConfig.gradyanRenkleri,
                 ),
               ),
-              Text(
-                paylasim.baslik,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: ShareConfig.baslikPunto,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+            ),
+          Padding(
+            padding: const EdgeInsets.all(ShareConfig.kenarBoslugu),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  paylasim.ustEtiket,
+                  style: const TextStyle(
+                    fontSize: ShareConfig.tarihPunto,
+                    color: AppColors.textSecondary,
+                    letterSpacing: ShareConfig.etiketHarfAraligi,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              Center(
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      paylasim.sayi,
-                      style: const TextStyle(
-                        fontSize: ShareConfig.skorPunto,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.gold,
-                        height: 1,
+                Text(
+                  paylasim.baslik,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: ShareConfig.baslikPunto,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const Spacer(),
+                Center(
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        paylasim.sayi,
+                        style: const TextStyle(
+                          fontSize: ShareConfig.skorPunto,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.gold,
+                          height: 1,
+                        ),
                       ),
-                    ),
-                    Text(
-                      paylasim.sayiEtiketi,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: ShareConfig.aracEtiketPunto,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.goldAcik,
+                      Text(
+                        paylasim.sayiEtiketi,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: ShareConfig.aracEtiketPunto,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.goldAcik,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const Spacer(),
-              Text(
-                paylasim.metin,
-                maxLines: ShareConfig.aracMetinSatiri,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: ShareConfig.aracMetinPunto,
-                  color: AppColors.textPrimary,
-                  height: ShareConfig.aracMetinSatirYuksekligi,
+                const Spacer(),
+                Text(
+                  paylasim.metin,
+                  maxLines: ShareConfig.aracMetinSatiri,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: ShareConfig.aracMetinPunto,
+                    color: AppColors.textPrimary,
+                    height: ShareConfig.aracMetinSatirYuksekligi,
+                  ),
                 ),
-              ),
-              const SizedBox(height: ShareConfig.kenarBoslugu),
-              const Text(
-                ShareStrings.marka,
-                style: TextStyle(
-                  fontSize: ShareConfig.markaPunto,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.gold,
+                const SizedBox(height: ShareConfig.kenarBoslugu),
+                const Text(
+                  ShareStrings.marka,
+                  style: TextStyle(
+                    fontSize: ShareConfig.markaPunto,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.gold,
+                  ),
                 ),
-              ),
-              const Text(
-                ShareStrings.aracDavet,
-                style: TextStyle(
-                  fontSize: ShareConfig.tarihPunto,
-                  color: AppColors.textSecondary,
+                const Text(
+                  ShareStrings.aracDavet,
+                  style: TextStyle(
+                    fontSize: ShareConfig.tarihPunto,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

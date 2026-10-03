@@ -659,28 +659,57 @@ uçan kâğıt, taşlar, sonsuzluk şeridi zaten var).
 | Kimlik | Dosya(lar) | Öncelik | Durum |
 |---|---|---|---|
 | — | `kart_arka_yuzu`, `sahne_kapali/yuksek/orta/dusuk` (mevcut görsellerden) | P1 | bağlandı |
-| P1-B1 | `muhur`, `kart_arka_yuzu_muhursuz` | P1 | bekliyor |
-| P1-B2 | `on_plan_sutunlar` | P1 | bekliyor |
-| P1-B3 | `parilti` | P1 | bekliyor |
-| P1-B4 | `sahne_orta_kapili` | P1 | bekliyor |
-| P1-B5 | `kategori_seti` | P1 | bekliyor |
-| P1-M1 | ikon (mevcut `784120f8`/`122a7f6e`) | P1 | çizildi |
-| P1-M2 | bildirim ikonu (Claude vektör çizer) | P1 | bekliyor |
-| P1-M3 | `play_ozellik` | P1 | bekliyor |
-| P1-O1 | `sahne_onboarding` | P1 | bekliyor |
-| P1-O2 | `astrolab_cekirdek`, `astrolab_halkalar` | P1 | bekliyor |
-| P1-O3 | `kure_cam`, `kure_sivi`, `kure_cerceve` | P1 | bekliyor |
-| P1-O4 | `kart_hazir` | P1 | bekliyor |
-| P1-S1 | `paylasim_gece/isik/mor` | P1 | bekliyor |
-| P1-P1 | `sahne_profil` | P1 | bekliyor |
-| P1-P2 | `buyuk_uclu_seti` | P1 | bekliyor |
-| P1-P3 | `burc_seti` | P1 | bekliyor |
-| P2-R1 | `yil_1` … `yil_9` | P2 | bekliyor |
-| P2-R2 | `rapor_kitap` | P2 | bekliyor |
-| P2-R3 | `kilit` | P2 | bekliyor |
-| P2-U1 | `uyum_bos` | P2 | bekliyor |
-| P2-U2 | `uyum_guclu/dengeli/gelistiren` | P2 | bekliyor |
-| P2-K1 | `arac_isim/numara/bebek` | P2 | bekliyor |
-| P2-C1 | `cerceve_normal/nadir` | P2 | karar bekliyor (Koleksiyon) |
-| P2-C2 | 8 ek kart | P2 | karar bekliyor (Koleksiyon) |
-| P3-1…5 | ay evreleri, akşam, mermer doku, hata, sayı madalyonu | P3 | bekliyor |
+| P1-B1 | `muhur`, `kart_arka_yuzu_muhursuz` | P1 | bağlandı |
+| P1-B2 | `on_plan_sutunlar` | P1 | bağlandı |
+| P1-B3 | `parilti` | P1 | bağlandı |
+| P1-B4 | `sahne_orta_kapili` | P1 | bağlandı |
+| P1-B5 | `kategori_seti` | P1 | bağlandı |
+| P1-M1 | `ikon_sade.png` (yeni şeffaf sürüm) | P1 | bağlandı |
+| P1-M2 | `assets/svg/bildirim_kapi.svg` (vektör kaynak) | P1 | bağlandı |
+| P1-M3 | `play_ozellik` → `../luckApp_gorsel_kaynak/play_ozellik_1024x500.png` (mağaza, uygulamada yok) | P1 | hazır (Play Console'a Turan yükler) |
+| P1-O1 | `sahne_onboarding` | P1 | bağlandı |
+| P1-O2 | `astrolab_cekirdek`, `astrolab_halkalar` | P1 | bağlandı |
+| P1-O3 | `kure_cam`, `kure_sivi`, `kure_cerceve` | P1 | bağlandı |
+| P1-O4 | `kart_hazir` | P1 | bağlandı |
+| P1-S1 | `paylasim_gece/isik/mor` | P1 | bağlandı |
+| P1-P1 | `sahne_profil` | P1 | bağlandı |
+| P1-P2 | `buyuk_uclu_seti` | P1 | bağlandı |
+| P1-P3 | `burc_seti` | P1 | bağlandı |
+| P2-R1 | `yil_1` … `yil_9` | P2 | bağlandı |
+| P2-R2 | `rapor_kitap` | P2 | bağlandı |
+| P2-R3 | `kilit` | P2 | bağlandı |
+| P2-U1 | `uyum_bos` | P2 | bağlandı |
+| P2-U2 | `uyum_guclu/dengeli/gelistiren` | P2 | bağlandı |
+| P2-K1 | `arac_isim/numara/bebek` | P2 | bağlandı |
+| P2-C1 | `cerceve_normal/nadir` | P2 | bağlandı |
+| P2-C2 | 8 ek kart | P2 | bağlandı |
+| P3-1…5 | ay evreleri, akşam, mermer doku, hata, sayı madalyonu | P3 | bağlandı |
+
+### 3 Ekim 2026 üretim teslimi
+
+- P1, P2, P3 ve koleksiyon ekleri: 54 PNG kaynak + 1 bildirim SVG kaynağı üretildi.
+- PNG dosyaları `assets/images/`; bildirim kaynağı `assets/svg/bildirim_kapi.svg`.
+- Toplu önizleme: `GORSEL_SETI.html`. Dosya araması ve koyu/açık/damalı zemin seçenekleri vardır.
+- Son üretim istemleri, referanslar ve özgün çıktı yolları: `GORSEL_URETIM_ISTEMLERI.json`.
+- Gerçek tuval ölçüleri ve örneklenmiş alfa kontrolü: `GORSEL_DOSYA_KONTROLU.json`.
+- Kaynak PNG'ler küçültülmedi veya kırpılmadı. Üretici bazı kareleri 1254×1254 ve ızgaraları rehberdekinden farklı çözünürlükte verdi; gerçek ölçüler kontrol dosyasındadır. Küre ve astrolab katmanları kendi gruplarında aynı tuval boyutundadır.
+- Alfa kanalları kontrol edildi. Önizlemelerde şeffaf piksellerin RGB rengi hale gibi görünebilir; alfa sıfır olduğunda bu renk görünmez.
+- Telefon kırpımı, ikon ızgaralarının ayrılması, katman içeriğinin piksel düzeyinde hizalanması, mermer dokunun tekrar birleşimi ve 24–48 px/cihaz görünümü entegrasyonda doğrulanmalıdır. Bu kayıt bu kontrollerin yapıldığını iddia etmez.
+- Durum yalnızca “çizildi”; yeni görseller uygulama ekranlarına bağlanmadı. Koleksiyon özelliği ve gezinme kararları değişmedi.
+- Kontrol: `flutter analyze` → No issues found; `flutter test` → 351 test geçti.
+
+### 3 Ekim 2026 entegrasyon (V2–V16)
+
+- Tüm öğeler işlendi ve ekranlara bağlandı (ayrıntı: `GORSEL_YENILEME_PLANI.md`
+  Bölüm 1 ve 3). Uygulamadaki dosyalar küçültülmüş JPEG/WebP'dir; özgün
+  PNG'ler `../luckApp_gorsel_kaynak/` klasöründe (`GORSEL_SETI.html` oraya bakar).
+- Izgaralar parçalandı: `kategori_<ad>.webp`, `madalyon_<gunes|ay|yukselen>.webp`,
+  `burc_<burç>.webp` (12), `ay_evresi_<0-7>.webp`.
+- Koleksiyon 24 kart: 8 yeni kart + Bölüm 4 P2-C'deki 16 eski kart
+  (Codex klasöründen) `koleksiyon_<id>.jpg` olarak eklendi; `7c2c7363` kare
+  olduğu için ortadan 2:3 kırpıldı.
+- Kalite notları (yeniden çizim gerekmez, bilgi için): `kure_sivi` cama göre
+  biraz büyük üretilmişti, kodda %93 ölçekle camın içine oturtuldu;
+  `on_plan_sutunlar` telefonda kenarlardan taşacak genişlikte (×1,18) çizilir.
+- Yeni görsel ihtiyacı yok. Ses (K3) kararı verilirse ses dosyaları için bu
+  rehbere ayrı bölüm eklenmeli.

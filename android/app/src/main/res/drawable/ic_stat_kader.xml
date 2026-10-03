@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bildirim simgesi: tek renk kapı kemeri + dört uçlu yıldız
+     (kaynak: assets/svg/bildirim_kapi.svg). Android yalnız alfa
+     kanalını kullanır; renk sistemce verilir. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M4,21V10a8,8 0,0 1,16 0v11h-3V10a5,5 0,0 0,-10 0v11H4Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,8l1.35,3.65L17,13l-3.65,1.35L12,18l-1.35,-3.65L7,13l3.65,-1.35L12,8Z" />
+</vector>

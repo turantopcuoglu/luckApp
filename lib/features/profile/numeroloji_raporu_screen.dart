@@ -7,6 +7,7 @@ import '../../core/content/rapor_okumasi.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/app_images.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../legal/legal_texts.dart';
 import '../premium/premium_providers.dart';
@@ -40,9 +41,18 @@ class NumerolojiRaporuScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: <Widget>[
+            Center(
+              child: Image.asset(
+                AppImages.raporKitap,
+                height: ProfileConfig.raporKitapBuyuk,
+                excludeFromSemantics: true,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
             Text(
               ProfileStrings.raporAciklama,
               style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.md),
             _ZamanCizelgesi(donemler: okuma.zamanCizelgesi),
@@ -102,7 +112,14 @@ class _ZamanCizelgesi extends StatelessWidget {
             Text(ProfileStrings.zamanCizelgesiBaslik, style: yazi.titleMedium),
             const SizedBox(height: AppSpacing.md),
             for (int i = 0; i < donemler.length; i++)
-              _DonemSatiri(ozet: donemler[i], sonMu: i == donemler.length - 1),
+              _DonemSatiri(
+                ozet: donemler[i],
+                sonMu: i == donemler.length - 1,
+                // Dört dönem ayın dört ana evresiyle simgelenir: yeni ay,
+                // ilk dördün, dolunay, son dördün.
+                ayEvresi: (i * ProfileConfig.donemEvreAdimi) %
+                    ProfileConfig.ayEvresiSayisi,
+              ),
           ],
         ),
       ),
@@ -112,10 +129,17 @@ class _ZamanCizelgesi extends StatelessWidget {
 
 /// Zaman çizelgesinin tek satırı: daire + çizgi solda, metin sağda.
 class _DonemSatiri extends StatelessWidget {
-  const _DonemSatiri({required this.ozet, required this.sonMu});
+  const _DonemSatiri({
+    required this.ozet,
+    required this.sonMu,
+    required this.ayEvresi,
+  });
 
   final DonemOzeti ozet;
   final bool sonMu;
+
+  /// Dönemi simgeleyen ay evresinin indeksi ([AyEvresi.index]).
+  final int ayEvresi;
 
   @override
   Widget build(BuildContext context) {
@@ -129,20 +153,30 @@ class _DonemSatiri extends StatelessWidget {
           children: <Widget>[
             Column(
               children: <Widget>[
-                Container(
-                  width: ProfileConfig.donemDairesiCapi,
-                  height: ProfileConfig.donemDairesiCapi,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: aktif ? AppColors.gold : AppColors.surface,
-                    border: Border.all(color: AppColors.gold),
-                  ),
-                  child: Text(
-                    '${ozet.donem.zirve}',
-                    style: yazi.titleMedium?.copyWith(
-                      color: aktif ? AppColors.background : AppColors.gold,
-                    ),
+                // Ay evresi simgesi; zirve sayısı üstüne yazılır.
+                SizedBox.square(
+                  dimension: ProfileConfig.donemAyBoyutu,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      Image.asset(
+                        AppImages.ayEvresi(ayEvresi),
+                        excludeFromSemantics: true,
+                      ),
+                      Text(
+                        '${ozet.donem.zirve}',
+                        style: yazi.titleMedium?.copyWith(
+                          color: aktif ? AppColors.gold : AppColors.goldAcik,
+                          fontWeight: FontWeight.w700,
+                          shadows: const <Shadow>[
+                            Shadow(
+                              color: AppColors.background,
+                              blurRadius: AppSpacing.sm,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 if (!sonMu)

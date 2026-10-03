@@ -5,8 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../shared/widgets/app_icons.dart';
+import '../../shared/widgets/altin_buton.dart';
+import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
+import '../../shared/widgets/cam_panel.dart';
+import '../../shared/widgets/sahne_arka_plani.dart';
+import '../../shared/widgets/sahne_config.dart';
 import '../legal/yasal_belge_screen.dart';
 import 'magaza_servisi.dart';
 import 'premium_kontrolcu.dart';
@@ -16,17 +20,47 @@ import 'premium_strings.dart';
 final AutoDisposeStateProvider<String?> seciliPlanProvider =
     StateProvider.autoDispose<String?>((Ref ref) => null);
 
-/// Paywall boyutları.
+/// Paywall ve kilit pencerelerinin ölçüleri.
 abstract final class PaywallConfig {
-  /// Kristal küre çizimi boyutu.
-  static const double illustrasyonBoyutu = 96;
+  /// Başlığın üstünde kahraman sahnesine (açık altın kapı) bırakılan boşluk
+  /// (ekran yüksekliği oranı).
+  static const double kahramanBoslukOrani = 0.27;
+
+  /// Sahnenin alt karartmasının başladığı yükseklik (ekran oranı).
+  static const double karartmaBaslangici = 0.16;
+
+  /// Sahnenin tamamen zemine indiği yükseklik (ekran oranı).
+  static const double karartmaSonu = 0.50;
+
+  /// Başlığın parlak sahne üstünde okunması için gölge bulanıklığı.
+  static const double baslikGolgesi = 16;
+
+  /// Özellik satırlarındaki parıltı ikonunun boyutu.
+  static const double ozellikIkonBoyutu = 20;
+
+  /// Seçili plan kartındaki onay rozetinin boyutu.
+  static const double secimRozetiBoyutu = 22;
+
+  /// Seçili plan kartının zemin opaklığı (seçili olmayan cam panel
+  /// opaklığındadır).
+  static const double seciliPlanOpakligi = 0.9;
+
+  /// Seçili olmayan plan kartının kenar opaklığı.
+  static const double pasifPlanKenarOpakligi = 0.25;
+
+  /// Kilit penceresindeki kilit ambleminin boyutu.
+  static const double kilitPencereAmblemi = 56;
+
+  /// Rapor kilidi penceresindeki kitap görselinin yüksekliği.
+  static const double raporKitapBoyutu = 120;
 
   /// Yıllık planın aylığa bölüneceği ay sayısı.
   static const int yildakiAy = 12;
 }
 
-/// Premium abonelik ekranı: Google Play planları, satın alma, geri
-/// yükleme ve zorunlu yenileme bilgisi.
+/// Premium abonelik ekranı: açık altın kapı sahnesinin önünde başlık,
+/// özellikler, yan yana iki plan, altın CTA, geri yükleme ve zorunlu
+/// yenileme bilgisi (mockup `9635f67f` 4. ekran).
 ///
 /// Satın alma başarıyla sonuçlanınca ekran kendini kapatır.
 class PaywallScreen extends ConsumerWidget {
@@ -63,146 +97,197 @@ class PaywallScreen extends ConsumerWidget {
     final AbonelikPlani? aylikPlan =
         planlar.where((AbonelikPlani p) => !p.yillikMi).firstOrNull;
 
+    final List<Widget> planKartlari = <Widget>[
+      for (final AbonelikPlani plan in planlar)
+        _PlanKarti(
+          plan: plan,
+          secili: plan.urunId == seciliId,
+          aylikPlan: aylikPlan,
+          onTap: () =>
+              ref.read(seciliPlanProvider.notifier).state = plan.urunId,
+        ),
+    ];
+
     return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            0,
-            AppSpacing.lg,
-            AppSpacing.lg,
+      backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        actions: const <Widget>[CloseButton()],
+      ),
+      body: Stack(
+        children: <Widget>[
+          const Positioned.fill(
+            child: SahneArkaPlani(
+              gorsel: AppImages.sahneOrtaKapili,
+              hizalama: Alignment.topCenter,
+              altKarartmaBaslangici: PaywallConfig.karartmaBaslangici,
+              altKarartmaSonu: PaywallConfig.karartmaSonu,
+            ),
           ),
-          children: <Widget>[
-            Center(
-              child: AppIllustrations.kristalKure(
-                boyut: PaywallConfig.illustrasyonBoyutu,
-                renk: AppColors.gold,
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                AppSpacing.lg,
               ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              PremiumStrings.baslik,
-              style: yazi.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              PremiumStrings.altBaslik,
-              style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            for (final String ozellik in PremiumStrings.ozellikler)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Icon(
-                      Icons.check_circle_rounded,
-                      color: AppColors.gold,
-                      size: AppSpacing.md + AppSpacing.xs,
+              children: <Widget>[
+                SizedBox(
+                  height: MediaQuery.sizeOf(context).height *
+                      PaywallConfig.kahramanBoslukOrani,
+                ),
+                Text(
+                  PremiumStrings.baslik,
+                  style: yazi.displaySmall?.copyWith(
+                    color: AppColors.goldAcik,
+                    shadows: const <Shadow>[
+                      Shadow(
+                        color: AppColors.background,
+                        blurRadius: PaywallConfig.baslikGolgesi,
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  PremiumStrings.altBaslik,
+                  style:
+                      yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                for (final String ozellik in PremiumStrings.ozellikler)
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Image.asset(
+                          AppImages.parilti,
+                          width: PaywallConfig.ozellikIkonBoyutu,
+                          height: PaywallConfig.ozellikIkonBoyutu,
+                          excludeFromSemantics: true,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(child: Text(ozellik, style: yazi.bodyMedium)),
+                      ],
                     ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(child: Text(ozellik, style: yazi.bodyMedium)),
+                  ),
+                const SizedBox(height: AppSpacing.lg),
+                if (durum.aktif)
+                  CamPanel(
+                    child: Text(
+                      PremiumStrings.zatenPremium,
+                      style: yazi.titleMedium?.copyWith(color: AppColors.gold),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                else if (durum.planlarYukleniyor)
+                  const Padding(
+                    padding: EdgeInsets.all(AppSpacing.lg),
+                    child: Center(
+                      child: CircularProgressIndicator(color: AppColors.gold),
+                    ),
+                  )
+                else if (planlar.isEmpty)
+                  _PlanYok(
+                    onTekrar: () => unawaited(
+                      ref.read(premiumKontrolcuProvider.notifier).baslat(),
+                    ),
+                  )
+                else ...<Widget>[
+                  // İki plan yan yana (mockup); daha fazlası alt alta.
+                  if (planKartlari.length <= 2)
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          for (int i = 0; i < planKartlari.length; i++)
+                            ...<Widget>[
+                              if (i > 0) const SizedBox(width: AppSpacing.sm),
+                              Expanded(child: planKartlari[i]),
+                            ],
+                        ],
+                      ),
+                    )
+                  else
+                    for (final Widget kart in planKartlari)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        child: kart,
+                      ),
+                  const SizedBox(height: AppSpacing.md),
+                  if (durum.islemde)
+                    const Center(
+                      child: CircularProgressIndicator(color: AppColors.gold),
+                    )
+                  else
+                    AltinButon(
+                      genislik: null,
+                      metin: secili?.denemeGunu != null
+                          ? PremiumStrings.denemeBaslat
+                          : PremiumStrings.abonelikBaslat,
+                      onPressed: secili == null
+                          ? null
+                          : () => unawaited(
+                                ref
+                                    .read(premiumKontrolcuProvider.notifier)
+                                    .satinAl(secili),
+                              ),
+                    ),
+                ],
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  PremiumStrings.puanNotu,
+                  style: yazi.bodySmall?.copyWith(color: AppColors.goldAcik),
+                  textAlign: TextAlign.center,
+                ),
+                if (!durum.aktif)
+                  TextButton(
+                    onPressed: durum.islemde
+                        ? null
+                        : () => unawaited(
+                              ref
+                                  .read(premiumKontrolcuProvider.notifier)
+                                  .geriYukle(),
+                            ),
+                    child: const Text(PremiumStrings.geriYukle),
+                  ),
+                Text(
+                  PremiumStrings.yenilemeBilgisi,
+                  style:
+                      yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  children: <Widget>[
+                    for (final YasalBelge belge in YasalBelge.values)
+                      TextButton(
+                        onPressed: () => Navigator.of(context).push(
+                          fadeThroughRoute<void>(
+                            YasalBelgeScreen(belge: belge),
+                          ),
+                        ),
+                        child: Text(belge.baslik),
+                      ),
                   ],
                 ),
-              ),
-            const SizedBox(height: AppSpacing.lg),
-            if (durum.aktif)
-              Card(
-                margin: EdgeInsets.zero,
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Text(
-                    PremiumStrings.zatenPremium,
-                    style: yazi.titleMedium?.copyWith(color: AppColors.gold),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              )
-            else if (durum.planlarYukleniyor)
-              const Padding(
-                padding: EdgeInsets.all(AppSpacing.lg),
-                child: Center(
-                  child: CircularProgressIndicator(color: AppColors.gold),
-                ),
-              )
-            else if (planlar.isEmpty)
-              _PlanYok(
-                onTekrar: () => unawaited(
-                  ref.read(premiumKontrolcuProvider.notifier).baslat(),
-                ),
-              )
-            else ...<Widget>[
-              for (final AbonelikPlani plan in planlar)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: _PlanKarti(
-                    plan: plan,
-                    secili: plan.urunId == seciliId,
-                    aylikPlan: aylikPlan,
-                    onTap: () => ref.read(seciliPlanProvider.notifier).state =
-                        plan.urunId,
-                  ),
-                ),
-              const SizedBox(height: AppSpacing.sm),
-              FilledButton(
-                onPressed: durum.islemde || secili == null
-                    ? null
-                    : () => unawaited(
-                          ref
-                              .read(premiumKontrolcuProvider.notifier)
-                              .satinAl(secili),
-                        ),
-                child: durum.islemde
-                    ? const SizedBox.square(
-                        dimension: AppSpacing.md,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(
-                        secili?.denemeGunu != null
-                            ? PremiumStrings.denemeBaslat
-                            : PremiumStrings.abonelikBaslat,
-                      ),
-              ),
-            ],
-            if (!durum.aktif)
-              TextButton(
-                onPressed: durum.islemde
-                    ? null
-                    : () => unawaited(
-                          ref.read(premiumKontrolcuProvider.notifier).geriYukle(),
-                        ),
-                child: const Text(PremiumStrings.geriYukle),
-              ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              PremiumStrings.yenilemeBilgisi,
-              style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
-              textAlign: TextAlign.center,
-            ),
-            Wrap(
-              alignment: WrapAlignment.center,
-              children: <Widget>[
-                for (final YasalBelge belge in YasalBelge.values)
-                  TextButton(
-                    onPressed: () => Navigator.of(context).push(
-                      fadeThroughRoute<void>(YasalBelgeScreen(belge: belge)),
-                    ),
-                    child: Text(belge.baslik),
-                  ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-/// Seçilebilir abonelik planı kartı.
+/// Seçilebilir abonelik planı kartı: cam zemin, seçiliyken altın kenar
+/// ve sağ üstte onay rozeti.
 class _PlanKarti extends StatelessWidget {
   const _PlanKarti({
     required this.plan,
@@ -224,78 +309,93 @@ class _PlanKarti extends StatelessWidget {
       if (plan.yillikMi && aylikPlan != null)
         PremiumStrings.ayliginaDusen(_aylikKarsilik()),
     ];
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(
-              color: secili ? AppColors.gold : AppColors.surface,
-              width: 2,
-            ),
-          ),
-          child: Row(
-            children: <Widget>[
-              Icon(
-                secili
-                    ? Icons.radio_button_checked_rounded
-                    : Icons.radio_button_off_rounded,
-                color: secili ? AppColors.gold : AppColors.textSecondary,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          plan.yillikMi
-                              ? PremiumStrings.yillik
-                              : PremiumStrings.aylik,
-                          style: yazi.titleMedium,
-                        ),
-                        if (plan.yillikMi) ...<Widget>[
-                          const SizedBox(width: AppSpacing.sm),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.sm,
-                              vertical: AppSpacing.xs / 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.gold,
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.full),
-                            ),
-                            child: Text(
-                              PremiumStrings.enAvantajli,
-                              style: yazi.labelSmall
-                                  ?.copyWith(color: AppColors.background),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    for (final String satir in altSatirlar)
-                      Text(
-                        satir,
-                        style: yazi.bodySmall
-                            ?.copyWith(color: AppColors.textSecondary),
+    final BorderRadius kose = BorderRadius.circular(AppRadius.md);
+    return Semantics(
+      selected: secili,
+      button: true,
+      child: Material(
+        color: AppColors.surface.withValues(
+          alpha: secili
+              ? PaywallConfig.seciliPlanOpakligi
+              : SahneConfig.camZeminOpakligi,
+        ),
+        borderRadius: kose,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: kose,
+          child: Container(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              borderRadius: kose,
+              border: Border.all(
+                color: secili
+                    ? AppColors.gold
+                    : AppColors.gold.withValues(
+                        alpha: PaywallConfig.pasifPlanKenarOpakligi,
                       ),
-                  ],
+                width: secili ? 2 : 1,
+              ),
+            ),
+            child: Stack(
+              children: <Widget>[
+                SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        plan.yillikMi
+                            ? PremiumStrings.yillik
+                            : PremiumStrings.aylik,
+                        style: yazi.titleLarge,
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        '${plan.fiyatMetni} '
+                        '${PremiumStrings.donem(yillik: plan.yillikMi)}',
+                        style: yazi.titleSmall?.copyWith(color: AppColors.gold),
+                        textAlign: TextAlign.center,
+                      ),
+                      for (final String satir in altSatirlar)
+                        Text(
+                          satir,
+                          style: yazi.bodySmall
+                              ?.copyWith(color: AppColors.textSecondary),
+                          textAlign: TextAlign.center,
+                        ),
+                      if (plan.yillikMi) ...<Widget>[
+                        const SizedBox(height: AppSpacing.sm),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.sm,
+                            vertical: AppSpacing.xs / 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.gold,
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.full),
+                          ),
+                          child: Text(
+                            PremiumStrings.enAvantajli,
+                            style: yazi.labelSmall
+                                ?.copyWith(color: AppColors.background),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                '${plan.fiyatMetni} '
-                '${PremiumStrings.donem(yillik: plan.yillikMi)}',
-                style: yazi.titleSmall?.copyWith(color: AppColors.gold),
-              ),
-            ],
+                if (secili)
+                  const Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Icon(
+                      Icons.check_circle_rounded,
+                      color: AppColors.gold,
+                      size: PaywallConfig.secimRozetiBoyutu,
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

@@ -10,10 +10,13 @@ import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
+import '../../shared/widgets/gorsel_bant.dart';
 import '../ads/banner_reklam_alani.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/tr_strings.dart';
+import '../koleksiyon/widgets/koleksiyon_panelleri.dart';
 import '../legal/legal_texts.dart';
 import '../premium/kilit_secenekleri.dart';
 import '../premium/premium_providers.dart';
@@ -50,20 +53,37 @@ class KaderProfiliScreen extends ConsumerWidget {
         SayiMetinleri.yasamYolu[kader.yasamYolu.deger]!;
 
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          _ProfilBasligi(profil: profil),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              0,
+              AppSpacing.md,
+              AppSpacing.md,
+            ),
+            child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(ProfileStrings.baslik, style: yazi.headlineMedium),
+            Text(
+              ProfileStrings.baslik,
+              style: yazi.headlineMedium,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               ProfileStrings.aciklama,
               style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.md),
             _KimlikKarti(profil: profil, kader: kader, karakter: karakter),
             const SizedBox(height: AppSpacing.md),
             const BuyukUcluKarti(),
+            const SizedBox(height: AppSpacing.md),
+            const KoleksiyonOzetKarti(),
             const SizedBox(height: AppSpacing.md),
             _SayiKarolari(kader: kader),
             if (kader.isimSayisi == null) ...<Widget>[
@@ -83,9 +103,11 @@ class KaderProfiliScreen extends ConsumerWidget {
             Card(
               margin: EdgeInsets.zero,
               child: ListTile(
-                leading: const Icon(
-                  Icons.auto_stories_rounded,
-                  color: AppColors.gold,
+                leading: Image.asset(
+                  AppImages.raporKitap,
+                  width: ProfileConfig.raporKitapIkonu,
+                  height: ProfileConfig.raporKitapIkonu,
+                  excludeFromSemantics: true,
                 ),
                 title: const Text(ProfileStrings.raporGirisBaslik),
                 subtitle: const Text(ProfileStrings.raporGirisAciklama),
@@ -122,6 +144,65 @@ class KaderProfiliScreen extends ConsumerWidget {
               textAlign: TextAlign.center,
             ),
           ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Profil sekmesinin üst bandı: göl üstünde altın zodyak halkası
+/// ([AppImages.sahneProfil]); halkanın ortasında kullanıcının baş harfli
+/// altın avatarı durur. Bant alta doğru zemine erir.
+class _ProfilBasligi extends StatelessWidget {
+  const _ProfilBasligi({required this.profil});
+
+  final UserProfile profil;
+
+  @override
+  Widget build(BuildContext context) {
+    final String isim = profil.isim.trim();
+    final String basHarf = isim.isEmpty
+        ? ''
+        : isim.substring(0, 1).toUpperCase();
+    return GorselBant(
+      gorsel: AppImages.sahneProfil,
+      child: Align(
+        alignment: const Alignment(0, ProfileConfig.avatarHizasiY),
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints kisit) {
+            final double cap = kisit.maxWidth * ProfileConfig.avatarOrani;
+            return Container(
+              width: cap,
+              height: cap,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const RadialGradient(
+                  colors: <Color>[AppColors.surface, AppColors.background],
+                ),
+                border: Border.all(
+                  color: AppColors.gold,
+                  width: ProfileConfig.avatarKenarKalinligi,
+                ),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: AppColors.gold.withValues(
+                      alpha: ProfileConfig.avatarHaleOpakligi,
+                    ),
+                    blurRadius: AppSpacing.lg,
+                  ),
+                ],
+              ),
+              child: Text(
+                basHarf,
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  color: AppColors.goldAcik,
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -150,12 +231,32 @@ class _KimlikKarti extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(profil.tamAd ?? profil.isim, style: yazi.titleLarge),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              '${TrStrings.tarihMetni(profil.dogumTarihi).split(',').first} · '
-              '${kader.burc.etiket} (${kader.burc.element.etiket})',
-              style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
+            Row(
+              children: <Widget>[
+                Image.asset(
+                  AppImages.burc(kader.burc.name),
+                  width: ProfileConfig.burcMadalyonBoyutu,
+                  height: ProfileConfig.burcMadalyonBoyutu,
+                  excludeFromSemantics: true,
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(profil.tamAd ?? profil.isim, style: yazi.titleLarge),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        '${TrStrings.tarihMetni(profil.dogumTarihi).split(',').first} · '
+                        '${kader.burc.etiket} (${kader.burc.element.etiket})',
+                        style: yazi.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: AppSpacing.sm),
             Wrap(
@@ -293,8 +394,11 @@ class _SayiKarosu extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextTheme yazi = Theme.of(context).textTheme;
     return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppRadius.md),
+      color: AppColors.camYuzey,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        side: const BorderSide(color: AppColors.camKenar),
+      ),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -305,9 +409,25 @@ class _SayiKarosu extends StatelessWidget {
           ),
           child: Column(
             children: <Widget>[
-              Text(
-                hesap == null ? '+' : '${hesap!.deger}',
-                style: yazi.headlineMedium?.copyWith(color: AppColors.gold),
+              // Sayı, boş altın madalyonun ortasına yazılır.
+              SizedBox.square(
+                dimension: ProfileConfig.sayiMadalyonBoyutu,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Image.asset(
+                      AppImages.sayiMadalyonu,
+                      excludeFromSemantics: true,
+                    ),
+                    Text(
+                      hesap == null ? '+' : '${hesap!.deger}',
+                      style: yazi.titleLarge?.copyWith(
+                        color: AppColors.goldAcik,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(

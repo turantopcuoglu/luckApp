@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/kilit_amblemi.dart';
 import '../categories_config.dart';
 
 /// Premium kilidi görseli: [kilitli] ise içeriği blur'layıp üzerine
-/// altın kilit ikonu koyar; değilse içeriği olduğu gibi gösterir
+/// altın kilit amblemi koyar; değilse içeriği olduğu gibi gösterir
 /// (plan Session 9, madde 2).
 ///
 /// Dokunma davranışı bu widget'ın DIŞINDA ele alınır; gate yalnızca
@@ -38,11 +38,7 @@ class PremiumGate extends StatelessWidget {
         ),
         const Positioned.fill(
           child: Center(
-            child: Icon(
-              Icons.lock_rounded,
-              color: AppColors.gold,
-              size: CategoriesConfig.kilitIkonBoyutu,
-            ),
+            child: KilitAmblemi(boyut: CategoriesConfig.kilitIkonBoyutu),
           ),
         ),
       ],

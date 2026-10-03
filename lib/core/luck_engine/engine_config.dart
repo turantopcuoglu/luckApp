@@ -156,4 +156,15 @@ abstract final class EngineConfig {
 
   /// Döngüsel indekste gün numarasının sayıldığı referans yıl (1 Ocak).
   static const int donguReferansYili = 2000;
+
+  // ---- Koleksiyon (günün kartı) ----
+
+  /// Günün koleksiyon kartı seçiminin amaç etiketi (tekrarsız döngü).
+  static const String koleksiyonAmaci = 'koleksiyon';
+
+  /// Günün kartının nadir çekiliş olup olmadığının amaç etiketi.
+  static const String koleksiyonNadirAmaci = 'koleksiyon_nadir';
+
+  /// Nadir çekilişin paydası: ortalama her N günde bir kart nadir gelir.
+  static const int nadirKartPaydasi = 8;
 }

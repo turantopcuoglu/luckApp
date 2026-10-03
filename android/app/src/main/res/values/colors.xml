@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AppColors.background ile aynı gece laciverti. -->
+    <color name="ikon_zemin">#0A0E1A</color>
+    <!-- İkon zemininin merkezindeki mavi ışık. -->
+    <color name="ikon_zemin_merkez">#223460</color>
+    <!-- Bildirim vurgusu: AppColors.gold. -->
+    <color name="bildirim_vurgu">#F4C95D</color>
+</resources>

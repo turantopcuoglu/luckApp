@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/features/daily_luck/tr_strings.dart';
 import 'package:kader/features/share/arac_story_card.dart';
+import 'package:kader/features/share/paylasim_temasi.dart';
 import 'package:kader/features/share/share_config.dart';
 import 'package:kader/features/share/share_service.dart';
 import 'package:kader/features/share/share_strings.dart';
@@ -42,6 +43,46 @@ void main() {
     }
     expect(find.text(ShareStrings.marka), findsOneWidget);
     expect(find.text(ShareStrings.genelSkor), findsOneWidget);
+  });
+
+  testWidgets('StoryCard "skoru gizle" açıkken skor ve puanları yazmaz, '
+      'başlığı ortaya alır', (WidgetTester tester) async {
+    tester.view.physicalSize = ShareConfig.kartBoyutu;
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: StoryCard(sonuc: sonuc, baslik: 'Şefkat Günü', skoruGizle: true),
+      ),
+    );
+
+    expect(find.text('${sonuc.genelSkor}'), findsNothing);
+    expect(find.text(ShareStrings.genelSkor), findsNothing);
+    expect(find.text(LuckCategory.ask.etiket), findsNothing);
+    expect(find.text('Şefkat Günü'), findsOneWidget);
+    expect(find.text(ShareStrings.marka), findsOneWidget);
+  });
+
+  testWidgets('her paylaşım teması görseli çözülüp kartla PNG üretilir', (
+    WidgetTester tester,
+  ) async {
+    await tester.runAsync(() async {
+      final ShareService servis = ShareService();
+      for (final PaylasimTemasi tema in PaylasimTemasi.values) {
+        final ui.Image zemin = await servis.gorselCoz(tema.gorsel);
+        expect(zemin.width, greaterThan(0), reason: tema.name);
+        final List<int> png = await servis.kartPngUret(
+          StoryCard(
+            sonuc: sonuc,
+            arkaPlan: RawImage(image: zemin, fit: BoxFit.cover),
+          ),
+        );
+        expect(png.sublist(0, 4), <int>[0x89, 0x50, 0x4E, 0x47]);
+        zemin.dispose();
+      }
+    });
   });
 
   testWidgets('kartPngUret 1080x1920 boyutunda geçerli PNG üretir', (

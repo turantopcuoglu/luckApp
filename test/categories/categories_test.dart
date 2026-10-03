@@ -14,6 +14,7 @@ import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 import 'package:kader/features/premium/paywall_screen.dart';
 import 'package:kader/features/premium/premium_providers.dart';
 import 'package:kader/features/premium/premium_strings.dart';
+import 'package:kader/shared/widgets/kilit_amblemi.dart';
 
 import '../test_ortami.dart';
 
@@ -103,7 +104,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.runAsync(hazirla);
       await ekraniAc(tester, const DailyLuckScreen());
-      expect(find.byIcon(Icons.lock_rounded), findsNWidgets(2));
+      expect(find.byType(KilitAmblemi), findsNWidgets(2));
     });
 
     testWidgets('kilitli kutu kilit seçeneklerini, oradan paywall açılır',
@@ -157,7 +158,7 @@ void main() {
       await tester.runAsync(hazirla);
       await anaEkraniAcVeKartiCevir(tester, premium: true);
 
-      expect(find.byIcon(Icons.lock_rounded), findsNothing);
+      expect(find.byType(KilitAmblemi), findsNothing);
 
       await tester.ensureVisible(find.text(LuckCategory.ask.etiket));
       await tester.tap(find.text(LuckCategory.ask.etiket));
@@ -175,7 +176,7 @@ void main() {
         ),
       );
       await ekraniAc(tester, const DailyLuckScreen());
-      expect(find.byIcon(Icons.lock_rounded), findsOneWidget);
+      expect(find.byType(KilitAmblemi), findsOneWidget);
     });
   });
 }

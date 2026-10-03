@@ -28,11 +28,13 @@ abstract final class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.background,
       textTheme: _textTheme,
+      // Yeni stil: kartlar sahnenin önünde duran cam paneller.
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: AppColors.camYuzey,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
+          side: const BorderSide(color: AppColors.camKenar),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(

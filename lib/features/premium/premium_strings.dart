@@ -63,6 +63,9 @@ abstract final class PremiumStrings {
       'edilmezse ücretli döneme geçilir. Aboneliğini Google Play > Ödemeler '
       've abonelikler bölümünden istediğin zaman iptal edebilirsin.';
 
+  /// Paywall dipnotu: Premium'un skoru etkilemediği güvencesi.
+  static const String puanNotu = 'Premium, şans puanını değiştirmez.';
+
   /// Zaten premium olan kullanıcıya.
   static const String zatenPremium = 'Premium üyeliğin aktif ✨';
 

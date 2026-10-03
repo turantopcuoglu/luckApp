@@ -4,7 +4,7 @@ abstract final class CategoriesConfig {
   static const double blurSigma = 3;
 
   /// Kilit ikonunun boyutu.
-  static const double kilitIkonBoyutu = 28;
+  static const double kilitIkonBoyutu = 34;
 
   /// Detay sayfasındaki skor halkasının çapı.
   static const double detayHalkaCapi = 180;

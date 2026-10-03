@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/kilit_amblemi.dart';
 import 'profile_config.dart';
 import 'profile_strings.dart';
 
@@ -69,11 +70,7 @@ class KilitliBolumKarti extends StatelessWidget {
                 ],
                 if (kilitli) ...<Widget>[
                   const SizedBox(width: AppSpacing.sm),
-                  const Icon(
-                    Icons.lock_rounded,
-                    color: AppColors.gold,
-                    size: AppSpacing.md + AppSpacing.xs,
-                  ),
+                  const KilitAmblemi(boyut: ProfileConfig.kilitAmblemBoyutu),
                 ],
               ],
             ),

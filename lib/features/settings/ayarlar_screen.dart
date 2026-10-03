@@ -8,7 +8,10 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
+import '../../shared/widgets/sahne_arka_plani.dart';
+import '../../shared/widgets/sahne_config.dart';
 import '../ads/ads_providers.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/tr_strings.dart';
@@ -91,184 +94,200 @@ class AyarlarScreen extends ConsumerWidget {
     final TextTheme yazi = Theme.of(context).textTheme;
     final UserProfile profil = ref.watch(aktifProfilProvider);
     final PremiumDurumu premium = ref.watch(premiumKontrolcuProvider);
-    final bool gizlilikGerekli =
-        ref.watch(reklamServisiProvider).gizlilikSecenekleriGerekli;
+    final bool gizlilikGerekli = ref
+        .watch(reklamServisiProvider)
+        .gizlilikSecenekleriGerekli;
 
     Widget bolumBasligi(String metin) => Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            AppSpacing.lg,
-            AppSpacing.md,
-            AppSpacing.xs,
-          ),
-          child: Text(
-            metin.toUpperCase(),
-            style: yazi.labelMedium?.copyWith(color: AppColors.gold),
-          ),
-        );
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.xs,
+      ),
+      child: Text(
+        metin.toUpperCase(),
+        style: yazi.labelMedium?.copyWith(color: AppColors.gold),
+      ),
+    );
 
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Text(AyarlarStrings.baslik, style: yazi.headlineMedium),
-            ),
-            bolumBasligi(AyarlarStrings.profil),
-            ListTile(
-              title: const Text(AyarlarStrings.ad),
-              trailing: Text(profil.isim),
-            ),
-            ListTile(
-              title: const Text(AyarlarStrings.dogumTarihi),
-              subtitle: const Text(AyarlarStrings.sabitAlanNotu),
-              trailing: Text(
-                TrStrings.tarihMetni(profil.dogumTarihi).split(',').first,
+      backgroundColor: AppColors.background,
+      body: SahneliZemin(
+        gorsel: AppImages.sahneKapali,
+        altKarartmaBaslangici: SahneConfig.listeKarartmaBaslangici,
+        altKarartmaSonu: SahneConfig.listeKarartmaSonu,
+        child: SafeArea(
+          child: ListView(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Text(AyarlarStrings.baslik, style: yazi.headlineMedium),
               ),
-            ),
-            ListTile(
-              title: const Text(AyarlarStrings.tamAd),
-              subtitle: Text(profil.tamAd ?? AyarlarStrings.tamAdYok),
-              trailing: const Icon(Icons.edit_outlined),
-              onTap: () => unawaited(tamAdiDuzenle(context, ref)),
-            ),
-            ListTile(
-              title: const Text(AyarlarStrings.tercihler),
-              subtitle: const Text(AyarlarStrings.tercihlerAciklama),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.of(context).push(
-                fadeThroughRoute<void>(const TanismaScreen(duzenleme: true)),
+              bolumBasligi(AyarlarStrings.profil),
+              ListTile(
+                title: const Text(AyarlarStrings.ad),
+                trailing: Text(profil.isim),
               ),
-            ),
-            bolumBasligi(AyarlarStrings.premium),
-            ListTile(
-              leading: Icon(
-                premium.aktif
-                    ? Icons.workspace_premium_rounded
-                    : Icons.workspace_premium_outlined,
-                color: AppColors.gold,
+              ListTile(
+                title: const Text(AyarlarStrings.dogumTarihi),
+                subtitle: const Text(AyarlarStrings.sabitAlanNotu),
+                trailing: Text(
+                  TrStrings.tarihMetni(profil.dogumTarihi).split(',').first,
+                ),
               ),
-              title: Text(
-                premium.aktif
-                    ? AyarlarStrings.premiumAktif
-                    : AyarlarStrings.premiumDegil,
+              ListTile(
+                title: const Text(AyarlarStrings.tamAd),
+                subtitle: Text(profil.tamAd ?? AyarlarStrings.tamAdYok),
+                trailing: const Icon(Icons.edit_outlined),
+                onTap: () => unawaited(tamAdiDuzenle(context, ref)),
               ),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: premium.aktif
-                  ? () => _bilgiGoster(context, PremiumStrings.yonetimBilgisi)
-                  : () => Navigator.of(context).push(
-                        fadeThroughRoute<void>(const PaywallScreen()),
-                      ),
-              subtitle: Text(
-                premium.aktif
-                    ? AyarlarStrings.aboneligiYonet
-                    : AyarlarStrings.premiumaGec,
+              ListTile(
+                title: const Text(AyarlarStrings.tercihler),
+                subtitle: const Text(AyarlarStrings.tercihlerAciklama),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => Navigator.of(context).push(
+                  fadeThroughRoute<void>(const TanismaScreen(duzenleme: true)),
+                ),
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.restore_rounded),
-              title: const Text(AyarlarStrings.geriYukle),
-              onTap: premium.islemde
-                  ? null
-                  : () => unawaited(
+              bolumBasligi(AyarlarStrings.premium),
+              ListTile(
+                leading: Icon(
+                  premium.aktif
+                      ? Icons.workspace_premium_rounded
+                      : Icons.workspace_premium_outlined,
+                  color: AppColors.gold,
+                ),
+                title: Text(
+                  premium.aktif
+                      ? AyarlarStrings.premiumAktif
+                      : AyarlarStrings.premiumDegil,
+                ),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: premium.aktif
+                    ? () => _bilgiGoster(context, PremiumStrings.yonetimBilgisi)
+                    : () => Navigator.of(
+                        context,
+                      ).push(fadeThroughRoute<void>(const PaywallScreen())),
+                subtitle: Text(
+                  premium.aktif
+                      ? AyarlarStrings.aboneligiYonet
+                      : AyarlarStrings.premiumaGec,
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.restore_rounded),
+                title: const Text(AyarlarStrings.geriYukle),
+                onTap: premium.islemde
+                    ? null
+                    : () => unawaited(
                         ref.read(premiumKontrolcuProvider.notifier).geriYukle(),
                       ),
-            ),
-            bolumBasligi(AyarlarStrings.bildirimler),
-            const ListTile(
-              leading: Icon(Icons.notifications_none_rounded),
-              title: Text(AyarlarStrings.bildirimSaatleri),
-              subtitle: Text(AyarlarStrings.bildirimAciklama),
-            ),
-            ListTile(
-              leading: const Icon(Icons.refresh_rounded),
-              title: const Text(AyarlarStrings.bildirimleriTazele),
-              onTap: () async {
-                final ScaffoldMessengerState mesajci =
-                    ScaffoldMessenger.of(context);
-                final NotificationService servis =
-                    ref.read(notificationServiceProvider);
-                if (await servis.izinIste()) {
-                  await servis.gunlukBildirimleriPlanla(simdi: DateTime.now());
-                }
-                mesajci.showSnackBar(
-                  const SnackBar(
-                    content: Text(AyarlarStrings.bildirimlerKuruldu),
-                  ),
-                );
-              },
-            ),
-            bolumBasligi(AyarlarStrings.gizlilikYasal),
-            if (gizlilikGerekli)
-              ListTile(
-                leading: const Icon(Icons.privacy_tip_outlined),
-                title: const Text(AyarlarStrings.reklamGizlilik),
-                onTap: () => unawaited(
-                  ref.read(reklamServisiProvider).gizlilikSecenekleriniGoster(),
-                ),
               ),
-            ListTile(
-              leading: const Icon(Icons.info_outline_rounded),
-              title: const Text(AyarlarStrings.uyari),
-              onTap: () => _bilgiGoster(
-                context,
-                YasalMetinler.uyariMaddeleri.join('\n\n'),
-              ),
-            ),
-            for (final YasalBelge belge in YasalBelge.values)
-              ListTile(
-                leading: const Icon(Icons.description_outlined),
-                title: Text(belge.baslik),
-                onTap: () => Navigator.of(context).push(
-                  fadeThroughRoute<void>(YasalBelgeScreen(belge: belge)),
-                ),
-              ),
-            ListTile(
-              leading: const Icon(
-                Icons.delete_forever_outlined,
-                color: AppColors.error,
-              ),
-              title: const Text(
-                AyarlarStrings.verileriSil,
-                style: TextStyle(color: AppColors.error),
-              ),
-              onTap: () => unawaited(_verileriSil(context, ref)),
-            ),
-            if (kDebugMode) ...<Widget>[
-              bolumBasligi(AyarlarStrings.gelistirici),
-              SwitchListTile(
-                title: const Text(AyarlarStrings.premiumSimulasyonu),
-                value: premium.aktif,
-                onChanged: (bool acik) => unawaited(
-                  ref
-                      .read(premiumKontrolcuProvider.notifier)
-                      .gelistiriciPremiumAyarla(acik: acik),
-                ),
+              bolumBasligi(AyarlarStrings.bildirimler),
+              const ListTile(
+                leading: Icon(Icons.notifications_none_rounded),
+                title: Text(AyarlarStrings.bildirimSaatleri),
+                subtitle: Text(AyarlarStrings.bildirimAciklama),
               ),
               ListTile(
-                title: const Text(AyarlarStrings.rizaSifirla),
+                leading: const Icon(Icons.refresh_rounded),
+                title: const Text(AyarlarStrings.bildirimleriTazele),
                 onTap: () async {
-                  final ScaffoldMessengerState mesajci =
-                      ScaffoldMessenger.of(context);
-                  await ref.read(reklamServisiProvider).rizayiSifirla();
+                  final ScaffoldMessengerState mesajci = ScaffoldMessenger.of(
+                    context,
+                  );
+                  final NotificationService servis = ref.read(
+                    notificationServiceProvider,
+                  );
+                  if (await servis.izinIste()) {
+                    await servis.gunlukBildirimleriPlanla(
+                      simdi: DateTime.now(),
+                    );
+                  }
                   mesajci.showSnackBar(
                     const SnackBar(
-                      content: Text(AyarlarStrings.rizaSifirlandi),
+                      content: Text(AyarlarStrings.bildirimlerKuruldu),
                     ),
                   );
                 },
               ),
-            ],
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Text(
-                AyarlarStrings.surum(LegalConfig.uygulamaSurumu),
-                style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
-                textAlign: TextAlign.center,
+              bolumBasligi(AyarlarStrings.gizlilikYasal),
+              if (gizlilikGerekli)
+                ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined),
+                  title: const Text(AyarlarStrings.reklamGizlilik),
+                  onTap: () => unawaited(
+                    ref
+                        .read(reklamServisiProvider)
+                        .gizlilikSecenekleriniGoster(),
+                  ),
+                ),
+              ListTile(
+                leading: const Icon(Icons.info_outline_rounded),
+                title: const Text(AyarlarStrings.uyari),
+                onTap: () => _bilgiGoster(
+                  context,
+                  YasalMetinler.uyariMaddeleri.join('\n\n'),
+                ),
               ),
-            ),
-          ],
+              for (final YasalBelge belge in YasalBelge.values)
+                ListTile(
+                  leading: const Icon(Icons.description_outlined),
+                  title: Text(belge.baslik),
+                  onTap: () => Navigator.of(context).push(
+                    fadeThroughRoute<void>(YasalBelgeScreen(belge: belge)),
+                  ),
+                ),
+              ListTile(
+                leading: const Icon(
+                  Icons.delete_forever_outlined,
+                  color: AppColors.error,
+                ),
+                title: const Text(
+                  AyarlarStrings.verileriSil,
+                  style: TextStyle(color: AppColors.error),
+                ),
+                onTap: () => unawaited(_verileriSil(context, ref)),
+              ),
+              if (kDebugMode) ...<Widget>[
+                bolumBasligi(AyarlarStrings.gelistirici),
+                SwitchListTile(
+                  title: const Text(AyarlarStrings.premiumSimulasyonu),
+                  value: premium.aktif,
+                  onChanged: (bool acik) => unawaited(
+                    ref
+                        .read(premiumKontrolcuProvider.notifier)
+                        .gelistiriciPremiumAyarla(acik: acik),
+                  ),
+                ),
+                ListTile(
+                  title: const Text(AyarlarStrings.rizaSifirla),
+                  onTap: () async {
+                    final ScaffoldMessengerState mesajci = ScaffoldMessenger.of(
+                      context,
+                    );
+                    await ref.read(reklamServisiProvider).rizayiSifirla();
+                    mesajci.showSnackBar(
+                      const SnackBar(
+                        content: Text(AyarlarStrings.rizaSifirlandi),
+                      ),
+                    );
+                  },
+                ),
+              ],
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Text(
+                  AyarlarStrings.surum(LegalConfig.uygulamaSurumu),
+                  style: yazi.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

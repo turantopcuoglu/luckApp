@@ -6,6 +6,7 @@ import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../shared/widgets/app_route.dart';
+import '../../shared/widgets/kilit_amblemi.dart';
 import '../ads/ads_providers.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import 'paywall_screen.dart';
@@ -73,7 +74,7 @@ class _KilitSheet extends ConsumerWidget {
     final TextTheme yazi = Theme.of(context).textTheme;
     final bool reklamHazir = ref.watch(reklamHazirProvider);
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.lg,
           0,
@@ -84,7 +85,9 @@ class _KilitSheet extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const Icon(Icons.lock_rounded, color: AppColors.gold),
+            const Center(
+              child: KilitAmblemi(boyut: PaywallConfig.kilitPencereAmblemi),
+            ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               PremiumStrings.kilitBaslik,

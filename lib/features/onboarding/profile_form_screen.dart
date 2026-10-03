@@ -9,11 +9,14 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_route.dart';
 import '../legal/legal_config.dart';
 import 'onboarding_config.dart';
 import 'onboarding_strings.dart';
 import 'tanisma_screen.dart';
+import 'widgets/astrolab.dart';
+import 'widgets/onboarding_zemini.dart';
 
 /// Formda seçili doğum tarihi.
 ///
@@ -21,8 +24,8 @@ import 'tanisma_screen.dart';
 /// lokal animasyon için); geri dönülüp gelinirse seçim korunur.
 final StateProvider<DateTime> secilenDogumTarihiProvider =
     StateProvider<DateTime>(
-  (Ref ref) => OnboardingConfig.varsayilanDogumTarihi,
-);
+      (Ref ref) => OnboardingConfig.varsayilanDogumTarihi,
+    );
 
 /// Onboarding profil adımı: hitap adı, doğumdaki tam ad (opsiyonel) ve
 /// doğum tarihi.
@@ -66,11 +69,15 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
       );
       return;
     }
-    final String tamAd =
-        _tamAdKontrol.text.trim().replaceAll(RegExp(r'\s+'), ' ');
+    final String tamAd = _tamAdKontrol.text.trim().replaceAll(
+      RegExp(r'\s+'),
+      ' ',
+    );
 
     unawaited(
-      ref.read(userRepositoryProvider).kaydet(
+      ref
+          .read(userRepositoryProvider)
+          .kaydet(
             UserProfile(
               isim: isim,
               dogumTarihi: ref.read(secilenDogumTarihiProvider),
@@ -79,88 +86,101 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
             ),
           ),
     );
-    Navigator.of(context).push(
-      fadeThroughRoute<void>(const TanismaScreen()),
-    );
+    Navigator.of(context).push(fadeThroughRoute<void>(const TanismaScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
-    final TextStyle? aciklamaStili =
-        yaziTemasi.bodySmall?.copyWith(color: AppColors.textSecondary);
+    final TextStyle? aciklamaStili = yaziTemasi.bodySmall?.copyWith(
+      color: AppColors.textSecondary,
+    );
     return Scaffold(
+      backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(),
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                children: <Widget>[
-                  Text(
-                    OnboardingStrings.isimEtiketi,
-                    style: yaziTemasi.titleMedium,
+      body: OnboardingZemini(
+        yogun: true,
+        child: SafeArea(
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
                   ),
-                  const SizedBox(height: AppSpacing.sm),
-                  TextField(
-                    key: const Key('isim-alani'),
-                    controller: _isimKontrol,
-                    textCapitalization: TextCapitalization.words,
-                    decoration: const InputDecoration(
-                      hintText: OnboardingStrings.isimIpucu,
+                  children: <Widget>[
+                    const Center(
+                      child: Astrolab(boyut: OnboardingConfig.astrolabKucuk),
                     ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  Text(
-                    OnboardingStrings.tamAdEtiketi,
-                    style: yaziTemasi.titleMedium,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  TextField(
-                    key: const Key('tam-ad-form-alani'),
-                    controller: _tamAdKontrol,
-                    textCapitalization: TextCapitalization.words,
-                    decoration: const InputDecoration(
-                      hintText: OnboardingStrings.tamAdIpucu,
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      OnboardingStrings.isimEtiketi,
+                      style: yaziTemasi.titleMedium,
                     ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(OnboardingStrings.tamAdAciklama, style: aciklamaStili),
-                  const SizedBox(height: AppSpacing.lg),
-                  Text(
-                    OnboardingStrings.dogumTarihiEtiketi,
-                    style: yaziTemasi.titleMedium,
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    OnboardingStrings.dogumTarihiAciklama,
-                    style: aciklamaStili,
-                  ),
-                  SizedBox(
-                    height: OnboardingConfig.tarihSeciciYuksekligi,
-                    child: CupertinoDatePicker(
-                      mode: CupertinoDatePickerMode.date,
-                      initialDateTime: ref.read(secilenDogumTarihiProvider),
-                      minimumDate: DateTime(OnboardingConfig.enEskiDogumYili),
-                      maximumDate: DateTime.now(),
-                      backgroundColor: AppColors.background,
-                      onDateTimeChanged: (DateTime yeni) => ref
-                          .read(secilenDogumTarihiProvider.notifier)
-                          .state = yeni,
+                    const SizedBox(height: AppSpacing.sm),
+                    TextField(
+                      key: const Key('isim-alani'),
+                      controller: _isimKontrol,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(
+                        hintText: OnboardingStrings.isimIpucu,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: AppSpacing.lg),
+                    Text(
+                      OnboardingStrings.tamAdEtiketi,
+                      style: yaziTemasi.titleMedium,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    TextField(
+                      key: const Key('tam-ad-form-alani'),
+                      controller: _tamAdKontrol,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(
+                        hintText: OnboardingStrings.tamAdIpucu,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(OnboardingStrings.tamAdAciklama, style: aciklamaStili),
+                    const SizedBox(height: AppSpacing.lg),
+                    Text(
+                      OnboardingStrings.dogumTarihiEtiketi,
+                      style: yaziTemasi.titleMedium,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      OnboardingStrings.dogumTarihiAciklama,
+                      style: aciklamaStili,
+                    ),
+                    SizedBox(
+                      height: OnboardingConfig.tarihSeciciYuksekligi,
+                      child: CupertinoDatePicker(
+                        mode: CupertinoDatePickerMode.date,
+                        initialDateTime: ref.read(secilenDogumTarihiProvider),
+                        minimumDate: DateTime(OnboardingConfig.enEskiDogumYili),
+                        maximumDate: DateTime.now(),
+                        backgroundColor: Colors.transparent,
+                        onDateTimeChanged: (DateTime yeni) =>
+                            ref
+                                    .read(secilenDogumTarihiProvider.notifier)
+                                    .state =
+                                yeni,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: FilledButton(
-                onPressed: _devamEt,
-                child: const Text(OnboardingStrings.devam),
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: AltinButon(
+                  genislik: null,
+                  metin: OnboardingStrings.devam,
+                  onPressed: _devamEt,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

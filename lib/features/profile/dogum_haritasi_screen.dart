@@ -5,14 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/content/burc_metinleri.dart';
 import '../../core/content/harita_okumasi.dart';
+import '../../core/luck_engine/burc.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../legal/legal_texts.dart';
 import '../premium/kilit_secenekleri.dart';
 import '../premium/premium_providers.dart';
 import 'dogum_bilgisi_duzenle.dart';
 import 'kilitli_bolum_karti.dart';
+import 'profile_config.dart';
 import 'profile_providers.dart';
 import 'profile_strings.dart';
 
@@ -53,14 +56,26 @@ class BuyukUcluKarti extends ConsumerWidget {
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: <Widget>[
-                  for (final (String, String?) s in <(String, String?)>[
-                    (ProfileStrings.gunes, okuma.gunes.etiket),
-                    (ProfileStrings.ay, okuma.ay.etiket),
-                    (ProfileStrings.yukselen, okuma.yukselen?.etiket),
-                  ])
+                  for (final (String, String, Burc?) s
+                      in <(String, String, Burc?)>[
+                        (ProfileStrings.gunes, AppImages.madalyonGunes, okuma.gunes),
+                        (ProfileStrings.ay, AppImages.madalyonAy, okuma.ay),
+                        (
+                          ProfileStrings.yukselen,
+                          AppImages.madalyonYukselen,
+                          okuma.yukselen,
+                        ),
+                      ])
                     Expanded(
                       child: Column(
                         children: <Widget>[
+                          Image.asset(
+                            s.$2,
+                            width: ProfileConfig.ucluMadalyonBoyutu,
+                            height: ProfileConfig.ucluMadalyonBoyutu,
+                            excludeFromSemantics: true,
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
                           Text(
                             s.$1,
                             style: yazi.labelSmall?.copyWith(
@@ -69,7 +84,7 @@ class BuyukUcluKarti extends ConsumerWidget {
                           ),
                           const SizedBox(height: AppSpacing.xs),
                           Text(
-                            s.$2 ?? ProfileStrings.bilinmiyor,
+                            s.$3?.etiket ?? ProfileStrings.bilinmiyor,
                             style: yazi.titleMedium?.copyWith(
                               color: AppColors.gold,
                             ),
@@ -128,7 +143,13 @@ class DogumHaritasiScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: <Widget>[
-            Text(okuma.ozet, style: yazi.titleLarge),
+            _HaritaBasligi(okuma: okuma),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              okuma.ozet,
+              style: yazi.titleLarge,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: AppSpacing.md),
             for (final String not in okuma.notlar)
               Padding(
@@ -177,6 +198,72 @@ class DogumHaritasiScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Harita ekranının başlığı: Güneş, Ay ve Yükselen burçlarının
+/// madalyonları; her birinin köşesinde gezegenin küçük madalyonu durur.
+/// Yükselen bilinmiyorsa yerinde soluk bir boş madalyon görünür.
+class _HaritaBasligi extends StatelessWidget {
+  const _HaritaBasligi({required this.okuma});
+
+  final HaritaOkumasi okuma;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme yazi = Theme.of(context).textTheme;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        for (final (String, String, Burc?) s in <(String, String, Burc?)>[
+          (ProfileStrings.gunes, AppImages.madalyonGunes, okuma.gunes),
+          (ProfileStrings.ay, AppImages.madalyonAy, okuma.ay),
+          (ProfileStrings.yukselen, AppImages.madalyonYukselen, okuma.yukselen),
+        ])
+          Column(
+            children: <Widget>[
+              SizedBox.square(
+                dimension: ProfileConfig.haritaMadalyonBoyutu,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: <Widget>[
+                    Opacity(
+                      opacity: s.$3 == null
+                          ? ProfileConfig.pasifDonemOpakligi
+                          : 1,
+                      child: Image.asset(
+                        s.$3 == null
+                            ? AppImages.sayiMadalyonu
+                            : AppImages.burc(s.$3!.name),
+                        width: ProfileConfig.haritaMadalyonBoyutu,
+                        height: ProfileConfig.haritaMadalyonBoyutu,
+                        excludeFromSemantics: true,
+                      ),
+                    ),
+                    Positioned(
+                      right: -AppSpacing.xs,
+                      bottom: -AppSpacing.xs,
+                      child: Image.asset(
+                        s.$2,
+                        width: ProfileConfig.haritaGezegenRozeti,
+                        height: ProfileConfig.haritaGezegenRozeti,
+                        excludeFromSemantics: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                s.$1,
+                style: yazi.labelSmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+      ],
     );
   }
 }

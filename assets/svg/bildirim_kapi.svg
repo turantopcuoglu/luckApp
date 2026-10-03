@@ -1,0 +1,6 @@
+<!-- Kader bildirim simgesi kaynağı: tek renk kapı kemeri + dört uçlu yıldız. Android karşılığı res/drawable/ic_stat_kader.xml. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <title>Kader bildirim kapısı</title>
+  <path fill="#FFFFFF" fill-rule="evenodd" d="M4 21V10a8 8 0 0 1 16 0v11h-3V10a5 5 0 0 0-10 0v11H4Z"/>
+  <path fill="#FFFFFF" d="m12 8 1.35 3.65L17 13l-3.65 1.35L12 18l-1.35-3.65L7 13l3.65-1.35L12 8Z"/>
+</svg>

@@ -7,6 +7,9 @@ import '../../core/storage/luck_history_repository.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/altin_buton.dart';
+import '../../shared/widgets/app_images.dart';
+import '../../shared/widgets/sahne_arka_plani.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import 'feedback_config.dart';
 import 'feedback_strings.dart';
@@ -36,8 +39,7 @@ class FeedbackScreen extends ConsumerWidget {
   /// yazmayı beklemez (unawaited).
   void _kaydet(BuildContext context, WidgetRef ref, {required bool pozitif}) {
     final DateTime gun = ref.read(bugunProvider);
-    final LuckHistoryRepository repo =
-        ref.read(luckHistoryRepositoryProvider);
+    final LuckHistoryRepository repo = ref.read(luckHistoryRepositoryProvider);
     final String? emoji = ref.read(feedbackEmojiProvider);
 
     unawaited(() async {
@@ -49,9 +51,9 @@ class FeedbackScreen extends ConsumerWidget {
       await repo.feedbackKaydet(gun, pozitif: pozitif, emoji: emoji);
     }());
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text(FeedbackStrings.tesekkur)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text(FeedbackStrings.tesekkur)));
     Navigator.of(context).pop();
   }
 
@@ -62,70 +64,78 @@ class FeedbackScreen extends ConsumerWidget {
     final String? emoji = ref.watch(feedbackEmojiProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(title: const Text(FeedbackStrings.baslik)),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                FeedbackStrings.aksamSorusu,
-                style: yaziTemasi.headlineMedium,
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _SecimButonu(
-                    emoji: FeedbackStrings.evetEmoji,
-                    secili: pozitif ?? false,
-                    onTap: () => ref
-                        .read(feedbackPozitifProvider.notifier)
-                        .state = true,
-                  ),
-                  const SizedBox(width: AppSpacing.lg),
-                  _SecimButonu(
-                    emoji: FeedbackStrings.hayirEmoji,
-                    secili: pozitif == false,
-                    onTap: () => ref
-                        .read(feedbackPozitifProvider.notifier)
-                        .state = false,
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              Text(
-                FeedbackStrings.emojiBaslik,
-                style: yaziTemasi.titleMedium?.copyWith(
-                  color: AppColors.textSecondary,
+      body: SahneliZemin(
+        gorsel: AppImages.sahneAksam,
+        altKarartmaBaslangici: FeedbackConfig.karartmaBaslangici,
+        altKarartmaSonu: FeedbackConfig.karartmaSonu,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  FeedbackStrings.aksamSorusu,
+                  style: yaziTemasi.headlineMedium,
                 ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Wrap(
-                spacing: AppSpacing.sm,
-                children: <Widget>[
-                  for (final String secenek
-                      in FeedbackStrings.emojiSecenekleri)
-                    ChoiceChip(
-                      label: Text(secenek),
-                      selected: emoji == secenek,
-                      // Tekrar dokunmak seçimi kaldırır (emoji opsiyonel).
-                      onSelected: (bool secildi) => ref
-                          .read(feedbackEmojiProvider.notifier)
-                          .state = secildi ? secenek : null,
+                const SizedBox(height: AppSpacing.xl),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    _SecimButonu(
+                      emoji: FeedbackStrings.evetEmoji,
+                      secili: pozitif ?? false,
+                      onTap: () =>
+                          ref.read(feedbackPozitifProvider.notifier).state =
+                              true,
                     ),
-                ],
-              ),
-              const Spacer(),
-              FilledButton(
-                // 👍/👎 seçilmeden kaydedilemez; emoji opsiyoneldir.
-                onPressed: pozitif == null
-                    ? null
-                    : () => _kaydet(context, ref, pozitif: pozitif),
-                child: const Text(FeedbackStrings.kaydet),
-              ),
-            ],
+                    const SizedBox(width: AppSpacing.lg),
+                    _SecimButonu(
+                      emoji: FeedbackStrings.hayirEmoji,
+                      secili: pozitif == false,
+                      onTap: () =>
+                          ref.read(feedbackPozitifProvider.notifier).state =
+                              false,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                Text(
+                  FeedbackStrings.emojiBaslik,
+                  style: yaziTemasi.titleMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  children: <Widget>[
+                    for (final String secenek
+                        in FeedbackStrings.emojiSecenekleri)
+                      ChoiceChip(
+                        label: Text(secenek),
+                        selected: emoji == secenek,
+                        // Tekrar dokunmak seçimi kaldırır (emoji opsiyonel).
+                        onSelected: (bool secildi) =>
+                            ref.read(feedbackEmojiProvider.notifier).state =
+                                secildi ? secenek : null,
+                      ),
+                  ],
+                ),
+                const Spacer(),
+                AltinButon(
+                  genislik: null,
+                  metin: FeedbackStrings.kaydet,
+                  // 👍/👎 seçilmeden kaydedilemez; emoji opsiyoneldir.
+                  onPressed: pozitif == null
+                      ? null
+                      : () => _kaydet(context, ref, pozitif: pozitif),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -154,19 +164,17 @@ class _SecimButonu extends StatelessWidget {
         width: FeedbackConfig.secimButonBoyutu,
         height: FeedbackConfig.secimButonBoyutu,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: AppColors.camYuzey,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
-            color: secili ? AppColors.gold : Colors.transparent,
+            color: secili ? AppColors.gold : AppColors.camKenar,
             width: 2,
           ),
         ),
         child: Center(
           child: Text(
             emoji,
-            style: const TextStyle(
-              fontSize: FeedbackConfig.secimEmojiPunto,
-            ),
+            style: const TextStyle(fontSize: FeedbackConfig.secimEmojiPunto),
           ),
         ),
       ),

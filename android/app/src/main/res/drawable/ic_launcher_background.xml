@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Uyarlanabilir ikon zemini: ortada yumuşak mavi ışık, kenarda gece laciverti. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:type="radial"
+        android:gradientRadius="80%p"
+        android:centerX="0.5"
+        android:centerY="0.5"
+        android:startColor="@color/ikon_zemin_merkez"
+        android:endColor="@color/ikon_zemin" />
+</shape>

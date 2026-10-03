@@ -8,18 +8,22 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_route.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import 'calculating_screen.dart';
+import 'onboarding_config.dart';
 import 'onboarding_strings.dart';
+import 'widgets/astrolab.dart';
+import 'widgets/onboarding_zemini.dart';
 
 /// Formdaki tercih seçimleri (mevcut profilden başlar).
 final AutoDisposeStateProvider<OkuyucuTercihleri> tercihSecimiProvider =
     StateProvider.autoDispose<OkuyucuTercihleri>(
-  (Ref ref) =>
-      ref.read(userRepositoryProvider).profil()?.tercihler ??
-      const OkuyucuTercihleri(),
-);
+      (Ref ref) =>
+          ref.read(userRepositoryProvider).profil()?.tercihler ??
+          const OkuyucuTercihleri(),
+    );
 
 /// "Seni tanıyalım" soruları: enerji tarzı, karar tarzı, ilişki durumu,
 /// günlük uğraş.
@@ -59,9 +63,9 @@ class TanismaScreen extends ConsumerWidget {
       Navigator.of(context).pop();
       return;
     }
-    Navigator.of(context).push(
-      fadeThroughRoute<void>(const CalculatingScreen()),
-    );
+    Navigator.of(
+      context,
+    ).push(fadeThroughRoute<void>(const CalculatingScreen()));
   }
 
   @override
@@ -72,109 +76,121 @@ class TanismaScreen extends ConsumerWidget {
         ref.read(tercihSecimiProvider.notifier).state = yeni;
 
     return Scaffold(
+      backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         actions: <Widget>[
           if (!duzenleme)
             TextButton(
-              onPressed: () =>
-                  _kaydet(context, ref, const OkuyucuTercihleri()),
+              onPressed: () => _kaydet(context, ref, const OkuyucuTercihleri()),
               child: const Text(OnboardingStrings.atla),
             ),
         ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                children: <Widget>[
-                  Text(OnboardingStrings.tanismaBaslik, style: yazi.headlineMedium),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    OnboardingStrings.tanismaAciklama,
-                    style: yazi.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+      body: OnboardingZemini(
+        yogun: true,
+        child: SafeArea(
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
                   ),
-                  const SizedBox(height: AppSpacing.lg),
-                  _Soru<EnerjiTarzi>(
-                    soru: OnboardingStrings.soruEnerji,
-                    secenekler: EnerjiTarzi.values,
-                    etiket: (EnerjiTarzi e) => e.etiket,
-                    secili: t.enerji,
-                    onSec: (EnerjiTarzi? e) => guncelle(
-                      OkuyucuTercihleri(
-                        enerji: e,
-                        karar: t.karar,
-                        iliski: t.iliski,
-                        ugras: t.ugras,
+                  children: <Widget>[
+                    const Center(
+                      child: Astrolab(boyut: OnboardingConfig.astrolabKucuk),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      OnboardingStrings.tanismaBaslik,
+                      style: yazi.headlineMedium,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      OnboardingStrings.tanismaAciklama,
+                      style: yazi.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
                       ),
                     ),
-                  ),
-                  _Soru<KararTarzi>(
-                    soru: OnboardingStrings.soruKarar,
-                    secenekler: KararTarzi.values,
-                    etiket: (KararTarzi e) => e.etiket,
-                    secili: t.karar,
-                    onSec: (KararTarzi? e) => guncelle(
-                      OkuyucuTercihleri(
-                        enerji: t.enerji,
-                        karar: e,
-                        iliski: t.iliski,
-                        ugras: t.ugras,
+                    const SizedBox(height: AppSpacing.lg),
+                    _Soru<EnerjiTarzi>(
+                      soru: OnboardingStrings.soruEnerji,
+                      secenekler: EnerjiTarzi.values,
+                      etiket: (EnerjiTarzi e) => e.etiket,
+                      secili: t.enerji,
+                      onSec: (EnerjiTarzi? e) => guncelle(
+                        OkuyucuTercihleri(
+                          enerji: e,
+                          karar: t.karar,
+                          iliski: t.iliski,
+                          ugras: t.ugras,
+                        ),
                       ),
                     ),
-                  ),
-                  _Soru<IliskiDurumu>(
-                    soru: OnboardingStrings.soruIliski,
-                    secenekler: IliskiDurumu.values,
-                    etiket: (IliskiDurumu e) => e.etiket,
-                    secili: t.iliski,
-                    onSec: (IliskiDurumu? e) => guncelle(
-                      OkuyucuTercihleri(
-                        enerji: t.enerji,
-                        karar: t.karar,
-                        iliski: e,
-                        ugras: t.ugras,
+                    _Soru<KararTarzi>(
+                      soru: OnboardingStrings.soruKarar,
+                      secenekler: KararTarzi.values,
+                      etiket: (KararTarzi e) => e.etiket,
+                      secili: t.karar,
+                      onSec: (KararTarzi? e) => guncelle(
+                        OkuyucuTercihleri(
+                          enerji: t.enerji,
+                          karar: e,
+                          iliski: t.iliski,
+                          ugras: t.ugras,
+                        ),
                       ),
                     ),
-                  ),
-                  _Soru<Ugras>(
-                    soru: OnboardingStrings.soruUgras,
-                    secenekler: Ugras.values,
-                    etiket: (Ugras e) => e.etiket,
-                    secili: t.ugras,
-                    onSec: (Ugras? e) => guncelle(
-                      OkuyucuTercihleri(
-                        enerji: t.enerji,
-                        karar: t.karar,
-                        iliski: t.iliski,
-                        ugras: e,
+                    _Soru<IliskiDurumu>(
+                      soru: OnboardingStrings.soruIliski,
+                      secenekler: IliskiDurumu.values,
+                      etiket: (IliskiDurumu e) => e.etiket,
+                      secili: t.iliski,
+                      onSec: (IliskiDurumu? e) => guncelle(
+                        OkuyucuTercihleri(
+                          enerji: t.enerji,
+                          karar: t.karar,
+                          iliski: e,
+                          ugras: t.ugras,
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    OnboardingStrings.tanismaGizlilik,
-                    style: yazi.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
+                    _Soru<Ugras>(
+                      soru: OnboardingStrings.soruUgras,
+                      secenekler: Ugras.values,
+                      etiket: (Ugras e) => e.etiket,
+                      secili: t.ugras,
+                      onSec: (Ugras? e) => guncelle(
+                        OkuyucuTercihleri(
+                          enerji: t.enerji,
+                          karar: t.karar,
+                          iliski: t.iliski,
+                          ugras: e,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                    Text(
+                      OnboardingStrings.tanismaGizlilik,
+                      style: yazi.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: FilledButton(
-                onPressed: () => _kaydet(context, ref, t),
-                child: Text(
-                  duzenleme
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: AltinButon(
+                  genislik: null,
+                  onPressed: () => _kaydet(context, ref, t),
+                  metin: duzenleme
                       ? OnboardingStrings.kaydet
                       : OnboardingStrings.kaderimiHesapla,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

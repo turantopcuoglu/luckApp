@@ -1,0 +1,542 @@
+[
+  {
+    "File": "arac_bebek.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2427184,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "arac_isim.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2672938,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "arac_numara.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2621179,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "astrolab_cekirdek.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 441143,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 2309,
+    "PartialSamples": 292,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "astrolab_halkalar.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 973023,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1819,
+    "PartialSamples": 782,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "ay_evreleri.png",
+    "Width": 1774,
+    "Height": 887,
+    "Bytes": 1962732,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 827,
+    "PartialSamples": 1729,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "burc_seti.png",
+    "Width": 1448,
+    "Height": 1086,
+    "Bytes": 2831004,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 713,
+    "PartialSamples": 1839,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "buyuk_uclu_seti.png",
+    "Width": 2172,
+    "Height": 724,
+    "Bytes": 2520566,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 846,
+    "PartialSamples": 1677,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "cerceve_nadir.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 1862541,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1642,
+    "PartialSamples": 900,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "cerceve_normal.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 1483238,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1998,
+    "PartialSamples": 544,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "hata_durumu.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 604133,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 2031,
+    "PartialSamples": 570,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "ikon_sade.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 1639479,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1297,
+    "PartialSamples": 1302,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kart_acik_pencere.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2581109,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kart_altin_tuy.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2388959,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kart_arka_yuzu_muhursuz.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 3129789,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kart_ay_salincagi.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2384187,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kart_cam_merdiven.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2674161,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kart_hazir.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 3126095,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kart_kum_saati.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2639228,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kart_pusula.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2590360,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kart_yildiz_cesmesi.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2826126,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kart_yuzen_fener.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2401966,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kategori_seti.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 1268106,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1866,
+    "PartialSamples": 676,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kilit.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 1737557,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1564,
+    "PartialSamples": 1036,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kure_cam.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 1004644,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1720,
+    "PartialSamples": 881,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kure_cerceve.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 815348,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1994,
+    "PartialSamples": 607,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "kure_sivi.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 2451872,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 950,
+    "PartialSamples": 1650,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "mermer_doku.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 1999588,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "muhur.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 2011019,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1283,
+    "PartialSamples": 1316,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "on_plan_sutunlar.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 1799481,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1802,
+    "PartialSamples": 740,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "parilti.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 403425,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 2199,
+    "PartialSamples": 402,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "paylasim_gece.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2386642,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "paylasim_isik.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2416280,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "paylasim_mor.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2786267,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "play_ozellik.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2786854,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "rapor_kitap.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 2584449,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1039,
+    "PartialSamples": 1561,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "sahne_aksam.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2403373,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "sahne_onboarding.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2339466,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "sahne_orta_kapili.png",
+    "Width": 948,
+    "Height": 1660,
+    "Bytes": 2718309,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "sahne_profil.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2602685,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "sayi_madalyonu.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 2753145,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 904,
+    "PartialSamples": 1696,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "uyum_bos.png",
+    "Width": 1254,
+    "Height": 1254,
+    "Bytes": 895339,
+    "ExpectedTransparent": true,
+    "TransparentSamples": 1952,
+    "PartialSamples": 649,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "uyum_dengeli.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2637597,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "uyum_gelistiren.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2754063,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "uyum_guclu.png",
+    "Width": 1024,
+    "Height": 1536,
+    "Bytes": 2733053,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "yil_1.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2465654,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "yil_2.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2542584,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "yil_3.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2693025,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "yil_4.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2643304,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "yil_5.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2768406,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "yil_6.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2531902,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "yil_7.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2562901,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "yil_8.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2751478,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  },
+  {
+    "File": "yil_9.png",
+    "Width": 1536,
+    "Height": 1024,
+    "Bytes": 2468877,
+    "ExpectedTransparent": false,
+    "TransparentSamples": 0,
+    "PartialSamples": 0,
+    "AlphaSampleCheck": true
+  }
+]

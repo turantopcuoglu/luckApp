@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 
 import '../luck_engine/luck_engine.dart';
 import 'kayitli_kisi.dart';
+import 'koleksiyon_repository.dart';
 import 'luck_history_repository.dart';
 import 'user_repository.dart';
 import 'uygulama_durumu.dart';
@@ -72,3 +73,10 @@ final Provider<KisiRepository> kisiRepositoryProvider =
   (Ref ref) => KisiRepository(ref.watch(kisilerBoxProvider)),
 );
 
+
+/// Koleksiyon (kazanılan kartlar) repository'si; app_state kutusunu
+/// paylaşır.
+final Provider<KoleksiyonRepository> koleksiyonRepositoryProvider =
+    Provider<KoleksiyonRepository>(
+  (Ref ref) => KoleksiyonRepository(ref.watch(appStateBoxProvider)),
+);

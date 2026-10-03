@@ -13,8 +13,8 @@ enum SkorSahnesi {
   /// 60 ve üstü: turkuaz ışıkla açılmış kapılar.
   yuksek(gorsel: AppImages.sahneYuksek, vurgu: AppColors.sahneYuksek),
 
-  /// 40..59: altın kemer ardında gün doğumu.
-  orta(gorsel: AppImages.sahneOrta, vurgu: AppColors.sahneOrta),
+  /// 40..59: altın ışıkla açılmış kapılar.
+  orta(gorsel: AppImages.sahneOrtaKapili, vurgu: AppColors.sahneOrta),
 
   /// 39 ve altı: lavanta ışıklı, sakin kapılar.
   dusuk(gorsel: AppImages.sahneDusuk, vurgu: AppColors.sahneDusuk);

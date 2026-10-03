@@ -32,6 +32,12 @@ abstract final class AppColors {
   /// Işık dikişi ve kıvılcımların sıcak beyaz çekirdeği.
   static const Color isikCekirdegi = Color(0xFFFFF8E6);
 
+  /// Cam kart yüzeyi: [surface] rengi %72 opak (sahne arkadan sezilir).
+  static const Color camYuzey = Color(0xB8131A2E);
+
+  /// Cam kart kenarı: [gold] rengi %22 opak.
+  static const Color camKenar = Color(0x38F4C95D);
+
   /// Kart kanatlarının döndükçe kararan gölge rengi.
   static const Color golge = Color(0xFF000000);
 

@@ -1,13 +1,14 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/luck_engine/luck_engine.dart';
 import 'arac_story_card.dart';
+import 'paylasim_temasi.dart';
 import 'share_config.dart';
 import 'share_strings.dart';
 import 'story_card.dart';
@@ -22,21 +23,58 @@ class ShareService {
   /// Varsayılan kurucu.
   ShareService();
 
-  /// Günün [sonuc]unu (ve varsa kişisel [baslik]ını) story kartı olarak
-  /// paylaşır.
-  Future<void> paylas({required LuckResult sonuc, String? baslik}) =>
-      gorselPaylas(
-        kart: StoryCard(sonuc: sonuc, baslik: baslik),
+  /// Günün [sonuc]unu (ve varsa kişisel [baslik]ını) seçilen [tema]
+  /// arka planıyla story kartı olarak paylaşır; [skoruGizle] açıksa skor
+  /// ve kategori puanları karta yazılmaz.
+  Future<void> paylas({
+    required LuckResult sonuc,
+    String? baslik,
+    PaylasimTemasi tema = PaylasimTemasi.gece,
+    bool skoruGizle = false,
+  }) async {
+    final ui.Image zemin = await gorselCoz(tema.gorsel);
+    try {
+      await gorselPaylas(
+        kart: StoryCard(
+          sonuc: sonuc,
+          baslik: baslik,
+          skoruGizle: skoruGizle,
+          arkaPlan: RawImage(image: zemin, fit: BoxFit.cover),
+        ),
         metin: ShareStrings.paylasimMetni,
         dosyaAdi: ShareConfig.dosyaAdi,
       );
+    } finally {
+      zemin.dispose();
+    }
+  }
 
-  /// Bir Keşfet aracı sonucunu story kartı olarak paylaşır.
-  Future<void> aracPaylas(AracPaylasimi paylasim) => gorselPaylas(
-    kart: AracStoryCard(paylasim: paylasim),
-    metin: paylasim.paylasimMetni,
-    dosyaAdi: ShareConfig.aracDosyaAdi,
-  );
+  /// Bir Keşfet aracı sonucunu (gece temalı) story kartı olarak paylaşır.
+  Future<void> aracPaylas(AracPaylasimi paylasim) async {
+    final ui.Image zemin = await gorselCoz(PaylasimTemasi.gece.gorsel);
+    try {
+      await gorselPaylas(
+        kart: AracStoryCard(
+          paylasim: paylasim,
+          arkaPlan: RawImage(image: zemin, fit: BoxFit.cover),
+        ),
+        metin: paylasim.paylasimMetni,
+        dosyaAdi: ShareConfig.aracDosyaAdi,
+      );
+    } finally {
+      zemin.dispose();
+    }
+  }
+
+  /// [yol] asset görselini çözüp `ui.Image` döndürür. Off-screen render
+  /// tek karede biter; görselin önceden çözülmüş olması gerekir.
+  Future<ui.Image> gorselCoz(String yol) async {
+    final ByteData veri = await rootBundle.load(yol);
+    final ui.Codec cozucu = await ui.instantiateImageCodec(
+      veri.buffer.asUint8List(),
+    );
+    return (await cozucu.getNextFrame()).image;
+  }
 
   /// [kart]ı PNG'ye çevirip [metin] ile sistem paylaşım menüsüne verir.
   Future<void> gorselPaylas({

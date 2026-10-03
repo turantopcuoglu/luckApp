@@ -113,7 +113,20 @@ void main() {
 
     // Tanışma: bir soruyu cevapla.
     expect(find.byType(TanismaScreen), findsOneWidget);
-    await tester.scrollUntilVisible(find.text(Ugras.ogrenci.etiket), 100);
+    // Alttaki rotanın (profil formu) listesi de ağaçta: tanışma listesi
+    // açıkça seçilir.
+    await tester.scrollUntilVisible(
+      find.text(Ugras.ogrenci.etiket),
+      100,
+      scrollable: find
+          .descendant(
+            of: find.byType(TanismaScreen),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.ensureVisible(find.text(Ugras.ogrenci.etiket));
+    await tester.pump();
     await tester.tap(find.text(Ugras.ogrenci.etiket));
     await tester.pump();
     await tester.tap(find.text(OnboardingStrings.kaderimiHesapla));
@@ -132,12 +145,18 @@ void main() {
           .kaydet(DailyRecord(sonuc: sonuc));
     });
 
-    // 2.5 sn animasyon + geçiş: ana kabuk açılır, bayrak true olur.
+    // 2.5 sn ışık dolumu: bayrak true olur, "Kartın hazır" belirir.
     await tester.pump(const Duration(milliseconds: 2600));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1000));
+    expect(repo.onboardingTamamlandiMi, isTrue);
+    expect(find.text(OnboardingStrings.kartinHazir), findsOneWidget);
+
+    // "Kartıma geç": ana kabuk açılır.
+    await tester.tap(find.text(OnboardingStrings.kartimaGec));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(AnaKabuk), findsOneWidget);
-    expect(repo.onboardingTamamlandiMi, isTrue);
 
     // Geri tuşu ana kabuktan onboarding'e dönememeli (yığın temiz).
     final NavigatorState gezgin = tester.state(find.byType(Navigator).first);

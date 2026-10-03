@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +7,8 @@ import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../main.dart';
+import '../../shared/widgets/altin_buton.dart';
+import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/hero_tags.dart';
 import '../daily_luck/daily_luck_providers.dart';
@@ -17,16 +18,20 @@ import '../home/ana_kabuk.dart';
 import '../home/ana_sekme.dart';
 import 'onboarding_config.dart';
 import 'onboarding_strings.dart';
+import 'widgets/isik_kuresi.dart';
+import 'widgets/onboarding_zemini.dart';
 
-/// Onboarding son adımı: "Kaderin hesaplanıyor..." sahte hesaplama ekranı.
+/// Onboarding son adımı (mockup `ee9545f3` 2. ve 3. ekran):
 ///
-/// 2.5 sn'lik parçacık animasyonu (50 partikül merkezden dağılıp
-/// toplanır) biter bitmez onboarding tamamlanır ve ana ekrana Hero
-/// geçişiyle gidilir: ortadaki küçük halka, ana ekrandaki skor
-/// halkasına büyüyerek uçar.
+/// 1. **Işık dolumu** (2,5 sn): cam küre yıldızlı ışıkla dolar, ilerleme
+///    çubuğu ilerler, üç adımlı kontrol listesi sırayla tamamlanır.
+/// 2. **Kartın hazır**: dolum bitince onboarding tamamlanır, bildirim izni
+///    istenir; ışıklı kart belirir. "Kartıma geç" ana ekrana gider ve kart
+///    Hero ile ana ekrandaki kader kartına uçar.
 ///
-/// Geri tuşu bilinçli olarak kapalıdır (PopScope): yarım hesaplama
-/// deneyimi yarıda kesilmez, akış ileri doğru akar.
+/// İki faz iki controller'la sürülür; görünüm controller değerinden türer
+/// (setState yok, kural 5). Geri tuşu bilinçli olarak kapalıdır
+/// (PopScope): akış ileri doğru akar.
 class CalculatingScreen extends ConsumerStatefulWidget {
   /// Varsayılan kurucu.
   const CalculatingScreen({super.key});
@@ -36,29 +41,35 @@ class CalculatingScreen extends ConsumerStatefulWidget {
 }
 
 class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _kontrol = AnimationController(
+    with TickerProviderStateMixin {
+  late final AnimationController _dolum = AnimationController(
     vsync: this,
     duration: OnboardingConfig.hesaplamaSuresi,
+  );
+
+  late final AnimationController _hazir = AnimationController(
+    vsync: this,
+    duration: OnboardingConfig.hazirBelirmeSuresi,
   );
 
   @override
   void initState() {
     super.initState();
-    _kontrol.addStatusListener((AnimationStatus d) => unawaited(_animasyonBitti(d)));
-    _kontrol.forward();
+    _dolum
+      ..addStatusListener((AnimationStatus d) => unawaited(_dolumBitti(d)))
+      ..forward();
   }
 
   @override
   void dispose() {
-    _kontrol.dispose();
+    _dolum.dispose();
+    _hazir.dispose();
     super.dispose();
   }
 
-  /// Animasyon tamamlanınca onboarding bayrağı yazılır, bildirim izni
-  /// istenir ve tüm onboarding yığını temizlenerek ana ekrana geçilir
-  /// (geri tuşu artık onboarding'e dönemez).
-  Future<void> _animasyonBitti(AnimationStatus durum) async {
+  /// Dolum tamamlanınca onboarding bayrağı yazılır, bildirim izni istenir
+  /// ve "Kartın hazır" fazı başlar.
+  Future<void> _dolumBitti(AnimationStatus durum) async {
     if (durum != AnimationStatus.completed || !mounted) {
       return;
     }
@@ -68,13 +79,12 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
     // Bildirim izni akışı onboarding'in sonundadır (plan S8, madde 4):
     // sistem diyaloğu bu ekranın üzerinde görünür, cevaba göre ya
     // bildirimler planlanır ya da nazik bir hatırlatma gösterilir.
-    final NotificationService bildirimler =
-        ref.read(notificationServiceProvider);
+    final NotificationService bildirimler = ref.read(
+      notificationServiceProvider,
+    );
     final bool izinVerildi = await bildirimler.izinIste();
     if (izinVerildi) {
-      unawaited(
-        bildirimler.gunlukBildirimleriPlanla(simdi: DateTime.now()),
-      );
+      unawaited(bildirimler.gunlukBildirimleriPlanla(simdi: DateTime.now()));
     } else {
       anaMesajciAnahtari.currentState?.showSnackBar(
         const SnackBar(content: Text(FeedbackStrings.izinReddiMesaji)),
@@ -83,7 +93,15 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
     if (!mounted) {
       return;
     }
+    _hazir.duration = MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : OnboardingConfig.hazirBelirmeSuresi;
+    unawaited(_hazir.forward());
+  }
 
+  /// Tüm onboarding yığını temizlenerek ana ekrana geçilir (geri tuşu
+  /// artık onboarding'e dönemez).
+  void _kartimaGec() {
     // Ana ekran provider'ları misafir profiliyle değerlenmiş olabilir;
     // yeni profil okunsun diye tazelenir.
     ref
@@ -98,47 +116,215 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
 
   @override
   Widget build(BuildContext context) {
+    final Widget hazirlanma = _Hazirlanma(dolum: _dolum);
     return PopScope(
       canPop: false,
       child: Scaffold(
-        body: SafeArea(
-          child: Stack(
-            children: <Widget>[
-              // Parçacık sistemi tüm ekranı kaplar; repaint yalnızca
-              // controller tick'lerinde ve bu katmanda olur.
-              Positioned.fill(
-                child: RepaintBoundary(
-                  child: CustomPaint(
-                    painter: _ParcacikPainter(animasyon: _kontrol),
-                  ),
-                ),
-              ),
-              Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    // Ana ekrandaki skor halkasına uçacak Hero tohumu.
-                    Hero(
-                      tag: HeroTags.skorHalkasi,
-                      child: Container(
-                        width: OnboardingConfig.heroHalkaBoyutu,
-                        height: OnboardingConfig.heroHalkaBoyutu,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.gold,
-                            width: OnboardingConfig.heroHalkaKalinligi,
+        backgroundColor: AppColors.background,
+        body: OnboardingZemini(
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: AnimatedBuilder(
+                animation: _hazir,
+                builder: (BuildContext context, Widget? child) {
+                  final double t = _hazir.value;
+                  if (t == 0) {
+                    return hazirlanma;
+                  }
+                  // Dolum görünümü söner, hazır kart belirir.
+                  return Stack(
+                    children: <Widget>[
+                      if (t < 1)
+                        IgnorePointer(
+                          child: ExcludeSemantics(
+                            child: Opacity(opacity: 1 - t, child: hazirlanma),
                           ),
                         ),
+                      Opacity(
+                        opacity: Curves.easeOut.transform(t),
+                        child: _KartHazir(belirme: t, onGec: _kartimaGec),
                       ),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    Text(
-                      OnboardingStrings.hesaplaniyor,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ],
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Işık dolumu görünümü: küre, ilerleme çubuğu, başlık, kontrol listesi.
+class _Hazirlanma extends StatelessWidget {
+  const _Hazirlanma({required this.dolum});
+
+  final Animation<double> dolum;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme yazi = Theme.of(context).textTheme;
+    return Column(
+      children: <Widget>[
+        const Spacer(),
+        IsikKuresi(ilerleme: dolum),
+        const SizedBox(height: AppSpacing.lg),
+        _IlerlemeCubugu(ilerleme: dolum),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          OnboardingStrings.kartHazirlaniyor,
+          style: yazi.headlineMedium,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        AnimatedBuilder(
+          animation: dolum,
+          builder: (BuildContext context, Widget? child) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              for (
+                int i = 0;
+                i < OnboardingStrings.hazirlikAdimlari.length;
+                i++
+              )
+                _Adim(
+                  metin: OnboardingStrings.hazirlikAdimlari[i],
+                  durum: _adimDurumu(i, dolum.value),
                 ),
+            ],
+          ),
+        ),
+        const Spacer(),
+        const RituelNotu(metin: OnboardingStrings.kendineAlanAc),
+      ],
+    );
+  }
+
+  /// [i]. adımın [v] ilerlemesindeki durumu: önceki adım bittiyse aktif,
+  /// kendi eşiğini geçtiyse tamam.
+  static _AdimDurumu _adimDurumu(int i, double v) {
+    if (v >= OnboardingConfig.adimEsikleri[i]) {
+      return _AdimDurumu.tamam;
+    }
+    final double onceki = i == 0 ? 0 : OnboardingConfig.adimEsikleri[i - 1];
+    return v >= onceki ? _AdimDurumu.aktif : _AdimDurumu.bekliyor;
+  }
+}
+
+/// Kontrol listesi adımının durumu.
+enum _AdimDurumu { bekliyor, aktif, tamam }
+
+/// Kontrol listesinin tek satırı: işaret dairesi + metin.
+class _Adim extends StatelessWidget {
+  const _Adim({required this.metin, required this.durum});
+
+  final String metin;
+  final _AdimDurumu durum;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool tamam = durum == _AdimDurumu.tamam;
+    final bool aktif = durum == _AdimDurumu.aktif;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            width: OnboardingConfig.adimIsaretCapi,
+            height: OnboardingConfig.adimIsaretCapi,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: tamam || aktif
+                    ? AppColors.gold
+                    : AppColors.textSecondary.withValues(
+                        alpha: OnboardingConfig.notCizgiOpakligi,
+                      ),
+              ),
+              boxShadow: aktif
+                  ? <BoxShadow>[
+                      BoxShadow(
+                        color: AppColors.goldAcik.withValues(
+                          alpha: OnboardingConfig.notCizgiOpakligi,
+                        ),
+                        blurRadius: AppSpacing.sm,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: tamam
+                ? const Icon(
+                    Icons.check_rounded,
+                    color: AppColors.gold,
+                    size: AppSpacing.md,
+                  )
+                : aktif
+                ? const Center(
+                    child: Icon(
+                      Icons.circle,
+                      color: AppColors.goldAcik,
+                      size: AppSpacing.sm,
+                    ),
+                  )
+                : null,
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Text(
+            metin,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: durum == _AdimDurumu.bekliyor
+                  ? AppColors.textSecondary
+                  : AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Cam görünümlü, turkuaz-altın dolan ilerleme çubuğu.
+class _IlerlemeCubugu extends StatelessWidget {
+  const _IlerlemeCubugu({required this.ilerleme});
+
+  final Animation<double> ilerleme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: OnboardingConfig.ilerlemeCubuguYuksekligi,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(
+          color: AppColors.gold.withValues(
+            alpha: OnboardingConfig.notCizgiOpakligi,
+          ),
+        ),
+      ),
+      child: AnimatedBuilder(
+        animation: ilerleme,
+        builder: (BuildContext context, Widget? child) => FractionallySizedBox(
+          alignment: Alignment.centerLeft,
+          widthFactor: ilerleme.value,
+          child: child,
+        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.full),
+            gradient: const LinearGradient(
+              colors: <Color>[AppColors.sahneYuksek, AppColors.isikCekirdegi],
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: AppColors.sahneYuksek.withValues(
+                  alpha: OnboardingConfig.yuzeyHaleOpakligi,
+                ),
+                blurRadius: AppSpacing.sm,
               ),
             ],
           ),
@@ -148,86 +334,108 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
   }
 }
 
-/// Tek bir parçacığın sabit özellikleri (koreografisi).
-class _Parcacik {
-  const _Parcacik({
-    required this.aci,
-    required this.yaricapOrani,
-    required this.boyut,
-    required this.fazKaymasi,
-  });
+/// "Kartın hazır" görünümü: ışık halesi içinde kart (Hero tohumu),
+/// başlık, tamamlandı rozeti ve "Kartıma geç".
+class _KartHazir extends StatelessWidget {
+  const _KartHazir({required this.belirme, required this.onGec});
 
-  /// Merkezden uçuş yönü (radyan).
-  final double aci;
+  /// Belirme ilerlemesi (0-1): kart hafifçe büyüyerek oturur.
+  final double belirme;
 
-  /// Azami yarıçapın parçacığa özgü çarpanı (0-1).
-  final double yaricapOrani;
+  /// "Kartıma geç" dokunuşu.
+  final VoidCallback onGec;
 
-  /// Parçacığın çapı.
-  final double boyut;
-
-  /// Saçılma zamanlamasındaki kişisel kayma (0-1): hepsi aynı anda
-  /// hareket etmesin, bulut gibi dalgalanarak dağılsın.
-  final double fazKaymasi;
-}
-
-/// Merkezden dağılıp geri toplanan 50 parçacığı çizen painter.
-///
-/// `repaint: animasyon` sayesinde her tick'te yalnızca boyama çalışır;
-/// widget ağacı yeniden inşa edilmez (Session 5 performans kuralı).
-class _ParcacikPainter extends CustomPainter {
-  _ParcacikPainter({required this.animasyon}) : super(repaint: animasyon);
-
-  /// 0→1 ilerleyen hesaplama animasyonu.
-  final Animation<double> animasyon;
-
-  /// Sabit tohumla üretilen parçacık kadrosu: her açılışta aynı,
-  /// dolayısıyla test edilebilir ve titremesiz.
-  static final List<_Parcacik> _parcaciklar = _uret();
-
-  static List<_Parcacik> _uret() {
-    final Random rnd = Random(OnboardingConfig.parcacikTohumu);
-    return List<_Parcacik>.generate(
-      OnboardingConfig.parcacikSayisi,
-      (int i) => _Parcacik(
-        aci: rnd.nextDouble() * 2 * pi,
-        yaricapOrani: 0.4 + rnd.nextDouble() * 0.6,
-        boyut: OnboardingConfig.parcacikMinBoyut +
-            rnd.nextDouble() *
-                (OnboardingConfig.parcacikMaksBoyut -
-                    OnboardingConfig.parcacikMinBoyut),
-        fazKaymasi: rnd.nextDouble() * 0.2,
-      ),
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme yazi = Theme.of(context).textTheme;
+    final double olcek =
+        OnboardingConfig.hazirBaslangicOlcegi +
+        (1 - OnboardingConfig.hazirBaslangicOlcegi) *
+            Curves.easeOutBack.transform(belirme);
+    return Column(
+      children: <Widget>[
+        const Spacer(),
+        Transform.scale(
+          scale: olcek,
+          child: DecoratedBox(
+            // Kartın arkasından taşan sıcak ışık.
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: AppColors.goldAcik.withValues(
+                    alpha: OnboardingConfig.hazirHaleOpakligi * belirme,
+                  ),
+                  blurRadius: OnboardingConfig.hazirHaleBulanikligi,
+                ),
+              ],
+            ),
+            // Ana ekrandaki kader kartına uçar.
+            child: Hero(
+              tag: HeroTags.skorHalkasi,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                child: Image.asset(
+                  AppImages.kartHazir,
+                  width: OnboardingConfig.hazirKartGenisligi,
+                  height: OnboardingConfig.hazirKartYuksekligi,
+                  fit: BoxFit.cover,
+                  gaplessPlayback: true,
+                  excludeFromSemantics: true,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          OnboardingStrings.kartinHazir,
+          style: yazi.headlineMedium,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          OnboardingStrings.kartinHazirAlt,
+          style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.full),
+            border: Border.all(
+              color: AppColors.gold.withValues(
+                alpha: OnboardingConfig.notCizgiOpakligi,
+              ),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Icon(
+                Icons.check_circle_rounded,
+                color: AppColors.gold,
+                size: AppSpacing.md + AppSpacing.xs,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                OnboardingStrings.hazirlikTamamlandi,
+                style: yazi.bodySmall?.copyWith(color: AppColors.goldAcik),
+              ),
+            ],
+          ),
+        ),
+        const Spacer(),
+        AltinButon(
+          genislik: null,
+          metin: OnboardingStrings.kartimaGec,
+          onPressed: belirme < 1 ? null : onGec,
+        ),
+      ],
     );
   }
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Offset merkez = size.center(Offset.zero);
-    final double azamiYaricap =
-        size.shortestSide * OnboardingConfig.parcacikYaricapOrani;
-    final Paint boya = Paint()..color = AppColors.gold;
-
-    for (final _Parcacik p in _parcaciklar) {
-      // Faz kaymalı ilerleme: her parçacık kendi zaman diliminde
-      // 0→1 tamamlar (kayma kadar geç başlar, o kadar erken biter).
-      final double t = ((animasyon.value - p.fazKaymasi) /
-              (1 - p.fazKaymasi))
-          .clamp(0.0, 1.0);
-      // sin(pi*t): 0'da merkezde, 0.5'te en dışta, 1'de merkeze döner —
-      // "dağıl ve toplan" koreografisinin tamamı tek fonksiyonda.
-      final double uzaklik =
-          sin(pi * t) * azamiYaricap * p.yaricapOrani;
-      final Offset konum = merkez +
-          Offset(cos(p.aci) * uzaklik, sin(p.aci) * uzaklik);
-
-      // Dışa açıldıkça hafif solar, dönüşte tekrar parlar.
-      boya.color =
-          AppColors.gold.withValues(alpha: 1 - 0.6 * sin(pi * t));
-      canvas.drawCircle(konum, p.boyut / 2, boya);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_ParcacikPainter onceki) => false;
 }

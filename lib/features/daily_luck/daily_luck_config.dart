@@ -29,6 +29,27 @@ abstract final class DailyLuckConfig {
   /// 3D dönüşlerin perspektif katsayısı (Matrix4 satır 3, sütun 2).
   static const double kartFlipPerspektifi = 0.001;
 
+  // ---- Mühür katmanı (kartın ortasındaki altın madalyon) ----
+
+  /// Mühür çapının kart genişliğine oranı (eski tek parça kart
+  /// görselindeki madalyonla aynı boy).
+  static const double muhurCapOrani = 0.56;
+
+  /// Dokunuştan ışık fazı sonuna kadar mühürün döndüğü açı (radyan).
+  static const double muhurDonusAcisi = 0.6;
+
+  /// Beklemede mühürün hafif salınım açısı (radyan).
+  static const double muhurSallanmaAcisi = 0.035;
+
+  /// Beklemede mühürün nefesle büyüme payı (ölçek).
+  static const double muhurNefesOlcegi = 0.018;
+
+  /// Her kaç kıvılcımdan biri nokta yerine parıltı sprite'ıyla çizilir.
+  static const int kivilcimSpriteAraligi = 3;
+
+  /// Sprite kıvılcımın kenarının kıvılcım çapına oranı.
+  static const double kivilcimSpriteCarpani = 8;
+
   // ---- Kart açılışı: Mühür → Işık → Açılış → Yerleşme ----
   //
   // Tasarımdaki hareket taslağı: 0-250 ms mühür, 250-650 ms ışık,
@@ -246,61 +267,6 @@ abstract final class DailyLuckConfig {
   /// Skorun arkasındaki yumuşak ışık halesinin opaklığı.
   static const double puanHaleOpakligi = 0.35;
 
-  // ---- Sahne arka planı ----
-
-  /// Ken Burns (yavaş yakınlaşma/kayma) ve parıltı döngüsünün periyodu.
-  static const Duration sahneDongusu = Duration(seconds: 24);
-
-  /// Ken Burns'ün ulaştığı azami ölçek.
-  static const double kenBurnsOlcegi = 1.06;
-
-  /// Ken Burns yatay kayması (ekran genişliği oranı).
-  static const double kenBurnsKaymasi = 0.012;
-
-  /// Ekranda parıldayan yıldız sayısı.
-  static const int yildizSayisi = 40;
-
-  /// Yıldızların yerleştiği üst bölge (ekran yüksekliği oranı).
-  static const double yildizBolgesiOrani = 0.55;
-
-  /// Yıldız çapı üst sınırı.
-  static const double yildizMaksCapi = 1.9;
-
-  /// Bir sahne döngüsünde her yıldızın parıldama sayısı (tam sayı:
-  /// döngü sonunda desen kesintisiz başa sarar).
-  static const int parildamaKati = 6;
-
-  /// Yıldız konumlarının sabit tohumu (yalnızca görsel).
-  static const int yildizTohumu = 11;
-
-  /// En küçük yıldızın çapının [yildizMaksCapi]'na oranı.
-  static const double yildizMinCapOrani = 0.4;
-
-  /// Sönükken yıldızın çapının tam parlak çapa oranı.
-  static const double yildizSonukCapOrani = 0.6;
-
-  /// Parıltı eğrisinin keskinliği (sin^n): büyüdükçe yıldız kısa
-  /// süre parlar, uzun süre söner.
-  static const double parildamaKeskinligi = 4;
-
-  /// Bu parlaklığın altındaki yıldızlar hiç çizilmez (performans).
-  static const double yildizCizimEsigi = 0.02;
-
-  /// Yıldız halesinin bulanıklık yarıçapı.
-  static const double yildizBulanikligi = 1.2;
-
-  /// Alt karartma geçişinin başladığı yükseklik (ekran oranı).
-  static const double altKarartmaBaslangici = 0.48;
-
-  /// Alt karartmanın tamamen opak olduğu yükseklik (ekran oranı).
-  static const double altKarartmaSonu = 0.92;
-
-  /// Bu kadar kaydırınca arka plan azami karartmaya ulaşır.
-  static const double kaydirmaKarartmaMesafesi = 420;
-
-  /// Kaydırmayla inen azami karartma opaklığı.
-  static const double kaydirmaKarartmaMaks = 0.72;
-
   // ---- Kategori karoları ----
 
   /// Kategori karosunun yüksekliği.
@@ -336,17 +302,6 @@ abstract final class DailyLuckConfig {
   /// Yorum kartının kutulardan sonra belirme (fade) süresi.
   static const Duration yorumBelirmeSuresi = Duration(milliseconds: 400);
 
-  // ---- "Kartımı aç" çağrısı ----
-
-  /// Altın butonun yatay genişliği.
-  static const double acButonGenisligi = 220;
-
-  /// Altın buton gölgesinin bulanıklığı.
-  static const double acButonGolgesi = 18;
-
-  /// Altın buton gölgesinin opaklığı.
-  static const double acButonGolgeOpakligi = 0.35;
-
   // ---- Günlük okuma v2 ----
 
   /// Okuma bölüm kartı ikon boyutu.
@@ -354,6 +309,9 @@ abstract final class DailyLuckConfig {
 
   /// Büyük harfli bölüm etiketlerinin harf aralığı.
   static const double etiketHarfAraligi = 1.2;
+
+  /// "Neden bugün?" ay evresi açıklamasındaki ay görselinin boyutu.
+  static const double nedenAyBoyutu = 88;
 
   /// Bu saatten sonra (akşam) geri bildirim kartı gösterilir.
   static const int aksamKartiSaati = 18;

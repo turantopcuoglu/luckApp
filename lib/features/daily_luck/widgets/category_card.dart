@@ -16,8 +16,8 @@ Color kategoriRengi(LuckCategory kategori) => switch (kategori) {
   LuckCategory.risk => AppColors.kategoriRisk,
 };
 
-/// Kapalı kategori karosu: koyu cam zeminde yalnızca soluk altın ikon,
-/// metin yok. Kart açılışından sonra [CategoryCard]'a flip'lenir.
+/// Kapalı kategori karosu: koyu cam zeminde yalnızca soluk, kategori
+/// renginde glif; metin yok. Kart açılışından sonra [CategoryCard]'a flip'lenir.
 ///
 /// Genişliği ebeveyn belirler (ana ekranda beş karo bir satırı paylaşır).
 class KapaliKategoriKutusu extends StatelessWidget {
@@ -45,9 +45,9 @@ class KapaliKategoriKutusu extends StatelessWidget {
         child: AppIcons.kategori(
           kategori,
           boyut: DailyLuckConfig.kapaliKutuIkonBoyutu,
-          renk: AppColors.gold.withValues(
-            alpha: DailyLuckConfig.kapaliIkonOpakligi,
-          ),
+          renk: kategoriRengi(
+            kategori,
+          ).withValues(alpha: DailyLuckConfig.kapaliIkonOpakligi),
         ),
       ),
     );

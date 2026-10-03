@@ -7,17 +7,9 @@ import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/shared/widgets/app_icons.dart';
 
 void main() {
-  /// Repodaki tüm elle yazılmış SVG asset'leri.
+  /// Repodaki elle yazılmış SVG asset'leri.
   const List<String> svgDosyalari = <String>[
-    'assets/svg/kategori_kalp.svg',
-    'assets/svg/kategori_para.svg',
-    'assets/svg/kategori_yaprak.svg',
-    'assets/svg/kategori_zar.svg',
-    'assets/svg/kategori_sosyal.svg',
-    'assets/svg/arka_plan_yildizlar.svg',
-    'assets/svg/bos_durum_kristal_kure.svg',
-    'assets/svg/app_icon_yonca.svg',
-    'assets/svg/kart_arka_yuzu.svg',
+    'assets/svg/bildirim_kapi.svg',
   ];
 
   test('her SVG dosyası mevcut ve açıklama yorumuyla başlıyor', () {
@@ -50,13 +42,21 @@ void main() {
     }
   });
 
-  testWidgets('AppIcons.kategori her kategori için widget üretir',
+  test('her kategorinin glif dosyası var', () {
+    for (final LuckCategory kategori in LuckCategory.values) {
+      final String yol = AppIcons.kategoriDosyalari[kategori]!;
+      expect(File(yol).existsSync(), isTrue, reason: '$yol bulunamadı');
+    }
+  });
+
+  testWidgets('AppIcons.kategori her kategori için boyanmış glif üretir',
       (WidgetTester tester) async {
     for (final LuckCategory kategori in LuckCategory.values) {
       await tester.pumpWidget(
         MaterialApp(home: AppIcons.kategori(kategori)),
       );
-      expect(find.byType(SvgPicture), findsOneWidget);
+      final Image glif = tester.widget<Image>(find.byType(Image));
+      expect(glif.colorBlendMode, BlendMode.srcIn);
     }
   });
 }

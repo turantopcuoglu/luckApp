@@ -41,4 +41,13 @@ abstract final class LegalConfig {
 
   /// Uygulamanın kullanıcıya gösterilen sürümü (ayarlar ekranı).
   static const String uygulamaSurumu = '1.0.0';
+
+  /// Uyarı ekranı sahnesinin alt karartmasının başladığı yükseklik.
+  static const double karartmaBaslangici = 0.08;
+
+  /// Uyarı ekranı sahnesinin tam opak olduğu yükseklik.
+  static const double karartmaSonu = 0.40;
+
+  /// Uyarı başlığının üstündeki parıltının boyutu.
+  static const double uyariParilti = 56;
 }

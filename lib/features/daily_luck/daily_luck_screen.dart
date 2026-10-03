@@ -11,15 +11,21 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
+import '../../shared/widgets/hata_gorunumu.dart';
 import '../../shared/widgets/hero_tags.dart';
+import '../../shared/widgets/sahne_arka_plani.dart';
 import '../ads/banner_reklam_alani.dart';
 import '../categories/categories_strings.dart';
 import '../categories/category_detail_screen.dart';
 import '../categories/widgets/premium_gate.dart';
+import '../feedback/feedback_config.dart';
 import '../feedback/feedback_screen.dart';
 import '../home/ana_sekme.dart';
+import '../koleksiyon/koleksiyon_providers.dart';
+import '../koleksiyon/widgets/koleksiyon_panelleri.dart';
 import '../legal/legal_texts.dart';
 import '../premium/kilit_secenekleri.dart';
 import '../premium/premium_providers.dart';
@@ -37,7 +43,6 @@ import 'widgets/gunun_puani.dart';
 import 'widgets/kutu_acilisi.dart';
 import 'widgets/lucky_row.dart';
 import 'widgets/neden_cipleri.dart';
-import 'widgets/sahne_arka_plani.dart';
 
 /// Ana ekran: yaşayan bir gece sahnesinin önünde tarih + selamlama,
 /// ortada kapalı kader kartı, altında kapalı kategori karoları; kart
@@ -89,7 +94,12 @@ class _SahneliDurum extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        const Positioned.fill(child: SahneArkaPlani.kapali()),
+        const Positioned.fill(
+          child: SahneArkaPlani(
+            gorsel: AppImages.sahneKapali,
+            onPlan: AppImages.onPlanSutunlar,
+          ),
+        ),
         SafeArea(child: child),
       ],
     );
@@ -182,6 +192,8 @@ class _IcerikState extends ConsumerState<_Icerik>
       ..addStatusListener((AnimationStatus durum) {
         if (durum == AnimationStatus.completed) {
           _kutuKontrol.forward();
+          // Kart açıldı: günün koleksiyon kartı koleksiyona katılır.
+          unawaited(bugununKartiniKazan(ref));
         }
       });
   }
@@ -191,9 +203,13 @@ class _IcerikState extends ConsumerState<_Icerik>
     super.didChangeDependencies();
     // Açılışta görsel geç yüklenip sahne "boş" geçmesin diye önden çöz.
     unawaited(precacheImage(AssetImage(_sahne.gorsel), context));
-    unawaited(
-      precacheImage(const AssetImage(AppImages.kartArkaYuzu), context),
-    );
+    for (final String yol in <String>[
+      AppImages.kartArkaYuzuMuhursuz,
+      AppImages.muhur,
+      AppImages.onPlanSutunlar,
+    ]) {
+      unawaited(precacheImage(AssetImage(yol), context));
+    }
   }
 
   @override
@@ -292,7 +308,9 @@ class _IcerikState extends ConsumerState<_Icerik>
         // Sabit, yaşayan arka plan: içerik üzerinde kayar.
         Positioned.fill(
           child: SahneArkaPlani(
-            acikSahne: sahne.gorsel,
+            gorsel: AppImages.sahneKapali,
+            acikGorsel: sahne.gorsel,
+            onPlan: AppImages.onPlanSutunlar,
             gecis: _sahneGecisi,
             kaydirma: _kaydirma,
           ),
@@ -330,6 +348,11 @@ class _IcerikState extends ConsumerState<_Icerik>
                       vurgu: sahne.vurgu,
                       onDokun: _kartiAc,
                       arkaYuz: const _KapaliKartYuzu(),
+                      muhur: Image.asset(
+                        AppImages.muhur,
+                        gaplessPlayback: true,
+                        excludeFromSemantics: true,
+                      ),
                       onYuz: GununPuani(
                         skor: widget.sonuc.genelSkor,
                         ilerleme: _skorSayaci,
@@ -392,9 +415,14 @@ class _IcerikState extends ConsumerState<_Icerik>
                         onCevap: (bool anlatti) =>
                             _okumayaCevapVer(okuma, anlatti: anlatti),
                       ),
-                      NedenCipleri(nedenler: okuma.nedenler),
+                      NedenCipleri(
+                        nedenler: okuma.nedenler,
+                        gun: widget.sonuc.gun,
+                      ),
                       const SizedBox(height: AppSpacing.md),
                       SansOgeleriKarti(icerik: okuma),
+                      const SizedBox(height: AppSpacing.md),
+                      const GununKartiPaneli(),
                       const SizedBox(height: AppSpacing.md),
                       const YilRaporuKarti(),
                       if (aksamKarti) ...<Widget>[
@@ -525,7 +553,22 @@ class _AksamKarti extends StatelessWidget {
     final TextTheme yazi = Theme.of(context).textTheme;
     return Card(
       margin: EdgeInsets.zero,
-      child: Padding(
+      clipBehavior: Clip.antiAlias,
+      child: DecoratedBox(
+        // Alacakaranlık sahnesi: akşamın ilk yıldızları, sakin göl.
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: const AssetImage(AppImages.sahneAksam),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              AppColors.background.withValues(
+                alpha: FeedbackConfig.aksamKartiKarartmasi,
+              ),
+              BlendMode.darken,
+            ),
+          ),
+        ),
+        child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -548,12 +591,14 @@ class _AksamKarti extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 }
 
-/// Kader kartının kapalı yüzü: lacivert mermer, altın mühür ve ortadan
-/// dikey altın dikiş (açılışta kart bu dikişten ikiye ayrılır).
+/// Kader kartının kapalı yüzü: lacivert mermer ve ortadan dikey altın
+/// dikiş (açılışta kart bu dikişten ikiye ayrılır). Mühür ayrı katmandır
+/// ([FortuneRevealCard.muhur]).
 class _KapaliKartYuzu extends StatelessWidget {
   const _KapaliKartYuzu();
 
@@ -562,7 +607,7 @@ class _KapaliKartYuzu extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.md),
       child: Image.asset(
-        AppImages.kartArkaYuzu,
+        AppImages.kartArkaYuzuMuhursuz,
         width: DailyLuckConfig.kartGenisligi,
         height: DailyLuckConfig.kartYuksekligi,
         fit: BoxFit.cover,
@@ -623,7 +668,11 @@ class _KartAltiMetni extends StatelessWidget {
           style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.md),
-        _AltinButon(metin: TrStrings.kartimiAc, onPressed: onAc),
+        AltinButon(
+          metin: TrStrings.kartimiAc,
+          onPressed: onAc,
+          sonIkon: Icons.chevron_right_rounded,
+        ),
       ],
     );
     final Widget gununBasligi = Text(
@@ -671,52 +720,6 @@ class _KartAltiMetni extends StatelessWidget {
   }
 }
 
-/// Altın gradyanlı, hafif parlayan hap buton.
-class _AltinButon extends StatelessWidget {
-  const _AltinButon({required this.metin, required this.onPressed});
-
-  final String metin;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: DailyLuckConfig.acButonGenisligi,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.full),
-          gradient: const LinearGradient(
-            colors: <Color>[AppColors.goldAcik, AppColors.gold],
-          ),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: AppColors.gold.withValues(
-                alpha: DailyLuckConfig.acButonGolgeOpakligi,
-              ),
-              blurRadius: DailyLuckConfig.acButonGolgesi,
-            ),
-          ],
-        ),
-        child: FilledButton(
-          onPressed: onPressed,
-          style: FilledButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(metin),
-              const SizedBox(width: AppSpacing.xs),
-              const Icon(Icons.chevron_right_rounded),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 /// Skor üretilirken gösterilen basit yükleme durumu.
 class _Yukleniyor extends StatelessWidget {
   const _Yukleniyor();
@@ -745,15 +748,6 @@ class _Hata extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Text(
-          TrStrings.hataMetni,
-          style: Theme.of(context).textTheme.bodyMedium,
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
+    return const HataGorunumu(metin: TrStrings.hataMetni);
   }
 }

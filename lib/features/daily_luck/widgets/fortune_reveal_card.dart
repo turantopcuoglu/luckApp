@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
+import '../../../shared/widgets/parilti_sprite.dart';
 import '../daily_luck_config.dart';
 import '../tr_strings.dart';
 
@@ -36,6 +37,7 @@ class FortuneRevealCard extends StatefulWidget {
     required this.arkaYuz,
     required this.onYuz,
     required this.onDokun,
+    this.muhur,
     this.vurgu = AppColors.gold,
     super.key,
   });
@@ -52,6 +54,11 @@ class FortuneRevealCard extends StatefulWidget {
 
   /// Karta dokunulduğunda çağrılır (açılışı ebeveyn başlatır).
   final VoidCallback onDokun;
+
+  /// Kapalı yüzün ortasındaki mühür (şeffaf, kare). Ayrı katmandır:
+  /// beklemede nefes alır, dokununca döner, ışık fazından sonra kartla
+  /// birlikte ikiye bölünür. Null ise [arkaYuz] tek başına çizilir.
+  final Widget? muhur;
 
   /// Işık patlaması, şeritler ve kıvılcımların rengi (skor sahnesi).
   final Color vurgu;
@@ -80,6 +87,7 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _hareketAzaltilmis = MediaQuery.disableAnimationsOf(context);
+    PariltiSprite.yukle(context);
     _beklemeyiGuncelle();
   }
 
@@ -204,6 +212,42 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
             Curves.easeIn.transform(yerlesme);
     final bool bolunmus = t > DailyLuckConfig.isikSonu;
 
+    // Kapalı yüz = mermer kart + ayrı mühür katmanı. Mühür beklemede
+    // salınıp nefes alır, dokununca ışık fazı sonuna dek döner; kart
+    // bölününce her kanat mührün kendi yarısını taşır (mühür çatlar).
+    final Widget? muhurKatmani = widget.muhur;
+    final Widget kapaliYuz = muhurKatmani == null
+        ? widget.arkaYuz
+        : Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              widget.arkaYuz,
+              Center(
+                child: SizedBox.square(
+                  dimension: w * DailyLuckConfig.muhurCapOrani,
+                  child: Transform.rotate(
+                    angle:
+                        DailyLuckConfig.muhurDonusAcisi *
+                            Curves.easeOutCubic.transform(
+                              _dilim(t, 0, DailyLuckConfig.isikSonu),
+                            ) +
+                        sin(donguAcisi) *
+                            DailyLuckConfig.muhurSallanmaAcisi *
+                            bekleme,
+                    child: Transform.scale(
+                      scale:
+                          1 +
+                          DailyLuckConfig.muhurNefesOlcegi *
+                              sin(donguAcisi * DailyLuckConfig.muhurNefesKati) *
+                              bekleme,
+                      child: muhurKatmani,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+
     return Transform.translate(
       offset: Offset(0, suzulme),
       child: Transform.scale(
@@ -242,7 +286,7 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
               ),
             ],
             if (!bolunmus)
-              widget.arkaYuz
+              kapaliYuz
             else if (kanatOpakligi > 0) ...<Widget>[
               _Kanat(
                 sol: true,
@@ -251,7 +295,7 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
                 opaklik: kanatOpakligi,
                 kenarIsigi: sin(acilma * pi),
                 renk: widget.vurgu,
-                child: widget.arkaYuz,
+                child: kapaliYuz,
               ),
               _Kanat(
                 sol: false,
@@ -260,7 +304,7 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
                 opaklik: kanatOpakligi,
                 kenarIsigi: sin(acilma * pi),
                 renk: widget.vurgu,
-                child: widget.arkaYuz,
+                child: kapaliYuz,
               ),
             ],
             // Mühür parıltısı ve ışık dikişi kartın üstünde.
@@ -589,7 +633,8 @@ class _KivilcimPainter extends CustomPainter {
         DailyLuckConfig.kivilcimBulanikligi,
       );
     final Paint cekirdek = Paint();
-    for (final List<double> k in _kivilcimlar) {
+    for (int i = 0; i < _kivilcimlar.length; i++) {
+      final List<double> k = _kivilcimlar[i];
       // Kıvılcımlar dikiş boyunca farklı yüksekliklerden doğar.
       final Offset dogum = merkez.translate(
         0,
@@ -599,6 +644,18 @@ class _KivilcimPainter extends CustomPainter {
           k[1] * DailyLuckConfig.kivilcimMesafeOrani * size.width * yol;
       final Offset konum = dogum + Offset(cos(k[0]), sin(k[0])) * mesafe;
       final double cap = k[2] * DailyLuckConfig.kivilcimMaksCapi;
+      // Her birkaç kıvılcımdan biri dört uçlu parıltı: saçılan ışık
+      // tozunun arasında yıldız gibi çakan iri parçalar.
+      if (i % DailyLuckConfig.kivilcimSpriteAraligi == 0) {
+        PariltiSprite.ciz(
+          canvas,
+          konum,
+          cap * DailyLuckConfig.kivilcimSpriteCarpani,
+          Color.lerp(AppColors.isikCekirdegi, renk, sonum)!,
+          sonum,
+        );
+        continue;
+      }
       hale.color = renk.withValues(alpha: sonum);
       cekirdek.color = AppColors.isikCekirdegi.withValues(alpha: sonum);
       canvas

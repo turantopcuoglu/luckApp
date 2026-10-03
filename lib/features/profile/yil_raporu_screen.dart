@@ -13,6 +13,7 @@ import 'kilitli_bolum_karti.dart';
 import 'profile_config.dart';
 import 'profile_providers.dart';
 import 'profile_strings.dart';
+import 'yil_afisi.dart';
 
 /// Kişisel Yıl Raporu: bir takvim yılının kişiye özel rehberi.
 ///
@@ -86,7 +87,7 @@ class YilRaporuScreen extends ConsumerWidget {
   }
 }
 
-/// Büyük kişisel yıl sayısı ve yılın lakabı.
+/// Yıl afişi: büyük kişisel yıl sayısı ve yılın lakabı, sağda yılın sahnesi.
 class _YilBasligi extends StatelessWidget {
   const _YilBasligi({required this.okuma});
 
@@ -95,29 +96,26 @@ class _YilBasligi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme yazi = Theme.of(context).textTheme;
-    return Row(
-      children: <Widget>[
-        Text(
-          '${okuma.kisiselYil}',
-          style: yazi.displayMedium?.copyWith(
-            color: AppColors.gold,
-            fontSize: ProfileConfig.kisiselYilSayiBoyutu,
+    return YilAfisi(
+      kisiselYil: okuma.kisiselYil,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            ProfileStrings.kisiselYilEtiketi,
+            style: yazi.bodySmall?.copyWith(color: AppColors.goldAcik),
           ),
-        ),
-        const SizedBox(width: AppSpacing.md),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                ProfileStrings.kisiselYilEtiketi,
-                style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
-              ),
-              Text(okuma.yilLakabi, style: yazi.headlineSmall),
-            ],
+          Text(
+            '${okuma.kisiselYil}',
+            style: yazi.displayMedium?.copyWith(
+              color: AppColors.gold,
+              fontSize: ProfileConfig.kisiselYilSayiBoyutu,
+            ),
           ),
-        ),
-      ],
+          Text(okuma.yilLakabi, style: yazi.headlineSmall),
+        ],
+      ),
     );
   }
 }

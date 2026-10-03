@@ -12,8 +12,11 @@ import 'package:kader/features/daily_luck/tr_strings.dart';
 import 'package:kader/features/daily_luck/widgets/comment_card.dart';
 import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 import 'package:kader/features/daily_luck/widgets/gunun_puani.dart';
+import 'package:kader/features/share/paylasim_screen.dart';
+import 'package:kader/features/share/paylasim_temasi.dart';
 import 'package:kader/features/share/share_button.dart';
 import 'package:kader/features/share/share_service.dart';
+import 'package:kader/features/share/share_strings.dart';
 
 import '../test_ortami.dart';
 
@@ -239,9 +242,23 @@ void main() {
     await tester.ensureVisible(find.byType(ShareButton));
     await tester.tap(find.byType(ShareButton));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    // "Kartını paylaş" ekranı: Mor tema + skoru gizle, sonra Paylaş.
+    expect(find.byType(PaylasimScreen), findsOneWidget);
+    await tester.ensureVisible(find.text(PaylasimTemasi.mor.etiket));
+    await tester.tap(find.text(PaylasimTemasi.mor.etiket));
+    await tester.ensureVisible(find.byType(Switch));
+    await tester.tap(find.byType(Switch));
+    await tester.pump();
+    await tester.ensureVisible(find.text(ShareStrings.paylas));
+    await tester.tap(find.text(ShareStrings.paylas));
+    await tester.pump();
 
     expect(sahte.paylasilanlar.single.gun, sabitGun);
     expect(sahte.basliklar.single, beklenenOkuma().baslik);
+    expect(sahte.temalar.single, PaylasimTemasi.mor);
+    expect(sahte.gizlemeler.single, isTrue);
   });
 }
 
@@ -253,9 +270,22 @@ class _SahteShareService extends ShareService {
   /// paylas ile gelen başlıklar.
   final List<String?> basliklar = <String?>[];
 
+  /// paylas ile gelen temalar.
+  final List<PaylasimTemasi> temalar = <PaylasimTemasi>[];
+
+  /// paylas ile gelen "skoru gizle" seçimleri.
+  final List<bool> gizlemeler = <bool>[];
+
   @override
-  Future<void> paylas({required LuckResult sonuc, String? baslik}) async {
+  Future<void> paylas({
+    required LuckResult sonuc,
+    String? baslik,
+    PaylasimTemasi tema = PaylasimTemasi.gece,
+    bool skoruGizle = false,
+  }) async {
     paylasilanlar.add(sonuc);
     basliklar.add(baslik);
+    temalar.add(tema);
+    gizlemeler.add(skoruGizle);
   }
 }

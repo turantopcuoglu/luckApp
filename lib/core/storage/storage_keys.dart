@@ -20,6 +20,10 @@ abstract final class StorageKeys {
 
   /// app_state kutusunda durum map'inin saklandığı tek anahtar.
   static const String durumKaydi = 'durum';
+
+  /// app_state kutusunda koleksiyon map'inin saklandığı anahtar
+  /// (kart kimliği → kazanılma bilgisi).
+  static const String koleksiyonKaydi = 'koleksiyon';
 }
 
 /// [gun] tarihini saatten bağımsız `yyyy-MM-dd` kutu anahtarına çevirir.

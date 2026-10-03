@@ -6,9 +6,11 @@ import '../../core/content/gunluk_okuma.dart';
 import '../../core/storage/kayitli_kisi.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/sahne_arka_plani.dart';
 import '../categories/categories_config.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/widgets/score_ring.dart';
+import 'uyum_config.dart';
 import 'uyum_strings.dart';
 
 /// Kullanıcı ile [kisi] arasındaki uyum okuması.
@@ -28,58 +30,76 @@ class UyumSonucScreen extends ConsumerWidget {
       digerProfil: kisi.profil,
     );
     return Scaffold(
+      backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(title: Text(kisi.kisaAd)),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          children: <Widget>[
-            Center(
-              child: ScoreRing(
-                skor: okuma.sonuc.skor,
-                boyut: CategoriesConfig.detayHalkaCapi,
-                kalinlik: CategoriesConfig.detayHalkaKalinligi,
-                etiket: UyumStrings.uyumEtiketi,
-              ),
+      body: Stack(
+        children: <Widget>[
+          Positioned.fill(
+            child: SahneArkaPlani(
+              gorsel: UyumConfig.sahne(okuma.sonuc.derece),
+              hizalama: Alignment.topCenter,
+              altKarartmaBaslangici: UyumConfig.karartmaBaslangici,
+              altKarartmaSonu: UyumConfig.karartmaSonu,
             ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              okuma.sonuc.derece.etiket,
-              style: yazi.titleLarge?.copyWith(color: AppColors.gold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            for (final UyumBolumu bolum in okuma.bolumler) ...<Widget>[
-              Card(
-                margin: EdgeInsets.zero,
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        bolum.baslik,
-                        style: yazi.titleSmall?.copyWith(
-                          color: AppColors.gold,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        bolum.metin,
-                        style: yazi.bodyLarge?.copyWith(height: 1.5),
-                      ),
-                    ],
+          ),
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              children: <Widget>[
+                Center(
+                  child: ScoreRing(
+                    skor: okuma.sonuc.skor,
+                    boyut: CategoriesConfig.detayHalkaCapi,
+                    kalinlik: CategoriesConfig.detayHalkaKalinligi,
+                    etiket: UyumStrings.uyumEtiketi,
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-            ],
-            Text(
-              UyumStrings.sonucNotu,
-              style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
-              textAlign: TextAlign.center,
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  okuma.sonuc.derece.etiket,
+                  style: yazi.titleLarge?.copyWith(color: AppColors.gold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                for (final UyumBolumu bolum in okuma.bolumler) ...<Widget>[
+                  Card(
+                    margin: EdgeInsets.zero,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            bolum.baslik,
+                            style: yazi.titleSmall?.copyWith(
+                              color: AppColors.gold,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                          Text(
+                            bolum.metin,
+                            style: yazi.bodyLarge?.copyWith(
+                              height: UyumConfig.metinSatirAraligi,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                ],
+                Text(
+                  UyumStrings.sonucNotu,
+                  style: yazi.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

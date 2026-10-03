@@ -117,6 +117,9 @@ void main() {
       await tester.runAsync(hazirla);
       await ac(tester, const KaderProfiliScreen());
 
+      // Profil başlık bandı uzun: karo test ekranının altında kalabilir.
+      await tester.ensureVisible(find.text(ProfileStrings.yasamYolu));
+      await tester.pump();
       await tester.tap(find.text(ProfileStrings.yasamYolu));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));

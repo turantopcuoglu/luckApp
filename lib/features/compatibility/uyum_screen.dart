@@ -9,12 +9,14 @@ import '../../core/storage/kayitli_kisi.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../onboarding/onboarding_config.dart';
 import '../premium/paywall_screen.dart';
 import '../premium/premium_config.dart';
 import '../premium/premium_providers.dart';
 import '../premium/premium_strings.dart';
+import 'uyum_config.dart';
 import 'uyum_sonuc_screen.dart';
 import 'uyum_strings.dart';
 
@@ -116,11 +118,24 @@ class UyumScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: <Widget>[
-            Text(UyumStrings.baslik, style: yazi.headlineMedium),
+            Center(
+              child: Image.asset(
+                AppImages.uyumBos,
+                width: UyumConfig.kahramanBoyutu,
+                height: UyumConfig.kahramanBoyutu,
+                excludeFromSemantics: true,
+              ),
+            ),
+            Text(
+              UyumStrings.baslik,
+              style: yazi.headlineMedium,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               UyumStrings.aciklama,
               style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.lg),
             if (kisiler.isEmpty)
@@ -140,9 +155,11 @@ class UyumScreen extends ConsumerWidget {
                 child: Card(
                   margin: EdgeInsets.zero,
                   child: ListTile(
-                    leading: const Icon(
-                      Icons.favorite_rounded,
-                      color: AppColors.gold,
+                    leading: Image.asset(
+                      AppImages.burc(kisi.profil.burc.name),
+                      width: UyumConfig.kisiMadalyonBoyutu,
+                      height: UyumConfig.kisiMadalyonBoyutu,
+                      excludeFromSemantics: true,
                     ),
                     title: Text(kisi.ad),
                     subtitle: Text(
