@@ -36,11 +36,9 @@
 - [ ] Satışa açmadan önce hukuki danışmanlık (Türkiye'de 677 sayılı Kanun riski;
       konumlandırma "eğlence / kendini keşif", "fal" değil).
 - [ ] İl koordinatlarını bir kez resmî kaynaktan kontrol et (±0.1° yazıldı).
-- [ ] **Görseller:** Uygulamada henüz gösterişli görsel yok. Telefon ikonu
-      Flutter'ın varsayılan logosu, uygulama içi görseller Session 4'ün basit
-      SVG'leri. `CIZIM_LISTESI.md` P1 (9 öğe) GPT ile üretilip
-      `assets/png/` altına konacak, sonra bir oturumda koda bağlanacak
-      (pubspec asset satırı onayı gerekir).
+- [ ] **Görseller:** Ayrı plana taşındı: `GORSEL_YENILEME_PLANI.md` (durum,
+      oturum sırası) ve `GORSEL_URETIM_REHBERI.md` (GPT istemleri).
+      `CIZIM_LISTESI.md` eskidi.
 
 ---
 

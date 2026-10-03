@@ -26,3 +26,9 @@
 - Emülatör/gerçek cihaz testi
 - Store metadata, imzalama, release build
 - Firebase/servis hesabı bağlama
+
+## Devir notları (yeni sohbette önce bunlara bak)
+- Görsel/tasarım/animasyon işleri: `GORSEL_YENILEME_PLANI.md`
+  (durum, tasarım sistemi, oturum sırası). Çizim istemleri:
+  `GORSEL_URETIM_REHBERI.md`.
+- İngilizce sürüm / i18n işleri: `INGILIZCE_SURUM_PLANI.md`.

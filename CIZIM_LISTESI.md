@@ -1,5 +1,11 @@
 # Çizim Listesi (GPT ile üretilecek görseller)
 
+> **ESKİDİ (3 Ekim 2026):** Bu dosyadaki "ince altın çizgi, düz renk"
+> stili terk edildi. Güncel stil, öğe listesi ve istemler
+> **`GORSEL_URETIM_REHBERI.md`** içinde; görsel işlerin durumu ve oturum
+> sırası **`GORSEL_YENILEME_PLANI.md`** içinde. Bu dosya yalnızca tarihçe
+> için duruyor.
+
 Bu dosya, uygulamada çizilmesi gereken her görseli tek tek tarif eder:
 nerede kullanılacağı (kod referansıyla), boyutu, biçimi, GPT'ye verilecek
 İngilizce istem (prompt) ve kaçınılacak şeyler.
