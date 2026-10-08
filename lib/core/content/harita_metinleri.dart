@@ -10,6 +10,7 @@
 library;
 
 import '../luck_engine/luck_engine.dart';
+import 'tr_icerik_paketi.dart';
 
 /// Doğum haritası metin havuzları.
 abstract final class HaritaMetinleri {
@@ -156,14 +157,17 @@ abstract final class HaritaMetinleri {
 
   // ---- Başlıklar ----
 
+  /// Burcun Türkçe adı (içerik paketinden; enum etiketine bağlı değil).
+  static String _ad(Burc b) => trIcerik.burcAdi(b);
+
   /// Ay bölümü başlığı.
-  static String ayBasligi(Burc b) => 'Ay burcun · ${b.etiket}';
+  static String ayBasligi(Burc b) => 'Ay burcun · ${_ad(b)}';
 
   /// Yükselen bölümü başlığı.
-  static String yukselenBasligi(Burc b) => 'Yükselenin · ${b.etiket}';
+  static String yukselenBasligi(Burc b) => 'Yükselenin · ${_ad(b)}';
 
   /// Alternatif (komşu burç) bölümü başlığı.
-  static String alternatifBasligi(String tur, Burc b) => '$tur ${b.etiket} ise';
+  static String alternatifBasligi(String tur, Burc b) => '$tur ${_ad(b)} ise';
 
   /// Alternatif Ay bölümü türü.
   static const String ayTuru = 'Ay burcun';
@@ -174,27 +178,27 @@ abstract final class HaritaMetinleri {
   /// Büyük üçlü özeti ("Güneş Balık · Ay Yay · Yükselen Kova"); bilinmeyen
   /// Yükselen "?" olarak yazılır.
   static String ozet(Burc gunes, Burc ay, Burc? yukselen) =>
-      'Güneş ${gunes.etiket} · Ay ${ay.etiket} · '
-      'Yükselen ${yukselen?.etiket ?? '?'}';
+      'Güneş ${_ad(gunes)} · Ay ${_ad(ay)} · '
+      'Yükselen ${yukselen == null ? '?' : _ad(yukselen)}';
 
   // ---- Belirsizlik notları ----
 
   /// Saat bilinmiyor ve Ay o gün burç değiştiriyor.
   static String ayGunIcindeDegisiyor(Burc a, Burc b) =>
-      'Doğduğun gün Ay ${a.etiket} ile ${b.etiket} burçları arasında yer '
+      'Doğduğun gün Ay ${_ad(a)} ile ${_ad(b)} burçları arasında yer '
       'değiştiriyor. Doğum saatini eklersen hangisi olduğu netleşir; '
       'şimdilik iki yorumu da okuyabilirsin.';
 
   /// Saat biliniyor ama Ay burç sınırına çok yakın.
   static String aySinirda(Burc a, Burc b) =>
-      'Ay doğduğun anda ${a.etiket} ile ${b.etiket} burçlarının sınırında. '
-      'Doğum saatin bir saat kadar farklıysa Ay burcun ${b.etiket} olabilir; '
+      'Ay doğduğun anda ${_ad(a)} ile ${_ad(b)} burçlarının sınırında. '
+      'Doğum saatin bir saat kadar farklıysa Ay burcun ${_ad(b)} olabilir; '
       'iki yorumu da okuyabilirsin.';
 
   /// Yükselen burç sınırına çok yakın.
   static String yukselenSinirda(Burc a, Burc b) =>
-      'Yükselenin ${a.etiket} ile ${b.etiket} sınırında. Doğum saatin '
-      'birkaç dakika farklıysa Yükselenin ${b.etiket} olabilir; iki yorumu '
+      'Yükselenin ${_ad(a)} ile ${_ad(b)} sınırında. Doğum saatin '
+      'birkaç dakika farklıysa Yükselenin ${_ad(b)} olabilir; iki yorumu '
       'da okuyabilirsin.';
 
   /// Doğum tarihinde Türkiye saat uygulaması kayıtları kesin değil.

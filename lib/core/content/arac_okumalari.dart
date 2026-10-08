@@ -8,9 +8,11 @@ library;
 import '../luck_engine/luck_engine.dart';
 import 'arac_metinleri.dart';
 import 'content_config.dart';
+import 'icerik_paketi.dart';
 import 'rapor_metinleri.dart';
 import 'sayi_metinleri.dart';
 import 'slot_doldurucu.dart';
+import 'tr_icerik_paketi.dart';
 
 /// Bir araç okumasının tek bölümü.
 class AracBolumu {
@@ -74,7 +76,13 @@ class BebekIsmiOkumasi {
 }
 
 /// [analiz] için numara okuması.
-NumaraOkumasi numaraOkumasi(NumaraAnalizi analiz) {
+///
+/// [paket]: içerik dili. Bu okumanın metinleri henüz yalnız Türkçe;
+/// İngilizce havuzlar E9 oturumunda pakete bağlanır.
+NumaraOkumasi numaraOkumasi(
+  NumaraAnalizi analiz, {
+  IcerikPaketi paket = trIcerik,
+}) {
   final NumaraMetni m = AracMetinleri.numaralar[analiz.deger]!;
   final int? karmik = analiz.karmikBorc;
   return NumaraOkumasi(
@@ -96,7 +104,13 @@ NumaraOkumasi numaraOkumasi(NumaraAnalizi analiz) {
 ///
 /// Ücretsiz: isim, ruh ve kişilik sayıları. Premium: karmik borçlar,
 /// karmik dersler, gizli tutku ve ilk/son harf.
-List<AracBolumu> isimOkumasi(IsimAnalizi analiz) {
+///
+/// [paket]: içerik dili. Bu okumanın metinleri henüz yalnız Türkçe;
+/// İngilizce havuzlar E9 oturumunda pakete bağlanır.
+List<AracBolumu> isimOkumasi(
+  IsimAnalizi analiz, {
+  IcerikPaketi paket = trIcerik,
+}) {
   final SayiHesabi? ruh = analiz.ruh;
   final SayiHesabi? kisilik = analiz.kisilik;
 
@@ -182,7 +196,14 @@ UyumBandi bebekBandi(int puan) {
 /// [uyum] için bebek ismi okuması; [referansAdlari], uyum hesabındaki
 /// doğum tarihleriyle aynı sırada kişilerin adları ya da rolleridir
 /// ("Anne", "Baba").
-BebekIsmiOkumasi bebekIsmiOkumasi(IsimUyumu uyum, List<String> referansAdlari) {
+///
+/// [paket]: içerik dili. Bu okumanın metinleri henüz yalnız Türkçe;
+/// İngilizce havuzlar E9 oturumunda pakete bağlanır.
+BebekIsmiOkumasi bebekIsmiOkumasi(
+  IsimUyumu uyum,
+  List<String> referansAdlari, {
+  IcerikPaketi paket = trIcerik,
+}) {
   if (referansAdlari.length != uyum.iliskiler.length) {
     throw ArgumentError.value(
       referansAdlari,

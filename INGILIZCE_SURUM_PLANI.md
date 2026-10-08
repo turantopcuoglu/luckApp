@@ -11,10 +11,10 @@
 
 | Bilgi | Değer |
 |---|---|
-| Tarih | 8 Ekim 2026 (E0 ve E1 tamamlandı) |
-| Son commit | `f3d9bea` (görsel yenileme V2–V16 dahil) |
+| Tarih | 8 Ekim 2026 (E0, E1, E2 tamamlandı) |
+| Son commit | `1de5ed4` E0 + E1 (E2 commit'i istendiğinde) |
 | Dal | `main` (her oturum doğrudan `main`'e commit edildi) |
-| Testler | 388 test, tamamı yeşil (`flutter test`; +11 altın kayıt) |
+| Testler | 396 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi) |
 | Analiz | `flutter analyze` → No issues found |
 | Uygulama dili | Yalnızca Türkçe; tüm metinler Dart sabitleri, i18n altyapısı yok |
 
@@ -246,10 +246,26 @@ Her satır tek oturumdur. Kutuyu bitince işaretle.
       `ALTIN_KAYIT_YAZDIR=1 flutter test test/content/altin_kayit_test.dart`
       ile yeniden üretilir; **E2–E9 boyunca tablo değişmez.** Duyarlılık
       denendi: 10 içerik dosyasında tek kelime değişince 8 grup kırıldı.
-- [ ] **E2 — Etiketlerin içerik katmanına taşınması (content).** `IcerikDili`,
+- [x] **E2 — Etiketlerin içerik katmanına taşınması (content).** `IcerikDili`,
       `IcerikPaketi` arayüzü, `TrIcerikPaketi` (mevcut sabitlere yönlendirir),
       etiket tabloları. Birleştiricilere `paket` parametresi (varsayılan TR).
       E1 testleri yeşil.
+      **Yapıldı (8 Eki):** `content/icerik_paketi.dart` (`IcerikDili`,
+      `IcerikPaketi`), `content/tr_icerik_paketi.dart` (`TrIcerikPaketi`,
+      tek örnek `trIcerik`; kapsayıcı `switch` ile burç, element, kategori,
+      ay evresi, uyum derecesi, 4 tercih enum'u, uğraş öbeği, iyelik).
+      İçerik katmanında enum `etiket`/`alan` okuması kalmadı
+      (`fortune_composer`, `harita_metinleri`, `neden_metinleri`).
+      Tüm birleştiricilerde `paket` parametresi (varsayılan `trIcerik`);
+      rapor/yıllık/harita/araç birleştiricilerinde şimdilik kullanılmıyor
+      (havuzlar E8/E9'da bağlanır). Test: `icerik_paketi_test.dart`
+      (tablolar = enum etiketleri; sahte paketle adların paketten geldiği).
+      **Kalanlar:** (1) `features/` hâlâ enum `etiket`'lerini okuyor (~70
+      yer); ekranlar E5/E6'da `icerikPaketiProvider` üzerinden pakete geçer.
+      (2) Enum `etiket`'leri o zamana dek `@Deprecated` YAPILMADI (analyze
+      sıfır sorun kuralı); tüm kullanım taşınınca silinir. (3) Birleştirici
+      içindeki satır içi Türkçe kalıplar (`'… burcu · …'`, `'Özün · …'`,
+      `'Birlikte'`, `'Tavsiye'` …) E8'de paket getter'larına taşınır.
 - [ ] **E3 — i18n altyapısı (K1 onayı sonrası).** pubspec, `l10n.yaml`, boş
       ARB'ler, `MaterialApp` locale bağlantısı, `dilProvider` (K3), Ayarlar'da dil
       seçimi. Bu oturumda yalnızca `ana_sekme` ve `ayarlar` metinleri taşınır.

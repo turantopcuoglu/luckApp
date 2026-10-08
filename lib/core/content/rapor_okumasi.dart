@@ -7,7 +7,9 @@
 library;
 
 import '../luck_engine/luck_engine.dart';
+import 'icerik_paketi.dart';
 import 'rapor_metinleri.dart';
+import 'tr_icerik_paketi.dart';
 
 /// Rapor bölümlerinin türleri (sıra = ekrandaki sıra).
 enum RaporBolumTuru {
@@ -106,9 +108,13 @@ class RaporOkumasi {
 /// Ücretsiz kısım: zaman çizelgesi ve içinde bulunulan dönemin zirvesi.
 /// Diğer bölümler premium'dur. İsim tabanlı bölümler, rapor tam ad
 /// olmadan hesaplandıysa listede yer almaz.
+///
+/// [paket]: içerik dili. Bu okumanın metinleri henüz yalnız Türkçe;
+/// İngilizce havuzlar E8 oturumunda pakete bağlanır.
 RaporOkumasi raporOkumasi({
   required NumerolojiRaporu rapor,
   required DateTime gun,
+  IcerikPaketi paket = trIcerik,
 }) {
   final YasamDonemi aktif = rapor.aktifDonem(gun);
   final List<RaporBolumu> bolumler = <RaporBolumu>[

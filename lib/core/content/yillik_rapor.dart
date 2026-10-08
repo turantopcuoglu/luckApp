@@ -10,8 +10,10 @@ library;
 import '../luck_engine/luck_engine.dart';
 import 'content_config.dart';
 import 'dongu_metinleri.dart';
+import 'icerik_paketi.dart';
 import 'rapor_metinleri.dart';
 import 'slot_doldurucu.dart';
+import 'tr_icerik_paketi.dart';
 import 'yillik_rapor_metinleri.dart';
 import 'yorum_yonu.dart';
 
@@ -142,9 +144,13 @@ class YillikRaporOkumasi {
 ///
 /// Ücretsiz kısım: yılın teması ve ilk [ContentConfig.yillikUcretsizAy]
 /// ay. Diğer her şey premium'dur.
+///
+/// [paket]: içerik dili. Bu okumanın metinleri henüz yalnız Türkçe;
+/// İngilizce havuzlar E8 oturumunda pakete bağlanır.
 YillikRaporOkumasi yillikRaporOkumasi({
   required NumerolojiRaporu rapor,
   required int yil,
+  IcerikPaketi paket = trIcerik,
 }) {
   final DateTime dogum = rapor.dogumTarihi;
   final int kisiselYil = Numeroloji.kisiselYil(dogum, yil);

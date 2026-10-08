@@ -10,6 +10,8 @@ library;
 
 import '../luck_engine/luck_engine.dart';
 import 'harita_metinleri.dart';
+import 'icerik_paketi.dart';
+import 'tr_icerik_paketi.dart';
 
 /// Harita bölümünün türü.
 enum HaritaBolumTuru {
@@ -97,11 +99,15 @@ Burc komsuBurc(double boylam) {
 ///
 /// [saatBiliniyor] ve [konumBiliniyor] eksik bilgi notunu, [saatDilimiKesin]
 /// (bkz. `TurkiyeSaatDilimi`) Yükselen güvenilirlik notunu belirler.
+///
+/// [paket]: içerik dili. Bu okumanın metinleri henüz yalnız Türkçe;
+/// İngilizce havuzlar E9 oturumunda pakete bağlanır.
 HaritaOkumasi haritaOkumasi({
   required DogumHaritasi harita,
   required bool saatBiliniyor,
   required bool konumBiliniyor,
   bool saatDilimiKesin = true,
+  IcerikPaketi paket = trIcerik,
 }) {
   final List<HaritaBolumu> bolumler = <HaritaBolumu>[];
   final List<String> notlar = <String>[];

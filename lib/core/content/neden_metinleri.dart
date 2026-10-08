@@ -1,5 +1,6 @@
 import '../luck_engine/luck_engine.dart';
 import 'dongu_metinleri.dart';
+import 'tr_icerik_paketi.dart';
 import 'yorum_yonu.dart';
 
 /// "Neden bugün?" çiplerinin ve açıklamalarının metinleri.
@@ -52,7 +53,7 @@ abstract final class NedenMetinleri {
 
   /// Ay evresi çipi.
   static String ayEvresiEtiketi(AyEvresi evre, int etki) =>
-      '${evre.etiket} ${etkiMetni(etki)}';
+      '${trIcerik.ayEvresiAdi(evre)} ${etkiMetni(etki)}';
 
   /// Ay evresi açıklaması.
   static String ayEvresiAciklamasi(AyEvresi evre, int etki) =>

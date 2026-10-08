@@ -24,13 +24,14 @@ import 'content_config.dart';
 import 'dongu_metinleri.dart';
 import 'fortune_pools.dart';
 import 'gunluk_okuma.dart';
+import 'icerik_paketi.dart';
 import 'kisisel_havuzlar.dart';
 import 'neden_metinleri.dart';
 import 'okuyucu.dart';
 import 'sans_rengi.dart';
 import 'sayi_metinleri.dart';
 import 'slot_doldurucu.dart';
-import 'turkce_ek.dart';
+import 'tr_icerik_paketi.dart';
 import 'uyum_metinleri.dart';
 import 'yorum_yonu.dart';
 
@@ -49,22 +50,24 @@ GunTonu gunTonuBul(int genelSkor) {
 }
 
 /// [okuyucu] için şablon yer tutucularının değer sözlüğünü kurar.
+///
+/// Adlar ve isim çekimi [paket]ten gelir (dil bağımsız erişim, E2).
 Map<String, String> slotSozlugu(
   Okuyucu okuyucu, {
   DateTime? gun,
   GunDongusu? dongu,
   SansliSaat? saat,
   String? digerIsim,
+  IcerikPaketi paket = trIcerik,
 }) {
   final KarakterYonu? karakter =
       YorumYonu.karakterler[okuyucu.profil.yasamYolu.deger];
   return <String, String>{
     SlotAnahtarlari.isim: okuyucu.isim,
-    SlotAnahtarlari.isimIlgi: TurkceEk.ilgi(okuyucu.isim),
-    SlotAnahtarlari.burc: okuyucu.profil.burc.etiket,
+    SlotAnahtarlari.isimIlgi: paket.iyelik(okuyucu.isim),
+    SlotAnahtarlari.burc: paket.burcAdi(okuyucu.profil.burc),
     SlotAnahtarlari.yasamYolu: '${okuyucu.profil.yasamYolu.deger}',
-    SlotAnahtarlari.ugrasAlani:
-        okuyucu.tercihler.ugras?.alan ?? KisiselHavuzlar.varsayilanUgrasAlani,
+    SlotAnahtarlari.ugrasAlani: paket.ugrasAlani(okuyucu.tercihler.ugras),
     if (karakter != null) SlotAnahtarlari.doga: karakter.doga,
     if (dongu != null) SlotAnahtarlari.kisiselGun: '${dongu.kisiselGun}',
     if (dongu != null) SlotAnahtarlari.kisiselYil: '${dongu.kisiselYil}',
@@ -198,12 +201,14 @@ List<String> _durumHavuzu(
 /// [okuyucu] için [sonuc] gününün tam, bölümlü okumasını üretir.
 ///
 /// [begenilmeyenler]: kullanıcının BU GÜNDEN ÖNCE "beni anlatmadı" dediği
-/// bölüm kimlikleri (bkz. [bolumKimligi]).
+/// bölüm kimlikleri (bkz. [bolumKimligi]). [paket]: içerik dili
+/// (varsayılan Türkçe; bkz. `icerik_paketi.dart` geçiş notu).
 GunlukOkuma gunlukOkuma({
   required LuckEngine motor,
   required Okuyucu okuyucu,
   required LuckResult sonuc,
   Set<String> begenilmeyenler = const <String>{},
+  IcerikPaketi paket = trIcerik,
 }) {
   final DateTime gun = sonuc.gun;
   final GunDongusu dongu = GunDongusu.hesapla(
@@ -226,6 +231,7 @@ GunlukOkuma gunlukOkuma({
     gun: gun,
     dongu: dongu,
     saat: saat,
+    paket: paket,
   );
   String doldur(String s) => slotDoldur(s, slotlar);
 
@@ -506,12 +512,13 @@ List<NedenOgesi> nedenOgeleri({
 ///
 /// Paragraf: bugünün o alandaki durumu (kişinin durumuna göre; düşük
 /// günlerde uyarıyı da içerir) + günün temasının o alana etkisi + kişinin
-/// o alandaki tarzı + somut tavsiye.
+/// o alandaki tarzı + somut tavsiye. [paket]: içerik dili.
 KategoriOkumasi kategoriOkumasi({
   required LuckEngine motor,
   required Okuyucu okuyucu,
   required LuckResult sonuc,
   required LuckCategory kategori,
+  IcerikPaketi paket = trIcerik,
 }) {
   final DateTime gun = sonuc.gun;
   final int skor = sonuc.kategoriSkorlari[kategori] ?? 0;
@@ -530,6 +537,7 @@ KategoriOkumasi kategoriOkumasi({
     gun: gun,
     dongu: dongu,
     saat: saat,
+    paket: paket,
   );
   String doldur(String s) => slotDoldur(s, slotlar);
 
@@ -576,16 +584,21 @@ KategoriOkumasi kategoriOkumasi({
 ///
 /// Tam ad yoksa isim tabanlı bölümler (iç ses, yansıma) listede yer
 /// almaz. Profil metinleri gün değişse de aynı kalır; yalnızca yıl
-/// bölümü takvim yılına bağlıdır.
+/// bölümü takvim yılına bağlıdır. [paket]: içerik dili.
 List<ProfilBolumu> profilOkumasi({
   required Okuyucu okuyucu,
   required DateTime gun,
+  IcerikPaketi paket = trIcerik,
 }) {
   final KaderProfili p = okuyucu.profil;
   final SayiKarakteri karakter = SayiMetinleri.yasamYolu[p.yasamYolu.deger]!;
   final int kisiselYil = Numeroloji.kisiselYil(p.dogumTarihi, gun.year);
   final KisiselYilMetni yil = DonguMetinleri.kisiselYil[kisiselYil]!;
-  final Map<String, String> slotlar = slotSozlugu(okuyucu, gun: gun);
+  final Map<String, String> slotlar = slotSozlugu(
+    okuyucu,
+    gun: gun,
+    paket: paket,
+  );
   String doldur(String s) => slotDoldur(s, slotlar);
   final IliskiDurumu? iliski = okuyucu.tercihler.iliski;
   final Ugras? ugras = okuyucu.tercihler.ugras;
@@ -605,7 +618,9 @@ List<ProfilBolumu> profilOkumasi({
     ),
     ProfilBolumu(
       tur: ProfilBolumTuru.burc,
-      baslik: '${p.burc.etiket} burcu · ${p.burc.element.etiket}',
+      baslik:
+          '${paket.burcAdi(p.burc)} burcu · '
+          '${paket.elementAdi(p.burc.element)}',
       metin: <String>[
         BurcMetinleri.oz[p.burc]!,
         if (p.burcSinirGunu) BurcMetinleri.sinirNotu,
@@ -671,15 +686,18 @@ List<ProfilBolumu> profilOkumasi({
 }
 
 /// [okuyucu] ile [digerIsim]/[digerProfil] arasındaki uyum okuması.
+/// [paket]: içerik dili.
 UyumOkumasi uyumOkumasi({
   required Okuyucu okuyucu,
   required String digerIsim,
   required KaderProfili digerProfil,
+  IcerikPaketi paket = trIcerik,
 }) {
   final UyumSonucu sonuc = uyumHesapla(okuyucu.profil, digerProfil);
   final Map<String, String> slotlar = slotSozlugu(
     okuyucu,
     digerIsim: digerIsim,
+    paket: paket,
   );
   String doldur(String s) => slotDoldur(s, slotlar);
   // Varyant, çifte özgü skordan seçilir: simetrik ve deterministik.
@@ -709,7 +727,9 @@ UyumOkumasi uyumOkumasi({
         metin: doldur(sec(UyumMetinleri.yasamYolu[sonuc.yasamYoluIliskisi]!)),
       ),
       UyumBolumu(
-        baslik: '${okuyucu.profil.burc.etiket} & ${digerProfil.burc.etiket}',
+        baslik:
+            '${paket.burcAdi(okuyucu.profil.burc)} & '
+            '${paket.burcAdi(digerProfil.burc)}',
         metin: UyumMetinleri.element[sonuc.elementIliskisi]!,
       ),
       if (sonuc.ruhUyumlu != null)
