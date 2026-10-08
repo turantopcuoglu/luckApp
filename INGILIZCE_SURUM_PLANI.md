@@ -11,10 +11,10 @@
 
 | Bilgi | Değer |
 |---|---|
-| Tarih | 3 Ekim 2026 |
-| Son commit | `b427a6e` Büyük Üçlü: doğum saati/ili, harita ekranı ve Yükselen girişi |
+| Tarih | 8 Ekim 2026 (E0 ve E1 tamamlandı) |
+| Son commit | `f3d9bea` (görsel yenileme V2–V16 dahil) |
 | Dal | `main` (her oturum doğrudan `main`'e commit edildi) |
-| Testler | 347 test, tamamı yeşil (`flutter test`) |
+| Testler | 388 test, tamamı yeşil (`flutter test`; +11 altın kayıt) |
 | Analiz | `flutter analyze` → No issues found |
 | Uygulama dili | Yalnızca Türkçe; tüm metinler Dart sabitleri, i18n altyapısı yok |
 
@@ -36,6 +36,8 @@
 - [ ] Satışa açmadan önce hukuki danışmanlık (Türkiye'de 677 sayılı Kanun riski;
       konumlandırma "eğlence / kendini keşif", "fal" değil).
 - [ ] İl koordinatlarını bir kez resmî kaynaktan kontrol et (±0.1° yazıldı).
+- [ ] K4: İngilizce uygulama adı (E11'den önce).
+- [ ] K5: E9'daki İngilizce yasal metin taslağını hukukçuya onaylat.
 - [ ] **Görseller:** Ayrı plana taşındı: `GORSEL_YENILEME_PLANI.md` (durum,
       oturum sırası) ve `GORSEL_URETIM_REHBERI.md` (GPT istemleri).
       `CIZIM_LISTESI.md` eskidi.
@@ -57,7 +59,16 @@
    `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 5. **`dart format` yalnızca düzenlenen dosyalara.** Klasöre toplu format
    atma; dokunulmamış dosyalar biçimlenirse `git checkout -- <dosya>` ile geri al.
-6. **Ortam (Windows):** `python` yok. Çok satırlı düzenlemeler için scratchpad
+6. **Ortam (8 Ekim 2026'dan beri macOS):** Proje exFAT biçimli harici
+   diskte (`/Volumes/PortableSSD`). macOS her yazılan dosyanın yanına `._*`
+   (AppleDouble) dosyası bırakır; bu yüzden `flutter test` diskte
+   `FileSystemException: Deletion failed` ile çöker (native assets/ephemeral
+   kopyalama). Çözüm: depoyu scratchpad'e `rsync -a --exclude build/
+   --exclude .dart_tool/ --exclude '._*' --exclude ios/Pods/ --exclude
+   ios/Flutter/ephemeral/` ile kopyalayıp testi orada çalıştır.
+   `flutter analyze` diskte çalışır ama `build/ios/SourcePackages` da
+   tarandığı için `flutter analyze lib test` kullan. Eski Windows notu:
+   `python` yok. Çok satırlı düzenlemeler için scratchpad
    dizininde küçük Dart betikleri (`dart run <betik>.dart`) ya da Edit aracı
    kullanıldı. Bash heredoc içinde `₺` gibi karakterler ve tırnaklar sorun
    çıkarabilir; o durumda betiği Write ile dosyaya yaz. Dart betiğinde
@@ -158,16 +169,16 @@ taşınacak (E2):
 
 ---
 
-## 5. Onay gerektiren kararlar (E0'da kullanıcıya sor)
+## 5. Onay gerektiren kararlar (E0'da soruldu, 8 Ekim 2026)
 
-| # | Karar | Önerilen |
-|---|---|---|
-| K1 | Arayüz metinleri için Flutter `gen-l10n` (ARB). `pubspec.yaml`'a `flutter_localizations` (sdk), `intl` ve `flutter: generate: true` eklenir. | Evet |
-| K2 | İçerik dil paketleri için klasör düzeni: `lib/core/content/tr/` ve `lib/core/content/en/` (mevcut dosyalar `tr/` altına taşınır) **ya da** taşımadan `*_en.dart` ek dosyaları. | Taşıma yok: `*_en.dart` ek dosyaları (daha az kırılma riski, D4/D7 için güvenli) |
-| K3 | Dil seçimi: cihaz dili `tr` ise Türkçe, değilse İngilizce; Ayarlar'dan elle değiştirilebilir. Seçim `UygulamaDurumu`'na yazılır. | Evet |
-| K4 | İngilizce uygulama adı (mağaza ve launcher). | Kullanıcı karar verir (ör. "Kader: Numerology & Luck") |
-| K5 | İngilizce yasal metinler (gizlilik, koşullar, sorumluluk reddi) kim tarafından yazılacak/onaylanacak? | Taslağı Claude yazar, hukukçu onaylar |
-| K6 | Dünya geneli doğum yeri (E10): `timezone` paketi zaten var (tz verisi içerir); şehir veritabanı için GeoNames `cities15000` (CC BY 4.0, ~2 MB asset, atıf gerekir). | İlk yayında yok; sonra |
+| # | Karar | Önerilen | Cevap (Turan) |
+|---|---|---|---|
+| K1 | Arayüz metinleri için Flutter `gen-l10n` (ARB). `pubspec.yaml`'a `flutter_localizations` (sdk), `intl` ve `flutter: generate: true` eklenir. | Evet | **Evet.** pubspec değişikliği ve `lib/l10n/` klasörü (+ kökte `l10n.yaml`) E3 için onaylı. |
+| K2 | İçerik dil paketleri için klasör düzeni: `lib/core/content/tr/` ve `lib/core/content/en/` (mevcut dosyalar `tr/` altına taşınır) **ya da** taşımadan `*_en.dart` ek dosyaları. | Taşıma yok: `*_en.dart` ek dosyaları (daha az kırılma riski, D4/D7 için güvenli) | **`*_en.dart` ek dosyaları**, taşıma yok. |
+| K3 | Dil seçimi: cihaz dili `tr` ise Türkçe, değilse İngilizce; Ayarlar'dan elle değiştirilebilir. Seçim `UygulamaDurumu`'na yazılır. | Evet | **Evet** (cihaz dili + Ayarlar'dan elle seçim, `UygulamaDurumu`'nda saklanır). |
+| K4 | İngilizce uygulama adı (mağaza ve launcher). | Kullanıcı karar verir (ör. "Kader: Numerology & Luck") | **Açık** — Turan sonra karar verecek. E11 (mağaza) öncesi gerekli; o zamana kadar launcher adı "Kader" kalır. |
+| K5 | İngilizce yasal metinler (gizlilik, koşullar, sorumluluk reddi) kim tarafından yazılacak/onaylanacak? | Taslağı Claude yazar, hukukçu onaylar | **Taslağı Claude yazar (E9), hukukçu onaylar** (yayın öncesi Turan'ın işi). |
+| K6 | Dünya geneli doğum yeri (E10): `timezone` paketi zaten var (tz verisi içerir); şehir veritabanı için GeoNames `cities15000` (CC BY 4.0, ~2 MB asset, atıf gerekir). | İlk yayında yok; sonra | **İlk yayında yok**, E10 sonraya. İngilizce sürümde Yükselen yalnız Türkiye doğumlular için (§4.5). |
 
 ---
 
@@ -218,12 +229,23 @@ final class EnIcerikPaketi implements IcerikPaketi { /* *_en.dart sabitleri */ }
 
 Her satır tek oturumdur. Kutuyu bitince işaretle.
 
-- [ ] **E0 — Kararlar.** K1–K6'yı kullanıcıya sor, cevapları bu dosyaya yaz. Kod yok.
-- [ ] **E1 — Altın kayıt testleri (content).** Türkçe çıktıları sabitleyen
+- [x] **E0 — Kararlar.** K1–K6'yı kullanıcıya sor, cevapları bu dosyaya yaz. Kod yok. (8 Eki; K4 açık)
+- [x] **E1 — Altın kayıt testleri (content).** Türkçe çıktıları sabitleyen
       testler: 12 yaşam yolu × 3 tercih × 10 gün `gunlukOkuma.kartMetni`,
       `raporOkumasi`, `yillikRaporOkumasi(2027)`, `profilOkumasi`, `uyumOkumasi`,
       `isimOkumasi`, `numaraOkumasi`, `haritaOkumasi` çıktılarının FNV özetleri
       tek bir test dosyasında. Sonraki her oturumda yeşil kalmalı (D7).
+      **Yapıldı (8 Eki):** `test/content/altin_kayit_test.dart`, 207 FNV-1a
+      özeti, 11 test: günlük okuma (12 yy × 3 tercih × 10 gün), geri
+      bildirimli günlük okuma, kategori detayı (5 kategori), profil (3 yıl),
+      uyum (6 kişi), numeroloji raporu (adlı/adsız × 5 yaş), yıllık rapor
+      (2026–2034), harita (3 bilgi durumu × 60 doğum), isim (16 ad), numara
+      (tarama + biçimli), bebek ismi (3 ebeveyn seti). Dökümde metinler,
+      başlıklar, bölüm sırası/türü, premium bayrakları ve geri bildirim
+      kimlikleri var. Bilinçli bir Türkçe metin değişikliğinde tablo
+      `ALTIN_KAYIT_YAZDIR=1 flutter test test/content/altin_kayit_test.dart`
+      ile yeniden üretilir; **E2–E9 boyunca tablo değişmez.** Duyarlılık
+      denendi: 10 içerik dosyasında tek kelime değişince 8 grup kırıldı.
 - [ ] **E2 — Etiketlerin içerik katmanına taşınması (content).** `IcerikDili`,
       `IcerikPaketi` arayüzü, `TrIcerikPaketi` (mevcut sabitlere yönlendirir),
       etiket tabloları. Birleştiricilere `paket` parametresi (varsayılan TR).
