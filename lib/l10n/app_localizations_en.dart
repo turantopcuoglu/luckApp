@@ -138,4 +138,121 @@ class AppLocalizationsEn extends AppLocalizations {
   String ayarlarSurum(String surum) {
     return 'Kader $surum';
   }
+
+  @override
+  String get onboardingUygulamaAdi => 'Kader';
+
+  @override
+  String get onboardingSlogan => 'Your luck is rewritten every morning.';
+
+  @override
+  String get onboardingKarsilamaAciklama =>
+      'A reading written just for you every day, from the numbers in your birth date and name.';
+
+  @override
+  String get onboardingBasla => 'Get started';
+
+  @override
+  String get onboardingIsimEtiketi => 'What should we call you?';
+
+  @override
+  String get onboardingIsimIpucu => 'Your name';
+
+  @override
+  String get onboardingTamAdEtiketi => 'Your full name at birth (optional)';
+
+  @override
+  String get onboardingTamAdIpucu => 'First Middle Last';
+
+  @override
+  String get onboardingTamAdAciklama =>
+      'Your name, soul and personality numbers are calculated from your full name as registered at birth. If you leave it empty, you can add it later from your profile.';
+
+  @override
+  String get onboardingDogumTarihiEtiketi => 'Your birth date';
+
+  @override
+  String get onboardingDogumTarihiAciklama =>
+      'Your life path number and zodiac sign come from this date, so please enter it correctly.';
+
+  @override
+  String get onboardingDevam => 'Continue';
+
+  @override
+  String get onboardingKaderimiHesapla => 'Calculate my destiny';
+
+  @override
+  String get onboardingKaydet => 'Save';
+
+  @override
+  String get onboardingAtla => 'Skip for now';
+
+  @override
+  String get onboardingIsimBosUyarisi => 'Enter your name to continue.';
+
+  @override
+  String get onboardingRituelNotu => 'A daily ritual of inspiration.';
+
+  @override
+  String get onboardingKartHazirlaniyor => 'Preparing your card';
+
+  @override
+  String get onboardingHazirlikProfil => 'Profile ready';
+
+  @override
+  String get onboardingHazirlikKart => 'Preparing your daily card';
+
+  @override
+  String get onboardingHazirlikSon => 'Final touches';
+
+  @override
+  String get onboardingKendineAlanAc => 'Make a little space for yourself.';
+
+  @override
+  String get onboardingKartinHazir => 'Your card is ready';
+
+  @override
+  String get onboardingKartinHazirAlt =>
+      'Choose one small step for yourself today.';
+
+  @override
+  String get onboardingHazirlikTamamlandi => 'All set';
+
+  @override
+  String get onboardingKartimaGec => 'Go to my card';
+
+  @override
+  String get onboardingTanismaBaslik => 'Let\'s get to know you';
+
+  @override
+  String get onboardingTanismaAciklama =>
+      'Your answers help your readings truly fit you: we won\'t show a workplace line to a student or a partner line to someone who\'s single. Every question is optional and can be changed later in Settings.';
+
+  @override
+  String get onboardingSoruEnerji => 'How do you recharge?';
+
+  @override
+  String get onboardingSoruKarar => 'When making decisions…';
+
+  @override
+  String get onboardingSoruIliski => 'Your relationship status';
+
+  @override
+  String get onboardingSoruUgras => 'What fills most of your days?';
+
+  @override
+  String get onboardingTanismaGizlilik =>
+      'Your answers are stored only on this device.';
+
+  @override
+  String get yasalUyariBaslik => 'Before you begin';
+
+  @override
+  String get yasalDevam => 'Continue';
+
+  @override
+  String get yasalGizlilikPolitikasi => 'Privacy Policy';
+
+  @override
+  String get yasalKullanimKosullari => 'Terms of Use';
 }

@@ -12,6 +12,10 @@ import 'package:kader/core/storage/uygulama_durumu.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/home/ana_sekme.dart';
 import 'package:kader/features/legal/legal_config.dart';
+import 'package:kader/features/legal/yasal_belge_screen.dart';
+import 'package:kader/features/onboarding/profile_form_screen.dart';
+import 'package:kader/features/onboarding/tanisma_screen.dart';
+import 'package:kader/features/onboarding/welcome_screen.dart';
 import 'package:kader/l10n/app_localizations.dart';
 import 'package:kader/l10n/app_localizations_en.dart';
 import 'package:kader/l10n/dil_providers.dart';
@@ -227,6 +231,65 @@ void main() {
       expect(find.text(AnaSekme.bugun.etiketi(trMetinler)), findsNothing);
       // Kalıcılık "dil tercihi deposu" testinde; burada runAsync kullanmak
       // GoogleFonts'un ağdan font indirmesini tetikler (smoke test notu).
+    });
+  });
+
+  group('Onboarding ve yasal ekranlar (E4)', () {
+    final TestOrtami ortam = TestOrtami();
+    final AppLocalizations en = AppLocalizationsEn();
+    setUp(() => ortam.kur('dil_onboarding_test'));
+
+    /// [ev] ekranını İngilizce yerelleştirmeyle açar.
+    Future<void> ingilizceAc(WidgetTester tester, Widget ev) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: ortam.overridelar(gun: DateTime(2026, 7, 6)),
+          child: MaterialApp(
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ev,
+          ),
+        ),
+      );
+      await tester.pump();
+    }
+
+    testWidgets('karşılama ve uyarı ekranı İngilizce açılır', (
+      WidgetTester tester,
+    ) async {
+      await ingilizceAc(tester, const WelcomeScreen());
+      expect(find.text(en.onboardingSlogan), findsOneWidget);
+      expect(find.text(en.onboardingRituelNotu), findsOneWidget);
+      expect(find.text(trMetinler.onboardingSlogan), findsNothing);
+
+      await tester.tap(find.text(en.onboardingBasla));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text(en.yasalUyariBaslik), findsOneWidget);
+      expect(find.text(en.yasalDevam), findsOneWidget);
+      // Belge bağlantıları maddelerin altında; liste tembel çizildiği için
+      // önce oraya kaydırılır.
+      await tester.scrollUntilVisible(
+        find.text(YasalBelge.gizlilik.baslik(en)),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text(YasalBelge.gizlilik.baslik(en)), findsOneWidget);
+      expect(find.text(YasalBelge.kosullar.baslik(en)), findsOneWidget);
+    });
+
+    testWidgets('profil formu ve tanışma soruları İngilizce açılır', (
+      WidgetTester tester,
+    ) async {
+      await ingilizceAc(tester, const ProfileFormScreen());
+      expect(find.text(en.onboardingIsimEtiketi), findsOneWidget);
+      expect(find.text(en.onboardingDevam), findsOneWidget);
+
+      await ingilizceAc(tester, const TanismaScreen());
+      expect(find.text(en.onboardingTanismaBaslik), findsOneWidget);
+      expect(find.text(en.onboardingSoruEnerji), findsOneWidget);
+      expect(find.text(en.onboardingAtla), findsOneWidget);
     });
   });
 }

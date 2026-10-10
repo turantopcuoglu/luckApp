@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_route.dart';
 import '../legal/uyari_screen.dart';
 import 'onboarding_config.dart';
-import 'onboarding_strings.dart';
 import 'profile_form_screen.dart';
 import 'widgets/astrolab.dart';
 import 'widgets/onboarding_zemini.dart';
@@ -25,6 +25,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
+    final AppLocalizations l = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: OnboardingZemini(
@@ -36,13 +37,10 @@ class WelcomeScreen extends StatelessWidget {
                 const Spacer(),
                 const Astrolab(boyut: OnboardingConfig.astrolabBuyuk),
                 const SizedBox(height: AppSpacing.lg),
-                Text(
-                  OnboardingStrings.uygulamaAdi,
-                  style: yaziTemasi.displayMedium,
-                ),
+                Text(l.onboardingUygulamaAdi, style: yaziTemasi.displayMedium),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  OnboardingStrings.slogan,
+                  l.onboardingSlogan,
                   style: yaziTemasi.bodyLarge?.copyWith(
                     color: AppColors.goldAcik,
                   ),
@@ -50,7 +48,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  OnboardingStrings.karsilamaAciklama,
+                  l.onboardingKarsilamaAciklama,
                   style: yaziTemasi.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -59,14 +57,14 @@ class WelcomeScreen extends StatelessWidget {
                 const Spacer(),
                 AltinButon(
                   genislik: null,
-                  metin: OnboardingStrings.basla,
+                  metin: l.onboardingBasla,
                   onPressed: () => Navigator.of(context).push(
                     fadeThroughRoute<void>(
                       UyariScreen(
                         onKabul: (BuildContext c, WidgetRef ref) =>
                             Navigator.of(c).push(
-                          fadeThroughRoute<void>(const ProfileFormScreen()),
-                        ),
+                              fadeThroughRoute<void>(const ProfileFormScreen()),
+                            ),
                       ),
                     ),
                   ),

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_images.dart';
 import '../../../shared/widgets/sahne_arka_plani.dart';
 import '../onboarding_config.dart';
-import '../onboarding_strings.dart';
 
 /// Onboarding ekranlarının ortak zemini: sütunlu kemerler ve ayna göl
 /// ([AppImages.sahneOnboarding]); alt kısım form alanları için koyulaşır.
@@ -45,10 +45,10 @@ class OnboardingZemini extends StatelessWidget {
 /// "─ ✦ Günlük bir ilham ritüeli. ✦ ─" alt notu (mockup).
 class RituelNotu extends StatelessWidget {
   /// Varsayılan kurucu.
-  const RituelNotu({this.metin = OnboardingStrings.rituelNotu, super.key});
+  const RituelNotu({this.metin, super.key});
 
-  /// Gösterilecek not.
-  final String metin;
+  /// Gösterilecek not; verilmezse "Günlük bir ilham ritüeli." yazar.
+  final String? metin;
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +65,10 @@ class RituelNotu extends StatelessWidget {
       children: <Widget>[
         cizgi(sol: true),
         Text(
-          metin,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: AppColors.textSecondary,
-          ),
+          metin ?? AppLocalizations.of(context).onboardingRituelNotu,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
         ),
         cizgi(sol: false),
       ],

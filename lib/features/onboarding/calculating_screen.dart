@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../main.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_images.dart';
@@ -17,7 +18,6 @@ import '../feedback/notification_service.dart';
 import '../home/ana_kabuk.dart';
 import '../home/ana_sekme.dart';
 import 'onboarding_config.dart';
-import 'onboarding_strings.dart';
 import 'widgets/isik_kuresi.dart';
 import 'widgets/onboarding_zemini.dart';
 
@@ -166,6 +166,13 @@ class _Hazirlanma extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme yazi = Theme.of(context).textTheme;
+    final AppLocalizations l = AppLocalizations.of(context);
+    // Sırası [OnboardingConfig.adimEsikleri] ile eşleşir.
+    final List<String> adimlar = <String>[
+      l.onboardingHazirlikProfil,
+      l.onboardingHazirlikKart,
+      l.onboardingHazirlikSon,
+    ];
     return Column(
       children: <Widget>[
         const Spacer(),
@@ -174,7 +181,7 @@ class _Hazirlanma extends StatelessWidget {
         _IlerlemeCubugu(ilerleme: dolum),
         const SizedBox(height: AppSpacing.lg),
         Text(
-          OnboardingStrings.kartHazirlaniyor,
+          l.onboardingKartHazirlaniyor,
           style: yazi.headlineMedium,
           textAlign: TextAlign.center,
         ),
@@ -185,20 +192,13 @@ class _Hazirlanma extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              for (
-                int i = 0;
-                i < OnboardingStrings.hazirlikAdimlari.length;
-                i++
-              )
-                _Adim(
-                  metin: OnboardingStrings.hazirlikAdimlari[i],
-                  durum: _adimDurumu(i, dolum.value),
-                ),
+              for (int i = 0; i < adimlar.length; i++)
+                _Adim(metin: adimlar[i], durum: _adimDurumu(i, dolum.value)),
             ],
           ),
         ),
         const Spacer(),
-        const RituelNotu(metin: OnboardingStrings.kendineAlanAc),
+        RituelNotu(metin: l.onboardingKendineAlanAc),
       ],
     );
   }
@@ -348,6 +348,7 @@ class _KartHazir extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme yazi = Theme.of(context).textTheme;
+    final AppLocalizations l = AppLocalizations.of(context);
     final double olcek =
         OnboardingConfig.hazirBaslangicOlcegi +
         (1 - OnboardingConfig.hazirBaslangicOlcegi) *
@@ -389,13 +390,13 @@ class _KartHazir extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
-          OnboardingStrings.kartinHazir,
+          l.onboardingKartinHazir,
           style: yazi.headlineMedium,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          OnboardingStrings.kartinHazirAlt,
+          l.onboardingKartinHazirAlt,
           style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
           textAlign: TextAlign.center,
         ),
@@ -423,7 +424,7 @@ class _KartHazir extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                OnboardingStrings.hazirlikTamamlandi,
+                l.onboardingHazirlikTamamlandi,
                 style: yazi.bodySmall?.copyWith(color: AppColors.goldAcik),
               ),
             ],
@@ -432,7 +433,7 @@ class _KartHazir extends StatelessWidget {
         const Spacer(),
         AltinButon(
           genislik: null,
-          metin: OnboardingStrings.kartimaGec,
+          metin: l.onboardingKartimaGec,
           onPressed: belirme < 1 ? null : onGec,
         ),
       ],

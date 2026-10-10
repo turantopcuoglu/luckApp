@@ -2,30 +2,34 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import 'legal_config.dart';
 import 'legal_texts.dart';
 
 /// Yasal belge türleri.
 enum YasalBelge {
   /// Gizlilik Politikası.
-  gizlilik(baslik: 'Gizlilik Politikası', url: LegalConfig.gizlilikUrl),
+  gizlilik(url: LegalConfig.gizlilikUrl),
 
   /// Kullanım Koşulları.
-  kosullar(baslik: 'Kullanım Koşulları', url: LegalConfig.kosullarUrl);
+  kosullar(url: LegalConfig.kosullarUrl);
 
-  const YasalBelge({required this.baslik, required this.url});
-
-  /// Ekran başlığı.
-  final String baslik;
+  const YasalBelge({required this.url});
 
   /// Web sürümünün adresi.
   final String url;
 
+  /// Belgenin adı ve ekran başlığı ([l] arayüz dilinde).
+  String baslik(AppLocalizations l) => switch (this) {
+    YasalBelge.gizlilik => l.yasalGizlilikPolitikasi,
+    YasalBelge.kosullar => l.yasalKullanimKosullari,
+  };
+
   /// Belgenin bölümleri.
   List<YasalBolum> get bolumler => switch (this) {
-        YasalBelge.gizlilik => YasalMetinler.gizlilikPolitikasi,
-        YasalBelge.kosullar => YasalMetinler.kullanimKosullari,
-      };
+    YasalBelge.gizlilik => YasalMetinler.gizlilikPolitikasi,
+    YasalBelge.kosullar => YasalMetinler.kullanimKosullari,
+  };
 }
 
 /// Bir yasal belgeyi okunaklı bölümler halinde gösterir.
@@ -44,7 +48,7 @@ class YasalBelgeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextTheme yazi = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: Text(belge.baslik)),
+      appBar: AppBar(title: Text(belge.baslik(AppLocalizations.of(context)))),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),

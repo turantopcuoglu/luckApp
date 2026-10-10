@@ -11,10 +11,10 @@
 
 | Bilgi | Değer |
 |---|---|
-| Tarih | 8 Ekim 2026 (E0–E3 tamamlandı) |
-| Son commit | `a934bae` E2 (E3 commit'i istendiğinde) |
+| Tarih | 11 Ekim 2026 (E0–E4 tamamlandı) |
+| Son commit | `d178ac0` (E3 + iOS Pods; E4 commit'i istendiğinde) |
 | Dal | `main` (her oturum doğrudan `main`'e commit edildi) |
-| Testler | 405 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi, +9 dil) |
+| Testler | 407 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi, +11 dil) |
 | Analiz | `flutter analyze` → No issues found |
 | Uygulama dili | Türkçe. gen-l10n altyapısı kurulu (E3); İngilizce `DilConfig.ingilizceYayinda = false` ile kapalı (yalnız debug'da Ayarlar'dan seçilebilir) |
 
@@ -109,7 +109,7 @@ bozmamak** için konuldu. Her biri bir testle korunmalı.
 | Dosya | Satır (yaklaşık) |
 |---|---|
 | `features/daily_luck/tr_strings.dart` (tarih biçimi `tarihMetni` dahil) | 119 |
-| `features/onboarding/onboarding_strings.dart` | 84 |
+| ~~`features/onboarding/onboarding_strings.dart`~~ (E4'te ARB'ye taşındı, silindi) | — |
 | `features/profile/profile_strings.dart` | 210 |
 | `features/premium/premium_strings.dart` (+ `PremiumHatalari` in `premium_kontrolcu.dart`) | 143 |
 | `features/tools/tools_strings.dart` | 115 |
@@ -287,8 +287,24 @@ Her satır tek oturumdur. Kutuyu bitince işaretle.
       sırası, geri düğmesi ipucu "Geri"); emülatörde kontrol edilmeli.
       (3) Testte `tester.pageBack()` İngilizce "Back" ipucu aradığı için
       çalışmaz; `find.byType(BackButton)` kullan.
-- [ ] **E4 — ARB taşıma: onboarding + legal ekranları (UI).** Yasal metin
+- [x] **E4 — ARB taşıma: onboarding + legal ekranları (UI).** Yasal metin
       gövdesi hâlâ Türkçe kalabilir; E9'da yazılır.
+      **Yapıldı (11 Eki):** `OnboardingStrings` (33 metin) → `onboarding*`
+      ARB anahtarları, dosya silindi; `hazirlikAdimlari` listesi üç anahtara
+      bölündü (sıra `OnboardingConfig.adimEsikleri` ile aynı).
+      `RituelNotu.metin` artık `String?` (boşsa ARB'den). Legal'den yalnız
+      arayüz metinleri taşındı: `yasalUyariBaslik`, `yasalDevam`,
+      `yasalGizlilikPolitikasi`, `yasalKullanimKosullari`;
+      `YasalBelge.baslik` alanı `baslik(AppLocalizations)` metoduna döndü
+      (paywall ve ayarlar çağrıları güncellendi, tek satır). Testler:
+      `dil_test.dart`'a İngilizce karşılama/uyarı ve form/tanışma testleri;
+      paywall'u açan iki test `testUygulamasi` ile sarıldı.
+      **E9'a kalanlar (bilinçli olarak Türkçe):** `YasalMetinler.uyariMaddeleri`,
+      `uyariKabul`, `kisaNot` (sorumluluk reddi, K5 hukukçu onayı) ve
+      gizlilik/koşullar gövdeleri. Tanışma seçenek etiketleri
+      (`EnerjiTarzi.etiket` …) içerik katmanından gelir, E8 kapsamında.
+      **Ortam notu:** `flutter gen-l10n` de `lib/l10n/._*` dosyalarını ARB
+      sanıp çöker; önce `find lib test -name '._*' -delete`.
 - [ ] **E5 — ARB taşıma: daily_luck + categories + feedback + share.**
       `TrStrings.tarihMetni` → `intl` `DateFormat.yMMMMEEEEd(locale)`.
 - [ ] **E6 — ARB taşıma: profile + premium + tools + compatibility.**

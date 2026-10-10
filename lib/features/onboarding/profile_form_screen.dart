@@ -9,11 +9,11 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_route.dart';
 import '../legal/legal_config.dart';
 import 'onboarding_config.dart';
-import 'onboarding_strings.dart';
 import 'tanisma_screen.dart';
 import 'widgets/astrolab.dart';
 import 'widgets/onboarding_zemini.dart';
@@ -65,7 +65,9 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
     final String isim = _isimKontrol.text.trim();
     if (isim.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(OnboardingStrings.isimBosUyarisi)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).onboardingIsimBosUyarisi),
+        ),
       );
       return;
     }
@@ -91,6 +93,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final TextStyle? aciklamaStili = yaziTemasi.bodySmall?.copyWith(
       color: AppColors.textSecondary,
@@ -115,7 +118,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
-                      OnboardingStrings.isimEtiketi,
+                      l.onboardingIsimEtiketi,
                       style: yaziTemasi.titleMedium,
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -123,13 +126,13 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                       key: const Key('isim-alani'),
                       controller: _isimKontrol,
                       textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(
-                        hintText: OnboardingStrings.isimIpucu,
+                      decoration: InputDecoration(
+                        hintText: l.onboardingIsimIpucu,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     Text(
-                      OnboardingStrings.tamAdEtiketi,
+                      l.onboardingTamAdEtiketi,
                       style: yaziTemasi.titleMedium,
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -137,22 +140,19 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                       key: const Key('tam-ad-form-alani'),
                       controller: _tamAdKontrol,
                       textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(
-                        hintText: OnboardingStrings.tamAdIpucu,
+                      decoration: InputDecoration(
+                        hintText: l.onboardingTamAdIpucu,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
-                    Text(OnboardingStrings.tamAdAciklama, style: aciklamaStili),
+                    Text(l.onboardingTamAdAciklama, style: aciklamaStili),
                     const SizedBox(height: AppSpacing.lg),
                     Text(
-                      OnboardingStrings.dogumTarihiEtiketi,
+                      l.onboardingDogumTarihiEtiketi,
                       style: yaziTemasi.titleMedium,
                     ),
                     const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      OnboardingStrings.dogumTarihiAciklama,
-                      style: aciklamaStili,
-                    ),
+                    Text(l.onboardingDogumTarihiAciklama, style: aciklamaStili),
                     SizedBox(
                       height: OnboardingConfig.tarihSeciciYuksekligi,
                       child: CupertinoDatePicker(
@@ -175,7 +175,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: AltinButon(
                   genislik: null,
-                  metin: OnboardingStrings.devam,
+                  metin: l.onboardingDevam,
                   onPressed: _devamEt,
                 ),
               ),

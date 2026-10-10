@@ -190,8 +190,8 @@ void main() {
       await ac(tester, const AyarlarScreen());
 
       expect(find.text('Ayşe'), findsWidgets);
-      await tester.scrollUntilVisible(find.text(YasalBelge.gizlilik.baslik), 200);
-      await tester.tap(find.text(YasalBelge.gizlilik.baslik));
+      await tester.scrollUntilVisible(find.text(YasalBelge.gizlilik.baslik(trMetinler)), 200);
+      await tester.tap(find.text(YasalBelge.gizlilik.baslik(trMetinler)));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 

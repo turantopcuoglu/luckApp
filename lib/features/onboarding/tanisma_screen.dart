@@ -8,12 +8,12 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_route.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import 'calculating_screen.dart';
 import 'onboarding_config.dart';
-import 'onboarding_strings.dart';
 import 'widgets/astrolab.dart';
 import 'widgets/onboarding_zemini.dart';
 
@@ -70,6 +70,7 @@ class TanismaScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final OkuyucuTercihleri t = ref.watch(tercihSecimiProvider);
     void guncelle(OkuyucuTercihleri yeni) =>
@@ -83,7 +84,7 @@ class TanismaScreen extends ConsumerWidget {
           if (!duzenleme)
             TextButton(
               onPressed: () => _kaydet(context, ref, const OkuyucuTercihleri()),
-              child: const Text(OnboardingStrings.atla),
+              child: Text(l.onboardingAtla),
             ),
         ],
       ),
@@ -102,20 +103,17 @@ class TanismaScreen extends ConsumerWidget {
                       child: Astrolab(boyut: OnboardingConfig.astrolabKucuk),
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    Text(
-                      OnboardingStrings.tanismaBaslik,
-                      style: yazi.headlineMedium,
-                    ),
+                    Text(l.onboardingTanismaBaslik, style: yazi.headlineMedium),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      OnboardingStrings.tanismaAciklama,
+                      l.onboardingTanismaAciklama,
                       style: yazi.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     _Soru<EnerjiTarzi>(
-                      soru: OnboardingStrings.soruEnerji,
+                      soru: l.onboardingSoruEnerji,
                       secenekler: EnerjiTarzi.values,
                       etiket: (EnerjiTarzi e) => e.etiket,
                       secili: t.enerji,
@@ -129,7 +127,7 @@ class TanismaScreen extends ConsumerWidget {
                       ),
                     ),
                     _Soru<KararTarzi>(
-                      soru: OnboardingStrings.soruKarar,
+                      soru: l.onboardingSoruKarar,
                       secenekler: KararTarzi.values,
                       etiket: (KararTarzi e) => e.etiket,
                       secili: t.karar,
@@ -143,7 +141,7 @@ class TanismaScreen extends ConsumerWidget {
                       ),
                     ),
                     _Soru<IliskiDurumu>(
-                      soru: OnboardingStrings.soruIliski,
+                      soru: l.onboardingSoruIliski,
                       secenekler: IliskiDurumu.values,
                       etiket: (IliskiDurumu e) => e.etiket,
                       secili: t.iliski,
@@ -157,7 +155,7 @@ class TanismaScreen extends ConsumerWidget {
                       ),
                     ),
                     _Soru<Ugras>(
-                      soru: OnboardingStrings.soruUgras,
+                      soru: l.onboardingSoruUgras,
                       secenekler: Ugras.values,
                       etiket: (Ugras e) => e.etiket,
                       secili: t.ugras,
@@ -171,7 +169,7 @@ class TanismaScreen extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      OnboardingStrings.tanismaGizlilik,
+                      l.onboardingTanismaGizlilik,
                       style: yazi.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -185,8 +183,8 @@ class TanismaScreen extends ConsumerWidget {
                   genislik: null,
                   onPressed: () => _kaydet(context, ref, t),
                   metin: duzenleme
-                      ? OnboardingStrings.kaydet
-                      : OnboardingStrings.kaderimiHesapla,
+                      ? l.onboardingKaydet
+                      : l.onboardingKaderimiHesapla,
                 ),
               ),
             ],

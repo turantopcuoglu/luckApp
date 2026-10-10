@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
@@ -30,6 +31,7 @@ class UyariScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme yazi = Theme.of(context).textTheme;
+    final AppLocalizations l = AppLocalizations.of(context);
     final bool onay = ref.watch(uyariOnayProvider);
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -60,7 +62,7 @@ class UyariScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       Text(
-                        YasalMetinler.uyariBaslik,
+                        l.yasalUyariBaslik,
                         style: yazi.headlineMedium,
                         textAlign: TextAlign.center,
                       ),
@@ -101,7 +103,7 @@ class UyariScreen extends ConsumerWidget {
                                   YasalBelgeScreen(belge: belge),
                                 ),
                               ),
-                              child: Text(belge.baslik),
+                              child: Text(belge.baslik(l)),
                             ),
                         ],
                       ),
@@ -134,7 +136,7 @@ class UyariScreen extends ConsumerWidget {
                       const SizedBox(height: AppSpacing.sm),
                       AltinButon(
                         genislik: null,
-                        metin: YasalMetinler.devam,
+                        metin: l.yasalDevam,
                         onPressed: onay ? () => onKabul(context, ref) : null,
                       ),
                     ],

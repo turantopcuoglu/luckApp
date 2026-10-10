@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
@@ -273,7 +274,7 @@ class PaywallScreen extends ConsumerWidget {
                             YasalBelgeScreen(belge: belge),
                           ),
                         ),
-                        child: Text(belge.baslik),
+                        child: Text(belge.baslik(AppLocalizations.of(context))),
                       ),
                   ],
                 ),

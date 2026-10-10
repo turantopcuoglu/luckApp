@@ -18,12 +18,6 @@ class YasalBolum {
 /// için HTML karşılıkları geliştiriciye ayrıca teslim edilmiştir.
 /// Bu metinler bir hukuk danışmanı tarafından gözden geçirilmelidir.
 abstract final class YasalMetinler {
-  /// Uyarı ekranındaki onay sonrası devam butonu.
-  static const String devam = 'Devam';
-
-  /// Onboarding başındaki uyarının başlığı.
-  static const String uyariBaslik = 'Başlamadan önce';
-
   /// Onboarding uyarısının maddeleri.
   static const List<String> uyariMaddeleri = <String>[
     'Kader bir eğlence ve kendini keşfetme uygulamasıdır. Yorumlar '

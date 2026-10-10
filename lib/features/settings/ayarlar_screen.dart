@@ -255,7 +255,7 @@ class AyarlarScreen extends ConsumerWidget {
               for (final YasalBelge belge in YasalBelge.values)
                 ListTile(
                   leading: const Icon(Icons.description_outlined),
-                  title: Text(belge.baslik),
+                  title: Text(belge.baslik(l)),
                   onTap: () => Navigator.of(context).push(
                     fadeThroughRoute<void>(YasalBelgeScreen(belge: belge)),
                   ),

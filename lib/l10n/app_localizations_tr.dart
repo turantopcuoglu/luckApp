@@ -137,4 +137,121 @@ class AppLocalizationsTr extends AppLocalizations {
   String ayarlarSurum(String surum) {
     return 'Kader $surum';
   }
+
+  @override
+  String get onboardingUygulamaAdi => 'Kader';
+
+  @override
+  String get onboardingSlogan => 'Şansın her sabah yeniden yazılır.';
+
+  @override
+  String get onboardingKarsilamaAciklama =>
+      'Doğum tarihin ve adından hesaplanan sayılarınla, her gün sana özel yazılmış bir okuma.';
+
+  @override
+  String get onboardingBasla => 'Başla';
+
+  @override
+  String get onboardingIsimEtiketi => 'Sana nasıl hitap edelim?';
+
+  @override
+  String get onboardingIsimIpucu => 'Adın';
+
+  @override
+  String get onboardingTamAdEtiketi => 'Doğumdaki tam adın (isteğe bağlı)';
+
+  @override
+  String get onboardingTamAdIpucu => 'Ad Göbek adı Soyad';
+
+  @override
+  String get onboardingTamAdAciklama =>
+      'İsim, ruh ve kişilik sayıların nüfus kaydındaki tam adından hesaplanır. Boş bırakırsan bunları daha sonra profilinden ekleyebilirsin.';
+
+  @override
+  String get onboardingDogumTarihiEtiketi => 'Doğum tarihin';
+
+  @override
+  String get onboardingDogumTarihiAciklama =>
+      'Yaşam yolu sayın ve burcun bu tarihten hesaplanır; lütfen doğru gir.';
+
+  @override
+  String get onboardingDevam => 'Devam';
+
+  @override
+  String get onboardingKaderimiHesapla => 'Kaderimi hesapla';
+
+  @override
+  String get onboardingKaydet => 'Kaydet';
+
+  @override
+  String get onboardingAtla => 'Şimdilik atla';
+
+  @override
+  String get onboardingIsimBosUyarisi => 'Devam etmek için adını yazmalısın.';
+
+  @override
+  String get onboardingRituelNotu => 'Günlük bir ilham ritüeli.';
+
+  @override
+  String get onboardingKartHazirlaniyor => 'Kartın hazırlanıyor';
+
+  @override
+  String get onboardingHazirlikProfil => 'Profil hazır';
+
+  @override
+  String get onboardingHazirlikKart => 'Günlük kart hazırlanıyor';
+
+  @override
+  String get onboardingHazirlikSon => 'Son dokunuşlar';
+
+  @override
+  String get onboardingKendineAlanAc => 'Kendine küçük bir alan aç.';
+
+  @override
+  String get onboardingKartinHazir => 'Kartın hazır';
+
+  @override
+  String get onboardingKartinHazirAlt =>
+      'Bugün kendin için küçük bir adım seç.';
+
+  @override
+  String get onboardingHazirlikTamamlandi => 'Hazırlık tamamlandı';
+
+  @override
+  String get onboardingKartimaGec => 'Kartıma geç';
+
+  @override
+  String get onboardingTanismaBaslik => 'Seni biraz tanıyalım';
+
+  @override
+  String get onboardingTanismaAciklama =>
+      'Cevapların yorumlarının sana gerçekten uymasını sağlar: bir öğrenciye iş yeri, bekar birine partner cümlesi göstermeyiz. Hepsi isteğe bağlı ve sonradan Ayarlar\'dan değiştirilebilir.';
+
+  @override
+  String get onboardingSoruEnerji => 'Enerjini nasıl toplarsın?';
+
+  @override
+  String get onboardingSoruKarar => 'Karar verirken…';
+
+  @override
+  String get onboardingSoruIliski => 'İlişki durumun';
+
+  @override
+  String get onboardingSoruUgras => 'Günlerini en çok ne dolduruyor?';
+
+  @override
+  String get onboardingTanismaGizlilik =>
+      'Cevapların yalnızca bu cihazda saklanır.';
+
+  @override
+  String get yasalUyariBaslik => 'Başlamadan önce';
+
+  @override
+  String get yasalDevam => 'Devam';
+
+  @override
+  String get yasalGizlilikPolitikasi => 'Gizlilik Politikası';
+
+  @override
+  String get yasalKullanimKosullari => 'Kullanım Koşulları';
 }

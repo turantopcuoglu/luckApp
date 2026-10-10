@@ -11,7 +11,6 @@ import 'package:kader/features/home/ana_kabuk.dart';
 import 'package:kader/features/legal/legal_config.dart';
 import 'package:kader/features/legal/uyari_screen.dart';
 import 'package:kader/features/onboarding/calculating_screen.dart';
-import 'package:kader/features/onboarding/onboarding_strings.dart';
 import 'package:kader/features/onboarding/profile_form_screen.dart';
 import 'package:kader/features/onboarding/tanisma_screen.dart';
 import 'package:kader/features/onboarding/welcome_screen.dart';
@@ -41,25 +40,25 @@ void main() {
 
   /// Karşılama → uyarı → onay → profil formu.
   Future<void> formaKadarIlerle(WidgetTester tester) async {
-    await tester.tap(find.text(OnboardingStrings.basla));
+    await tester.tap(find.text(trMetinler.onboardingBasla));
     await gecis(tester);
     await tester.tap(find.byKey(const Key('uyari-onay')));
     await tester.pump();
-    await tester.tap(find.text(OnboardingStrings.devam));
+    await tester.tap(find.text(trMetinler.yasalDevam));
     await gecis(tester);
   }
 
   testWidgets('karşılama: slogan ve Başla butonu görünür',
       (WidgetTester tester) async {
     await akisiBaslat(tester);
-    expect(find.text(OnboardingStrings.slogan), findsOneWidget);
-    expect(find.text(OnboardingStrings.basla), findsOneWidget);
+    expect(find.text(trMetinler.onboardingSlogan), findsOneWidget);
+    expect(find.text(trMetinler.onboardingBasla), findsOneWidget);
   });
 
   testWidgets('Başla önce uyarıyı açar; onaysız devam edilemez',
       (WidgetTester tester) async {
     await akisiBaslat(tester);
-    await tester.tap(find.text(OnboardingStrings.basla));
+    await tester.tap(find.text(trMetinler.onboardingBasla));
     await gecis(tester);
 
     expect(find.byType(UyariScreen), findsOneWidget);
@@ -81,9 +80,9 @@ void main() {
     await formaKadarIlerle(tester);
     expect(find.byType(ProfileFormScreen), findsOneWidget);
 
-    await tester.tap(find.text(OnboardingStrings.devam));
+    await tester.tap(find.text(trMetinler.onboardingDevam));
     await tester.pump();
-    expect(find.text(OnboardingStrings.isimBosUyarisi), findsOneWidget);
+    expect(find.text(trMetinler.onboardingIsimBosUyarisi), findsOneWidget);
     expect(find.byType(ProfileFormScreen), findsOneWidget);
   });
 
@@ -99,7 +98,7 @@ void main() {
       find.byKey(const Key('tam-ad-form-alani')),
       '  Turan   Ali Kaya ',
     );
-    await tester.tap(find.text(OnboardingStrings.devam));
+    await tester.tap(find.text(trMetinler.onboardingDevam));
     await gecis(tester);
 
     // Profil bellekte kayıtlı: tam ad boşlukları temizlenmiş, uyarı
@@ -129,7 +128,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.text(Ugras.ogrenci.etiket));
     await tester.pump();
-    await tester.tap(find.text(OnboardingStrings.kaderimiHesapla));
+    await tester.tap(find.text(trMetinler.onboardingKaderimiHesapla));
     await gecis(tester);
 
     expect(find.byType(CalculatingScreen), findsOneWidget);
@@ -150,10 +149,10 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 1000));
     expect(repo.onboardingTamamlandiMi, isTrue);
-    expect(find.text(OnboardingStrings.kartinHazir), findsOneWidget);
+    expect(find.text(trMetinler.onboardingKartinHazir), findsOneWidget);
 
     // "Kartıma geç": ana kabuk açılır.
-    await tester.tap(find.text(OnboardingStrings.kartimaGec));
+    await tester.tap(find.text(trMetinler.onboardingKartimaGec));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(AnaKabuk), findsOneWidget);

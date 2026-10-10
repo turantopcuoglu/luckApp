@@ -621,7 +621,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: c,
-          child: const MaterialApp(home: PaywallScreen()),
+          child: testUygulamasi(const PaywallScreen()),
         ),
       );
       await tester.pump();
