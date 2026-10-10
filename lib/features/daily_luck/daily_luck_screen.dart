@@ -11,6 +11,8 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
+import '../../l10n/tarih_bicimi.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
@@ -18,7 +20,6 @@ import '../../shared/widgets/hata_gorunumu.dart';
 import '../../shared/widgets/hero_tags.dart';
 import '../../shared/widgets/sahne_arka_plani.dart';
 import '../ads/banner_reklam_alani.dart';
-import '../categories/categories_strings.dart';
 import '../categories/category_detail_screen.dart';
 import '../categories/widgets/premium_gate.dart';
 import '../feedback/feedback_config.dart';
@@ -35,7 +36,6 @@ import '../share/share_button.dart';
 import 'daily_luck_config.dart';
 import 'daily_luck_providers.dart';
 import 'skor_sahnesi.dart';
-import 'tr_strings.dart';
 import 'widgets/category_card.dart';
 import 'widgets/comment_card.dart';
 import 'widgets/fortune_reveal_card.dart';
@@ -250,7 +250,9 @@ class _IcerikState extends ConsumerState<_Icerik>
         context,
         ref,
         kilitAnahtari: KilitAnahtarlari.kategori(kategori),
-        aciklama: CategoriesStrings.kilitAciklamasi(kategori.etiket),
+        aciklama: AppLocalizations.of(
+          context,
+        ).kategoriKilitAciklamasi(kategori.etiket),
       );
       return;
     }
@@ -281,12 +283,13 @@ class _IcerikState extends ConsumerState<_Icerik>
       );
     }
     ref.invalidate(bugunKaydiProvider);
+    final AppLocalizations l = AppLocalizations.of(context);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
           content: Text(
-            anlatti ? TrStrings.anlattiTesekkur : TrStrings.anlatmadiTesekkur,
+            anlatti ? l.gunlukAnlattiTesekkur : l.gunlukAnlatmadiTesekkur,
           ),
         ),
       );
@@ -294,6 +297,7 @@ class _IcerikState extends ConsumerState<_Icerik>
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final DateTime bugun = ref.watch(bugunProvider);
     final UserProfile profil = ref.watch(aktifProfilProvider);
@@ -324,7 +328,7 @@ class _IcerikState extends ConsumerState<_Icerik>
               children: <Widget>[
                 // Üst blok: tarih ve selamlama.
                 Text(
-                  TrStrings.tarihMetni(bugun),
+                  tarihMetni(l, bugun),
                   textAlign: TextAlign.center,
                   style: yaziTemasi.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
@@ -332,7 +336,7 @@ class _IcerikState extends ConsumerState<_Icerik>
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  TrStrings.selamlama(profil.isim),
+                  l.gunlukSelamlama(profil.isim),
                   textAlign: TextAlign.center,
                   style: yaziTemasi.headlineMedium,
                 ),
@@ -508,17 +512,18 @@ class _AnlattiMiSatiri extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         Text(
-          TrStrings.seniAnlattiMi,
+          l.gunlukSeniAnlattiMi,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: AppColors.textSecondary,
               ),
         ),
         IconButton(
-          tooltip: TrStrings.evet,
+          tooltip: l.gunlukEvet,
           onPressed: () => onCevap(true),
           icon: Icon(
             cevap == true
@@ -529,7 +534,7 @@ class _AnlattiMiSatiri extends StatelessWidget {
           ),
         ),
         IconButton(
-          tooltip: TrStrings.hayir,
+          tooltip: l.gunlukHayir,
           onPressed: () => onCevap(false),
           icon: Icon(
             cevap == false
@@ -550,6 +555,7 @@ class _AksamKarti extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return Card(
       margin: EdgeInsets.zero,
@@ -573,10 +579,10 @@ class _AksamKarti extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(TrStrings.aksamKartiBaslik, style: yazi.titleMedium),
+            Text(l.gunlukAksamBaslik, style: yazi.titleMedium),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              TrStrings.aksamKartiAciklama,
+              l.gunlukAksamAciklama,
               style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
             Align(
@@ -585,7 +591,7 @@ class _AksamKarti extends StatelessWidget {
                 onPressed: () => Navigator.of(context).push(
                   fadeThroughRoute<void>(const FeedbackScreen()),
                 ),
-                child: const Text(TrStrings.aksamKartiButon),
+                child: Text(l.gunlukAksamButon),
               ),
             ),
           ],
@@ -652,24 +658,25 @@ class _KartAltiMetni extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final Widget davet = Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          TrStrings.kartHazir,
+          l.gunlukKartHazir,
           textAlign: TextAlign.center,
           style: yazi.headlineMedium,
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          TrStrings.kendineBirDakika,
+          l.gunlukKendineBirDakika,
           textAlign: TextAlign.center,
           style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.md),
         AltinButon(
-          metin: TrStrings.kartimiAc,
+          metin: l.gunlukKartimiAc,
           onPressed: onAc,
           sonIkon: Icons.chevron_right_rounded,
         ),
@@ -726,6 +733,7 @@ class _Yukleniyor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -733,7 +741,7 @@ class _Yukleniyor extends StatelessWidget {
           const CircularProgressIndicator(color: AppColors.gold),
           const SizedBox(height: AppSpacing.md),
           Text(
-            TrStrings.yukleniyor,
+            l.gunlukYukleniyor,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
@@ -748,6 +756,7 @@ class _Hata extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const HataGorunumu(metin: TrStrings.hataMetni);
+    final AppLocalizations l = AppLocalizations.of(context);
+    return HataGorunumu(metin: l.gunlukHata);
   }
 }

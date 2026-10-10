@@ -28,13 +28,6 @@ abstract final class FeedbackConfig {
   /// Android bildirim kanalı kimliği.
   static const String kanalId = 'kader_gunluk';
 
-  /// Android bildirim kanalı adı.
-  static const String kanalAd = 'Günlük Hatırlatmalar';
-
-  /// Android bildirim kanalı açıklaması.
-  static const String kanalAciklama =
-      'Sabah kader hazır ve akşam geri bildirim hatırlatmaları';
-
   /// Android bildirim simgesi: tek renk kapı kemeri + yıldız
   /// (`res/drawable/ic_stat_kader.xml`, kaynak `assets/svg/bildirim_kapi.svg`).
   static const String bildirimSimgesi = '@drawable/ic_stat_kader';
@@ -53,4 +46,20 @@ abstract final class FeedbackConfig {
 
   /// Büyük seçim emoji puntosu.
   static const double secimEmojiPunto = 40;
+
+  /// Geri bildirim ekranının olumlu seçenek emojisi (dilden bağımsız).
+  static const String evetEmoji = '👍';
+
+  /// Geri bildirim ekranının olumsuz seçenek emojisi.
+  static const String hayirEmoji = '👎';
+
+  /// Geri bildirime eklenebilen duygu emojileri.
+  static const List<String> emojiSecenekleri = <String>[
+    '🍀',
+    '✨',
+    '😐',
+    '😅',
+    '😮',
+    '🥲',
+  ];
 }

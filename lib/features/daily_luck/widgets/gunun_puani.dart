@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../../../core/luck_engine/engine_config.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../daily_luck_config.dart';
-import '../tr_strings.dart';
 
 /// Kart açılınca kanatların arasından görünen günün puanı: büyük altın
 /// rakam, "/100", etiket ve rakamın etrafında çizilerek beliren ışık
@@ -36,9 +36,10 @@ class GununPuani extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return Semantics(
-      label: TrStrings.puanSemantik(skor, EngineConfig.skorMaks),
+      label: l.gunlukPuanSemantik(skor, EngineConfig.skorMaks),
       excludeSemantics: true,
       child: SizedBox(
         width: DailyLuckConfig.kartGenisligi,
@@ -79,13 +80,13 @@ class GununPuani extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        TrStrings.puanPaydasi(EngineConfig.skorMaks),
+                        l.gunlukPuanPaydasi(EngineConfig.skorMaks),
                         style: yazi.titleMedium?.copyWith(
                           color: AppColors.goldAcik,
                         ),
                       ),
                       Text(
-                        TrStrings.gununSansPuani,
+                        l.gunlukSansPuani,
                         style: yazi.labelMedium?.copyWith(
                           color: AppColors.textPrimary,
                         ),

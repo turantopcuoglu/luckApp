@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../daily_luck/tr_strings.dart';
+import '../../l10n/app_localizations.dart';
+import '../../l10n/tarih_bicimi.dart';
 import 'share_config.dart';
-import 'share_strings.dart';
 
 /// 1080x1920 story formatında paylaşım kartı (off-screen render edilir;
 /// paylaşım ekranında küçültülmüş önizleme olarak da gösterilir).
@@ -22,6 +22,7 @@ class StoryCard extends StatelessWidget {
   /// Günün [sonuc]u ile kart oluşturur.
   const StoryCard({
     required this.sonuc,
+    required this.metinler,
     this.baslik,
     this.arkaPlan,
     this.skoruGizle = false,
@@ -30,6 +31,10 @@ class StoryCard extends StatelessWidget {
 
   /// Paylaşılan günün sonucu.
   final LuckResult sonuc;
+
+  /// Kart metinlerinin dili. Kart ekrana konmadan da çizildiği için
+  /// (`Localizations` yok) dışarıdan verilir.
+  final AppLocalizations metinler;
 
   /// Günün kişisel başlığı; paylaşılabilir kimlik etiketi olarak tarihin
   /// altına yazılır (yoksa gösterilmez).
@@ -57,7 +62,7 @@ class StoryCard extends StatelessWidget {
               children: <Widget>[
                 // Üst: tarih ve günün başlığı.
                 Text(
-                  TrStrings.tarihMetni(sonuc.gun),
+                  tarihMetni(metinler, sonuc.gun),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: ShareConfig.tarihPunto,
@@ -80,7 +85,7 @@ class StoryCard extends StatelessWidget {
                 const Spacer(),
                 if (skoruGizle)
                   Text(
-                    baslik ?? ShareStrings.paylasimMetni,
+                    baslik ?? metinler.paylasimMetni,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: ShareConfig.gizliBaslikPunto,
@@ -91,8 +96,8 @@ class StoryCard extends StatelessWidget {
                     ),
                   )
                 else ...<Widget>[
-                  const Text(
-                    ShareStrings.genelSkor,
+                  Text(
+                    metinler.paylasimGenelSkor,
                     style: TextStyle(
                       fontSize: ShareConfig.skorEtiketPunto,
                       color: AppColors.textPrimary,
@@ -149,8 +154,8 @@ class StoryCard extends StatelessWidget {
                 const SizedBox(height: ShareConfig.kenarBoslugu / 2),
 
                 // Alt orta: uygulama imzası.
-                const Text(
-                  ShareStrings.marka,
+                Text(
+                  metinler.paylasimMarka,
                   style: TextStyle(
                     fontSize: ShareConfig.markaPunto,
                     fontWeight: FontWeight.w600,

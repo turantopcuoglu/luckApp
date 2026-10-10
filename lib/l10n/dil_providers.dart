@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/content/icerik_paketi.dart';
 import '../core/storage/providers.dart';
+import 'app_localizations.dart';
 import 'dil_config.dart';
 
 /// Uygulama dilini çözer (K3).
@@ -72,3 +73,14 @@ final Provider<IcerikDili> uygulamaDiliProvider = Provider<IcerikDili>(
     cihazDilKodu: ref.watch(cihazDilKoduProvider),
   ),
 );
+
+/// Uygulama dilindeki arayüz metinleri, `BuildContext` olmadan.
+///
+/// Widget ağacının dışında metin üreten kod içindir: ekrana konmadan
+/// çizilen paylaşım kartı ve planlanan bildirimler. Widget'lar
+/// `AppLocalizations.of(context)` kullanmaya devam eder.
+final Provider<AppLocalizations> arayuzMetinleriProvider =
+    Provider<AppLocalizations>(
+      (Ref ref) =>
+          lookupAppLocalizations(dilLocale(ref.watch(uygulamaDiliProvider))),
+    );

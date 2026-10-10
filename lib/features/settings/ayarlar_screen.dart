@@ -12,13 +12,13 @@ import '../../core/theme/app_dimens.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/dil_config.dart';
 import '../../l10n/dil_providers.dart';
+import '../../l10n/tarih_bicimi.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/sahne_arka_plani.dart';
 import '../../shared/widgets/sahne_config.dart';
 import '../ads/ads_providers.dart';
 import '../daily_luck/daily_luck_providers.dart';
-import '../daily_luck/tr_strings.dart';
 import '../feedback/notification_service.dart';
 import '../legal/legal_config.dart';
 import '../legal/legal_texts.dart';
@@ -137,7 +137,7 @@ class AyarlarScreen extends ConsumerWidget {
                 title: Text(l.ayarlarDogumTarihi),
                 subtitle: Text(l.ayarlarSabitAlanNotu),
                 trailing: Text(
-                  TrStrings.tarihMetni(profil.dogumTarihi).split(',').first,
+                  kisaTarihMetni(l, profil.dogumTarihi),
                 ),
               ),
               ListTile(
@@ -205,6 +205,7 @@ class AyarlarScreen extends ConsumerWidget {
                   if (await servis.izinIste()) {
                     await servis.gunlukBildirimleriPlanla(
                       simdi: DateTime.now(),
+                      metinler: l,
                     );
                   }
                   mesajci.showSnackBar(

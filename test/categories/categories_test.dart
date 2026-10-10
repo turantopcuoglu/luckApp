@@ -7,7 +7,6 @@ import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
-import 'package:kader/features/categories/categories_strings.dart';
 import 'package:kader/features/categories/category_detail_screen.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
 import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
@@ -94,7 +93,7 @@ void main() {
         find.text('${beklenen.paragraf}\n\n${beklenen.eylem}'),
         findsOneWidget,
       );
-      expect(find.text(CategoriesStrings.sansliSaatBaslik), findsOneWidget);
+      expect(find.text(trMetinler.kategoriSansliSaat), findsOneWidget);
       expect(find.text(beklenen.sansliSaat.etiket), findsOneWidget);
     });
   });
@@ -119,7 +118,7 @@ void main() {
 
       expect(find.text(PremiumStrings.kilitBaslik), findsOneWidget);
       expect(
-        find.text(CategoriesStrings.kilitAciklamasi(LuckCategory.ask.etiket)),
+        find.text(trMetinler.kategoriKilitAciklamasi(LuckCategory.ask.etiket)),
         findsOneWidget,
       );
       // Reklam SDK'sı hazır değilken reklam seçeneği gösterilmez.

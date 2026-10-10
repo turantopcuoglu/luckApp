@@ -7,18 +7,17 @@ import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_icons.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/hata_gorunumu.dart';
 import '../../shared/widgets/sahne_arka_plani.dart';
 import '../../shared/widgets/sahne_config.dart';
 import '../daily_luck/daily_luck_providers.dart';
-import '../daily_luck/tr_strings.dart';
 import '../daily_luck/widgets/category_card.dart';
 import '../daily_luck/widgets/score_ring.dart';
 import '../legal/legal_texts.dart';
 import 'categories_config.dart';
-import 'categories_strings.dart';
 
 /// Kategori detay sayfası: kategori skoru, kişiye özel paragraf (açılış +
 /// burç elementi + ilişki durumu + tavsiye), şanslı saatli eylem önerisi
@@ -32,6 +31,7 @@ class CategoryDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final AsyncValue<LuckResult> sonuc = ref.watch(gununSansiProvider);
 
@@ -62,7 +62,7 @@ class CategoryDetailScreen extends ConsumerWidget {
               child: CircularProgressIndicator(color: AppColors.gold),
             ),
             error: (Object hata, StackTrace iz) =>
-                const HataGorunumu(metin: TrStrings.hataMetni),
+                HataGorunumu(metin: l.gunlukHata),
             data: (LuckResult veri) {
               // Okuma, saklanan sonuç + profil + bağımsız içerik tohumundan
               // deterministik seçilir.
@@ -110,7 +110,7 @@ class CategoryDetailScreen extends ConsumerWidget {
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
-                              CategoriesStrings.sansliSaatBaslik,
+                              l.kategoriSansliSaat,
                               style: yaziTemasi.bodyMedium?.copyWith(
                                 color: AppColors.textSecondary,
                               ),

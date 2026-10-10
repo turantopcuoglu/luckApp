@@ -1,3 +1,4 @@
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_images.dart';
 
 /// Hikâye kartının arka plan teması (mockup `9635f67f` 1. ekran).
@@ -6,19 +7,23 @@ import '../../shared/widgets/app_images.dart';
 /// skor ve metinler kodla ortadaki sakin alana yazılır.
 enum PaylasimTemasi {
   /// Lacivert gece, sağ üstte hilal.
-  gece(etiket: 'Gece', gorsel: AppImages.paylasimGece),
+  gece(gorsel: AppImages.paylasimGece),
 
   /// Kemerden dökülen altın-beyaz ışık.
-  isik(etiket: 'Işık', gorsel: AppImages.paylasimIsik),
+  isik(gorsel: AppImages.paylasimIsik),
 
   /// Mor-lavanta bulutsu gökyüzü.
-  mor(etiket: 'Mor', gorsel: AppImages.paylasimMor);
+  mor(gorsel: AppImages.paylasimMor);
 
-  const PaylasimTemasi({required this.etiket, required this.gorsel});
-
-  /// Seçicide görünen ad.
-  final String etiket;
+  const PaylasimTemasi({required this.gorsel});
 
   /// Arka plan görselinin asset yolu.
   final String gorsel;
+
+  /// Seçicide görünen ad ([metinler] dilinde).
+  String etiket(AppLocalizations metinler) => switch (this) {
+    PaylasimTemasi.gece => metinler.paylasimTemaGece,
+    PaylasimTemasi.isik => metinler.paylasimTemaIsik,
+    PaylasimTemasi.mor => metinler.paylasimTemaMor,
+  };
 }

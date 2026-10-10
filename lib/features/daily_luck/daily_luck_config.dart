@@ -6,6 +6,12 @@ import 'package:flutter/painting.dart';
 /// Magic number yasağı gereği ekrandaki tüm özel ölçüler buradan okunur;
 /// genel boşluk/radius değerleri `core/theme/app_dimens.dart`tan gelir.
 abstract final class DailyLuckConfig {
+  /// Onboarding tamamlanana kadar kullanılan misafir ismi.
+  ///
+  /// Dile göre ÇEVRİLMEZ: skor tohumu isimden türer (D5), dil değişince
+  /// misafirin skoru değişmemeli.
+  static const String misafirIsmi = 'Misafir';
+
   /// Skor halkasının dış çapı (kategori detay ve uyum ekranlarının
   /// varsayılanı; [ScoreRing] bunu okur).
   static const double halkaCapi = 220;

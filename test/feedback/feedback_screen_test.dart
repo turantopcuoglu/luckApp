@@ -10,8 +10,10 @@ import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/luck_history_repository.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
+import 'package:kader/features/feedback/feedback_config.dart';
 import 'package:kader/features/feedback/feedback_screen.dart';
-import 'package:kader/features/feedback/feedback_strings.dart';
+
+import '../test_ortami.dart';
 
 void main() {
   late Directory geciciDizin;
@@ -62,7 +64,7 @@ void main() {
         // Üretimdeki gibi: feedback ekranı bir ana ekranın ÜSTÜNE
         // push edilir; pop sonrası SnackBar'ın tutunacağı Scaffold
         // (ev sahibi) ekranda kalır.
-        child: const MaterialApp(home: Scaffold(body: SizedBox())),
+        child: testUygulamasi(const Scaffold(body: SizedBox())),
       ),
     );
     final NavigatorState gezgin = tester.state(find.byType(Navigator));
@@ -79,10 +81,10 @@ void main() {
       (WidgetTester tester) async {
     await ekraniAc(tester);
 
-    expect(find.text(FeedbackStrings.aksamSorusu), findsOneWidget);
-    expect(find.text(FeedbackStrings.evetEmoji), findsOneWidget);
-    expect(find.text(FeedbackStrings.hayirEmoji), findsOneWidget);
-    for (final String emoji in FeedbackStrings.emojiSecenekleri) {
+    expect(find.text(trMetinler.geriBildirimAksamSorusu), findsOneWidget);
+    expect(find.text(FeedbackConfig.evetEmoji), findsOneWidget);
+    expect(find.text(FeedbackConfig.hayirEmoji), findsOneWidget);
+    for (final String emoji in FeedbackConfig.emojiSecenekleri) {
       expect(find.text(emoji), findsOneWidget);
     }
 
@@ -95,11 +97,11 @@ void main() {
       (WidgetTester tester) async {
     await ekraniAc(tester);
 
-    await tester.tap(find.text(FeedbackStrings.evetEmoji));
+    await tester.tap(find.text(FeedbackConfig.evetEmoji));
     await tester.pump();
     await tester.tap(find.text('🍀'));
     await tester.pump();
-    await tester.tap(find.text(FeedbackStrings.kaydet));
+    await tester.tap(find.text(trMetinler.geriBildirimKaydet));
     await tester.pump();
     // Pop geçiş animasyonunun bitmesini bekle.
     await tester.pump(const Duration(seconds: 1));
@@ -110,17 +112,17 @@ void main() {
     expect(kayit.feedbackPozitif, isTrue);
     expect(kayit.feedbackEmoji, '🍀');
     // Teşekkür mesajı gösterilir ve ekran kapanır.
-    expect(find.text(FeedbackStrings.tesekkur), findsOneWidget);
-    expect(find.text(FeedbackStrings.aksamSorusu), findsNothing);
+    expect(find.text(trMetinler.geriBildirimTesekkur), findsOneWidget);
+    expect(find.text(trMetinler.geriBildirimAksamSorusu), findsNothing);
   });
 
   testWidgets('👎 emoji olmadan da kaydedilebilir',
       (WidgetTester tester) async {
     await ekraniAc(tester);
 
-    await tester.tap(find.text(FeedbackStrings.hayirEmoji));
+    await tester.tap(find.text(FeedbackConfig.hayirEmoji));
     await tester.pump();
-    await tester.tap(find.text(FeedbackStrings.kaydet));
+    await tester.tap(find.text(trMetinler.geriBildirimKaydet));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
 

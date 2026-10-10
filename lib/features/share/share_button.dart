@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_route.dart';
 import 'paylasim_screen.dart';
-import 'share_strings.dart';
 
 /// Ana ekrandaki "Paylaş" butonu: tema ve "Skoru gizle" seçilen
 /// "Kartını paylaş" ekranını açar ([PaylasimScreen]).
@@ -22,6 +22,7 @@ class ShareButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     return OutlinedButton.icon(
       onPressed: () => unawaited(
         Navigator.of(context).push(
@@ -32,7 +33,7 @@ class ShareButton extends StatelessWidget {
       ),
       icon: const Icon(Icons.ios_share, color: AppColors.gold),
       label: Text(
-        ShareStrings.paylas,
+        l.paylasimPaylas,
         style: Theme.of(context)
             .textTheme
             .titleSmall

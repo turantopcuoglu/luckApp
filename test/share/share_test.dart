@@ -3,14 +3,18 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
-import 'package:kader/features/daily_luck/tr_strings.dart';
 import 'package:kader/features/share/arac_story_card.dart';
 import 'package:kader/features/share/paylasim_temasi.dart';
 import 'package:kader/features/share/share_config.dart';
 import 'package:kader/features/share/share_service.dart';
-import 'package:kader/features/share/share_strings.dart';
 import 'package:kader/features/share/story_card.dart';
+import 'package:kader/l10n/app_localizations.dart';
+import 'package:kader/l10n/app_localizations_en.dart';
+import 'package:kader/l10n/tarih_bicimi.dart';
+
+import '../test_ortami.dart';
 
 void main() {
   final LuckResult sonuc = const LuckEngine().hesapla(
@@ -20,6 +24,14 @@ void main() {
     ),
     gun: DateTime(2026, 7, 6),
   );
+
+  // Kart widget testleri MaterialApp'sız çizilir; ay/gün adları için intl
+  // tarih verisi elle yüklenir (uygulamada GlobalMaterialLocalizations
+  // yükler).
+  setUpAll(() async {
+    await initializeDateFormatting('tr');
+    await initializeDateFormatting('en');
+  });
 
   testWidgets('StoryCard skor, tarih, 5 kategori ve markayı gösterir', (
     WidgetTester tester,
@@ -32,17 +44,37 @@ void main() {
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
-        child: StoryCard(sonuc: sonuc),
+        child: StoryCard(sonuc: sonuc, metinler: trMetinler),
       ),
     );
 
     expect(find.text('${sonuc.genelSkor}'), findsWidgets);
-    expect(find.text(TrStrings.tarihMetni(sonuc.gun)), findsOneWidget);
+    expect(find.text(tarihMetni(trMetinler, sonuc.gun)), findsOneWidget);
     for (final LuckCategory kategori in LuckCategory.values) {
       expect(find.text(kategori.etiket), findsOneWidget);
     }
-    expect(find.text(ShareStrings.marka), findsOneWidget);
-    expect(find.text(ShareStrings.genelSkor), findsOneWidget);
+    expect(find.text(trMetinler.paylasimMarka), findsOneWidget);
+    expect(find.text(trMetinler.paylasimGenelSkor), findsOneWidget);
+  });
+
+  testWidgets('StoryCard İngilizce metinler ve tarih biçimiyle çizilir', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = ShareConfig.kartBoyutu;
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final AppLocalizations en = AppLocalizationsEn();
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: StoryCard(sonuc: sonuc, metinler: en),
+      ),
+    );
+
+    expect(find.text('Monday, July 6, 2026'), findsOneWidget);
+    expect(find.text(en.paylasimGenelSkor), findsOneWidget);
+    expect(find.text(trMetinler.paylasimGenelSkor), findsNothing);
   });
 
   testWidgets('StoryCard "skoru gizle" açıkken skor ve puanları yazmaz, '
@@ -54,28 +86,29 @@ void main() {
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
-        child: StoryCard(sonuc: sonuc, baslik: 'Şefkat Günü', skoruGizle: true),
+        child: StoryCard(sonuc: sonuc, metinler: trMetinler, baslik: 'Şefkat Günü', skoruGizle: true),
       ),
     );
 
     expect(find.text('${sonuc.genelSkor}'), findsNothing);
-    expect(find.text(ShareStrings.genelSkor), findsNothing);
+    expect(find.text(trMetinler.paylasimGenelSkor), findsNothing);
     expect(find.text(LuckCategory.ask.etiket), findsNothing);
     expect(find.text('Şefkat Günü'), findsOneWidget);
-    expect(find.text(ShareStrings.marka), findsOneWidget);
+    expect(find.text(trMetinler.paylasimMarka), findsOneWidget);
   });
 
   testWidgets('her paylaşım teması görseli çözülüp kartla PNG üretilir', (
     WidgetTester tester,
   ) async {
     await tester.runAsync(() async {
-      final ShareService servis = ShareService();
+      final ShareService servis = ShareService(metinler: trMetinler);
       for (final PaylasimTemasi tema in PaylasimTemasi.values) {
         final ui.Image zemin = await servis.gorselCoz(tema.gorsel);
         expect(zemin.width, greaterThan(0), reason: tema.name);
         final List<int> png = await servis.kartPngUret(
           StoryCard(
             sonuc: sonuc,
+            metinler: trMetinler,
             arkaPlan: RawImage(image: zemin, fit: BoxFit.cover),
           ),
         );
@@ -90,8 +123,8 @@ void main() {
   ) async {
     // toImage ve PNG kodlama gerçek async işlemlerdir → runAsync.
     await tester.runAsync(() async {
-      final ShareService servis = ShareService();
-      final List<int> png = await servis.kartPngUret(StoryCard(sonuc: sonuc));
+      final ShareService servis = ShareService(metinler: trMetinler);
+      final List<int> png = await servis.kartPngUret(StoryCard(sonuc: sonuc, metinler: trMetinler));
 
       expect(png, isNotEmpty);
       // PNG imzası: 89 50 4E 47.
@@ -121,9 +154,9 @@ void main() {
     addTearDown(tester.view.reset);
 
     await tester.pumpWidget(
-      const Directionality(
+      Directionality(
         textDirection: TextDirection.ltr,
-        child: AracStoryCard(paylasim: numara),
+        child: AracStoryCard(paylasim: numara, metinler: trMetinler),
       ),
     );
 
@@ -133,8 +166,8 @@ void main() {
       numara.sayi,
       numara.sayiEtiketi,
       numara.metin,
-      ShareStrings.marka,
-      ShareStrings.aracDavet,
+      trMetinler.paylasimMarka,
+      trMetinler.paylasimAracDavet,
     ]) {
       expect(find.text(m), findsOneWidget, reason: m);
     }
@@ -142,8 +175,8 @@ void main() {
 
   test('paylaşım metni başlık, etiket, sayı ve daveti içerir', () {
     expect(
-      numara.paylasimMetni,
-      '0532 123 45 67 · Usta İlham 11\n${ShareStrings.aracDavet}',
+      numara.paylasimMetni(trMetinler),
+      '0532 123 45 67 · Usta İlham 11\n${trMetinler.paylasimAracDavet}',
     );
   });
 
@@ -151,8 +184,9 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.runAsync(() async {
-      final List<int> png = await ShareService().kartPngUret(
+      final List<int> png = await ShareService(metinler: trMetinler).kartPngUret(
         AracStoryCard(
+          metinler: trMetinler,
           paylasim: AracPaylasimi(
             ustEtiket: numara.ustEtiket,
             baslik: 'Çok Uzun Bir Ad Soyad Örneği İçin Şimşek Ünal Öztürk',

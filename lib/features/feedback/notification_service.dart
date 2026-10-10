@@ -7,9 +7,8 @@ import 'package:timezone/data/latest.dart' as tz_veri;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../core/theme/app_colors.dart';
-import '../daily_luck/tr_strings.dart';
+import '../../l10n/app_localizations.dart';
 import 'feedback_config.dart';
-import 'feedback_strings.dart';
 
 /// [NotificationService] örneğini sağlar (testte sahtesiyle override
 /// edilebilir).
@@ -106,21 +105,27 @@ class NotificationService {
   /// - Sabah 08:30: önümüzdeki [FeedbackConfig.sabahGunSayisi] gün
   ///   için, güne göre değişen metinli tek seferlik bildirimler.
   ///   Her uygulama açılışında pencere tazelenir.
-  Future<void> gunlukBildirimleriPlanla({required DateTime simdi}) async {
+  ///
+  /// Metinler [metinler] dilindedir; dil değişirse bir sonraki planlamada
+  /// (uygulama açılışı) yeni dile geçer.
+  Future<void> gunlukBildirimleriPlanla({
+    required DateTime simdi,
+    required AppLocalizations metinler,
+  }) async {
     try {
       await _eklenti.cancelAll();
 
-      const NotificationDetails detaylar = NotificationDetails(
+      final NotificationDetails detaylar = NotificationDetails(
         android: AndroidNotificationDetails(
           FeedbackConfig.kanalId,
-          FeedbackConfig.kanalAd,
-          channelDescription: FeedbackConfig.kanalAciklama,
+          metinler.bildirimKanalAd,
+          channelDescription: metinler.bildirimKanalAciklama,
           importance: Importance.high,
           priority: Priority.high,
           icon: FeedbackConfig.bildirimSimgesi,
           color: AppColors.gold,
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: const DarwinNotificationDetails(),
       );
 
       // Not: tz.local kurulmamışsa UTC'dir; TZDateTime.from mutlak ANI
@@ -139,7 +144,7 @@ class NotificationService {
       await _eklenti.zonedSchedule(
         FeedbackConfig.aksamBildirimId,
         'Kader',
-        FeedbackStrings.aksamSorusu,
+        metinler.geriBildirimAksamSorusu,
         aksam,
         detaylar,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -159,7 +164,7 @@ class NotificationService {
         await _eklenti.zonedSchedule(
           FeedbackConfig.sabahBildirimBaslangicId + i,
           'Kader',
-          sabahMetni(hedef),
+          sabahMetni(hedef, metinler),
           tz.TZDateTime.from(hedef, tz.local),
           detaylar,
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -189,16 +194,35 @@ class NotificationService {
         : bugunku.add(const Duration(days: 1));
   }
 
-  /// [gun] için sabah bildirim metnini seçer.
+  /// Sabah bildiriminin metin varyasyonları (en az 10; plan Session 8,
+  /// madde 3). Sıra iki dilde aynıdır: seçim indeksle yapılır.
+  static List<String> sabahVaryasyonlari(AppLocalizations metinler) =>
+      <String>[
+        metinler.bildirimSabah1,
+        metinler.bildirimSabah2,
+        metinler.bildirimSabah3,
+        metinler.bildirimSabah4,
+        metinler.bildirimSabah5,
+        metinler.bildirimSabah6,
+        metinler.bildirimSabah7,
+        metinler.bildirimSabah8,
+        metinler.bildirimSabah9,
+        metinler.bildirimSabah10,
+        metinler.bildirimSabah11,
+        metinler.bildirimSabah12,
+      ];
+
+  /// [gun] için sabah bildirim metnini [metinler] dilinde seçer.
   ///
   /// Gün sayısından türetilen tohumla rastgele ama deterministik:
-  /// aynı gün hep aynı varyasyon, ardışık günlerde farklı dağılım.
-  static String sabahMetni(DateTime gun) {
+  /// aynı gün hep aynı varyasyon (her dilde aynı indeks), ardışık
+  /// günlerde farklı dağılım.
+  static String sabahMetni(DateTime gun, AppLocalizations metinler) {
     final int gunNumarasi =
         DateTime(gun.year, gun.month, gun.day).millisecondsSinceEpoch ~/
             Duration.millisecondsPerDay;
     final Random rnd = Random(gunNumarasi);
-    return TrStrings.sabahBildirimVaryasyonlari[
-        rnd.nextInt(TrStrings.sabahBildirimVaryasyonlari.length)];
+    final List<String> varyasyonlar = sabahVaryasyonlari(metinler);
+    return varyasyonlar[rnd.nextInt(varyasyonlar.length)];
   }
 }

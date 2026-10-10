@@ -565,6 +565,360 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kullanım Koşulları'**
   String get yasalKullanimKosullari;
+
+  /// intl DateFormat deseni: tam tarih (ör. 6 Temmuz 2026, Pazartesi). Harfler çevrilmez, yalnız sıra ve noktalama dile göre değişir.
+  ///
+  /// In tr, this message translates to:
+  /// **'d MMMM y, EEEE'**
+  String get tarihDeseni;
+
+  /// intl DateFormat deseni: haftanın günü olmadan tarih (ör. 6 Temmuz 2026).
+  ///
+  /// In tr, this message translates to:
+  /// **'d MMMM y'**
+  String get kisaTarihDeseni;
+
+  /// Skor halkasının altındaki etiket (büyük harf).
+  ///
+  /// In tr, this message translates to:
+  /// **'GENEL SKOR'**
+  String get gunlukGenelSkor;
+
+  /// Skor yüklenirken gösterilen metin.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaderin hesaplanıyor...'**
+  String get gunlukYukleniyor;
+
+  /// Kapalı kartın altındaki başlık.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünün kartı hazır'**
+  String get gunlukKartHazir;
+
+  /// Kapalı kartın altındaki davet cümlesi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kendine bir dakika ayır.'**
+  String get gunlukKendineBirDakika;
+
+  /// Kartı açan buton ve kartın erişilebilirlik etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kartımı aç'**
+  String get gunlukKartimiAc;
+
+  /// Açık karttaki skorun altındaki etiket.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün şans puanı'**
+  String get gunlukSansPuani;
+
+  /// Skorun paydası.
+  ///
+  /// In tr, this message translates to:
+  /// **'/ {maks}'**
+  String gunlukPuanPaydasi(int maks);
+
+  /// Ekran okuyucu için skor cümlesi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün şans puanı: {skor} / {maks}'**
+  String gunlukPuanSemantik(int skor, int maks);
+
+  /// Skor ya da okuma yüklenemezse gösterilen hata metni.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir şeyler ters gitti. Uygulamayı yeniden başlatmayı dene.'**
+  String get gunlukHata;
+
+  /// Ana ekran selamlaması.
+  ///
+  /// In tr, this message translates to:
+  /// **'Merhaba, {isim}'**
+  String gunlukSelamlama(String isim);
+
+  /// Şans ögeleri kartı: renk sütunu etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şans rengin'**
+  String get gunlukSansRengi;
+
+  /// Şans ögeleri kartı: sayı sütunu etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şanslı sayın'**
+  String get gunlukSansliSayi;
+
+  /// Şans ögeleri kartı: tavsiye satırı etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün tavsiyesi'**
+  String get gunlukTavsiye;
+
+  /// Yorum bölümünün altındaki geri bildirim sorusu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu yorum seni anlattı mı?'**
+  String get gunlukSeniAnlattiMi;
+
+  /// Olumlu cevap düğmesinin ipucu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Evet'**
+  String get gunlukEvet;
+
+  /// Olumsuz cevap düğmesinin ipucu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hayır'**
+  String get gunlukHayir;
+
+  /// Olumlu cevap sonrası SnackBar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güzel! Bu tarz yorumları sevdiğini not ettik ✨'**
+  String get gunlukAnlattiTesekkur;
+
+  /// Olumsuz cevap sonrası SnackBar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Teşekkürler. Önümüzdeki günlerde bu yorumu sana tekrar göstermeyeceğiz.'**
+  String get gunlukAnlatmadiTesekkur;
+
+  /// Skorun nedenlerini açan başlık.
+  ///
+  /// In tr, this message translates to:
+  /// **'Neden bugün?'**
+  String get gunlukNedenBugun;
+
+  /// Neden sayfasının alt notu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Skorun ve yorumun bu hesaplardan gelir. Aynı gün, aynı sonucu verir.'**
+  String get gunlukNedenNotu;
+
+  /// Akşam geri bildirim kartının başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün nasıldı?'**
+  String get gunlukAksamBaslik;
+
+  /// Akşam geri bildirim kartının açıklaması.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün gerçekten şanslı mıydın? Cevabın Kader\'in sana olan isabetini takip etmesine yardım eder.'**
+  String get gunlukAksamAciklama;
+
+  /// Akşam kartından geri bildirim ekranını açan buton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cevapla'**
+  String get gunlukAksamButon;
+
+  /// Kategori detayı: şanslı saat kartının başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şanslı saat aralığın'**
+  String get kategoriSansliSaat;
+
+  /// Kilitli kategorinin kilit seçenekleri sayfasındaki açıklama.
+  ///
+  /// In tr, this message translates to:
+  /// **'{kategori} kategorisinin bugünkü skoru, sana özel yorumu ve şanslı saati Premium üyelere açık. İstersen kısa bir reklam izleyerek yalnızca bugün için de açabilirsin.'**
+  String kategoriKilitAciklamasi(String kategori);
+
+  /// Akşam bildiriminin ve geri bildirim ekranının ana sorusu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün gerçekten şanslı mıydın?'**
+  String get geriBildirimAksamSorusu;
+
+  /// Geri bildirim ekranının başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün nasıldı?'**
+  String get geriBildirimBaslik;
+
+  /// İsteğe bağlı emoji bölümünün başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstersen bir emoji bırak'**
+  String get geriBildirimEmojiBaslik;
+
+  /// Geri bildirim ekranının kaydet butonu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet'**
+  String get geriBildirimKaydet;
+
+  /// Kayıt sonrası teşekkür.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydedildi, yarın görüşürüz ✨'**
+  String get geriBildirimTesekkur;
+
+  /// Bildirim izni reddedilince gösterilen nazik hatırlatma.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sorun değil! İstersen bildirimleri daha sonra telefon ayarlarından açabilirsin.'**
+  String get geriBildirimIzinReddi;
+
+  /// Android bildirim kanalı adı (telefon ayarlarında görünür).
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük Hatırlatmalar'**
+  String get bildirimKanalAd;
+
+  /// Android bildirim kanalı açıklaması.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sabah kader hazır ve akşam geri bildirim hatırlatmaları'**
+  String get bildirimKanalAciklama;
+
+  /// Sabah bildirimi varyasyonu 1/12. Sıra iki dilde aynı kalmalı (gün → indeks).
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünün kaderi hazır ✨'**
+  String get bildirimSabah1;
+
+  /// Sabah bildirimi varyasyonu 2/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yıldızlar senin için dizildi, gel bak 🌟'**
+  String get bildirimSabah2;
+
+  /// Sabah bildirimi varyasyonu 3/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni bir gün, yeni bir şans. Skorun seni bekliyor 🍀'**
+  String get bildirimSabah3;
+
+  /// Sabah bildirimi varyasyonu 4/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kader kartın açılmayı bekliyor 🎴'**
+  String get bildirimSabah4;
+
+  /// Sabah bildirimi varyasyonu 5/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün şanslı mısın? Öğrenmenin tek yolu var 👀'**
+  String get bildirimSabah5;
+
+  /// Sabah bildirimi varyasyonu 6/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güne bakmadan çıkma: kaderin hesaplandı ☕'**
+  String get bildirimSabah6;
+
+  /// Sabah bildirimi varyasyonu 7/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Evren bugün ne fısıldıyor? Kartına dokun 🔮'**
+  String get bildirimSabah7;
+
+  /// Sabah bildirimi varyasyonu 8/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Skorun hazır. Cesaret edebilecek misin? 😏'**
+  String get bildirimSabah8;
+
+  /// Sabah bildirimi varyasyonu 9/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ay evresi işini yaptı, sıra sende 🌙'**
+  String get bildirimSabah9;
+
+  /// Sabah bildirimi varyasyonu 10/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünün enerjisi ölçüldü. Sonuç içeride ⚡'**
+  String get bildirimSabah10;
+
+  /// Sabah bildirimi varyasyonu 11/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaderin kapıda, açmayan bilemez 🚪'**
+  String get bildirimSabah11;
+
+  /// Sabah bildirimi varyasyonu 12/12.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şans perileri mesaini tamamladı, rapor hazır 🧚'**
+  String get bildirimSabah12;
+
+  /// Paylaş butonu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaş'**
+  String get paylasimPaylas;
+
+  /// Story kartının köşesindeki uygulama imzası (çevrilmez).
+  ///
+  /// In tr, this message translates to:
+  /// **'Kader ✨'**
+  String get paylasimMarka;
+
+  /// Story kartındaki skor etiketi (büyük harf).
+  ///
+  /// In tr, this message translates to:
+  /// **'GÜNÜN ŞANS PUANI'**
+  String get paylasimGenelSkor;
+
+  /// Paylaşım menüsüne eklenen kısa metin; kişisel başlık yoksa kartta da görünür.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünkü kaderim ✨'**
+  String get paylasimMetni;
+
+  /// Keşfet aracı kartının altındaki davet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sen de hesapla: Kader uygulaması'**
+  String get paylasimAracDavet;
+
+  /// Paylaşım ekranının başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kartını paylaş'**
+  String get paylasimKartiniPaylas;
+
+  /// Skoru karttan gizleme anahtarı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Skoru gizle'**
+  String get paylasimSkoruGizle;
+
+  /// Paylaş butonunun altındaki açıklama.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaşım menüsünü açar'**
+  String get paylasimMenusunuAcar;
+
+  /// Tema seçicinin erişilebilirlik etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'{tema} teması'**
+  String paylasimTemaSecimi(String tema);
+
+  /// Paylaşım teması adı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gece'**
+  String get paylasimTemaGece;
+
+  /// Paylaşım teması adı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Işık'**
+  String get paylasimTemaIsik;
+
+  /// Paylaşım teması adı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mor'**
+  String get paylasimTemaMor;
 }
 
 class _AppLocalizationsDelegate

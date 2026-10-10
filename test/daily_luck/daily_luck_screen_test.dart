@@ -8,7 +8,6 @@ import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/features/daily_luck/daily_luck_screen.dart';
-import 'package:kader/features/daily_luck/tr_strings.dart';
 import 'package:kader/features/daily_luck/widgets/comment_card.dart';
 import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 import 'package:kader/features/daily_luck/widgets/gunun_puani.dart';
@@ -16,7 +15,6 @@ import 'package:kader/features/share/paylasim_screen.dart';
 import 'package:kader/features/share/paylasim_temasi.dart';
 import 'package:kader/features/share/share_button.dart';
 import 'package:kader/features/share/share_service.dart';
-import 'package:kader/features/share/share_strings.dart';
 
 import '../test_ortami.dart';
 
@@ -57,7 +55,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: ortam.overridelar(gun: sabitGun, ek: ek),
-          child: const MaterialApp(home: DailyLuckScreen()),
+          child: testUygulamasi(const DailyLuckScreen()),
         ),
       );
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -80,11 +78,11 @@ void main() {
     await ekraniAc(tester);
 
     expect(find.text('6 Temmuz 2026, Pazartesi'), findsOneWidget);
-    expect(find.text(TrStrings.selamlama('Ayşe')), findsOneWidget);
+    expect(find.text(trMetinler.gunlukSelamlama('Ayşe')), findsOneWidget);
     expect(find.byType(FortuneRevealCard), findsOneWidget);
     expect(find.byType(GununPuani), findsNothing);
-    expect(find.text(TrStrings.kartHazir), findsOneWidget);
-    expect(find.text(TrStrings.kartimiAc), findsOneWidget);
+    expect(find.text(trMetinler.gunlukKartHazir), findsOneWidget);
+    expect(find.text(trMetinler.gunlukKartimiAc), findsOneWidget);
   });
 
   testWidgets('karta dokununca kayıtlı skor halkada yazar',
@@ -109,7 +107,7 @@ void main() {
         motor.hesapla(kullanici: ayse.seed, gun: sabitGun);
     await ekraniAc(tester);
 
-    await tester.tap(find.text(TrStrings.kartimiAc));
+    await tester.tap(find.text(trMetinler.gunlukKartimiAc));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 1000));
     // Açılış sürerken karta dokunmak koreografiyi baştan başlatmaz.
@@ -133,8 +131,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: ortam.overridelar(gun: sabitGun),
-          child: const MaterialApp(
-            home: MediaQuery(
+          child: testUygulamasi(
+            const MediaQuery(
               data: MediaQueryData(disableAnimations: true),
               child: DailyLuckScreen(),
             ),
@@ -178,7 +176,7 @@ void main() {
     expect(find.text(beklenen.kartMetni), findsOneWidget);
     expect(find.text(beklenen.sansRengi.ad), findsOneWidget);
     expect(find.text(beklenen.tavsiye), findsOneWidget);
-    expect(find.text(TrStrings.nedenBugun), findsOneWidget);
+    expect(find.text(trMetinler.gunlukNedenBugun), findsOneWidget);
     expect(find.byType(ShareButton), findsOneWidget);
   });
 
@@ -200,7 +198,7 @@ void main() {
       beklenenOkuma().bolumler.map((OkumaBolumu b) => b.kimlik).toSet(),
     );
     expect(kayit.bolumGeriBildirimleri.values, everyElement(isFalse));
-    expect(find.text(TrStrings.anlatmadiTesekkur), findsOneWidget);
+    expect(find.text(trMetinler.gunlukAnlatmadiTesekkur), findsOneWidget);
     expect(find.byIcon(Icons.thumb_down_alt_rounded), findsOneWidget);
   });
 
@@ -246,13 +244,13 @@ void main() {
 
     // "Kartını paylaş" ekranı: Mor tema + skoru gizle, sonra Paylaş.
     expect(find.byType(PaylasimScreen), findsOneWidget);
-    await tester.ensureVisible(find.text(PaylasimTemasi.mor.etiket));
-    await tester.tap(find.text(PaylasimTemasi.mor.etiket));
+    await tester.ensureVisible(find.text(PaylasimTemasi.mor.etiket(trMetinler)));
+    await tester.tap(find.text(PaylasimTemasi.mor.etiket(trMetinler)));
     await tester.ensureVisible(find.byType(Switch));
     await tester.tap(find.byType(Switch));
     await tester.pump();
-    await tester.ensureVisible(find.text(ShareStrings.paylas));
-    await tester.tap(find.text(ShareStrings.paylas));
+    await tester.ensureVisible(find.text(trMetinler.paylasimPaylas));
+    await tester.tap(find.text(trMetinler.paylasimPaylas));
     await tester.pump();
 
     expect(sahte.paylasilanlar.single.gun, sabitGun);
@@ -264,6 +262,8 @@ void main() {
 
 /// Paylaşımı kaydeden sahte servis (gerçek plugin çağrısı yapılmaz).
 class _SahteShareService extends ShareService {
+  _SahteShareService() : super(metinler: trMetinler);
+
   /// paylas ile gelen sonuçlar.
   final List<LuckResult> paylasilanlar = <LuckResult>[];
 

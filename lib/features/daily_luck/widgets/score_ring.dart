@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../../../core/luck_engine/luck_engine.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../daily_luck_config.dart';
-import '../tr_strings.dart';
 
 /// Dairesel skor göstergesi: arka halka + skor oranında dolan
 /// altın gradient halka, ortasında skor sayısı ve etiketi.
@@ -18,16 +18,16 @@ class ScoreRing extends StatelessWidget {
     required this.skor,
     this.boyut = DailyLuckConfig.halkaCapi,
     this.kalinlik = DailyLuckConfig.halkaKalinligi,
-    this.etiket = TrStrings.genelSkorEtiketi,
+    this.etiket,
     super.key,
   });
 
   /// Gösterilecek genel skor.
   final int skor;
 
-  /// Skorun altındaki etiket (varsayılan "GENEL SKOR"; kategori
+  /// Skorun altındaki etiket (verilmezse "GENEL SKOR"; kategori
   /// detayında kategori adı kullanılır).
-  final String etiket;
+  final String? etiket;
 
   /// Halkanın dış çapı.
   final double boyut;
@@ -57,7 +57,7 @@ class ScoreRing extends StatelessWidget {
                 ),
               ),
               Text(
-                etiket,
+                etiket ?? AppLocalizations.of(context).gunlukGenelSkor,
                 style: yaziTemasi.labelSmall?.copyWith(
                   color: AppColors.textSecondary,
                   letterSpacing: 2,

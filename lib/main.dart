@@ -61,16 +61,6 @@ Future<void> main() async {
   final bool bildirimdenAcildi =
       await bildirimler.baslat(bildirimeDokunuldu: _feedbackEkraniniAc);
 
-  // Onboarding bitmişse bildirim penceresi her açılışta tazelenir
-  // (sabah metin varyasyonları 14 gün ileriye planlanır).
-  final UserRepository kullanicilar =
-      UserRepository(AppStorage.userProfileBox);
-  if (kullanicilar.onboardingTamamlandiMi) {
-    unawaited(
-      bildirimler.gunlukBildirimleriPlanla(simdi: DateTime.now()),
-    );
-  }
-
   final ReklamServisi reklamlar =
       _mobilPlatform ? AdMobReklamServisi() : const BosReklamServisi();
   final MagazaServisi magaza =
@@ -89,6 +79,20 @@ Future<void> main() async {
       magazaServisiProvider.overrideWithValue(magaza),
     ],
   );
+
+  // Onboarding bitmişse bildirim penceresi her açılışta tazelenir
+  // (sabah metin varyasyonları 14 gün ileriye planlanır). Metinler
+  // uygulama dilindedir; dil değiştiyse bu açılışta yeni dile geçer.
+  final UserRepository kullanicilar =
+      UserRepository(AppStorage.userProfileBox);
+  if (kullanicilar.onboardingTamamlandiMi) {
+    unawaited(
+      bildirimler.gunlukBildirimleriPlanla(
+        simdi: DateTime.now(),
+        metinler: kapsayici.read(arayuzMetinleriProvider),
+      ),
+    );
+  }
 
   runApp(
     UncontrolledProviderScope(

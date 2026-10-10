@@ -74,7 +74,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: ortam.overridelar(gun: gun),
-          child: MaterialApp(home: ekran),
+          child: testUygulamasi(ekran),
         ),
       );
       await Future<void>.delayed(const Duration(milliseconds: 50));

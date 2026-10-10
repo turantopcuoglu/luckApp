@@ -11,10 +11,10 @@
 
 | Bilgi | Değer |
 |---|---|
-| Tarih | 11 Ekim 2026 (E0–E4 tamamlandı) |
-| Son commit | `d178ac0` (E3 + iOS Pods; E4 commit'i istendiğinde) |
+| Tarih | 11 Ekim 2026 (E0–E5 tamamlandı) |
+| Son commit | `44ce3cd` E4 (E5 commit'i istendiğinde) |
 | Dal | `main` (her oturum doğrudan `main`'e commit edildi) |
-| Testler | 407 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi, +11 dil) |
+| Testler | 412 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi, +11 dil, +5 E5) |
 | Analiz | `flutter analyze` → No issues found |
 | Uygulama dili | Türkçe. gen-l10n altyapısı kurulu (E3); İngilizce `DilConfig.ingilizceYayinda = false` ile kapalı (yalnız debug'da Ayarlar'dan seçilebilir) |
 
@@ -108,16 +108,16 @@ bozmamak** için konuldu. Her biri bir testle korunmalı.
 
 | Dosya | Satır (yaklaşık) |
 |---|---|
-| `features/daily_luck/tr_strings.dart` (tarih biçimi `tarihMetni` dahil) | 119 |
+| ~~`features/daily_luck/tr_strings.dart`~~ (E5'te ARB'ye taşındı, silindi) | — |
 | ~~`features/onboarding/onboarding_strings.dart`~~ (E4'te ARB'ye taşındı, silindi) | — |
 | `features/profile/profile_strings.dart` | 210 |
 | `features/premium/premium_strings.dart` (+ `PremiumHatalari` in `premium_kontrolcu.dart`) | 143 |
 | `features/tools/tools_strings.dart` | 115 |
 | `features/settings/ayarlar_strings.dart` | 113 |
 | `features/compatibility/uyum_strings.dart` | 69 |
-| `features/feedback/feedback_strings.dart` (bildirim metinleri) | 38 |
-| `features/share/share_strings.dart` | 17 |
-| `features/categories/categories_strings.dart` | 11 |
+| ~~`features/feedback/feedback_strings.dart`~~ (E5) | — |
+| ~~`features/share/share_strings.dart`~~ (E5) | — |
+| ~~`features/categories/categories_strings.dart`~~ (E5) | — |
 | `features/home/ana_sekme.dart` (sekme etiketleri enum içinde) | — |
 | `features/profile/tam_ad_duzenle.dart` (`TamAdStrings`) | — |
 | `features/legal/legal_texts.dart` (KVKK/koşullar — **hukuki metin**, çeviri değil yeniden yazım) | 216 |
@@ -305,8 +305,33 @@ Her satır tek oturumdur. Kutuyu bitince işaretle.
       (`EnerjiTarzi.etiket` …) içerik katmanından gelir, E8 kapsamında.
       **Ortam notu:** `flutter gen-l10n` de `lib/l10n/._*` dosyalarını ARB
       sanıp çöker; önce `find lib test -name '._*' -delete`.
-- [ ] **E5 — ARB taşıma: daily_luck + categories + feedback + share.**
+- [x] **E5 — ARB taşıma: daily_luck + categories + feedback + share.**
       `TrStrings.tarihMetni` → `intl` `DateFormat.yMMMMEEEEd(locale)`.
+      **Yapıldı (11 Eki):** dört `*_strings.dart` silindi; anahtarlar
+      `gunluk*`, `kategori*`, `geriBildirim*`, `bildirim*`, `paylasim*`.
+      **Tarih:** `yMMMMEEEEd` Türkçede virgülü düşürdüğü için (D9) kullanılmadı;
+      ARB'de desen var: `tarihDeseni` ("d MMMM y, EEEE" / "EEEE, MMMM d, y")
+      ve `kisaTarihDeseni`; `lib/l10n/tarih_bicimi.dart` →
+      `tarihMetni(l, gun)`, `kisaTarihMetni(l, gun)`. Koleksiyon, profil ve
+      ayarlardaki `tarihMetni(...).split(',').first` kısa desene çevrildi
+      (İngilizcede "Monday" kalıyordu). `tarih_bicimi_test`: Türkçe çıktı 2
+      yıl boyunca eski elle kurulan biçimle birebir aynı.
+      **Widget dışı metin:** `dil_providers.dart`'a `arayuzMetinleriProvider`
+      (`lookupAppLocalizations`). `ShareService(metinler:)` provider'dan alır
+      (araç çağrıları değişmedi); `StoryCard`/`AracStoryCard` `metinler`
+      parametresi alır (ekran dışı çizimde `Localizations` yok);
+      `AracPaylasimi.paylasimMetni(l)`, `PaylasimTemasi.etiket(l)`.
+      Bildirim: `gunlukBildirimleriPlanla(simdi:, metinler:)`; kanal adı ve
+      12 sabah varyasyonu ARB'de (`bildirimSabah1..12`, sıra iki dilde aynı;
+      testle korunur). `main.dart`'ta planlama `ProviderContainer`
+      kurulduktan sonraya alındı.
+      **Dile bağlanmayanlar:** `DailyLuckConfig.misafirIsmi` (skor tohumu, D5),
+      geri bildirim emojileri → `FeedbackConfig`.
+      **Testler:** `MaterialApp(home:)` ile açılan ekran testleri
+      `testUygulamasi` ile sarıldı; kart testleri `initializeDateFormatting`
+      çağırır. **E12 notu:** dil değişince planlı bildirimler bir sonraki
+      açılışta yeni dile geçer; anında geçmesi istenirse Ayarlar'daki dil
+      seçimine yeniden planlama eklenmeli.
 - [ ] **E6 — ARB taşıma: profile + premium + tools + compatibility.**
 - [ ] **E7 — İngilizce günlük okuma (content).** `yorum_yonu_en.dart`,
       `karakter_yonleri_en.dart`, `kategori_durumlari_en.dart`,

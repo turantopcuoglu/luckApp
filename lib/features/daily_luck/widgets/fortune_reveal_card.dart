@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/parilti_sprite.dart';
 import '../daily_luck_config.dart';
-import '../tr_strings.dart';
 
 /// [t]'nin [bas, son] dilimi içindeki 0-1 konumu (dışında kırpılır).
 double _dilim(double t, double bas, double son) =>
@@ -121,11 +121,12 @@ class _FortuneRevealCardState extends State<FortuneRevealCard>
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     const double w = DailyLuckConfig.kartGenisligi;
     const double h = DailyLuckConfig.kartYuksekligi;
     return Semantics(
       button: true,
-      label: TrStrings.kartimiAc,
+      label: l.gunlukKartimiAc,
       child: GestureDetector(
         onTap: widget.onDokun,
         behavior: HitTestBehavior.opaque,

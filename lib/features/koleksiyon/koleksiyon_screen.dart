@@ -7,11 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/storage/koleksiyon_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
+import '../../l10n/tarih_bicimi.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/sahne_arka_plani.dart';
 import '../../shared/widgets/sahne_config.dart';
-import '../daily_luck/tr_strings.dart';
 import 'koleksiyon_config.dart';
 import 'koleksiyon_katalogu.dart';
 import 'koleksiyon_providers.dart';
@@ -285,6 +286,7 @@ class KartDetayScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final KazanilanKart? kayit = ref.watch(koleksiyonProvider)[kart.id];
     final bool kazanildi = kayit != null;
@@ -348,7 +350,7 @@ class KartDetayScreen extends ConsumerWidget {
                 const SizedBox(height: AppSpacing.md),
                 Text(
                   KoleksiyonStrings.ilkGun(
-                    TrStrings.tarihMetni(kayit.ilkGun).split(',').first,
+                    kisaTarihMetni(l, kayit.ilkGun),
                   ),
                   style: yazi.bodySmall?.copyWith(
                     color: AppColors.textSecondary,

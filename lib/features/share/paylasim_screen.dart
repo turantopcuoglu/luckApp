@@ -7,12 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/cam_panel.dart';
 import 'paylasim_temasi.dart';
 import 'share_config.dart';
 import 'share_service.dart';
-import 'share_strings.dart';
 import 'story_card.dart';
 
 /// Paylaşım ekranında seçili tema.
@@ -41,12 +41,13 @@ class PaylasimScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final PaylasimTemasi tema = ref.watch(paylasimTemasiProvider);
     final bool gizle = ref.watch(skoruGizleProvider);
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text(ShareStrings.kartiniPaylas)),
+      appBar: AppBar(title: Text(l.paylasimKartiniPaylas)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
@@ -78,6 +79,7 @@ class PaylasimScreen extends ConsumerWidget {
                       child: FittedBox(
                         child: StoryCard(
                           sonuc: sonuc,
+                          metinler: l,
                           baslik: baslik,
                           skoruGizle: gizle,
                           arkaPlan: Image.asset(
@@ -115,7 +117,7 @@ class PaylasimScreen extends ConsumerWidget {
                   Icons.visibility_off_outlined,
                   color: AppColors.textSecondary,
                 ),
-                title: Text(ShareStrings.skoruGizle, style: yazi.bodyLarge),
+                title: Text(l.paylasimSkoruGizle, style: yazi.bodyLarge),
                 value: gizle,
                 activeThumbColor: AppColors.gold,
                 onChanged: (bool yeni) =>
@@ -125,7 +127,7 @@ class PaylasimScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.lg),
             AltinButon(
               genislik: null,
-              metin: ShareStrings.paylas,
+              metin: l.paylasimPaylas,
               basIkon: Icons.ios_share,
               onPressed: () => unawaited(
                 ref
@@ -140,7 +142,7 @@ class PaylasimScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              ShareStrings.paylasimMenusunuAcar,
+              l.paylasimMenusunuAcar,
               style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
@@ -165,10 +167,11 @@ class _TemaSecenegi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     return Semantics(
       button: true,
       selected: secili,
-      label: ShareStrings.temaSecimi(tema.etiket),
+      label: l.paylasimTemaSecimi(tema.etiket(l)),
       child: GestureDetector(
         onTap: onTap,
         child: Column(
@@ -205,7 +208,7 @@ class _TemaSecenegi extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             ExcludeSemantics(
               child: Text(
-                tema.etiket,
+                tema.etiket(l),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: secili ? AppColors.goldAcik : AppColors.textSecondary,
                 ),

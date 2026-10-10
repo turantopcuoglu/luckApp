@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import 'share_config.dart';
-import 'share_strings.dart';
 
 /// Bir Keşfet aracı sonucunun paylaşım verisi (görsel + metin).
 ///
@@ -33,9 +33,10 @@ class AracPaylasimi {
   /// Kısa yorum (kartta en fazla [ShareConfig.aracMetinSatiri] satır).
   final String metin;
 
-  /// Paylaşım menüsüne eklenen düz metin (görselin yanında).
-  String get paylasimMetni =>
-      '$baslik · $sayiEtiketi $sayi\n${ShareStrings.aracDavet}';
+  /// Paylaşım menüsüne eklenen düz metin (görselin yanında), davet
+  /// [metinler] dilinde.
+  String paylasimMetni(AppLocalizations metinler) =>
+      '$baslik · $sayiEtiketi $sayi\n${metinler.paylasimAracDavet}';
 }
 
 /// Keşfet aracı sonucu için 1080x1920 story kartı (off-screen render
@@ -49,10 +50,18 @@ class AracPaylasimi {
 /// off-screen render ağacında asenkron font yüklemesine güvenilmez.
 class AracStoryCard extends StatelessWidget {
   /// [paylasim] verisiyle kart oluşturur.
-  const AracStoryCard({required this.paylasim, this.arkaPlan, super.key});
+  const AracStoryCard({
+    required this.paylasim,
+    required this.metinler,
+    this.arkaPlan,
+    super.key,
+  });
 
   /// Kartta gösterilecek veri.
   final AracPaylasimi paylasim;
+
+  /// Kart metinlerinin dili (bkz. [StoryCard.metinler]).
+  final AppLocalizations metinler;
 
   /// Kartı kaplayan tema görseli (null ise lacivert-mor gradyan). Üstüne
   /// uzun metin yazıldığı için düz bir karartmayla koyulaştırılır.
@@ -143,16 +152,16 @@ class AracStoryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: ShareConfig.kenarBoslugu),
-                const Text(
-                  ShareStrings.marka,
+                Text(
+                  metinler.paylasimMarka,
                   style: TextStyle(
                     fontSize: ShareConfig.markaPunto,
                     fontWeight: FontWeight.w600,
                     color: AppColors.gold,
                   ),
                 ),
-                const Text(
-                  ShareStrings.aracDavet,
+                Text(
+                  metinler.paylasimAracDavet,
                   style: TextStyle(
                     fontSize: ShareConfig.tarihPunto,
                     color: AppColors.textSecondary,

@@ -6,7 +6,7 @@ import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/daily_record.dart';
 import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
-import 'tr_strings.dart';
+import '../../features/daily_luck/daily_luck_config.dart';
 
 /// Bugünün tarihini sağlar.
 ///
@@ -23,7 +23,7 @@ final Provider<UserProfile> aktifProfilProvider = Provider<UserProfile>(
   (Ref ref) =>
       ref.watch(userRepositoryProvider).profil() ??
       UserProfile(
-        isim: TrStrings.misafirIsmi,
+        isim: DailyLuckConfig.misafirIsmi,
         // Misafir için sabit doğum tarihi: deterministik skor üretimi
         // isteyen kural 8 gereği rastgele bir değer KULLANILAMAZ.
         dogumTarihi: DateTime(2000),

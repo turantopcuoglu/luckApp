@@ -3,17 +3,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../l10n/app_localizations.dart';
+import '../../l10n/dil_providers.dart';
 import '../../main.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/hero_tags.dart';
 import '../daily_luck/daily_luck_providers.dart';
-import '../feedback/feedback_strings.dart';
 import '../feedback/notification_service.dart';
 import '../home/ana_kabuk.dart';
 import '../home/ana_sekme.dart';
@@ -82,12 +83,18 @@ class _CalculatingScreenState extends ConsumerState<CalculatingScreen>
     final NotificationService bildirimler = ref.read(
       notificationServiceProvider,
     );
+    final AppLocalizations metinler = ref.read(arayuzMetinleriProvider);
     final bool izinVerildi = await bildirimler.izinIste();
     if (izinVerildi) {
-      unawaited(bildirimler.gunlukBildirimleriPlanla(simdi: DateTime.now()));
+      unawaited(
+        bildirimler.gunlukBildirimleriPlanla(
+          simdi: DateTime.now(),
+          metinler: metinler,
+        ),
+      );
     } else {
       anaMesajciAnahtari.currentState?.showSnackBar(
-        const SnackBar(content: Text(FeedbackStrings.izinReddiMesaji)),
+        SnackBar(content: Text(metinler.geriBildirimIzinReddi)),
       );
     }
     if (!mounted) {

@@ -7,21 +7,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/luck_engine/luck_engine.dart';
+import '../../l10n/app_localizations.dart';
+import '../../l10n/dil_providers.dart';
 import 'arac_story_card.dart';
 import 'paylasim_temasi.dart';
 import 'share_config.dart';
-import 'share_strings.dart';
 import 'story_card.dart';
 
 /// [ShareService] örneğini sağlar (testte sahtesiyle override edilir).
-final Provider<ShareService> shareServiceProvider =
-    Provider<ShareService>((Ref ref) => ShareService());
+final Provider<ShareService> shareServiceProvider = Provider<ShareService>(
+  (Ref ref) => ShareService(metinler: ref.watch(arayuzMetinleriProvider)),
+);
 
 /// Story kartını off-screen PNG'ye çevirip sistem paylaşım menüsüne
 /// veren servis.
 class ShareService {
-  /// Varsayılan kurucu.
-  ShareService();
+  /// Kartları ve paylaşım metnini [metinler] dilinde üretir.
+  ShareService({required this.metinler});
+
+  /// Kart ve paylaşım metinlerinin dili (uygulama dili).
+  final AppLocalizations metinler;
 
   /// Günün [sonuc]unu (ve varsa kişisel [baslik]ını) seçilen [tema]
   /// arka planıyla story kartı olarak paylaşır; [skoruGizle] açıksa skor
@@ -37,11 +42,12 @@ class ShareService {
       await gorselPaylas(
         kart: StoryCard(
           sonuc: sonuc,
+          metinler: metinler,
           baslik: baslik,
           skoruGizle: skoruGizle,
           arkaPlan: RawImage(image: zemin, fit: BoxFit.cover),
         ),
-        metin: ShareStrings.paylasimMetni,
+        metin: metinler.paylasimMetni,
         dosyaAdi: ShareConfig.dosyaAdi,
       );
     } finally {
@@ -56,9 +62,10 @@ class ShareService {
       await gorselPaylas(
         kart: AracStoryCard(
           paylasim: paylasim,
+          metinler: metinler,
           arkaPlan: RawImage(image: zemin, fit: BoxFit.cover),
         ),
-        metin: paylasim.paylasimMetni,
+        metin: paylasim.paylasimMetni(metinler),
         dosyaAdi: ShareConfig.aracDosyaAdi,
       );
     } finally {

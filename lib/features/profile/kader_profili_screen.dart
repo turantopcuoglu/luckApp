@@ -10,12 +10,13 @@ import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
+import '../../l10n/tarih_bicimi.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/gorsel_bant.dart';
 import '../ads/banner_reklam_alani.dart';
 import '../daily_luck/daily_luck_providers.dart';
-import '../daily_luck/tr_strings.dart';
 import '../koleksiyon/widgets/koleksiyon_panelleri.dart';
 import '../legal/legal_texts.dart';
 import '../premium/kilit_secenekleri.dart';
@@ -223,6 +224,7 @@ class _KimlikKarti extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return Card(
       margin: EdgeInsets.zero,
@@ -247,7 +249,7 @@ class _KimlikKarti extends StatelessWidget {
                       Text(profil.tamAd ?? profil.isim, style: yazi.titleLarge),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        '${TrStrings.tarihMetni(profil.dogumTarihi).split(',').first} · '
+                        '${kisaTarihMetni(l, profil.dogumTarihi)} · '
                         '${kader.burc.etiket} (${kader.burc.element.etiket})',
                         style: yazi.bodyMedium?.copyWith(
                           color: AppColors.textSecondary,

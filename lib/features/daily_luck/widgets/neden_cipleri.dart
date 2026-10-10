@@ -4,9 +4,9 @@ import '../../../core/content/gunluk_okuma.dart';
 import '../../../core/luck_engine/ay_evresi.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_images.dart';
 import '../daily_luck_config.dart';
-import '../tr_strings.dart';
 
 /// "Neden bugün?" çipleri: skoru ve yorumu belirleyen hesapları gösterir.
 ///
@@ -41,12 +41,13 @@ class NedenCipleri extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          TrStrings.nedenBugun,
+          l.gunlukNedenBugun,
           style: yazi.labelMedium?.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.xs),
@@ -79,6 +80,7 @@ class _NedenSayfasi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return SafeArea(
       child: SingleChildScrollView(
@@ -116,7 +118,7 @@ class _NedenSayfasi extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              TrStrings.nedenNotu,
+              l.gunlukNedenNotu,
               style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
           ],

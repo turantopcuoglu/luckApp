@@ -7,12 +7,12 @@ import '../../core/storage/luck_history_repository.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/sahne_arka_plani.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import 'feedback_config.dart';
-import 'feedback_strings.dart';
 
 /// Kullanıcının 👍/👎 seçimi (null = henüz seçmedi).
 ///
@@ -53,12 +53,17 @@ class FeedbackScreen extends ConsumerWidget {
 
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text(FeedbackStrings.tesekkur)));
+    ).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context).geriBildirimTesekkur),
+      ),
+    );
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yaziTemasi = Theme.of(context).textTheme;
     final bool? pozitif = ref.watch(feedbackPozitifProvider);
     final String? emoji = ref.watch(feedbackEmojiProvider);
@@ -66,7 +71,7 @@ class FeedbackScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(title: const Text(FeedbackStrings.baslik)),
+      appBar: AppBar(title: Text(l.geriBildirimBaslik)),
       body: SahneliZemin(
         gorsel: AppImages.sahneAksam,
         altKarartmaBaslangici: FeedbackConfig.karartmaBaslangici,
@@ -78,7 +83,7 @@ class FeedbackScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  FeedbackStrings.aksamSorusu,
+                  l.geriBildirimAksamSorusu,
                   style: yaziTemasi.headlineMedium,
                 ),
                 const SizedBox(height: AppSpacing.xl),
@@ -86,7 +91,7 @@ class FeedbackScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     _SecimButonu(
-                      emoji: FeedbackStrings.evetEmoji,
+                      emoji: FeedbackConfig.evetEmoji,
                       secili: pozitif ?? false,
                       onTap: () =>
                           ref.read(feedbackPozitifProvider.notifier).state =
@@ -94,7 +99,7 @@ class FeedbackScreen extends ConsumerWidget {
                     ),
                     const SizedBox(width: AppSpacing.lg),
                     _SecimButonu(
-                      emoji: FeedbackStrings.hayirEmoji,
+                      emoji: FeedbackConfig.hayirEmoji,
                       secili: pozitif == false,
                       onTap: () =>
                           ref.read(feedbackPozitifProvider.notifier).state =
@@ -104,7 +109,7 @@ class FeedbackScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 Text(
-                  FeedbackStrings.emojiBaslik,
+                  l.geriBildirimEmojiBaslik,
                   style: yaziTemasi.titleMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -114,7 +119,7 @@ class FeedbackScreen extends ConsumerWidget {
                   spacing: AppSpacing.sm,
                   children: <Widget>[
                     for (final String secenek
-                        in FeedbackStrings.emojiSecenekleri)
+                        in FeedbackConfig.emojiSecenekleri)
                       ChoiceChip(
                         label: Text(secenek),
                         selected: emoji == secenek,
@@ -128,7 +133,7 @@ class FeedbackScreen extends ConsumerWidget {
                 const Spacer(),
                 AltinButon(
                   genislik: null,
-                  metin: FeedbackStrings.kaydet,
+                  metin: l.geriBildirimKaydet,
                   // 👍/👎 seçilmeden kaydedilemez; emoji opsiyoneldir.
                   onPressed: pozitif == null
                       ? null

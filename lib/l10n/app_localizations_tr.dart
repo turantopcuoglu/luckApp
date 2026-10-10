@@ -254,4 +254,200 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get yasalKullanimKosullari => 'Kullanım Koşulları';
+
+  @override
+  String get tarihDeseni => 'd MMMM y, EEEE';
+
+  @override
+  String get kisaTarihDeseni => 'd MMMM y';
+
+  @override
+  String get gunlukGenelSkor => 'GENEL SKOR';
+
+  @override
+  String get gunlukYukleniyor => 'Kaderin hesaplanıyor...';
+
+  @override
+  String get gunlukKartHazir => 'Bugünün kartı hazır';
+
+  @override
+  String get gunlukKendineBirDakika => 'Kendine bir dakika ayır.';
+
+  @override
+  String get gunlukKartimiAc => 'Kartımı aç';
+
+  @override
+  String get gunlukSansPuani => 'Günün şans puanı';
+
+  @override
+  String gunlukPuanPaydasi(int maks) {
+    return '/ $maks';
+  }
+
+  @override
+  String gunlukPuanSemantik(int skor, int maks) {
+    return 'Günün şans puanı: $skor / $maks';
+  }
+
+  @override
+  String get gunlukHata =>
+      'Bir şeyler ters gitti. Uygulamayı yeniden başlatmayı dene.';
+
+  @override
+  String gunlukSelamlama(String isim) {
+    return 'Merhaba, $isim';
+  }
+
+  @override
+  String get gunlukSansRengi => 'Şans rengin';
+
+  @override
+  String get gunlukSansliSayi => 'Şanslı sayın';
+
+  @override
+  String get gunlukTavsiye => 'Günün tavsiyesi';
+
+  @override
+  String get gunlukSeniAnlattiMi => 'Bu yorum seni anlattı mı?';
+
+  @override
+  String get gunlukEvet => 'Evet';
+
+  @override
+  String get gunlukHayir => 'Hayır';
+
+  @override
+  String get gunlukAnlattiTesekkur =>
+      'Güzel! Bu tarz yorumları sevdiğini not ettik ✨';
+
+  @override
+  String get gunlukAnlatmadiTesekkur =>
+      'Teşekkürler. Önümüzdeki günlerde bu yorumu sana tekrar göstermeyeceğiz.';
+
+  @override
+  String get gunlukNedenBugun => 'Neden bugün?';
+
+  @override
+  String get gunlukNedenNotu =>
+      'Skorun ve yorumun bu hesaplardan gelir. Aynı gün, aynı sonucu verir.';
+
+  @override
+  String get gunlukAksamBaslik => 'Günün nasıldı?';
+
+  @override
+  String get gunlukAksamAciklama =>
+      'Bugün gerçekten şanslı mıydın? Cevabın Kader\'in sana olan isabetini takip etmesine yardım eder.';
+
+  @override
+  String get gunlukAksamButon => 'Cevapla';
+
+  @override
+  String get kategoriSansliSaat => 'Şanslı saat aralığın';
+
+  @override
+  String kategoriKilitAciklamasi(String kategori) {
+    return '$kategori kategorisinin bugünkü skoru, sana özel yorumu ve şanslı saati Premium üyelere açık. İstersen kısa bir reklam izleyerek yalnızca bugün için de açabilirsin.';
+  }
+
+  @override
+  String get geriBildirimAksamSorusu => 'Bugün gerçekten şanslı mıydın?';
+
+  @override
+  String get geriBildirimBaslik => 'Günün nasıldı?';
+
+  @override
+  String get geriBildirimEmojiBaslik => 'İstersen bir emoji bırak';
+
+  @override
+  String get geriBildirimKaydet => 'Kaydet';
+
+  @override
+  String get geriBildirimTesekkur => 'Kaydedildi, yarın görüşürüz ✨';
+
+  @override
+  String get geriBildirimIzinReddi =>
+      'Sorun değil! İstersen bildirimleri daha sonra telefon ayarlarından açabilirsin.';
+
+  @override
+  String get bildirimKanalAd => 'Günlük Hatırlatmalar';
+
+  @override
+  String get bildirimKanalAciklama =>
+      'Sabah kader hazır ve akşam geri bildirim hatırlatmaları';
+
+  @override
+  String get bildirimSabah1 => 'Bugünün kaderi hazır ✨';
+
+  @override
+  String get bildirimSabah2 => 'Yıldızlar senin için dizildi, gel bak 🌟';
+
+  @override
+  String get bildirimSabah3 =>
+      'Yeni bir gün, yeni bir şans. Skorun seni bekliyor 🍀';
+
+  @override
+  String get bildirimSabah4 => 'Kader kartın açılmayı bekliyor 🎴';
+
+  @override
+  String get bildirimSabah5 => 'Bugün şanslı mısın? Öğrenmenin tek yolu var 👀';
+
+  @override
+  String get bildirimSabah6 => 'Güne bakmadan çıkma: kaderin hesaplandı ☕';
+
+  @override
+  String get bildirimSabah7 => 'Evren bugün ne fısıldıyor? Kartına dokun 🔮';
+
+  @override
+  String get bildirimSabah8 => 'Skorun hazır. Cesaret edebilecek misin? 😏';
+
+  @override
+  String get bildirimSabah9 => 'Ay evresi işini yaptı, sıra sende 🌙';
+
+  @override
+  String get bildirimSabah10 => 'Bugünün enerjisi ölçüldü. Sonuç içeride ⚡';
+
+  @override
+  String get bildirimSabah11 => 'Kaderin kapıda, açmayan bilemez 🚪';
+
+  @override
+  String get bildirimSabah12 =>
+      'Şans perileri mesaini tamamladı, rapor hazır 🧚';
+
+  @override
+  String get paylasimPaylas => 'Paylaş';
+
+  @override
+  String get paylasimMarka => 'Kader ✨';
+
+  @override
+  String get paylasimGenelSkor => 'GÜNÜN ŞANS PUANI';
+
+  @override
+  String get paylasimMetni => 'Bugünkü kaderim ✨';
+
+  @override
+  String get paylasimAracDavet => 'Sen de hesapla: Kader uygulaması';
+
+  @override
+  String get paylasimKartiniPaylas => 'Kartını paylaş';
+
+  @override
+  String get paylasimSkoruGizle => 'Skoru gizle';
+
+  @override
+  String get paylasimMenusunuAcar => 'Paylaşım menüsünü açar';
+
+  @override
+  String paylasimTemaSecimi(String tema) {
+    return '$tema teması';
+  }
+
+  @override
+  String get paylasimTemaGece => 'Gece';
+
+  @override
+  String get paylasimTemaIsik => 'Işık';
+
+  @override
+  String get paylasimTemaMor => 'Mor';
 }

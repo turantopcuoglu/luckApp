@@ -255,4 +255,205 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yasalKullanimKosullari => 'Terms of Use';
+
+  @override
+  String get tarihDeseni => 'EEEE, MMMM d, y';
+
+  @override
+  String get kisaTarihDeseni => 'MMMM d, y';
+
+  @override
+  String get gunlukGenelSkor => 'OVERALL SCORE';
+
+  @override
+  String get gunlukYukleniyor => 'Calculating your destiny...';
+
+  @override
+  String get gunlukKartHazir => 'Today\'s card is ready';
+
+  @override
+  String get gunlukKendineBirDakika => 'Take a minute for yourself.';
+
+  @override
+  String get gunlukKartimiAc => 'Open my card';
+
+  @override
+  String get gunlukSansPuani => 'Today\'s luck score';
+
+  @override
+  String gunlukPuanPaydasi(int maks) {
+    return '/ $maks';
+  }
+
+  @override
+  String gunlukPuanSemantik(int skor, int maks) {
+    return 'Today\'s luck score: $skor / $maks';
+  }
+
+  @override
+  String get gunlukHata => 'Something went wrong. Try restarting the app.';
+
+  @override
+  String gunlukSelamlama(String isim) {
+    return 'Hello, $isim';
+  }
+
+  @override
+  String get gunlukSansRengi => 'Your lucky color';
+
+  @override
+  String get gunlukSansliSayi => 'Your lucky number';
+
+  @override
+  String get gunlukTavsiye => 'Today\'s advice';
+
+  @override
+  String get gunlukSeniAnlattiMi => 'Did this reading describe you?';
+
+  @override
+  String get gunlukEvet => 'Yes';
+
+  @override
+  String get gunlukHayir => 'No';
+
+  @override
+  String get gunlukAnlattiTesekkur =>
+      'Great! We\'ve noted that you like readings like this ✨';
+
+  @override
+  String get gunlukAnlatmadiTesekkur =>
+      'Thanks. We won\'t show you this reading again in the coming days.';
+
+  @override
+  String get gunlukNedenBugun => 'Why today?';
+
+  @override
+  String get gunlukNedenNotu =>
+      'Your score and reading come from these calculations. The same day always gives the same result.';
+
+  @override
+  String get gunlukAksamBaslik => 'How was your day?';
+
+  @override
+  String get gunlukAksamAciklama =>
+      'Were you really lucky today? Your answer helps Kader keep track of how accurate it is for you.';
+
+  @override
+  String get gunlukAksamButon => 'Answer';
+
+  @override
+  String get kategoriSansliSaat => 'Your lucky hours';
+
+  @override
+  String kategoriKilitAciklamasi(String kategori) {
+    return 'Today\'s $kategori score, your personal reading and your lucky hours are open to Premium members. You can also unlock them for today only by watching a short ad.';
+  }
+
+  @override
+  String get geriBildirimAksamSorusu => 'Were you really lucky today?';
+
+  @override
+  String get geriBildirimBaslik => 'How was your day?';
+
+  @override
+  String get geriBildirimEmojiBaslik => 'Leave an emoji if you like';
+
+  @override
+  String get geriBildirimKaydet => 'Save';
+
+  @override
+  String get geriBildirimTesekkur => 'Saved, see you tomorrow ✨';
+
+  @override
+  String get geriBildirimIzinReddi =>
+      'No problem! You can turn on notifications later in your phone\'s settings.';
+
+  @override
+  String get bildirimKanalAd => 'Daily reminders';
+
+  @override
+  String get bildirimKanalAciklama =>
+      'Morning destiny-ready and evening feedback reminders';
+
+  @override
+  String get bildirimSabah1 => 'Today\'s destiny is ready ✨';
+
+  @override
+  String get bildirimSabah2 => 'The stars lined up for you, come and see 🌟';
+
+  @override
+  String get bildirimSabah3 =>
+      'A new day, a new chance. Your score is waiting 🍀';
+
+  @override
+  String get bildirimSabah4 => 'Your destiny card is waiting to be opened 🎴';
+
+  @override
+  String get bildirimSabah5 =>
+      'Are you lucky today? There\'s only one way to find out 👀';
+
+  @override
+  String get bildirimSabah6 =>
+      'Don\'t head out without a look: your destiny is calculated ☕';
+
+  @override
+  String get bildirimSabah7 =>
+      'What is the universe whispering today? Tap your card 🔮';
+
+  @override
+  String get bildirimSabah8 => 'Your score is ready. Dare to look? 😏';
+
+  @override
+  String get bildirimSabah9 =>
+      'The moon phase did its part, now it\'s your turn 🌙';
+
+  @override
+  String get bildirimSabah10 =>
+      'Today\'s energy has been measured. The result is inside ⚡';
+
+  @override
+  String get bildirimSabah11 =>
+      'Your destiny is at the door. Open it to find out 🚪';
+
+  @override
+  String get bildirimSabah12 =>
+      'The luck fairies finished their shift, the report is ready 🧚';
+
+  @override
+  String get paylasimPaylas => 'Share';
+
+  @override
+  String get paylasimMarka => 'Kader ✨';
+
+  @override
+  String get paylasimGenelSkor => 'TODAY\'S LUCK SCORE';
+
+  @override
+  String get paylasimMetni => 'My destiny today ✨';
+
+  @override
+  String get paylasimAracDavet => 'Calculate yours: the Kader app';
+
+  @override
+  String get paylasimKartiniPaylas => 'Share your card';
+
+  @override
+  String get paylasimSkoruGizle => 'Hide score';
+
+  @override
+  String get paylasimMenusunuAcar => 'Opens the share menu';
+
+  @override
+  String paylasimTemaSecimi(String tema) {
+    return '$tema theme';
+  }
+
+  @override
+  String get paylasimTemaGece => 'Night';
+
+  @override
+  String get paylasimTemaIsik => 'Light';
+
+  @override
+  String get paylasimTemaMor => 'Purple';
 }
