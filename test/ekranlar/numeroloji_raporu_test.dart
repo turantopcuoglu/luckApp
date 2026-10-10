@@ -8,11 +8,9 @@ import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/features/legal/legal_texts.dart';
-import 'package:kader/features/premium/premium_strings.dart';
 import 'package:kader/features/profile/kader_profili_screen.dart';
 import 'package:kader/features/profile/numeroloji_raporu_screen.dart';
 import 'package:kader/features/profile/profile_providers.dart';
-import 'package:kader/features/profile/profile_strings.dart';
 import 'package:kader/shared/widgets/kilit_amblemi.dart';
 
 import '../test_ortami.dart';
@@ -78,9 +76,9 @@ void main() {
       await tester.runAsync(hazirla);
       await ac(tester, const NumerolojiRaporuScreen());
 
-      expect(find.text(ProfileStrings.zamanCizelgesiBaslik), findsOneWidget);
+      expect(find.text(trMetinler.profilZamanCizelgesiBaslik), findsOneWidget);
       expect(find.text('32-41 yaş · Zirve 1'), findsOneWidget);
-      expect(find.text(ProfileStrings.suAn), findsOneWidget);
+      expect(find.text(trMetinler.profilSuAn), findsOneWidget);
 
       await tester.scrollUntilVisible(
         find.text('Şu anki dönemin · Zirve 1'),
@@ -92,7 +90,7 @@ void main() {
         find.text('Karmik borç 13 · Emek ve sabır'),
         200,
       );
-      expect(find.text(ProfileStrings.kilidiAc), findsWidgets);
+      expect(find.text(trMetinler.profilKilidiAc), findsWidgets);
       expect(find.byType(KilitAmblemi), findsWidgets);
     });
 
@@ -105,13 +103,13 @@ void main() {
         find.text('Sıradaki dönem · 41-50 yaş'),
         200,
       );
-      await tester.tap(find.text(ProfileStrings.kilidiAc).first);
+      await tester.tap(find.text(trMetinler.profilKilidiAc).first);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
-      expect(find.text(PremiumStrings.raporKilitBaslik), findsOneWidget);
-      expect(find.text(PremiumStrings.raporPremiumSecenegi), findsOneWidget);
-      expect(find.text(PremiumStrings.reklamlaAc), findsNothing);
+      expect(find.text(trMetinler.premiumRaporKilitBaslik), findsOneWidget);
+      expect(find.text(trMetinler.premiumRaporPremiumSecenegi), findsOneWidget);
+      expect(find.text(trMetinler.premiumReklamlaAc), findsNothing);
     });
 
     testWidgets('premium kullanıcıda kilit yok, tüm bölümler okunur', (
@@ -121,7 +119,7 @@ void main() {
       await ac(tester, const NumerolojiRaporuScreen(), premium: true);
 
       await tester.scrollUntilVisible(find.text('Denge sayısı 8'), 300);
-      expect(find.text(ProfileStrings.kilidiAc), findsNothing);
+      expect(find.text(trMetinler.profilKilidiAc), findsNothing);
       expect(find.text(RaporMetinleri.dengeler[8]!), findsOneWidget);
     });
 
@@ -140,10 +138,10 @@ void main() {
       await ac(tester, const NumerolojiRaporuScreen(), premium: true);
 
       await tester.scrollUntilVisible(
-        find.text(ProfileStrings.raporTamAdEksikBaslik),
+        find.text(trMetinler.profilRaporTamAdEksikBaslik),
         200,
       );
-      expect(find.text(ProfileStrings.raporTamAdEksikBaslik), findsOneWidget);
+      expect(find.text(trMetinler.profilRaporTamAdEksikBaslik), findsOneWidget);
       await tester.scrollUntilVisible(find.text(YasalMetinler.kisaNot), 300);
       expect(find.textContaining('Olgunluk sayısı'), findsNothing);
       expect(find.text(RaporMetinleri.gizliTutkuBasligi), findsNothing);
@@ -156,17 +154,17 @@ void main() {
       await ac(tester, const KaderProfiliScreen());
 
       await tester.scrollUntilVisible(
-        find.text(ProfileStrings.raporGirisBaslik),
+        find.text(trMetinler.profilRaporGirisBaslik),
         200,
       );
-      await tester.ensureVisible(find.text(ProfileStrings.raporGirisBaslik));
+      await tester.ensureVisible(find.text(trMetinler.profilRaporGirisBaslik));
       await tester.pump();
-      await tester.tap(find.text(ProfileStrings.raporGirisBaslik));
+      await tester.tap(find.text(trMetinler.profilRaporGirisBaslik));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
       expect(find.byType(NumerolojiRaporuScreen), findsOneWidget);
-      expect(find.text(ProfileStrings.zamanCizelgesiBaslik), findsOneWidget);
+      expect(find.text(trMetinler.profilZamanCizelgesiBaslik), findsOneWidget);
     });
   });
 }

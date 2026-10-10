@@ -7,6 +7,7 @@ import '../../core/content/rapor_okumasi.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_images.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../legal/legal_texts.dart';
@@ -15,7 +16,6 @@ import '../premium/rapor_kilidi.dart';
 import 'kilitli_bolum_karti.dart';
 import 'profile_config.dart';
 import 'profile_providers.dart';
-import 'profile_strings.dart';
 import 'tam_ad_duzenle.dart';
 
 /// Derin numeroloji raporu: hayatın dört dönemi, karmik sayılar ve isim
@@ -30,13 +30,14 @@ class NumerolojiRaporuScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final UserProfile profil = ref.watch(aktifProfilProvider);
     final RaporOkumasi okuma = ref.watch(raporOkumasiProvider);
     final bool kilitli = ref.watch(raporKilitliProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(ProfileStrings.raporBaslik)),
+      appBar: AppBar(title: Text(l.profilRaporBaslik)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -50,7 +51,7 @@ class NumerolojiRaporuScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              ProfileStrings.raporAciklama,
+              l.profilRaporAciklama,
               style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
@@ -65,8 +66,8 @@ class NumerolojiRaporuScreen extends ConsumerWidget {
                     Icons.edit_note_rounded,
                     color: AppColors.gold,
                   ),
-                  title: const Text(ProfileStrings.raporTamAdEksikBaslik),
-                  subtitle: const Text(ProfileStrings.raporTamAdEksikAciklama),
+                  title: Text(l.profilRaporTamAdEksikBaslik),
+                  subtitle: Text(l.profilRaporTamAdEksikAciklama),
                   onTap: () => unawaited(tamAdiDuzenle(context, ref)),
                 ),
               ),
@@ -101,6 +102,7 @@ class _ZamanCizelgesi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return Card(
       margin: EdgeInsets.zero,
@@ -109,7 +111,7 @@ class _ZamanCizelgesi extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(ProfileStrings.zamanCizelgesiBaslik, style: yazi.titleMedium),
+            Text(l.profilZamanCizelgesiBaslik, style: yazi.titleMedium),
             const SizedBox(height: AppSpacing.md),
             for (int i = 0; i < donemler.length; i++)
               _DonemSatiri(
@@ -143,6 +145,7 @@ class _DonemSatiri extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final bool aktif = ozet.aktif;
     return Opacity(
@@ -200,7 +203,7 @@ class _DonemSatiri extends StatelessWidget {
                         Expanded(
                           child: Text(
                             '${ozet.yasAraligi} · '
-                            '${ProfileStrings.zirveEtiketi(ozet.donem.zirve)}',
+                            '${l.profilZirve(ozet.donem.zirve)}',
                             style: yazi.labelLarge?.copyWith(
                               color: AppColors.gold,
                             ),
@@ -208,7 +211,7 @@ class _DonemSatiri extends StatelessWidget {
                         ),
                         if (aktif)
                           Chip(
-                            label: const Text(ProfileStrings.suAn),
+                            label: Text(l.profilSuAn),
                             visualDensity: VisualDensity.compact,
                             labelStyle: yazi.labelSmall,
                           ),

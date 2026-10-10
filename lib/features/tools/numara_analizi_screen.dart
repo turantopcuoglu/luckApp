@@ -7,12 +7,12 @@ import '../../core/content/arac_okumalari.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../share/arac_story_card.dart';
 import 'tools_config.dart';
 import 'tools_providers.dart';
-import 'tools_strings.dart';
 
-/// Seçili numara türünün indeksi ([ToolsStrings.numaraTurleri]).
+/// Seçili numara türünün indeksi ([_numaraTurleri]).
 final AutoDisposeStateProvider<int> numaraTuruProvider =
     StateProvider.autoDispose<int>((Ref ref) => 0);
 
@@ -56,23 +56,24 @@ class _NumaraAnaliziScreenState extends ConsumerState<NumaraAnaliziScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final int tur = ref.watch(numaraTuruProvider);
     final String? girdi = ref.watch(numaraGirdisiProvider);
     final NumaraOkumasi? okuma = ref.watch(numaraOkumasiProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(ToolsStrings.numaraBaslik)),
+      appBar: AppBar(title: Text(l.araclarNumaraBaslik)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: <Widget>[
             SegmentedButton<int>(
               segments: <ButtonSegment<int>>[
-                for (int i = 0; i < ToolsStrings.numaraTurleri.length; i++)
+                for (int i = 0; i < _numaraTurleri(l).length; i++)
                   ButtonSegment<int>(
                     value: i,
-                    label: Text(ToolsStrings.numaraTurleri[i].$1),
+                    label: Text(_numaraTurleri(l)[i].$1),
                   ),
               ],
               selected: <int>{tur},
@@ -86,19 +87,19 @@ class _NumaraAnaliziScreenState extends ConsumerState<NumaraAnaliziScreen> {
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => _hesapla(),
               decoration: InputDecoration(
-                labelText: ToolsStrings.numaraEtiketi,
-                hintText: ToolsStrings.numaraTurleri[tur].$2,
+                labelText: l.araclarNumaraEtiketi,
+                hintText: _numaraTurleri(l)[tur].$2,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             FilledButton(
               onPressed: _hesapla,
-              child: const Text(ToolsStrings.hesapla),
+              child: Text(l.araclarHesapla),
             ),
             const SizedBox(height: AppSpacing.lg),
             if (girdi != null && okuma == null)
               Text(
-                ToolsStrings.gecersiz,
+                l.araclarGecersiz,
                 style: yazi.bodyMedium?.copyWith(color: AppColors.error),
               ),
             if (okuma != null)
@@ -125,7 +126,7 @@ class _NumaraAnaliziScreenState extends ConsumerState<NumaraAnaliziScreen> {
                               children: <Widget>[
                                 Text(okuma.lakap, style: yazi.titleLarge),
                                 Text(
-                                  ToolsStrings.hesapSatiri(okuma.analiz.zincir),
+                                  l.araclarHesapSatiri(okuma.analiz.zincir.join(' → ')),
                                   style: yazi.bodySmall?.copyWith(
                                     color: AppColors.textSecondary,
                                   ),
@@ -142,7 +143,7 @@ class _NumaraAnaliziScreenState extends ConsumerState<NumaraAnaliziScreen> {
                         onPressed: () => unawaited(
                           ref.read(aracPaylasProvider)(
                             AracPaylasimi(
-                              ustEtiket: ToolsStrings.numaraKartEtiketi,
+                              ustEtiket: l.araclarNumaraKartEtiketi,
                               baslik: girdi!.trim(),
                               sayi: '${okuma.analiz.deger}',
                               sayiEtiketi: okuma.lakap,
@@ -151,7 +152,7 @@ class _NumaraAnaliziScreenState extends ConsumerState<NumaraAnaliziScreen> {
                           ),
                         ),
                         icon: const Icon(Icons.ios_share_rounded),
-                        label: const Text(ToolsStrings.paylas),
+                        label: Text(l.araclarPaylas),
                       ),
                     ],
                   ),
@@ -163,3 +164,11 @@ class _NumaraAnaliziScreenState extends ConsumerState<NumaraAnaliziScreen> {
     );
   }
 }
+
+/// Numara türleri: (segment etiketi, alan ipucu), [l] dilinde.
+List<(String, String)> _numaraTurleri(AppLocalizations l) =>
+    <(String, String)>[
+      (l.araclarTurTelefon, l.araclarTurTelefonIpucu),
+      (l.araclarTurPlaka, l.araclarTurPlakaIpucu),
+      (l.araclarTurEv, l.araclarTurEvIpucu),
+    ];

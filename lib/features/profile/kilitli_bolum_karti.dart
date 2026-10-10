@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/kilit_amblemi.dart';
 import 'profile_config.dart';
-import 'profile_strings.dart';
 
 /// Başlıklı metin kartı: kilitliyse ilk cümle görünür, gerisi bulanık ve
 /// altında "Kilidi aç" düğmesi durur.
@@ -41,6 +41,7 @@ class KilitliBolumKarti extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final TextStyle? metinStili = yazi.bodyLarge?.copyWith(
       height: ProfileConfig.metinSatirAraligi,
@@ -99,7 +100,7 @@ class KilitliBolumKarti extends StatelessWidget {
                 child: TextButton.icon(
                   onPressed: onKilidiAc,
                   icon: const Icon(Icons.lock_open_rounded),
-                  label: const Text(ProfileStrings.kilidiAc),
+                  label: Text(l.profilKilidiAc),
                 ),
               ),
             ],

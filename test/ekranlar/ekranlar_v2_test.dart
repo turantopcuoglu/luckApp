@@ -8,16 +8,15 @@ import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/features/compatibility/uyum_screen.dart';
 import 'package:kader/features/compatibility/uyum_sonuc_screen.dart';
-import 'package:kader/features/compatibility/uyum_strings.dart';
 import 'package:kader/features/home/ana_kabuk.dart';
 import 'package:kader/features/home/ana_sekme.dart';
 import 'package:kader/features/legal/legal_texts.dart';
 import 'package:kader/features/legal/yasal_belge_screen.dart';
-import 'package:kader/features/premium/premium_strings.dart';
 import 'package:kader/features/profile/hesap_metni.dart';
 import 'package:kader/features/profile/kader_profili_screen.dart';
-import 'package:kader/features/profile/profile_strings.dart';
 import 'package:kader/features/settings/ayarlar_screen.dart';
+
+import 'package:kader/l10n/app_localizations_en.dart';
 
 import '../test_ortami.dart';
 
@@ -64,7 +63,10 @@ void main() {
   group('hesapSatirlari', () {
     test('yaşam yolu adımları okunur biçimde', () {
       final List<HesapSatiri> satirlar =
-          hesapSatirlari(Numeroloji.yasamYolu(DateTime(1994, 3, 14)));
+          hesapSatirlari(
+            Numeroloji.yasamYolu(DateTime(1994, 3, 14)),
+            trMetinler,
+          );
       expect(
         satirlar.map((HesapSatiri s) => s.islem).toList(),
         <String>[
@@ -78,12 +80,27 @@ void main() {
 
     test('usta gün korunur, harfler değerleriyle yazılır', () {
       expect(
-        hesapSatirlari(Numeroloji.yasamYolu(DateTime(2000, 11, 29)))[1].islem,
+        hesapSatirlari(
+          Numeroloji.yasamYolu(DateTime(2000, 11, 29)),
+          trMetinler,
+        )[1].islem,
         '29 → 2+9 = 11',
       );
       expect(
-        hesapSatirlari(Numeroloji.isimSayisi('Ayşe')!).single.islem,
+        hesapSatirlari(Numeroloji.isimSayisi('Ayşe')!, trMetinler).single.islem,
         'A1 Y7 Ş1 E5 = 14 → 5',
+      );
+    });
+
+    test('adım etiketleri arayüz dilinde, işlemler iki dilde aynı', () {
+      final SayiHesabi hesap = Numeroloji.yasamYolu(DateTime(1994, 3, 14));
+      final List<HesapSatiri> tr = hesapSatirlari(hesap, trMetinler);
+      final List<HesapSatiri> en = hesapSatirlari(hesap, AppLocalizationsEn());
+      expect(tr.first.etiket, trMetinler.profilAdimAy);
+      expect(en.first.etiket, 'Birth month');
+      expect(
+        en.map((HesapSatiri s) => s.islem).toList(),
+        tr.map((HesapSatiri s) => s.islem).toList(),
       );
     });
 
@@ -101,14 +118,14 @@ void main() {
       await tester.runAsync(hazirla);
       await ac(tester, const KaderProfiliScreen());
 
-      expect(find.text(ProfileStrings.baslik), findsOneWidget);
+      expect(find.text(trMetinler.profilBaslik), findsOneWidget);
       expect(find.text('4'), findsWidgets); // yaşam yolu
       expect(find.text('5'), findsWidgets); // isim sayısı (Ayşe)
       await tester.scrollUntilVisible(find.text('Özün · Kurucu'), 200);
       expect(find.text('Özün · Kurucu'), findsOneWidget);
 
       await tester.scrollUntilVisible(find.text('Gölge yanın'), 200);
-      expect(find.text(ProfileStrings.kilidiAc), findsWidgets);
+      expect(find.text(trMetinler.profilKilidiAc), findsWidgets);
     });
 
     testWidgets('yaşam yolu karosu hesap adımlarını gösterir',
@@ -117,13 +134,13 @@ void main() {
       await ac(tester, const KaderProfiliScreen());
 
       // Profil başlık bandı uzun: karo test ekranının altında kalabilir.
-      await tester.ensureVisible(find.text(ProfileStrings.yasamYolu));
+      await tester.ensureVisible(find.text(trMetinler.profilYasamYolu));
       await tester.pump();
-      await tester.tap(find.text(ProfileStrings.yasamYolu));
+      await tester.tap(find.text(trMetinler.profilYasamYolu));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
-      expect(find.text(ProfileStrings.nasilHesaplandi), findsOneWidget);
+      expect(find.text(trMetinler.profilNasilHesaplandi), findsOneWidget);
       expect(find.text('1994 → 1+9+9+4 = 23 → 5'), findsOneWidget);
     });
 
@@ -141,12 +158,12 @@ void main() {
       await ac(tester, const KaderProfiliScreen(), premium: true);
 
       await tester.scrollUntilVisible(
-        find.text(ProfileStrings.tamAdEksikBaslik),
+        find.text(trMetinler.profilTamAdEksikBaslik),
         200,
       );
-      expect(find.text(ProfileStrings.tamAdEksikBaslik), findsOneWidget);
+      expect(find.text(trMetinler.profilTamAdEksikBaslik), findsOneWidget);
       await tester.scrollUntilVisible(find.text('Yaşam dersin'), 200);
-      expect(find.text(ProfileStrings.kilidiAc), findsNothing);
+      expect(find.text(trMetinler.profilKilidiAc), findsNothing);
     });
   });
 
@@ -156,19 +173,19 @@ void main() {
       await tester.runAsync(hazirla);
       await ac(tester, const UyumScreen());
 
-      expect(find.text(UyumStrings.bosDurum), findsOneWidget);
-      await tester.tap(find.text(UyumStrings.kisiEkle));
+      expect(find.text(trMetinler.uyumBosDurum), findsOneWidget);
+      await tester.tap(find.text(trMetinler.uyumKisiEkle));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
       await tester.enterText(find.byKey(const Key('kisi-ad-alani')), 'Mert Kaya');
-      await tester.tap(find.text(UyumStrings.kaydet));
+      await tester.tap(find.text(trMetinler.uyumKaydet));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
       await tester.pump(const Duration(milliseconds: 400));
 
       expect(find.byType(UyumSonucScreen), findsOneWidget);
-      expect(find.text(UyumStrings.uyumEtiketi), findsOneWidget);
+      expect(find.text(trMetinler.uyumEtiketi), findsOneWidget);
       expect(KisiRepository(ortam.kisiler).tumu().single.ad, 'Mert Kaya');
 
       // pageBack() İngilizce "Back" ipucunu arar; arayüz Türkçe yerelleştirildi.
@@ -177,9 +194,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 400));
       expect(find.text('Mert Kaya'), findsOneWidget);
 
-      await tester.tap(find.text(UyumStrings.kisiEkle));
+      await tester.tap(find.text(trMetinler.uyumKisiEkle));
       await tester.pump();
-      expect(find.text(PremiumStrings.kisiSiniri), findsOneWidget);
+      expect(find.text(trMetinler.premiumKisiSiniri), findsOneWidget);
     });
   });
 
@@ -233,7 +250,7 @@ void main() {
 
       await tester.tap(find.text(AnaSekme.uyum.etiketi(trMetinler)));
       await tester.pump();
-      expect(find.text(UyumStrings.aciklama), findsOneWidget);
+      expect(find.text(trMetinler.uyumAciklama), findsOneWidget);
 
       await tester.tap(find.text(AnaSekme.ayarlar.etiketi(trMetinler)));
       await tester.pump();

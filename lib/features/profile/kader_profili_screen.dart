@@ -26,7 +26,6 @@ import 'hesap_metni.dart';
 import 'kilitli_bolum_karti.dart';
 import 'numeroloji_raporu_screen.dart';
 import 'profile_config.dart';
-import 'profile_strings.dart';
 import 'tam_ad_duzenle.dart';
 
 /// Kader Profili: kullanıcının sabit numeroloji sayıları, burcu ve
@@ -42,6 +41,7 @@ class KaderProfiliScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final UserProfile profil = ref.watch(aktifProfilProvider);
     final KaderProfili kader = profil.kaderProfili;
@@ -69,13 +69,13 @@ class KaderProfiliScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text(
-              ProfileStrings.baslik,
+              l.profilBaslik,
               style: yazi.headlineMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              ProfileStrings.aciklama,
+              l.profilAciklama,
               style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
@@ -94,8 +94,8 @@ class KaderProfiliScreen extends ConsumerWidget {
                 child: ListTile(
                   leading: const Icon(Icons.edit_note_rounded,
                       color: AppColors.gold),
-                  title: const Text(ProfileStrings.tamAdEksikBaslik),
-                  subtitle: const Text(ProfileStrings.tamAdEksikAciklama),
+                  title: Text(l.profilTamAdEksikBaslik),
+                  subtitle: Text(l.profilTamAdEksikAciklama),
                   onTap: () => unawaited(tamAdiDuzenle(context, ref)),
                 ),
               ),
@@ -110,8 +110,8 @@ class KaderProfiliScreen extends ConsumerWidget {
                   height: ProfileConfig.raporKitapIkonu,
                   excludeFromSemantics: true,
                 ),
-                title: const Text(ProfileStrings.raporGirisBaslik),
-                subtitle: const Text(ProfileStrings.raporGirisAciklama),
+                title: Text(l.profilRaporGirisBaslik),
+                subtitle: Text(l.profilRaporGirisAciklama),
                 trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => unawaited(
                   Navigator.of(context).push(
@@ -131,7 +131,7 @@ class KaderProfiliScreen extends ConsumerWidget {
                     context,
                     ref,
                     kilitAnahtari: KilitAnahtarlari.profil,
-                    aciklama: ProfileStrings.kilitAciklamasi,
+                    aciklama: l.profilKilitAciklamasi,
                   ),
                 ),
               ),
@@ -269,9 +269,9 @@ class _KimlikKarti extends StatelessWidget {
                 for (final String anahtar in karakter.anahtarlar)
                   Chip(label: Text(anahtar)),
                 if (kader.burcSinirGunu)
-                  const Chip(
+                  Chip(
                     avatar: Icon(Icons.info_outline, size: AppSpacing.md),
-                    label: Text(ProfileStrings.sinirGunu),
+                    label: Text(l.profilSinirGunu),
                   ),
               ],
             ),
@@ -290,11 +290,12 @@ class _SayiKarolari extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final List<(String, SayiHesabi?)> karolar = <(String, SayiHesabi?)>[
-      (ProfileStrings.yasamYolu, kader.yasamYolu),
-      (ProfileStrings.isimSayisi, kader.isimSayisi),
-      (ProfileStrings.ruhSayisi, kader.ruhSayisi),
-      (ProfileStrings.kisilikSayisi, kader.kisilikSayisi),
+      (l.profilYasamYolu, kader.yasamYolu),
+      (l.profilIsimSayisi, kader.isimSayisi),
+      (l.profilRuhSayisi, kader.ruhSayisi),
+      (l.profilKisilikSayisi, kader.kisilikSayisi),
     ];
     return Row(
       children: <Widget>[
@@ -315,6 +316,7 @@ class _SayiKarolari extends ConsumerWidget {
   }
 
   void _hesabiGoster(BuildContext context, String etiket, SayiHesabi hesap) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     showModalBottomSheet<void>(
       context: context,
@@ -334,13 +336,13 @@ class _SayiKarolari extends ConsumerWidget {
             children: <Widget>[
               Text(
                 '$etiket ${hesap.deger}'
-                '${hesap.ustaMi ? ' · ${ProfileStrings.ustaSayi}' : ''}',
+                '${hesap.ustaMi ? ' · ${l.profilUstaSayi}' : ''}',
                 style: yazi.titleLarge?.copyWith(color: AppColors.gold),
               ),
               const SizedBox(height: AppSpacing.xs),
-              Text(ProfileStrings.nasilHesaplandi, style: yazi.titleSmall),
+              Text(l.profilNasilHesaplandi, style: yazi.titleSmall),
               const SizedBox(height: AppSpacing.md),
-              for (final HesapSatiri satir in hesapSatirlari(hesap))
+              for (final HesapSatiri satir in hesapSatirlari(hesap, l))
                 Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                   child: Row(
@@ -370,7 +372,7 @@ class _SayiKarolari extends ConsumerWidget {
                 ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                ProfileStrings.sistemNotu,
+                l.profilSistemNotu,
                 style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
               ),
             ],
@@ -394,6 +396,7 @@ class _SayiKarosu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return Material(
       color: AppColors.camYuzey,
@@ -433,7 +436,7 @@ class _SayiKarosu extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                hesap == null ? ProfileStrings.tamAdEkle : etiket,
+                hesap == null ? l.profilTamAdEkle : etiket,
                 style: yazi.labelSmall?.copyWith(
                   color: AppColors.textSecondary,
                 ),

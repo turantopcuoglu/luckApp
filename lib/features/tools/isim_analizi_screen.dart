@@ -7,13 +7,13 @@ import '../../core/content/arac_okumalari.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_route.dart';
 import '../premium/paywall_screen.dart';
 import '../premium/premium_providers.dart';
 import '../profile/kilitli_bolum_karti.dart';
 import '../share/arac_story_card.dart';
 import 'tools_providers.dart';
-import 'tools_strings.dart';
 
 /// Hesaplanmak üzere gönderilen ad (null: henüz gönderilmedi).
 final AutoDisposeStateProvider<String?> isimGirdisiProvider =
@@ -51,6 +51,7 @@ class _IsimAnaliziScreenState extends ConsumerState<IsimAnaliziScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final String? girdi = ref.watch(isimGirdisiProvider);
     final IsimAnalizi? analiz = ref.watch(isimAnaliziProvider);
@@ -60,7 +61,7 @@ class _IsimAnaliziScreenState extends ConsumerState<IsimAnaliziScreen> {
         : isimOkumasi(analiz);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(ToolsStrings.isimBaslik)),
+      appBar: AppBar(title: Text(l.araclarIsimBaslik)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -70,20 +71,20 @@ class _IsimAnaliziScreenState extends ConsumerState<IsimAnaliziScreen> {
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => _hesapla(),
-              decoration: const InputDecoration(
-                labelText: ToolsStrings.adEtiketi,
-                hintText: ToolsStrings.adIpucu,
+              decoration: InputDecoration(
+                labelText: l.araclarAdEtiketi,
+                hintText: l.araclarAdIpucu,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             FilledButton(
               onPressed: _hesapla,
-              child: const Text(ToolsStrings.hesapla),
+              child: Text(l.araclarHesapla),
             ),
             const SizedBox(height: AppSpacing.lg),
             if (girdi != null && analiz == null)
               Text(
-                ToolsStrings.gecersiz,
+                l.araclarGecersiz,
                 style: yazi.bodyMedium?.copyWith(color: AppColors.error),
               ),
             if (analiz != null) ...<Widget>[
@@ -105,9 +106,9 @@ class _IsimAnaliziScreenState extends ConsumerState<IsimAnaliziScreen> {
                 ),
               OutlinedButton.icon(
                 onPressed: () =>
-                    unawaited(ref.read(aracPaylasProvider)(_paylasim(analiz))),
+                    unawaited(ref.read(aracPaylasProvider)(_paylasim(analiz, l))),
                 icon: const Icon(Icons.ios_share_rounded),
-                label: const Text(ToolsStrings.paylas),
+                label: Text(l.araclarPaylas),
               ),
             ],
           ],
@@ -116,12 +117,14 @@ class _IsimAnaliziScreenState extends ConsumerState<IsimAnaliziScreen> {
     );
   }
 
-  /// Kart: isim sayısı ve (ücretsiz) isim sayısı metni.
-  AracPaylasimi _paylasim(IsimAnalizi analiz) => AracPaylasimi(
-    ustEtiket: ToolsStrings.isimKartEtiketi,
+  /// Kart: isim sayısı ve (ücretsiz) isim sayısı metni; etiketler [l]
+  /// dilinde.
+  AracPaylasimi _paylasim(IsimAnalizi analiz, AppLocalizations l) =>
+      AracPaylasimi(
+    ustEtiket: l.araclarIsimKartEtiketi,
     baslik: analiz.tamAd,
     sayi: '${analiz.isim.deger}',
-    sayiEtiketi: ToolsStrings.isimSayisiEtiketi,
+    sayiEtiketi: l.araclarIsimSayisiEtiketi,
     metin: isimOkumasi(analiz).first.metin,
   );
 }

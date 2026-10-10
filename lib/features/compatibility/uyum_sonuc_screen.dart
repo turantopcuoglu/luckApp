@@ -6,12 +6,12 @@ import '../../core/content/gunluk_okuma.dart';
 import '../../core/storage/kayitli_kisi.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/sahne_arka_plani.dart';
 import '../categories/categories_config.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../daily_luck/widgets/score_ring.dart';
 import 'uyum_config.dart';
-import 'uyum_strings.dart';
 
 /// Kullanıcı ile [kisi] arasındaki uyum okuması.
 class UyumSonucScreen extends ConsumerWidget {
@@ -23,6 +23,7 @@ class UyumSonucScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final UyumOkumasi okuma = uyumOkumasi(
       okuyucu: ref.watch(aktifProfilProvider).okuyucu,
@@ -52,7 +53,7 @@ class UyumSonucScreen extends ConsumerWidget {
                     skor: okuma.sonuc.skor,
                     boyut: CategoriesConfig.detayHalkaCapi,
                     kalinlik: CategoriesConfig.detayHalkaKalinligi,
-                    etiket: UyumStrings.uyumEtiketi,
+                    etiket: l.uyumEtiketi,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -90,7 +91,7 @@ class UyumSonucScreen extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.md),
                 ],
                 Text(
-                  UyumStrings.sonucNotu,
+                  l.uyumSonucNotu,
                   style: yazi.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),

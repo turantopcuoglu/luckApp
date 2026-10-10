@@ -27,7 +27,6 @@ import '../onboarding/tanisma_screen.dart';
 import '../onboarding/welcome_screen.dart';
 import '../premium/paywall_screen.dart';
 import '../premium/premium_kontrolcu.dart';
-import '../premium/premium_strings.dart';
 import '../profile/tam_ad_duzenle.dart';
 
 /// Ayarlar: profil, premium, bildirimler, dil, gizlilik/yasal ve veri silme.
@@ -167,7 +166,7 @@ class AyarlarScreen extends ConsumerWidget {
                 ),
                 trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: premium.aktif
-                    ? () => _bilgiGoster(context, PremiumStrings.yonetimBilgisi)
+                    ? () => _bilgiGoster(context, l.premiumYonetimBilgisi)
                     : () => Navigator.of(
                         context,
                       ).push(fadeThroughRoute<void>(const PaywallScreen())),

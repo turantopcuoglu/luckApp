@@ -6,8 +6,6 @@ import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
-import 'package:kader/features/premium/premium_strings.dart';
-import 'package:kader/features/profile/profile_strings.dart';
 import 'package:kader/features/profile/yil_raporu_karti.dart';
 import 'package:kader/features/profile/yil_raporu_screen.dart';
 
@@ -47,8 +45,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: ortam.overridelar(gun: gun, premium: premium),
-          child: MaterialApp(
-            home: Scaffold(body: ListView(children: <Widget>[ev])),
+          child: testUygulamasi(
+            Scaffold(body: ListView(children: <Widget>[ev])),
           ),
         ),
       );
@@ -74,15 +72,15 @@ void main() {
       await ac(tester, const YilRaporuKarti(), gun: ekim2026);
 
       expect(
-        find.text(ProfileStrings.yilRaporuKartBaslik(2027)),
+        find.text(trMetinler.profilYilRaporuKartBaslik(2027)),
         findsOneWidget,
       );
       expect(
-        find.text(ProfileStrings.yilRaporuKartAciklama(2027, 'Tohum Yılı')),
+        find.text(trMetinler.profilYilRaporuKartAciklama(2027, 'Tohum Yılı')),
         findsOneWidget,
       );
 
-      await tester.tap(find.text(ProfileStrings.yilRaporuKartBaslik(2027)));
+      await tester.tap(find.text(trMetinler.profilYilRaporuKartBaslik(2027)));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
       expect(find.byType(YilRaporuScreen), findsOneWidget);
@@ -92,7 +90,7 @@ void main() {
       final DateTime haziran = DateTime(2026, 6, 1);
       await tester.runAsync(() => hazirla(haziran));
       await ac(tester, const YilRaporuKarti(), gun: haziran);
-      expect(find.text(ProfileStrings.yilRaporuKartBaslik(2027)), findsNothing);
+      expect(find.text(trMetinler.profilYilRaporuKartBaslik(2027)), findsNothing);
     });
   });
 
@@ -103,7 +101,7 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             overrides: ortam.overridelar(gun: ekim2026, premium: premium),
-            child: const MaterialApp(home: YilRaporuScreen(yil: 2027)),
+            child: testUygulamasi(const YilRaporuScreen(yil: 2027)),
           ),
         );
         await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -115,7 +113,7 @@ void main() {
         'çipleri görünür', (WidgetTester tester) async {
       await ekraniAc(tester);
 
-      expect(find.text(ProfileStrings.yilRaporuBaslik(2027)), findsOneWidget);
+      expect(find.text(trMetinler.profilYilRaporuBaslik(2027)), findsOneWidget);
       expect(find.text('Tohum Yılı'), findsOneWidget);
       expect(find.text('2027 · Tohum Yılı · Kişisel yıl 1'), findsOneWidget);
 
@@ -127,13 +125,13 @@ void main() {
         find.text(YillikRaporMetinleri.aylar[2]!.varyantlar[0]),
         findsOneWidget,
       );
-      expect(find.text(ProfileStrings.akisCipi), findsWidgets);
+      expect(find.text(trMetinler.profilAkisCipi), findsWidgets);
 
       await tester.scrollUntilVisible(
         find.text('Şubat · İfade ve paylaşım ayı'),
         300,
       );
-      expect(find.text(ProfileStrings.zorluCipi), findsWidgets);
+      expect(find.text(trMetinler.profilZorluCipi), findsWidgets);
       // Şubat kilitli: tam metin görünmez.
       expect(
         find.text(YillikRaporMetinleri.aylar[3]!.varyantlar[0]),
@@ -149,17 +147,17 @@ void main() {
         find.text(YillikRaporMetinleri.firsatlarBasligi),
         300,
       );
-      await tester.ensureVisible(find.text(ProfileStrings.kilidiAc).first);
+      await tester.ensureVisible(find.text(trMetinler.profilKilidiAc).first);
       await tester.pump();
-      await tester.tap(find.text(ProfileStrings.kilidiAc).first);
+      await tester.tap(find.text(trMetinler.profilKilidiAc).first);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
       expect(
-        find.text(PremiumStrings.yilRaporuKilitBaslik(2027)),
+        find.text(trMetinler.premiumYilRaporuKilitBaslik(2027)),
         findsOneWidget,
       );
-      expect(find.text(PremiumStrings.reklamlaAc), findsNothing);
+      expect(find.text(trMetinler.premiumReklamlaAc), findsNothing);
     });
 
     testWidgets('premium kullanıcıda kilit yok; yılın sorusu en sonda', (
@@ -170,7 +168,7 @@ void main() {
         find.text(YillikRaporMetinleri.niyetBasligi),
         400,
       );
-      expect(find.text(ProfileStrings.kilidiAc), findsNothing);
+      expect(find.text(trMetinler.profilKilidiAc), findsNothing);
       expect(
         find.text(YillikRaporMetinleri.rehberler[1]!.niyet),
         findsOneWidget,

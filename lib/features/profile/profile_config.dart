@@ -84,4 +84,8 @@ abstract final class ProfileConfig {
 
   /// Akış/zorlu ay çipinin arka plan saydamlığı.
   static const double ayCipiOpakligi = 0.18;
+
+  /// Büyük Üçlü'de bilinmeyen burcun yerine yazılan işaret (dilden
+  /// bağımsız).
+  static const String bilinmeyenDeger = '?';
 }

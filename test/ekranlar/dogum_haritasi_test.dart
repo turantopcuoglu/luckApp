@@ -8,8 +8,8 @@ import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/core/storage/user_repository.dart';
 import 'package:kader/features/profile/dogum_haritasi_screen.dart';
+import 'package:kader/features/profile/profile_config.dart';
 import 'package:kader/features/profile/profile_providers.dart';
-import 'package:kader/features/profile/profile_strings.dart';
 
 import '../test_ortami.dart';
 
@@ -51,8 +51,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: ortam.overridelar(gun: sabitGun, premium: premium),
-          child: MaterialApp(
-            home: Scaffold(body: ListView(children: <Widget>[ev])),
+          child: testUygulamasi(
+            Scaffold(body: ListView(children: <Widget>[ev])),
           ),
         ),
       );
@@ -115,32 +115,32 @@ void main() {
         'seçilip kaydedilir', (WidgetTester tester) async {
       await ac(tester, const BuyukUcluKarti(), ayse);
       expect(find.text('Balık'), findsOneWidget);
-      expect(find.text(ProfileStrings.bilinmiyor), findsOneWidget);
+      expect(find.text(ProfileConfig.bilinmeyenDeger), findsOneWidget);
 
-      await tester.tap(find.text(ProfileStrings.yukseleniniOgren));
+      await tester.tap(find.text(trMetinler.profilYukseleniniOgren));
       await tester.pumpAndSettle();
-      expect(find.text(ProfileStrings.dogumBilgisiBaslik), findsOneWidget);
+      expect(find.text(trMetinler.profilDogumBilgisiBaslik), findsOneWidget);
 
       await tester.enterText(find.byKey(const Key('dogum-ili-alani')), 'ist');
       await tester.pumpAndSettle();
       await tester.tap(find.text('İstanbul').last);
       await tester.pumpAndSettle();
-      await tester.tap(find.text(ProfileStrings.kaydet));
+      await tester.tap(find.text(trMetinler.profilKaydet));
       await tester.pumpAndSettle();
 
       final UserProfile kayitli = UserRepository(ortam.profil).profil()!;
       expect(kayitli.dogumIliPlaka, 34);
       expect(kayitli.dogumSaatiDakika, isNull);
       // Saat hâlâ bilinmediği için Yükselen yok; düğme duruyor.
-      expect(find.text(ProfileStrings.yukseleniniOgren), findsOneWidget);
+      expect(find.text(trMetinler.profilYukseleniniOgren), findsOneWidget);
     });
 
     testWidgets('saat ve il varsa üç burç ve "Haritanı oku" görünür', (
       WidgetTester tester,
     ) async {
       await ac(tester, const BuyukUcluKarti(), ayseTam);
-      expect(find.text(ProfileStrings.bilinmiyor), findsNothing);
-      expect(find.text(ProfileStrings.haritaniOku), findsOneWidget);
+      expect(find.text(ProfileConfig.bilinmeyenDeger), findsNothing);
+      expect(find.text(trMetinler.profilHaritaniOku), findsOneWidget);
     });
   });
 
@@ -151,7 +151,7 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             overrides: ortam.overridelar(gun: sabitGun, premium: premium),
-            child: const MaterialApp(home: DogumHaritasiScreen()),
+            child: testUygulamasi(const DogumHaritasiScreen()),
           ),
         );
         await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -163,13 +163,13 @@ void main() {
       WidgetTester tester,
     ) async {
       await ekraniAc(tester);
-      expect(find.text(ProfileStrings.gunesBasligi('Balık')), findsOneWidget);
+      expect(find.text(trMetinler.profilGunesBasligi('Balık')), findsOneWidget);
       expect(find.textContaining('Ay burcun · '), findsWidgets);
       await tester.scrollUntilVisible(
         find.textContaining('Yükselenin · '),
         200,
       );
-      expect(find.text(ProfileStrings.kilidiAc), findsWidgets);
+      expect(find.text(trMetinler.profilKilidiAc), findsWidgets);
     });
 
     testWidgets('premium kullanıcıda kilit yok', (WidgetTester tester) async {
@@ -178,7 +178,7 @@ void main() {
         find.textContaining('Yükselenin · '),
         200,
       );
-      expect(find.text(ProfileStrings.kilidiAc), findsNothing);
+      expect(find.text(trMetinler.profilKilidiAc), findsNothing);
     });
   });
 }

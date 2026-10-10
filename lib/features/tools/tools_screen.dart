@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/gorsel_afis.dart';
@@ -12,7 +13,6 @@ import 'bebek_ismi_screen.dart';
 import 'isim_analizi_screen.dart';
 import 'numara_analizi_screen.dart';
 import 'tools_config.dart';
-import 'tools_strings.dart';
 
 /// Keşfet sekmesi: paylaşmaya uygun numeroloji araçları.
 ///
@@ -24,25 +24,26 @@ class ToolsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final List<(String, String, String, Widget)> araclar =
         <(String, String, String, Widget)>[
           (
             AppImages.aracIsim,
-            ToolsStrings.isimBaslik,
-            ToolsStrings.isimAciklama,
+            l.araclarIsimBaslik,
+            l.araclarIsimAciklama,
             const IsimAnaliziScreen(),
           ),
           (
             AppImages.aracNumara,
-            ToolsStrings.numaraBaslik,
-            ToolsStrings.numaraAciklama,
+            l.araclarNumaraBaslik,
+            l.araclarNumaraAciklama,
             const NumaraAnaliziScreen(),
           ),
           (
             AppImages.aracBebek,
-            ToolsStrings.bebekBaslik,
-            ToolsStrings.bebekAciklama,
+            l.araclarBebekBaslik,
+            l.araclarBebekAciklama,
             const BebekIsmiScreen(),
           ),
         ];
@@ -52,10 +53,10 @@ class ToolsScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: <Widget>[
-            Text(ToolsStrings.baslik, style: yazi.headlineMedium),
+            Text(l.araclarBaslik, style: yazi.headlineMedium),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              ToolsStrings.aciklama,
+              l.araclarAciklama,
               style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: AppSpacing.lg),

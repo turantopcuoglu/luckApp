@@ -12,7 +12,6 @@ import 'package:kader/features/daily_luck/daily_luck_screen.dart';
 import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 import 'package:kader/features/premium/paywall_screen.dart';
 import 'package:kader/features/premium/premium_providers.dart';
-import 'package:kader/features/premium/premium_strings.dart';
 import 'package:kader/shared/widgets/kilit_amblemi.dart';
 
 import '../test_ortami.dart';
@@ -116,27 +115,27 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
-      expect(find.text(PremiumStrings.kilitBaslik), findsOneWidget);
+      expect(find.text(trMetinler.premiumKilitBaslik), findsOneWidget);
       expect(
         find.text(trMetinler.kategoriKilitAciklamasi(LuckCategory.ask.etiket)),
         findsOneWidget,
       );
       // Reklam SDK'sı hazır değilken reklam seçeneği gösterilmez.
-      expect(find.text(PremiumStrings.reklamlaAc), findsNothing);
+      expect(find.text(trMetinler.premiumReklamlaAc), findsNothing);
 
-      await tester.tap(find.text(PremiumStrings.premiumaGec));
+      await tester.tap(find.text(trMetinler.premiumPremiumaGec));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
       expect(find.byType(PaywallScreen), findsOneWidget);
-      expect(find.text(PremiumStrings.baslik), findsOneWidget);
+      expect(find.text(trMetinler.premiumBaslik), findsOneWidget);
       // Mağaza yok (test): plan bulunamadı mesajı ve yenileme bilgisi.
-      expect(find.text(PremiumStrings.planYok), findsOneWidget);
+      expect(find.text(trMetinler.premiumPlanYok), findsOneWidget);
       await tester.scrollUntilVisible(
-        find.text(PremiumStrings.yenilemeBilgisi),
+        find.text(trMetinler.premiumYenilemeBilgisi),
         100,
       );
-      expect(find.text(PremiumStrings.yenilemeBilgisi), findsOneWidget);
+      expect(find.text(trMetinler.premiumYenilemeBilgisi), findsOneWidget);
     });
 
     testWidgets('kilitsiz kutuya dokunmak detay sayfası açar',

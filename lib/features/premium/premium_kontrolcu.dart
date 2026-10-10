@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/storage/providers.dart';
 import '../../core/storage/uygulama_durumu.dart';
+import '../../l10n/app_localizations.dart';
+import '../../l10n/dil_providers.dart';
 import 'magaza_servisi.dart';
 import 'premium_config.dart';
 
@@ -103,6 +105,10 @@ class PremiumDurumu {
 /// yok). Kötüye kullanıma karşı ileride Play Developer API ile sunucu
 /// doğrulaması eklenebilir; bu sınıfın dışa açık yüzü değişmez.
 class PremiumKontrolcu extends Notifier<PremiumDurumu> {
+  /// Hata mesajlarının dili (uygulama dili; kontrolcü widget ağacının
+  /// dışında çalıştığı için `BuildContext` yerine provider'dan okunur).
+  AppLocalizations get _metinler => ref.read(arayuzMetinleriProvider);
+
   StreamSubscription<List<SatinAlmaGuncellemesi>>? _abonelik;
   bool _geriYuklemeBekleniyor = false;
 
@@ -178,7 +184,7 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
     }
     final TekSeferlikUrun? urun = state.tekSeferlikUrunler[urunId];
     if (urun == null) {
-      state = state.copyWith(hataMesaji: PremiumHatalari.raporUrunuYok);
+      state = state.copyWith(hataMesaji: _metinler.premiumHataRaporUrunuYok);
       return;
     }
     state = state.copyWith(islemde: true);
@@ -188,7 +194,7 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
     if (!basladi) {
       state = state.copyWith(
         islemde: false,
-        hataMesaji: PremiumHatalari.satinAlmaBaslamadi,
+        hataMesaji: _metinler.premiumHataSatinAlmaBaslamadi,
       );
     }
   }
@@ -205,7 +211,7 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
       debugPrint('Planlar yüklenemedi: $hata');
       state = state.copyWith(
         planlarYukleniyor: false,
-        hataMesaji: PremiumHatalari.planlarYuklenemedi,
+        hataMesaji: _metinler.premiumHataPlanlar,
       );
     }
   }
@@ -217,7 +223,7 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
     if (!basladi) {
       state = state.copyWith(
         islemde: false,
-        hataMesaji: PremiumHatalari.satinAlmaBaslamadi,
+        hataMesaji: _metinler.premiumHataSatinAlmaBaslamadi,
       );
     }
   }
@@ -235,7 +241,7 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
       _geriYuklemeBekleniyor = false;
       state = state.copyWith(
         islemde: false,
-        hataMesaji: sessiz ? null : PremiumHatalari.geriYuklenemedi,
+        hataMesaji: sessiz ? null : _metinler.premiumHataGeriYukleme,
       );
     }
   }
@@ -264,9 +270,9 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
             bulunanTekSeferlikler.add(g.urunId);
           }
         case SatinAlmaDurumu.hata:
-          hata = PremiumHatalari.satinAlmaHatasi;
+          hata = _metinler.premiumHataSatinAlma;
         case SatinAlmaDurumu.beklemede:
-          hata = PremiumHatalari.odemeBekleniyor;
+          hata = _metinler.premiumHataOdemeBekleniyor;
         case SatinAlmaDurumu.iptal:
           break;
       }
@@ -334,37 +340,6 @@ class PremiumKontrolcu extends Notifier<PremiumDurumu> {
 
   /// Gösterilen hata mesajını temizler.
   void hatayiTemizle() => state = state.copyWith();
-}
-
-/// Premium akışının kullanıcıya dönük hata metinleri.
-abstract final class PremiumHatalari {
-  /// Planlar yüklenemedi.
-  static const String planlarYuklenemedi =
-      'Abonelik seçenekleri şu an yüklenemedi. İnternet bağlantını kontrol '
-      'edip tekrar dene.';
-
-  /// Satın alma akışı başlamadı.
-  static const String satinAlmaBaslamadi =
-      'Satın alma başlatılamadı. Google Play hesabının açık olduğundan emin '
-      'olup tekrar dene.';
-
-  /// Satın alma sırasında hata.
-  static const String satinAlmaHatasi =
-      'Satın alma tamamlanamadı. Ücret alınmadıysa tekrar deneyebilirsin.';
-
-  /// Ödeme beklemede.
-  static const String odemeBekleniyor =
-      'Ödemen onay bekliyor. Onaylandığında Premium otomatik açılacak.';
-
-  /// Tek seferlik ürün mağazada bulunamadı.
-  static const String raporUrunuYok =
-      'Rapor şu an satın alınamıyor. Uygulamanın Google Play üzerinden '
-      'yüklendiğinden ve internet bağlantının açık olduğundan emin ol.';
-
-  /// Geri yükleme hatası.
-  static const String geriYuklenemedi =
-      'Satın alımlar geri yüklenemedi. Aynı Google hesabıyla giriş yaptığından '
-      'emin ol.';
 }
 
 /// Premium kontrolcüsü.

@@ -15,7 +15,6 @@ import '../../shared/widgets/sahne_config.dart';
 import '../legal/yasal_belge_screen.dart';
 import 'magaza_servisi.dart';
 import 'premium_kontrolcu.dart';
-import 'premium_strings.dart';
 
 /// Paywall'da seçili plan kimliği (null = varsayılan: yıllık/ilk plan).
 final AutoDisposeStateProvider<String?> seciliPlanProvider =
@@ -70,6 +69,7 @@ class PaywallScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final PremiumDurumu durum = ref.watch(premiumKontrolcuProvider);
 
@@ -78,7 +78,7 @@ class PaywallScreen extends ConsumerWidget {
         (PremiumDurumu? eski, PremiumDurumu yeni) {
       if (eski?.aktif == false && yeni.aktif) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(PremiumStrings.basarili)),
+          SnackBar(content: Text(l.premiumBasarili)),
         );
         Navigator.of(context).maybePop();
       } else if (yeni.hataMesaji != null &&
@@ -140,7 +140,7 @@ class PaywallScreen extends ConsumerWidget {
                       PaywallConfig.kahramanBoslukOrani,
                 ),
                 Text(
-                  PremiumStrings.baslik,
+                  l.premiumBaslik,
                   style: yazi.displaySmall?.copyWith(
                     color: AppColors.goldAcik,
                     shadows: const <Shadow>[
@@ -154,13 +154,13 @@ class PaywallScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  PremiumStrings.altBaslik,
+                  l.premiumAltBaslik,
                   style:
                       yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                for (final String ozellik in PremiumStrings.ozellikler)
+                for (final String ozellik in _ozellikler(l))
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(vertical: AppSpacing.xs),
@@ -182,7 +182,7 @@ class PaywallScreen extends ConsumerWidget {
                 if (durum.aktif)
                   CamPanel(
                     child: Text(
-                      PremiumStrings.zatenPremium,
+                      l.premiumZatenPremium,
                       style: yazi.titleMedium?.copyWith(color: AppColors.gold),
                       textAlign: TextAlign.center,
                     ),
@@ -230,8 +230,8 @@ class PaywallScreen extends ConsumerWidget {
                     AltinButon(
                       genislik: null,
                       metin: secili?.denemeGunu != null
-                          ? PremiumStrings.denemeBaslat
-                          : PremiumStrings.abonelikBaslat,
+                          ? l.premiumDenemeBaslat
+                          : l.premiumAbonelikBaslat,
                       onPressed: secili == null
                           ? null
                           : () => unawaited(
@@ -243,7 +243,7 @@ class PaywallScreen extends ConsumerWidget {
                 ],
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  PremiumStrings.puanNotu,
+                  l.premiumPuanNotu,
                   style: yazi.bodySmall?.copyWith(color: AppColors.goldAcik),
                   textAlign: TextAlign.center,
                 ),
@@ -256,10 +256,10 @@ class PaywallScreen extends ConsumerWidget {
                                   .read(premiumKontrolcuProvider.notifier)
                                   .geriYukle(),
                             ),
-                    child: const Text(PremiumStrings.geriYukle),
+                    child: Text(l.premiumGeriYukle),
                   ),
                 Text(
-                  PremiumStrings.yenilemeBilgisi,
+                  l.premiumYenilemeBilgisi,
                   style:
                       yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
                   textAlign: TextAlign.center,
@@ -304,11 +304,12 @@ class _PlanKarti extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final List<String> altSatirlar = <String>[
-      if (plan.denemeGunu != null) PremiumStrings.deneme(plan.denemeGunu!),
+      if (plan.denemeGunu != null) l.premiumDeneme(plan.denemeGunu!),
       if (plan.yillikMi && aylikPlan != null)
-        PremiumStrings.ayliginaDusen(_aylikKarsilik()),
+        l.premiumAyliginaDusen(_aylikKarsilik()),
     ];
     final BorderRadius kose = BorderRadius.circular(AppRadius.md);
     return Semantics(
@@ -345,14 +346,14 @@ class _PlanKarti extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         plan.yillikMi
-                            ? PremiumStrings.yillik
-                            : PremiumStrings.aylik,
+                            ? l.premiumYillik
+                            : l.premiumAylik,
                         style: yazi.titleLarge,
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
                         '${plan.fiyatMetni} '
-                        '${PremiumStrings.donem(yillik: plan.yillikMi)}',
+                        '${plan.yillikMi ? l.premiumDonemYil : l.premiumDonemAy}',
                         style: yazi.titleSmall?.copyWith(color: AppColors.gold),
                         textAlign: TextAlign.center,
                       ),
@@ -376,7 +377,7 @@ class _PlanKarti extends StatelessWidget {
                                 BorderRadius.circular(AppRadius.full),
                           ),
                           child: Text(
-                            PremiumStrings.enAvantajli,
+                            l.premiumEnAvantajli,
                             style: yazi.labelSmall
                                 ?.copyWith(color: AppColors.background),
                           ),
@@ -427,18 +428,30 @@ class _PlanYok extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     return Column(
       children: <Widget>[
         Text(
-          PremiumStrings.planYok,
+          l.premiumPlanYok,
           style: Theme.of(context)
               .textTheme
               .bodyMedium
               ?.copyWith(color: AppColors.textSecondary),
           textAlign: TextAlign.center,
         ),
-        TextButton(onPressed: onTekrar, child: const Text(PremiumStrings.tekrarDene)),
+        TextButton(onPressed: onTekrar, child: Text(l.premiumTekrarDene)),
       ],
     );
   }
 }
+
+/// Paywall'daki Premium özellik listesi ([l] dilinde, sabit sırayla).
+List<String> _ozellikler(AppLocalizations l) => <String>[
+  l.premiumOzellik1,
+  l.premiumOzellik2,
+  l.premiumOzellik3,
+  l.premiumOzellik4,
+  l.premiumOzellik5,
+  l.premiumOzellik6,
+  l.premiumOzellik7,
+];

@@ -9,16 +9,15 @@ import '../../core/storage/kayitli_kisi.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../onboarding/onboarding_config.dart';
 import '../premium/paywall_screen.dart';
 import '../premium/premium_config.dart';
 import '../premium/premium_providers.dart';
-import '../premium/premium_strings.dart';
 import 'uyum_config.dart';
 import 'uyum_sonuc_screen.dart';
-import 'uyum_strings.dart';
 
 /// Kayıtlı kişilerin listesi.
 ///
@@ -35,21 +34,22 @@ class UyumScreen extends ConsumerWidget {
   const UyumScreen({super.key});
 
   Future<void> _ekle(BuildContext context, WidgetRef ref) async {
+    final AppLocalizations l = AppLocalizations.of(context);
     final List<KayitliKisi> mevcut = ref.read(kisilerProvider);
     if (!ref.read(entitlementProvider) &&
         mevcut.length >= PremiumConfig.ucretsizKisiSiniri) {
       final bool? premiumaGit = await showDialog<bool>(
         context: context,
         builder: (BuildContext d) => AlertDialog(
-          content: const Text(PremiumStrings.kisiSiniri),
+          content: Text(l.premiumKisiSiniri),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(d).pop(false),
-              child: const Text(UyumStrings.vazgec),
+              child: Text(l.uyumVazgec),
             ),
             FilledButton(
               onPressed: () => Navigator.of(d).pop(true),
-              child: const Text(PremiumStrings.premiumaGec),
+              child: Text(l.premiumPremiumaGec),
             ),
           ],
         ),
@@ -80,18 +80,19 @@ class UyumScreen extends ConsumerWidget {
     WidgetRef ref,
     KayitliKisi kisi,
   ) async {
+    final AppLocalizations l = AppLocalizations.of(context);
     final bool? onay = await showDialog<bool>(
       context: context,
       builder: (BuildContext d) => AlertDialog(
-        title: Text(UyumStrings.silBaslik(kisi.kisaAd)),
+        title: Text(l.uyumSilBaslik(kisi.kisaAd)),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(d).pop(false),
-            child: const Text(UyumStrings.vazgec),
+            child: Text(l.uyumVazgec),
           ),
           FilledButton(
             onPressed: () => Navigator.of(d).pop(true),
-            child: const Text(UyumStrings.sil),
+            child: Text(l.uyumSil),
           ),
         ],
       ),
@@ -104,6 +105,7 @@ class UyumScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final List<KayitliKisi> kisiler = ref.watch(kisilerProvider);
     return Scaffold(
@@ -112,7 +114,7 @@ class UyumScreen extends ConsumerWidget {
         backgroundColor: AppColors.gold,
         foregroundColor: AppColors.background,
         icon: const Icon(Icons.person_add_alt_1_rounded),
-        label: const Text(UyumStrings.kisiEkle),
+        label: Text(l.uyumKisiEkle),
       ),
       body: SafeArea(
         child: ListView(
@@ -127,13 +129,13 @@ class UyumScreen extends ConsumerWidget {
               ),
             ),
             Text(
-              UyumStrings.baslik,
+              l.uyumBaslik,
               style: yazi.headlineMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              UyumStrings.aciklama,
+              l.uyumAciklama,
               style: yazi.bodyMedium?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
@@ -142,7 +144,7 @@ class UyumScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
                 child: Text(
-                  UyumStrings.bosDurum,
+                  l.uyumBosDurum,
                   style: yazi.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -163,14 +165,14 @@ class UyumScreen extends ConsumerWidget {
                     ),
                     title: Text(kisi.ad),
                     subtitle: Text(
-                      UyumStrings.kisiOzeti(
-                        rol: kisi.rol.etiket,
-                        burc: kisi.profil.burc.etiket,
-                        yasamYolu: kisi.profil.yasamYolu.deger,
+                      l.uyumKisiOzeti(
+                        kisi.rol.etiket,
+                        kisi.profil.burc.etiket,
+                        kisi.profil.yasamYolu.deger,
                       ),
                     ),
                     trailing: IconButton(
-                      tooltip: UyumStrings.sil,
+                      tooltip: l.uyumSil,
                       icon: const Icon(Icons.delete_outline_rounded),
                       onPressed: () => unawaited(_sil(context, ref, kisi)),
                     ),
@@ -222,7 +224,9 @@ class _KisiEkleScreenState extends ConsumerState<KisiEkleScreen> {
     if (ad.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text(UyumStrings.adBos)));
+      ).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).uyumAdBos)),
+      );
       return;
     }
     Navigator.of(context).pop(
@@ -237,10 +241,11 @@ class _KisiEkleScreenState extends ConsumerState<KisiEkleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final KisiRolu rol = ref.watch(kisiRolProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text(UyumStrings.formBaslik)),
+      appBar: AppBar(title: Text(l.uyumFormBaslik)),
       // Kaydet butonu listenin dışında, altta sabit: klavye ve tarih
       // seçici açıkken de her zaman erişilebilir.
       body: SafeArea(
@@ -250,18 +255,18 @@ class _KisiEkleScreenState extends ConsumerState<KisiEkleScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 children: <Widget>[
-                  Text(UyumStrings.adEtiketi, style: yazi.titleMedium),
+                  Text(l.uyumAdEtiketi, style: yazi.titleMedium),
                   const SizedBox(height: AppSpacing.sm),
                   TextField(
                     key: const Key('kisi-ad-alani'),
                     controller: _ad,
                     textCapitalization: TextCapitalization.words,
-                    decoration: const InputDecoration(
-                      hintText: UyumStrings.adIpucu,
+                    decoration: InputDecoration(
+                      hintText: l.uyumAdIpucu,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  Text(UyumStrings.dogumEtiketi, style: yazi.titleMedium),
+                  Text(l.uyumDogumEtiketi, style: yazi.titleMedium),
                   SizedBox(
                     height: OnboardingConfig.tarihSeciciYuksekligi,
                     child: CupertinoDatePicker(
@@ -275,7 +280,7 @@ class _KisiEkleScreenState extends ConsumerState<KisiEkleScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  Text(UyumStrings.rolEtiketi, style: yazi.titleMedium),
+                  Text(l.uyumRolEtiketi, style: yazi.titleMedium),
                   const SizedBox(height: AppSpacing.sm),
                   Wrap(
                     spacing: AppSpacing.sm,
@@ -292,7 +297,7 @@ class _KisiEkleScreenState extends ConsumerState<KisiEkleScreen> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
-                    UyumStrings.rizaNotu,
+                    l.uyumRizaNotu,
                     style: yazi.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -304,7 +309,7 @@ class _KisiEkleScreenState extends ConsumerState<KisiEkleScreen> {
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: FilledButton(
                 onPressed: _kaydet,
-                child: const Text(UyumStrings.kaydet),
+                child: Text(l.uyumKaydet),
               ),
             ),
           ],

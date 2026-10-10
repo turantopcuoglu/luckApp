@@ -11,10 +11,10 @@
 
 | Bilgi | Değer |
 |---|---|
-| Tarih | 11 Ekim 2026 (E0–E5 tamamlandı) |
-| Son commit | `44ce3cd` E4 (E5 commit'i istendiğinde) |
+| Tarih | 11 Ekim 2026 (E0–E6 tamamlandı) |
+| Son commit | `b82a9b4` E5 (E6 commit'i istendiğinde) |
 | Dal | `main` (her oturum doğrudan `main`'e commit edildi) |
-| Testler | 412 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi, +11 dil, +5 E5) |
+| Testler | 414 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi, +11 dil, +5 E5, +2 E6) |
 | Analiz | `flutter analyze` → No issues found |
 | Uygulama dili | Türkçe. gen-l10n altyapısı kurulu (E3); İngilizce `DilConfig.ingilizceYayinda = false` ile kapalı (yalnız debug'da Ayarlar'dan seçilebilir) |
 
@@ -110,16 +110,17 @@ bozmamak** için konuldu. Her biri bir testle korunmalı.
 |---|---|
 | ~~`features/daily_luck/tr_strings.dart`~~ (E5'te ARB'ye taşındı, silindi) | — |
 | ~~`features/onboarding/onboarding_strings.dart`~~ (E4'te ARB'ye taşındı, silindi) | — |
-| `features/profile/profile_strings.dart` | 210 |
-| `features/premium/premium_strings.dart` (+ `PremiumHatalari` in `premium_kontrolcu.dart`) | 143 |
-| `features/tools/tools_strings.dart` | 115 |
+| ~~`features/profile/profile_strings.dart`~~ (E6'da ARB'ye taşındı, silindi) | — |
+| ~~`features/premium/premium_strings.dart` + `PremiumHatalari`~~ (E6) | — |
+| ~~`features/tools/tools_strings.dart`~~ (E6) | — |
 | `features/settings/ayarlar_strings.dart` | 113 |
-| `features/compatibility/uyum_strings.dart` | 69 |
+| ~~`features/compatibility/uyum_strings.dart`~~ (E6) | — |
 | ~~`features/feedback/feedback_strings.dart`~~ (E5) | — |
 | ~~`features/share/share_strings.dart`~~ (E5) | — |
 | ~~`features/categories/categories_strings.dart`~~ (E5) | — |
 | `features/home/ana_sekme.dart` (sekme etiketleri enum içinde) | — |
-| `features/profile/tam_ad_duzenle.dart` (`TamAdStrings`) | — |
+| ~~`features/profile/tam_ad_duzenle.dart` (`TamAdStrings`)~~ (E6) | — |
+| `features/koleksiyon/koleksiyon_strings.dart` (E6'da fark edildi, taşınmadı) | — |
 | `features/legal/legal_texts.dart` (KVKK/koşullar — **hukuki metin**, çeviri değil yeniden yazım) | 216 |
 
 ### 4.2 Motor içindeki Türkçe etiketler (taşınmalı)
@@ -332,7 +333,24 @@ Her satır tek oturumdur. Kutuyu bitince işaretle.
       çağırır. **E12 notu:** dil değişince planlı bildirimler bir sonraki
       açılışta yeni dile geçer; anında geçmesi istenirse Ayarlar'daki dil
       seçimine yeniden planlama eklenmeli.
-- [ ] **E6 — ARB taşıma: profile + premium + tools + compatibility.**
+- [x] **E6 — ARB taşıma: profile + premium + tools + compatibility.**
+      **Yapıldı (11 Eki):** dört `*_strings.dart`, `TamAdStrings` ve
+      `PremiumHatalari` silindi; 164 anahtar: `profil*`, `tamAd*`,
+      `premium*` (`premiumHata*` dahil), `araclar*`, `uyum*`. Liste/kayıt
+      sabitleri ekran içinde yardımcıya döndü: `_ozellikler(l)` (paywall),
+      `_numaraTurleri(l)` (numara analizi); dönem eki iki anahtar.
+      `hesapSatirlari(hesap, metinler)` (adım etiketleri dilde, işlem satırı
+      dilden bağımsız; testli). `PremiumKontrolcu` hata metinlerini
+      `arayuzMetinleriProvider`'dan alır (testli). Dile bağlanmayanlar:
+      doğum saati "08:05" biçimi (`_saatMetni`, iki dilde 24 saat),
+      `ProfileConfig.bilinmeyenDeger` ('?').
+      **E10'a not (Türkiye'ye özgü):** doğum yeri alanı il listesi; İngilizce
+      ipucu şimdilik "Type a province (e.g. İzmir)". Plaka/telefon ipuçları
+      İngilizcede genel örneklerle yazıldı.
+      **Kalanlar:** burç/rol/bant/yıl lakabı gibi etiketler içerik
+      katmanından gelir (E8). **Envanterde unutulmuş:**
+      `features/koleksiyon/koleksiyon_strings.dart` hâlâ duruyor (4.1
+      tablosunda yoktu); ayrı bir oturumda (E6b) aynı yöntemle taşınmalı.
 - [ ] **E7 — İngilizce günlük okuma (content).** `yorum_yonu_en.dart`,
       `karakter_yonleri_en.dart`, `kategori_durumlari_en.dart`,
       `kisisel_havuzlar_en.dart`, `fortune_pools_en.dart`, `dongu_metinleri_en.dart`,

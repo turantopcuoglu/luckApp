@@ -8,6 +8,7 @@ import '../../core/content/harita_okumasi.dart';
 import '../../core/luck_engine/burc.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../legal/legal_texts.dart';
@@ -17,7 +18,6 @@ import 'dogum_bilgisi_duzenle.dart';
 import 'kilitli_bolum_karti.dart';
 import 'profile_config.dart';
 import 'profile_providers.dart';
-import 'profile_strings.dart';
 
 /// Kader Profili'ndeki "Büyük Üçlü" kartı: Güneş, Ay ve Yükselen.
 ///
@@ -29,6 +29,7 @@ class BuyukUcluKarti extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final HaritaOkumasi okuma = ref.watch(haritaOkumasiProvider);
     void haritayaGit() => unawaited(
@@ -47,10 +48,10 @@ class BuyukUcluKarti extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(ProfileStrings.buyukUcluBaslik, style: yazi.titleMedium),
+              Text(l.profilBuyukUcluBaslik, style: yazi.titleMedium),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                ProfileStrings.buyukUcluAciklama,
+                l.profilBuyukUcluAciklama,
                 style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -58,10 +59,10 @@ class BuyukUcluKarti extends ConsumerWidget {
                 children: <Widget>[
                   for (final (String, String, Burc?) s
                       in <(String, String, Burc?)>[
-                        (ProfileStrings.gunes, AppImages.madalyonGunes, okuma.gunes),
-                        (ProfileStrings.ay, AppImages.madalyonAy, okuma.ay),
+                        (l.profilGunes, AppImages.madalyonGunes, okuma.gunes),
+                        (l.profilAy, AppImages.madalyonAy, okuma.ay),
                         (
-                          ProfileStrings.yukselen,
+                          l.profilYukselen,
                           AppImages.madalyonYukselen,
                           okuma.yukselen,
                         ),
@@ -84,7 +85,7 @@ class BuyukUcluKarti extends ConsumerWidget {
                           ),
                           const SizedBox(height: AppSpacing.xs),
                           Text(
-                            s.$3?.etiket ?? ProfileStrings.bilinmiyor,
+                            s.$3?.etiket ?? ProfileConfig.bilinmeyenDeger,
                             style: yazi.titleMedium?.copyWith(
                               color: AppColors.gold,
                             ),
@@ -101,11 +102,11 @@ class BuyukUcluKarti extends ConsumerWidget {
                     ? FilledButton.tonal(
                         onPressed: () =>
                             unawaited(dogumBilgisiniDuzenle(context)),
-                        child: const Text(ProfileStrings.yukseleniniOgren),
+                        child: Text(l.profilYukseleniniOgren),
                       )
                     : TextButton(
                         onPressed: haritayaGit,
-                        child: const Text(ProfileStrings.haritaniOku),
+                        child: Text(l.profilHaritaniOku),
                       ),
               ),
             ],
@@ -124,16 +125,17 @@ class DogumHaritasiScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final HaritaOkumasi okuma = ref.watch(haritaOkumasiProvider);
     final bool kilitli = ref.watch(profilKilitliProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(ProfileStrings.buyukUcluBaslik),
+        title: Text(l.profilBuyukUcluBaslik),
         actions: <Widget>[
           IconButton(
-            tooltip: ProfileStrings.dogumBilgisiBaslik,
+            tooltip: l.profilDogumBilgisiBaslik,
             icon: const Icon(Icons.edit_calendar_outlined),
             onPressed: () => unawaited(dogumBilgisiniDuzenle(context)),
           ),
@@ -168,7 +170,7 @@ class DogumHaritasiScreen extends ConsumerWidget {
               ),
             const SizedBox(height: AppSpacing.sm),
             KilitliBolumKarti(
-              baslik: ProfileStrings.gunesBasligi(okuma.gunes.etiket),
+              baslik: l.profilGunesBasligi(okuma.gunes.etiket),
               metin: BurcMetinleri.oz[okuma.gunes]!,
               kilitli: false,
               onKilidiAc: () {},
@@ -184,7 +186,7 @@ class DogumHaritasiScreen extends ConsumerWidget {
                     context,
                     ref,
                     kilitAnahtari: KilitAnahtarlari.profil,
-                    aciklama: ProfileStrings.haritaKilitAciklamasi,
+                    aciklama: l.profilHaritaKilitAciklamasi,
                   ),
                 ),
               ),
@@ -212,14 +214,15 @@ class _HaritaBasligi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         for (final (String, String, Burc?) s in <(String, String, Burc?)>[
-          (ProfileStrings.gunes, AppImages.madalyonGunes, okuma.gunes),
-          (ProfileStrings.ay, AppImages.madalyonAy, okuma.ay),
-          (ProfileStrings.yukselen, AppImages.madalyonYukselen, okuma.yukselen),
+          (l.profilGunes, AppImages.madalyonGunes, okuma.gunes),
+          (l.profilAy, AppImages.madalyonAy, okuma.ay),
+          (l.profilYukselen, AppImages.madalyonYukselen, okuma.yukselen),
         ])
           Column(
             children: <Widget>[

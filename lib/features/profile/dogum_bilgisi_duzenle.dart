@@ -8,8 +8,8 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../daily_luck/daily_luck_providers.dart';
-import 'profile_strings.dart';
 
 /// Düzenleyicide seçili doğum saati (gece yarısından dakika; null =
 /// bilinmiyor). Başlangıç değeri kayıtlı profildir.
@@ -81,6 +81,7 @@ class _DogumBilgisiSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final int? saat = ref.watch(_secilenSaatProvider);
     final int? plaka = ref.watch(_secilenIlProvider);
@@ -98,10 +99,10 @@ class _DogumBilgisiSheet extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(ProfileStrings.dogumBilgisiBaslik, style: yazi.titleLarge),
+            Text(l.profilDogumBilgisiBaslik, style: yazi.titleLarge),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              ProfileStrings.dogumBilgisiAciklama,
+              l.profilDogumBilgisiAciklama,
               style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -111,11 +112,11 @@ class _DogumBilgisiSheet extends ConsumerWidget {
                 Icons.schedule_rounded,
                 color: AppColors.gold,
               ),
-              title: const Text(ProfileStrings.dogumSaati),
+              title: Text(l.profilDogumSaati),
               subtitle: Text(
                 saat == null
-                    ? ProfileStrings.saatBilinmiyor
-                    : ProfileStrings.saatMetni(saat),
+                    ? l.profilSaatBilinmiyor
+                    : _saatMetni(saat),
               ),
               trailing: Wrap(
                 spacing: AppSpacing.xs,
@@ -124,11 +125,11 @@ class _DogumBilgisiSheet extends ConsumerWidget {
                     TextButton(
                       onPressed: () =>
                           ref.read(_secilenSaatProvider.notifier).state = null,
-                      child: const Text(ProfileStrings.saatBilinmiyor),
+                      child: Text(l.profilSaatBilinmiyor),
                     ),
                   TextButton(
                     onPressed: () => unawaited(_saatSec(context, ref)),
-                    child: const Text(ProfileStrings.saatSec),
+                    child: Text(l.profilSaatSec),
                   ),
                 ],
               ),
@@ -153,9 +154,9 @@ class _DogumBilgisiSheet extends ConsumerWidget {
                     controller: kontrol,
                     focusNode: odak,
                     onSubmitted: (_) => gonder(),
-                    decoration: const InputDecoration(
-                      labelText: ProfileStrings.dogumIli,
-                      hintText: ProfileStrings.dogumIliIpucu,
+                    decoration: InputDecoration(
+                      labelText: l.profilDogumIli,
+                      hintText: l.profilDogumIliIpucu,
                       prefixIcon: Icon(Icons.place_outlined),
                     ),
                   ),
@@ -166,7 +167,7 @@ class _DogumBilgisiSheet extends ConsumerWidget {
                 dogumBilgisiniKaydet(ref, dakika: saat, plaka: plaka);
                 Navigator.of(context).pop();
               },
-              child: const Text(ProfileStrings.kaydet),
+              child: Text(l.profilKaydet),
             ),
           ],
         ),
@@ -174,3 +175,9 @@ class _DogumBilgisiSheet extends ConsumerWidget {
     );
   }
 }
+
+/// Gece yarısından beri geçen [dakika]yı "08:05" biçiminde yazar
+/// (24 saat; iki dilde aynı).
+String _saatMetni(int dakika) =>
+    '${(dakika ~/ Duration.minutesPerHour).toString().padLeft(2, '0')}:'
+    '${(dakika % Duration.minutesPerHour).toString().padLeft(2, '0')}';

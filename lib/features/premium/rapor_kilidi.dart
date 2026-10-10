@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import 'magaza_servisi.dart';
@@ -12,35 +13,39 @@ import 'paywall_screen.dart';
 import 'premium_config.dart';
 import 'premium_kontrolcu.dart';
 import 'premium_providers.dart';
-import 'premium_strings.dart';
 
 /// Numeroloji Raporu'nun kilitli bölümüne dokunulunca açılan seçenekler.
 ///
 /// Döndürdüğü değer: rapor bu akışla açıldıysa true.
-Future<bool> raporKilidiniGoster(BuildContext context) => _kilidiGoster(
-  context,
-  const _KilitIcerigi(
-    urunId: PremiumConfig.raporUrunId,
-    baslik: PremiumStrings.raporKilitBaslik,
-    aciklama: PremiumStrings.raporKilitAciklama,
-    premiumSecenegi: PremiumStrings.raporPremiumSecenegi,
-  ),
-);
+Future<bool> raporKilidiniGoster(BuildContext context) {
+  final AppLocalizations l = AppLocalizations.of(context);
+  return _kilidiGoster(
+    context,
+    _KilitIcerigi(
+      urunId: PremiumConfig.raporUrunId,
+      baslik: l.premiumRaporKilitBaslik,
+      aciklama: l.premiumRaporKilitAciklama,
+      premiumSecenegi: l.premiumRaporPremiumSecenegi,
+    ),
+  );
+}
 
 /// [yil] Kişisel Yıl Raporu'nun kilitli bölümüne dokunulunca açılan
 /// seçenekler.
 ///
 /// Döndürdüğü değer: rapor bu akışla açıldıysa true.
-Future<bool> yilRaporuKilidiniGoster(BuildContext context, int yil) =>
-    _kilidiGoster(
-      context,
-      _KilitIcerigi(
-        urunId: PremiumConfig.yilRaporuUrunId(yil),
-        baslik: PremiumStrings.yilRaporuKilitBaslik(yil),
-        aciklama: PremiumStrings.yilRaporuKilitAciklama,
-        premiumSecenegi: PremiumStrings.yilRaporuPremiumSecenegi,
-      ),
-    );
+Future<bool> yilRaporuKilidiniGoster(BuildContext context, int yil) {
+  final AppLocalizations l = AppLocalizations.of(context);
+  return _kilidiGoster(
+    context,
+    _KilitIcerigi(
+      urunId: PremiumConfig.yilRaporuUrunId(yil),
+      baslik: l.premiumYilRaporuKilitBaslik(yil),
+      aciklama: l.premiumYilRaporuKilitAciklama,
+      premiumSecenegi: l.premiumYilRaporuPremiumSecenegi,
+    ),
+  );
+}
 
 Future<bool> _kilidiGoster(BuildContext context, _KilitIcerigi icerik) async {
   final bool? sonuc = await showModalBottomSheet<bool>(
@@ -99,6 +104,7 @@ class _TekSeferlikKilitSheetState
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final _KilitIcerigi icerik = widget.icerik;
     final PremiumDurumu durum = ref.watch(premiumKontrolcuProvider);
@@ -110,7 +116,7 @@ class _TekSeferlikKilitSheetState
     ) {
       if (yeni && !(eski ?? false)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(PremiumStrings.raporAcildi)),
+          SnackBar(content: Text(l.premiumRaporAcildi)),
         );
         Navigator.of(context).pop(true);
       }
@@ -171,8 +177,8 @@ class _TekSeferlikKilitSheetState
                     )
                   : Text(
                       urun == null
-                          ? PremiumStrings.raporFiyatYukleniyor
-                          : PremiumStrings.raporuSatinAl(urun.fiyatMetni),
+                          ? l.premiumRaporFiyatYukleniyor
+                          : l.premiumRaporuSatinAl(urun.fiyatMetni),
                     ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -194,7 +200,7 @@ class _TekSeferlikKilitSheetState
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              PremiumStrings.raporOdemeBilgisi,
+              l.premiumRaporOdemeBilgisi,
               style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),

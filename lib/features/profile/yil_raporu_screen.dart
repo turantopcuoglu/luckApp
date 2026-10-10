@@ -6,13 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/content/yillik_rapor.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../legal/legal_texts.dart';
 import '../premium/premium_providers.dart';
 import '../premium/rapor_kilidi.dart';
 import 'kilitli_bolum_karti.dart';
 import 'profile_config.dart';
 import 'profile_providers.dart';
-import 'profile_strings.dart';
 import 'yil_afisi.dart';
 
 /// Kişisel Yıl Raporu: bir takvim yılının kişiye özel rehberi.
@@ -29,6 +29,7 @@ class YilRaporuScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final YillikRaporOkumasi okuma = ref.watch(yillikRaporProvider(yil));
     final bool kilitli = !ref.watch(yilRaporuAcikProvider(yil));
@@ -54,7 +55,7 @@ class YilRaporuScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(ProfileStrings.yilRaporuBaslik(yil))),
+      appBar: AppBar(title: Text(l.profilYilRaporuBaslik(yil))),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -63,7 +64,7 @@ class YilRaporuScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.lg),
             ...rehber.map(bolumKarti),
             const SizedBox(height: AppSpacing.sm),
-            Text(ProfileStrings.ayAyBaslik(yil), style: yazi.titleLarge),
+            Text(l.profilAyAyBaslik(yil), style: yazi.titleLarge),
             const SizedBox(height: AppSpacing.md),
             for (final YillikAy ay in okuma.aylar)
               Padding(
@@ -95,6 +96,7 @@ class _YilBasligi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return YilAfisi(
       kisiselYil: okuma.kisiselYil,
@@ -103,7 +105,7 @@ class _YilBasligi extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            ProfileStrings.kisiselYilEtiketi,
+            l.profilKisiselYilEtiketi,
             style: yazi.bodySmall?.copyWith(color: AppColors.goldAcik),
           ),
           Text(
@@ -134,10 +136,11 @@ class _AyKarti extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final (String, Color)? cip = switch (ay.akis) {
-      AyAkisi.akis => (ProfileStrings.akisCipi, AppColors.gold),
-      AyAkisi.zorlu => (ProfileStrings.zorluCipi, AppColors.purple),
+      AyAkisi.akis => (l.profilAkisCipi, AppColors.gold),
+      AyAkisi.zorlu => (l.profilZorluCipi, AppColors.purple),
       AyAkisi.dengeli => null,
     };
     return KilitliBolumKarti(

@@ -1,5 +1,5 @@
 import '../../core/luck_engine/luck_engine.dart';
-import 'profile_strings.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Bir hesap adımının okunur satırı: etiket + işlem.
 class HesapSatiri {
@@ -17,19 +17,22 @@ class HesapSatiri {
 ///
 /// Amaç, sonucun rastgele olmadığını adım adım göstermektir; bu yüzden
 /// indirgeme zinciri (23 → 5) de açıkça yazılır.
-List<HesapSatiri> hesapSatirlari(SayiHesabi hesap) => <HesapSatiri>[
+///
+/// Adım etiketleri [metinler] dilindedir; işlem satırı dilden bağımsızdır.
+List<HesapSatiri> hesapSatirlari(SayiHesabi hesap, AppLocalizations metinler) =>
+    <HesapSatiri>[
       for (final HesapAdimi adim in hesap.adimlar)
-        HesapSatiri(etiket: _etiket(adim.tur), islem: _islem(adim)),
+        HesapSatiri(etiket: _etiket(adim.tur, metinler), islem: _islem(adim)),
     ];
 
-String _etiket(HesapAdimTuru tur) => switch (tur) {
-      HesapAdimTuru.ay => ProfileStrings.adimAy,
-      HesapAdimTuru.gun => ProfileStrings.adimGun,
-      HesapAdimTuru.yil => ProfileStrings.adimYil,
-      HesapAdimTuru.toplam => ProfileStrings.adimToplam,
-      HesapAdimTuru.harfler => ProfileStrings.adimHarfler,
-      HesapAdimTuru.sesliler => ProfileStrings.adimSesliler,
-      HesapAdimTuru.sessizler => ProfileStrings.adimSessizler,
+String _etiket(HesapAdimTuru tur, AppLocalizations l) => switch (tur) {
+      HesapAdimTuru.ay => l.profilAdimAy,
+      HesapAdimTuru.gun => l.profilAdimGun,
+      HesapAdimTuru.yil => l.profilAdimYil,
+      HesapAdimTuru.toplam => l.profilAdimToplam,
+      HesapAdimTuru.harfler => l.profilAdimHarfler,
+      HesapAdimTuru.sesliler => l.profilAdimSesliler,
+      HesapAdimTuru.sessizler => l.profilAdimSessizler,
     };
 
 String _islem(HesapAdimi adim) {

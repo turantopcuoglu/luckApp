@@ -6,13 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/content/yillik_rapor.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/sahne_config.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import '../premium/premium_config.dart';
 import 'profile_config.dart';
 import 'profile_providers.dart';
-import 'profile_strings.dart';
 import 'yil_afisi.dart';
 import 'yil_raporu_screen.dart';
 
@@ -34,6 +34,7 @@ class YilRaporuKarti extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     const int yil = PremiumConfig.satistakiYil;
     if (!gosterilmeli(ref.watch(bugunProvider), yil)) {
       return const SizedBox.shrink();
@@ -69,14 +70,14 @@ class YilRaporuKarti extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        ProfileStrings.yilRaporuKartBaslik(yil),
+                        l.profilYilRaporuKartBaslik(yil),
                         style: yazi.titleMedium?.copyWith(
                           color: AppColors.gold,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        ProfileStrings.yilRaporuKartAciklama(
+                        l.profilYilRaporuKartAciklama(
                           yil,
                           okuma.yilLakabi,
                         ),

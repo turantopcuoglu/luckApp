@@ -5,13 +5,13 @@ import '../../core/storage/luck_history_repository.dart';
 import '../../core/storage/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/kilit_amblemi.dart';
 import '../ads/ads_providers.dart';
 import '../daily_luck/daily_luck_providers.dart';
 import 'paywall_screen.dart';
 import 'premium_providers.dart';
-import 'premium_strings.dart';
 
 /// Kilitli içeriğe dokunulunca açılan seçenekler: Premium'a geç ya da
 /// ödüllü reklam izleyerek içeriği YALNIZCA BUGÜN için aç.
@@ -42,6 +42,7 @@ class _KilitSheet extends ConsumerWidget {
   final String aciklama;
 
   Future<void> _reklamIzle(BuildContext context, WidgetRef ref) async {
+    final AppLocalizations l = AppLocalizations.of(context);
     final ScaffoldMessengerState mesajci = ScaffoldMessenger.of(context);
     final NavigatorState gezgin = Navigator.of(context);
     final bool kazandi = await ref.read(reklamServisiProvider).odulluGoster();
@@ -50,8 +51,8 @@ class _KilitSheet extends ConsumerWidget {
         SnackBar(
           content: Text(
             ref.read(reklamServisiProvider).hazir
-                ? PremiumStrings.odulYok
-                : PremiumStrings.reklamYok,
+                ? l.premiumOdulYok
+                : l.premiumReklamYok,
           ),
         ),
       );
@@ -64,13 +65,14 @@ class _KilitSheet extends ConsumerWidget {
     await repo.reklamKilidiAc(bugun, kilitAnahtari);
     kilitleriTazele(ref);
     mesajci.showSnackBar(
-      const SnackBar(content: Text(PremiumStrings.acildi)),
+      SnackBar(content: Text(l.premiumAcildi)),
     );
     gezgin.pop(true);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final bool reklamHazir = ref.watch(reklamHazirProvider);
     return SafeArea(
@@ -90,7 +92,7 @@ class _KilitSheet extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              PremiumStrings.kilitBaslik,
+              l.premiumKilitBaslik,
               style: yazi.titleLarge,
               textAlign: TextAlign.center,
             ),
@@ -108,7 +110,7 @@ class _KilitSheet extends ConsumerWidget {
                   fadeThroughRoute<void>(const PaywallScreen()),
                 );
               },
-              child: const Text(PremiumStrings.premiumaGec),
+              child: Text(l.premiumPremiumaGec),
             ),
             if (reklamHazir) ...<Widget>[
               const SizedBox(height: AppSpacing.sm),
@@ -118,7 +120,7 @@ class _KilitSheet extends ConsumerWidget {
                   Icons.play_circle_outline_rounded,
                   color: AppColors.gold,
                 ),
-                label: const Text(PremiumStrings.reklamlaAc),
+                label: Text(l.premiumReklamlaAc),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(AppSpacing.xxl),
                   side: const BorderSide(color: AppColors.gold),

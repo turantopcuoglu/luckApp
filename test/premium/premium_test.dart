@@ -12,8 +12,8 @@ import 'package:kader/features/premium/paywall_screen.dart';
 import 'package:kader/features/premium/premium_config.dart';
 import 'package:kader/features/premium/premium_kontrolcu.dart';
 import 'package:kader/features/premium/premium_providers.dart';
-import 'package:kader/features/premium/premium_strings.dart';
 import 'package:kader/features/premium/rapor_kilidi.dart';
+import 'package:kader/l10n/app_localizations_en.dart';
 
 import '../test_ortami.dart';
 
@@ -238,9 +238,29 @@ void main() {
       await bekle();
       expect(
         c.read(premiumKontrolcuProvider).hataMesaji,
-        PremiumHatalari.odemeBekleniyor,
+        trMetinler.premiumHataOdemeBekleniyor,
       );
       expect(c.read(premiumKontrolcuProvider).aktif, isFalse);
+    });
+
+    test('hata mesajı uygulama dilinde üretilir (E6)', () async {
+      await UygulamaDurumuRepository(ortam.durum).dilKaydet('en');
+      final ProviderContainer c = kapsayici();
+      await c.read(premiumKontrolcuProvider.notifier).baslat();
+      await bekle();
+
+      magaza.yayinla(<SatinAlmaGuncellemesi>[
+        const SatinAlmaGuncellemesi(
+          urunId: PremiumConfig.yillikUrunId,
+          durum: SatinAlmaDurumu.beklemede,
+          tamamlanmaBekliyor: false,
+        ),
+      ]);
+      await bekle();
+      expect(
+        c.read(premiumKontrolcuProvider).hataMesaji,
+        AppLocalizationsEn().premiumHataOdemeBekleniyor,
+      );
     });
   });
 
@@ -369,7 +389,7 @@ void main() {
       expect(magaza.tekSeferlikAlinanlar, isEmpty);
       expect(
         c.read(premiumKontrolcuProvider).hataMesaji,
-        PremiumHatalari.raporUrunuYok,
+        trMetinler.premiumHataRaporUrunuYok,
       );
       // Açılıştaki geri yüklemenin önbellek yazmaları bitsin.
       await diskiBekle();
@@ -385,8 +405,8 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: c,
-          child: MaterialApp(
-            home: Scaffold(
+          child: testUygulamasi(
+            Scaffold(
               body: Builder(
                 builder: (BuildContext context) => TextButton(
                   onPressed: () => raporKilidiniGoster(context),
@@ -400,11 +420,11 @@ void main() {
       await tester.tap(find.text('aç'));
       await tester.pumpAndSettle();
 
-      expect(find.text(PremiumStrings.raporKilitBaslik), findsOneWidget);
-      expect(find.text(PremiumStrings.raporPremiumSecenegi), findsOneWidget);
-      expect(find.text(PremiumStrings.reklamlaAc), findsNothing);
+      expect(find.text(trMetinler.premiumRaporKilitBaslik), findsOneWidget);
+      expect(find.text(trMetinler.premiumRaporPremiumSecenegi), findsOneWidget);
+      expect(find.text(trMetinler.premiumReklamlaAc), findsNothing);
 
-      await tester.tap(find.text(PremiumStrings.raporuSatinAl('₺149,99')));
+      await tester.tap(find.text(trMetinler.premiumRaporuSatinAl('₺149,99')));
       await tester.pump();
       expect(magaza.tekSeferlikAlinanlar, hasLength(1));
 
@@ -414,8 +434,8 @@ void main() {
         await bekle();
       });
       await tester.pumpAndSettle();
-      expect(find.text(PremiumStrings.raporKilitBaslik), findsNothing);
-      expect(find.text(PremiumStrings.raporAcildi), findsOneWidget);
+      expect(find.text(trMetinler.premiumRaporKilitBaslik), findsNothing);
+      expect(find.text(trMetinler.premiumRaporAcildi), findsOneWidget);
     });
   });
 
@@ -539,8 +559,8 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: c,
-          child: MaterialApp(
-            home: Scaffold(
+          child: testUygulamasi(
+            Scaffold(
               body: Builder(
                 builder: (BuildContext context) => TextButton(
                   onPressed: () => yilRaporuKilidiniGoster(context, 2027),
@@ -554,10 +574,10 @@ void main() {
       await tester.tap(find.text('aç'));
       await tester.pumpAndSettle();
 
-      expect(find.text(PremiumStrings.yilRaporuKilitBaslik(2027)), findsOneWidget);
-      expect(find.text(PremiumStrings.yilRaporuPremiumSecenegi), findsOneWidget);
-      expect(find.text(PremiumStrings.reklamlaAc), findsNothing);
-      await tester.tap(find.text(PremiumStrings.raporuSatinAl('₺99,99')));
+      expect(find.text(trMetinler.premiumYilRaporuKilitBaslik(2027)), findsOneWidget);
+      expect(find.text(trMetinler.premiumYilRaporuPremiumSecenegi), findsOneWidget);
+      expect(find.text(trMetinler.premiumReklamlaAc), findsNothing);
+      await tester.tap(find.text(trMetinler.premiumRaporuSatinAl('₺99,99')));
       await tester.pump();
       expect(magaza.tekSeferlikAlinanlar.single.urunId, yil2027);
       await tester.runAsync(diskiBekle);
@@ -630,18 +650,18 @@ void main() {
       await tester.scrollUntilVisible(find.text('₺100,00 / ay'), 100);
       expect(find.text('₺600,00 / yıl'), findsOneWidget);
       expect(find.text('₺100,00 / ay'), findsOneWidget);
-      expect(find.text(PremiumStrings.enAvantajli), findsOneWidget);
-      expect(find.text(PremiumStrings.deneme(7)), findsOneWidget);
-      expect(find.text(PremiumStrings.ayliginaDusen('₺50,00')), findsOneWidget);
+      expect(find.text(trMetinler.premiumEnAvantajli), findsOneWidget);
+      expect(find.text(trMetinler.premiumDeneme(7)), findsOneWidget);
+      expect(find.text(trMetinler.premiumAyliginaDusen('₺50,00')), findsOneWidget);
 
       // Varsayılan yıllık (deneme var) → buton deneme metni.
       await tester.scrollUntilVisible(
-        find.text(PremiumStrings.denemeBaslat),
+        find.text(trMetinler.premiumDenemeBaslat),
         100,
       );
-      await tester.ensureVisible(find.text(PremiumStrings.denemeBaslat));
+      await tester.ensureVisible(find.text(trMetinler.premiumDenemeBaslat));
       await tester.pump();
-      await tester.tap(find.text(PremiumStrings.denemeBaslat));
+      await tester.tap(find.text(trMetinler.premiumDenemeBaslat));
       await tester.pump();
       expect(magaza.satinAlinanlar.single.urunId, PremiumConfig.yillikUrunId);
     });

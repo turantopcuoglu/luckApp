@@ -10,14 +10,12 @@ import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/features/home/ana_kabuk.dart';
 import 'package:kader/features/home/ana_sekme.dart';
-import 'package:kader/features/profile/profile_strings.dart';
 import 'package:kader/features/share/arac_story_card.dart';
 import 'package:kader/features/tools/bebek_ismi_screen.dart';
 import 'package:kader/features/tools/isim_analizi_screen.dart';
 import 'package:kader/features/tools/numara_analizi_screen.dart';
 import 'package:kader/features/tools/tools_providers.dart';
 import 'package:kader/features/tools/tools_screen.dart';
-import 'package:kader/features/tools/tools_strings.dart';
 
 import '../test_ortami.dart';
 
@@ -74,7 +72,7 @@ void main() {
 
   Future<void> yazVeHesapla(WidgetTester tester, String metin) async {
     await tester.enterText(find.byType(TextField), metin);
-    await tester.tap(find.text(ToolsStrings.hesapla));
+    await tester.tap(find.text(trMetinler.araclarHesapla));
     await tester.pump();
   }
 
@@ -94,11 +92,11 @@ void main() {
     await tester.tap(find.text(AnaSekme.kesfet.etiketi(trMetinler)));
     await tester.pump();
     expect(find.byType(ToolsScreen), findsOneWidget);
-    expect(find.text(ToolsStrings.isimBaslik), findsOneWidget);
-    expect(find.text(ToolsStrings.numaraBaslik), findsOneWidget);
-    expect(find.text(ToolsStrings.bebekBaslik), findsOneWidget);
+    expect(find.text(trMetinler.araclarIsimBaslik), findsOneWidget);
+    expect(find.text(trMetinler.araclarNumaraBaslik), findsOneWidget);
+    expect(find.text(trMetinler.araclarBebekBaslik), findsOneWidget);
 
-    await tester.tap(find.text(ToolsStrings.numaraBaslik));
+    await tester.tap(find.text(trMetinler.araclarNumaraBaslik));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(NumaraAnaliziScreen), findsOneWidget);
@@ -116,10 +114,10 @@ void main() {
       expect(find.text('Toplam 38 → 11'), findsOneWidget);
       expect(find.text(AracMetinleri.numaralar[11]!.metin), findsOneWidget);
 
-      await tester.tap(find.text(ToolsStrings.paylas));
+      await tester.tap(find.text(trMetinler.araclarPaylas));
       await tester.pump();
       final AracPaylasimi p = paylasilanlar.single;
-      expect(p.ustEtiket, ToolsStrings.numaraKartEtiketi);
+      expect(p.ustEtiket, trMetinler.araclarNumaraKartEtiketi);
       expect(p.baslik, '0532 123 45 67');
       expect(p.sayi, '11');
       expect(p.sayiEtiketi, 'Usta İlham');
@@ -129,7 +127,7 @@ void main() {
     testWidgets('harf/rakam yoksa uyarı', (WidgetTester tester) async {
       await ac(tester, const NumaraAnaliziScreen());
       await yazVeHesapla(tester, '---');
-      expect(find.text(ToolsStrings.gecersiz), findsOneWidget);
+      expect(find.text(trMetinler.araclarGecersiz), findsOneWidget);
     });
   });
 
@@ -147,24 +145,24 @@ void main() {
         300,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(find.text(ProfileStrings.kilidiAc), findsWidgets);
+      expect(find.text(trMetinler.profilKilidiAc), findsWidgets);
     });
 
     testWidgets('premium kullanıcıda kilit yok; paylaşım ücretsiz '
         'başlıkları içerir', (WidgetTester tester) async {
       await ac(tester, const IsimAnaliziScreen(), premium: true);
       await yazVeHesapla(tester, 'Ayşe Yılmaz');
-      expect(find.text(ProfileStrings.kilidiAc), findsNothing);
+      expect(find.text(trMetinler.profilKilidiAc), findsNothing);
 
       await tester.scrollUntilVisible(
-        find.text(ToolsStrings.paylas),
+        find.text(trMetinler.araclarPaylas),
         300,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.tap(find.text(ToolsStrings.paylas));
+      await tester.tap(find.text(trMetinler.araclarPaylas));
       await tester.pump();
       final AracPaylasimi p = paylasilanlar.single;
-      expect(p.ustEtiket, ToolsStrings.isimKartEtiketi);
+      expect(p.ustEtiket, trMetinler.araclarIsimKartEtiketi);
       expect(p.baslik, 'Ayşe Yılmaz');
       expect(p.sayi, '1');
       expect(p.metin, SayiMetinleri.isimSayisi[1]);
@@ -176,7 +174,7 @@ void main() {
       WidgetTester tester,
     ) async {
       await ac(tester, const BebekIsmiScreen());
-      expect(find.text(ToolsStrings.ben('Ayşe')), findsOneWidget);
+      expect(find.text(trMetinler.araclarBen('Ayşe')), findsOneWidget);
 
       // Ada Yılmaz → 11 (taban 2) ile Ayşe 4: aynı grup → 95.
       await yazVeHesapla(tester, 'Ada Yılmaz\nAli Yılmaz');
@@ -192,11 +190,11 @@ void main() {
       );
 
       await tester.scrollUntilVisible(
-        find.text(ToolsStrings.siralamaBaslik),
+        find.text(trMetinler.araclarSiralamaBaslik),
         300,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(find.text(ProfileStrings.kilidiAc), findsOneWidget);
+      expect(find.text(trMetinler.profilKilidiAc), findsOneWidget);
     });
 
     testWidgets('premium: tüm adaylar puana göre sıralı', (
@@ -206,7 +204,7 @@ void main() {
       // Ali Yılmaz → 9 ile 4: zorlayıcı → 60; Ada 95.
       await yazVeHesapla(tester, 'Ali Yılmaz\nAda Yılmaz');
       await tester.scrollUntilVisible(
-        find.text(ToolsStrings.siralamaBaslik),
+        find.text(trMetinler.araclarSiralamaBaslik),
         300,
         scrollable: find.byType(Scrollable).first,
       );
@@ -220,11 +218,11 @@ void main() {
       WidgetTester tester,
     ) async {
       await ac(tester, const BebekIsmiScreen());
-      await tester.tap(find.text(ToolsStrings.ben('Ayşe')));
+      await tester.tap(find.text(trMetinler.araclarBen('Ayşe')));
       await tester.pump();
-      expect(find.text(ToolsStrings.kisiSec), findsOneWidget);
+      expect(find.text(trMetinler.araclarKisiSec), findsOneWidget);
       final FilledButton buton = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, ToolsStrings.hesapla),
+        find.widgetWithText(FilledButton, trMetinler.araclarHesapla),
       );
       expect(buton.onPressed, isNull);
     });

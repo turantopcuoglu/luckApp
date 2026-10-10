@@ -456,4 +456,571 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paylasimTemaMor => 'Purple';
+
+  @override
+  String get profilBaslik => 'Your Destiny Profile';
+
+  @override
+  String get profilAciklama =>
+      'The numbers calculated from your birth date and name; they don\'t change over time. Tap any number to see how it was calculated.';
+
+  @override
+  String get profilYasamYolu => 'Life Path';
+
+  @override
+  String get profilIsimSayisi => 'Name';
+
+  @override
+  String get profilRuhSayisi => 'Soul';
+
+  @override
+  String get profilKisilikSayisi => 'Personality';
+
+  @override
+  String get profilTamAdEkle => 'Add your full name';
+
+  @override
+  String get profilTamAdEksikBaslik => 'Your name numbers are missing';
+
+  @override
+  String get profilTamAdEksikAciklama =>
+      'Your name, soul and personality numbers come from your full name at birth. Add it and two new sections open in your profile.';
+
+  @override
+  String get profilNasilHesaplandi => 'How was it calculated?';
+
+  @override
+  String get profilSistemNotu =>
+      'Kader uses the Pythagorean numerology system: A=1 … I=9, J=1 … R=9, S=1 … Z=8. Turkish letters take the value of their Latin counterparts (Ç=3, Ğ=7, I/İ=9, Ö=6, Ş=1, Ü=3). 11, 22 and 33 are kept as master numbers. Other numerology systems may give different results.';
+
+  @override
+  String get profilAdimAy => 'Birth month';
+
+  @override
+  String get profilAdimGun => 'Birth day';
+
+  @override
+  String get profilAdimYil => 'Birth year';
+
+  @override
+  String get profilAdimToplam => 'Total';
+
+  @override
+  String get profilAdimHarfler => 'All letters';
+
+  @override
+  String get profilAdimSesliler => 'Vowels';
+
+  @override
+  String get profilAdimSessizler => 'Consonants';
+
+  @override
+  String get profilUstaSayi => 'Master number';
+
+  @override
+  String get profilKilidiAc => 'Unlock';
+
+  @override
+  String get profilKilitAciklamasi =>
+      'Your full profile — your shadow side, love and work life, life lesson, inner voice and this year\'s theme — is open to Premium members. You can also unlock it for today by watching a short ad.';
+
+  @override
+  String get profilSinirGunu => 'Cusp';
+
+  @override
+  String get profilRaporGirisBaslik => 'Your Numerology Report';
+
+  @override
+  String get profilRaporGirisAciklama =>
+      'The four periods of your life, your karmic numbers and the hidden meanings of your name.';
+
+  @override
+  String get profilRaporBaslik => 'Your Numerology Report';
+
+  @override
+  String get profilRaporAciklama =>
+      'Themes about the long periods of your life, calculated from your birth date and full name. This report is a map of tendencies; it doesn\'t describe events but what each period is trying to teach you.';
+
+  @override
+  String get profilZamanCizelgesiBaslik => 'The four periods of your life';
+
+  @override
+  String get profilSuAn => 'Now';
+
+  @override
+  String profilZirve(int zirve) {
+    return 'Pinnacle $zirve';
+  }
+
+  @override
+  String get profilBuyukUcluBaslik => 'Your Big Three';
+
+  @override
+  String get profilBuyukUcluAciklama =>
+      'Your Sun sign describes who you are, your Moon sign how you feel, and your Rising how the world sees you.';
+
+  @override
+  String get profilGunes => 'Sun';
+
+  @override
+  String get profilAy => 'Moon';
+
+  @override
+  String get profilYukselen => 'Rising';
+
+  @override
+  String get profilYukseleniniOgren => 'Find your Rising';
+
+  @override
+  String get profilHaritaniOku => 'Read your chart';
+
+  @override
+  String profilGunesBasligi(String burc) {
+    return 'Your Sun sign · $burc';
+  }
+
+  @override
+  String get profilHaritaKilitAciklamasi =>
+      'Your Rising reading is open to Premium members. You can also unlock it for today by watching a short ad.';
+
+  @override
+  String get profilDogumBilgisiBaslik => 'Your birth time and place';
+
+  @override
+  String get profilDogumBilgisiAciklama =>
+      'Your Rising sign depends on your birth time and where you were born. Enter the time on your birth record or the one your family remembers; even a few minutes can change your Rising.';
+
+  @override
+  String get profilDogumSaati => 'Birth time';
+
+  @override
+  String get profilSaatBilinmiyor => 'I don\'t know';
+
+  @override
+  String get profilSaatSec => 'Choose time';
+
+  @override
+  String get profilDogumIli => 'Where you were born';
+
+  @override
+  String get profilDogumIliIpucu => 'Type a province (e.g. İzmir)';
+
+  @override
+  String get profilKaydet => 'Save';
+
+  @override
+  String profilYilRaporuKartBaslik(int yil) {
+    return 'Your $yil Personal Year Report';
+  }
+
+  @override
+  String profilYilRaporuKartAciklama(int yil, String yilLakabi) {
+    return '$yil is your $yilLakabi. The year\'s opportunities, your flow months and your month-by-month guide are ready.';
+  }
+
+  @override
+  String profilYilRaporuBaslik(int yil) {
+    return 'Your $yil Report';
+  }
+
+  @override
+  String get profilKisiselYilEtiketi => 'Your personal year';
+
+  @override
+  String profilAyAyBaslik(int yil) {
+    return '$yil month by month';
+  }
+
+  @override
+  String get profilAkisCipi => 'In flow';
+
+  @override
+  String get profilZorluCipi => 'Challenging';
+
+  @override
+  String get profilRaporTamAdEksikBaslik => 'Your report is incomplete';
+
+  @override
+  String get profilRaporTamAdEksikAciklama =>
+      'Your karmic lessons, hidden passion, maturity number and the letters of your name come from your full name at birth. Add it and five new sections open in your report.';
+
+  @override
+  String get tamAdBaslik => 'Your full name at birth';
+
+  @override
+  String get tamAdAciklama =>
+      'Write it as on your birth record, including middle names (e.g. Ayşe Nur Yılmaz). Don\'t use short forms or nicknames; your name numbers are calculated from this name. Your daily score won\'t change.';
+
+  @override
+  String get tamAdIpucu => 'First Middle Last';
+
+  @override
+  String get tamAdKaydet => 'Save';
+
+  @override
+  String get tamAdKaldir => 'Remove';
+
+  @override
+  String get tamAdVazgec => 'Cancel';
+
+  @override
+  String get premiumBaslik => 'Kader Premium';
+
+  @override
+  String get premiumAltBaslik =>
+      'See your whole destiny: every day, every category, ad-free.';
+
+  @override
+  String get premiumOzellik1 => 'Love and Money categories open every day';
+
+  @override
+  String get premiumOzellik2 =>
+      'Full Destiny Profile: your shadow side, love, work, life lesson, inner voice';
+
+  @override
+  String get premiumOzellik3 =>
+      'Personal year reading and the theme of your year';
+
+  @override
+  String get premiumOzellik4 =>
+      'Your full Numerology Report: the four periods of your life and your karmic numbers';
+
+  @override
+  String get premiumOzellik5 =>
+      'A Personal Year Report every year: your month-by-month guide';
+
+  @override
+  String get premiumOzellik6 => 'Unlimited compatibility checks';
+
+  @override
+  String get premiumOzellik7 => 'Ad-free experience';
+
+  @override
+  String get premiumYillik => 'Yearly';
+
+  @override
+  String get premiumAylik => 'Monthly';
+
+  @override
+  String get premiumEnAvantajli => 'Best value';
+
+  @override
+  String premiumAyliginaDusen(String fiyat) {
+    return 'about $fiyat per month';
+  }
+
+  @override
+  String premiumDeneme(int gun) {
+    return 'Try free for $gun days';
+  }
+
+  @override
+  String get premiumDonemYil => '/ year';
+
+  @override
+  String get premiumDonemAy => '/ month';
+
+  @override
+  String get premiumAbonelikBaslat => 'Start subscription';
+
+  @override
+  String get premiumDenemeBaslat => 'Start free trial';
+
+  @override
+  String get premiumGeriYukle => 'Restore purchases';
+
+  @override
+  String get premiumYukleniyor => 'Loading subscription options…';
+
+  @override
+  String get premiumPlanYok =>
+      'Subscription options can\'t be shown right now. Make sure the app was installed from Google Play and you\'re connected to the internet.';
+
+  @override
+  String get premiumTekrarDene => 'Try again';
+
+  @override
+  String get premiumYenilemeBilgisi =>
+      'The subscription renews automatically for the same period and price unless it\'s cancelled at least 24 hours before the period ends. If the free trial isn\'t cancelled before it ends, the paid period begins. You can cancel any time in Google Play > Payments & subscriptions.';
+
+  @override
+  String get premiumPuanNotu => 'Premium doesn\'t change your luck score.';
+
+  @override
+  String get premiumZatenPremium => 'Your Premium membership is active ✨';
+
+  @override
+  String get premiumBasarili => 'Premium is unlocked. Enjoy ✨';
+
+  @override
+  String get premiumKilitBaslik => 'This content is Premium';
+
+  @override
+  String get premiumPremiumaGec => 'Go Premium';
+
+  @override
+  String get premiumReklamlaAc => 'Watch an ad to unlock for today';
+
+  @override
+  String get premiumReklamYok =>
+      'No ad is available right now. You can try again in a little while.';
+
+  @override
+  String get premiumOdulYok =>
+      'The ad wasn\'t completed, so the content couldn\'t be unlocked.';
+
+  @override
+  String get premiumAcildi => 'Unlocked for today ✨';
+
+  @override
+  String get premiumKisiSiniri =>
+      'In the free version you can check compatibility with one person. Go Premium for unlimited people.';
+
+  @override
+  String get premiumRaporKilitBaslik => 'Unlock your full report';
+
+  @override
+  String get premiumRaporKilitAciklama =>
+      'This period\'s lesson, your next period, your karmic debts, the numbers missing from your name, your hidden passion, your maturity number and the letters of your name — your full report unlocks permanently with a one-time payment.';
+
+  @override
+  String premiumRaporuSatinAl(String fiyat) {
+    return 'Unlock report · $fiyat';
+  }
+
+  @override
+  String get premiumRaporFiyatYukleniyor => 'Loading price…';
+
+  @override
+  String get premiumRaporPremiumSecenegi => 'Go Premium — report included';
+
+  @override
+  String get premiumRaporOdemeBilgisi =>
+      'This is a one-time payment, not a subscription. The report stays unlocked on this Google account; if you change devices, use \"Restore purchases\" to unlock it again.';
+
+  @override
+  String premiumYilRaporuKilitBaslik(int yil) {
+    return 'Unlock your full $yil report';
+  }
+
+  @override
+  String get premiumYilRaporuKilitAciklama =>
+      'The year\'s opportunities and pitfalls, your love, work and money guide, the months when you\'ll be in flow and those that may challenge you, a month-by-month reading and the question of the year — unlocked permanently with a one-time payment.';
+
+  @override
+  String get premiumYilRaporuPremiumSecenegi =>
+      'Go Premium — every year\'s report included';
+
+  @override
+  String get premiumRaporAcildi => 'Your report is unlocked ✨';
+
+  @override
+  String get premiumYonetimBilgisi =>
+      'You can manage or cancel your subscription in the Google Play Store app under Profile > Payments & subscriptions > Subscriptions.';
+
+  @override
+  String get premiumHataPlanlar =>
+      'Subscription options couldn\'t be loaded right now. Check your internet connection and try again.';
+
+  @override
+  String get premiumHataSatinAlmaBaslamadi =>
+      'The purchase couldn\'t be started. Make sure you\'re signed in to Google Play and try again.';
+
+  @override
+  String get premiumHataSatinAlma =>
+      'The purchase couldn\'t be completed. If you weren\'t charged, you can try again.';
+
+  @override
+  String get premiumHataOdemeBekleniyor =>
+      'Your payment is awaiting approval. Premium will unlock automatically once it\'s approved.';
+
+  @override
+  String get premiumHataRaporUrunuYok =>
+      'The report can\'t be purchased right now. Make sure the app was installed from Google Play and you\'re connected to the internet.';
+
+  @override
+  String get premiumHataGeriYukleme =>
+      'Purchases couldn\'t be restored. Make sure you\'re signed in with the same Google account.';
+
+  @override
+  String get araclarBaslik => 'Discover';
+
+  @override
+  String get araclarAciklama =>
+      'Names and numbers have their own numbers too. Calculate a name you\'re curious about, your phone number, or the names you\'re considering for your baby.';
+
+  @override
+  String get araclarIsimBaslik => 'Name Analysis';
+
+  @override
+  String get araclarIsimAciklama =>
+      'The name, soul and personality numbers of any name.';
+
+  @override
+  String get araclarNumaraBaslik => 'Number Analysis';
+
+  @override
+  String get araclarNumaraAciklama =>
+      'The number and energy of your phone, license plate or house number.';
+
+  @override
+  String get araclarBebekBaslik => 'Baby Name';
+
+  @override
+  String get araclarBebekAciklama =>
+      'How well your candidate names match your family numerologically.';
+
+  @override
+  String get araclarHesapla => 'Calculate';
+
+  @override
+  String get araclarPaylas => 'Share';
+
+  @override
+  String get araclarGecersiz => 'There are no letters or digits to calculate.';
+
+  @override
+  String get araclarIsimKartEtiketi => 'NAME ANALYSIS';
+
+  @override
+  String get araclarNumaraKartEtiketi => 'NUMBER ANALYSIS';
+
+  @override
+  String get araclarBebekKartEtiketi => 'BABY NAME';
+
+  @override
+  String get araclarIsimSayisiEtiketi => 'Name number';
+
+  @override
+  String get araclarAdEtiketi => 'Full name';
+
+  @override
+  String get araclarAdIpucu => 'e.g. Emma Wilson';
+
+  @override
+  String get araclarNumaraEtiketi => 'Number';
+
+  @override
+  String get araclarTurTelefon => 'Phone';
+
+  @override
+  String get araclarTurTelefonIpucu => 'e.g. 555 123 4567';
+
+  @override
+  String get araclarTurPlaka => 'Plate';
+
+  @override
+  String get araclarTurPlakaIpucu => 'e.g. ABC 1234';
+
+  @override
+  String get araclarTurEv => 'House';
+
+  @override
+  String get araclarTurEvIpucu => 'e.g. Apt 7 or 12/4';
+
+  @override
+  String araclarHesapSatiri(String zincir) {
+    return 'Total $zincir';
+  }
+
+  @override
+  String get araclarAdaylarEtiketi => 'Candidate names';
+
+  @override
+  String get araclarAdaylarIpucu =>
+      'Write one full name per line.\ne.g. Emma Wilson\nNoah Wilson';
+
+  @override
+  String get araclarEbeveynBaslik => 'Who should we compare with?';
+
+  @override
+  String get araclarEbeveynAciklama =>
+      'People you added in the Compatibility tab appear here too.';
+
+  @override
+  String araclarBen(String isim) {
+    return 'Me ($isim)';
+  }
+
+  @override
+  String get araclarKisiSec => 'Choose at least one person.';
+
+  @override
+  String araclarPuan(int puan) {
+    return 'Match $puan/100';
+  }
+
+  @override
+  String get araclarSiralamaBaslik => 'Candidate ranking';
+
+  @override
+  String get araclarSiralamaKilitli =>
+      'The ranking of all candidates by match score is open to Premium members.';
+
+  @override
+  String araclarSiraSatiri(int sira, String ad, int puan) {
+    return '$sira. $ad · $puan';
+  }
+
+  @override
+  String get uyumBaslik => 'Compatibility';
+
+  @override
+  String get uyumAciklama =>
+      'See how your numbers and signs match with your partner, a crush, a friend or a family member.';
+
+  @override
+  String get uyumBosDurum =>
+      'You haven\'t added anyone yet. Add your first person to discover how well you match.';
+
+  @override
+  String get uyumKisiEkle => 'Add person';
+
+  @override
+  String get uyumFormBaslik => 'New person';
+
+  @override
+  String get uyumAdEtiketi => 'Full name';
+
+  @override
+  String get uyumAdIpucu => 'First Last (with middle name, if any)';
+
+  @override
+  String get uyumDogumEtiketi => 'Birth date';
+
+  @override
+  String get uyumRolEtiketi => 'Who are they to you?';
+
+  @override
+  String get uyumKaydet => 'Check compatibility';
+
+  @override
+  String get uyumAdBos => 'Enter a name to continue.';
+
+  @override
+  String get uyumRizaNotu =>
+      'These details are stored only on this device. When you add someone else\'s details, make sure they know about it.';
+
+  @override
+  String uyumSilBaslik(String ad) {
+    return 'Delete $ad?';
+  }
+
+  @override
+  String get uyumSil => 'Delete';
+
+  @override
+  String get uyumVazgec => 'Cancel';
+
+  @override
+  String get uyumEtiketi => 'MATCH';
+
+  @override
+  String get uyumSonucNotu =>
+      'Compatibility is calculated with traditional numerology rules from both people\'s life path numbers, zodiac elements and (if full names are known) soul numbers. It makes no judgment about the relationship\'s future; it\'s for entertainment.';
+
+  @override
+  String uyumKisiOzeti(String rol, String burc, int yasamYolu) {
+    return '$rol · $burc · Life path $yasamYolu';
+  }
 }

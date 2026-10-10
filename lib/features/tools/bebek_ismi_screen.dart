@@ -9,6 +9,7 @@ import '../../core/storage/kayitli_kisi.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_route.dart';
 import '../compatibility/uyum_screen.dart';
 import '../daily_luck/daily_luck_providers.dart';
@@ -18,7 +19,6 @@ import '../profile/kilitli_bolum_karti.dart';
 import '../share/arac_story_card.dart';
 import 'tools_config.dart';
 import 'tools_providers.dart';
-import 'tools_strings.dart';
 
 /// Aktif kullanıcıyı temsil eden referans kimliği.
 const String benKimligi = 'ben';
@@ -135,6 +135,7 @@ class _BebekIsmiScreenState extends ConsumerState<BebekIsmiScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final List<(String, String, DateTime)> kisiler = ref.watch(
       referansKisilerProvider,
@@ -145,7 +146,7 @@ class _BebekIsmiScreenState extends ConsumerState<BebekIsmiScreen> {
     final bool premium = ref.watch(entitlementProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(ToolsStrings.bebekBaslik)),
+      appBar: AppBar(title: Text(l.araclarBebekBaslik)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
@@ -155,17 +156,17 @@ class _BebekIsmiScreenState extends ConsumerState<BebekIsmiScreen> {
               minLines: ToolsConfig.adayAlaniSatiri,
               maxLines: null,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: ToolsStrings.adaylarEtiketi,
-                hintText: ToolsStrings.adaylarIpucu,
+              decoration: InputDecoration(
+                labelText: l.araclarAdaylarEtiketi,
+                hintText: l.araclarAdaylarIpucu,
                 alignLabelWithHint: true,
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            Text(ToolsStrings.ebeveynBaslik, style: yazi.titleMedium),
+            Text(l.araclarEbeveynBaslik, style: yazi.titleMedium),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              ToolsStrings.ebeveynAciklama,
+              l.araclarEbeveynAciklama,
               style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -176,7 +177,7 @@ class _BebekIsmiScreenState extends ConsumerState<BebekIsmiScreen> {
                 for (final (String, String, DateTime) k in kisiler)
                   FilterChip(
                     label: Text(
-                      k.$1 == benKimligi ? ToolsStrings.ben(k.$2) : k.$2,
+                      k.$1 == benKimligi ? l.araclarBen(k.$2) : k.$2,
                     ),
                     selected: secili.contains(k.$1),
                     onSelected: (bool s) => _kisiDegistir(k.$1, secili: s),
@@ -186,19 +187,19 @@ class _BebekIsmiScreenState extends ConsumerState<BebekIsmiScreen> {
             const SizedBox(height: AppSpacing.md),
             FilledButton(
               onPressed: secili.isEmpty ? null : _hesapla,
-              child: const Text(ToolsStrings.hesapla),
+              child: Text(l.araclarHesapla),
             ),
             if (secili.isEmpty) ...<Widget>[
               const SizedBox(height: AppSpacing.sm),
               Text(
-                ToolsStrings.kisiSec,
+                l.araclarKisiSec,
                 style: yazi.bodySmall?.copyWith(color: AppColors.error),
               ),
             ],
             const SizedBox(height: AppSpacing.lg),
             if (adaylar != null && sonuc == null && secili.isNotEmpty)
               Text(
-                ToolsStrings.gecersiz,
+                l.araclarGecersiz,
                 style: yazi.bodyMedium?.copyWith(color: AppColors.error),
               ),
             if (sonuc != null) ...<Widget>[
@@ -206,17 +207,17 @@ class _BebekIsmiScreenState extends ConsumerState<BebekIsmiScreen> {
               if (sonuc.siralama.length > 1) ...<Widget>[
                 const SizedBox(height: AppSpacing.md),
                 KilitliBolumKarti(
-                  baslik: ToolsStrings.siralamaBaslik,
+                  baslik: l.araclarSiralamaBaslik,
                   metin: premium
                       ? <String>[
                           for (int i = 0; i < sonuc.siralama.length; i++)
-                            ToolsStrings.siraSatiri(
+                            l.araclarSiraSatiri(
                               i + 1,
                               sonuc.siralama[i].analiz.tamAd,
                               sonuc.siralama[i].puan,
                             ),
                         ].join('\n')
-                      : ToolsStrings.siralamaKilitli,
+                      : l.araclarSiralamaKilitli,
                   kilitli: !premium,
                   onKilidiAc: () => unawaited(
                     Navigator.of(
@@ -230,7 +231,7 @@ class _BebekIsmiScreenState extends ConsumerState<BebekIsmiScreen> {
                 onPressed: () => unawaited(
                   ref.read(aracPaylasProvider)(
                     AracPaylasimi(
-                      ustEtiket: ToolsStrings.bebekKartEtiketi,
+                      ustEtiket: l.araclarBebekKartEtiketi,
                       baslik: sonuc.ilkAday.uyum.analiz.tamAd,
                       sayi: '${sonuc.ilkAday.uyum.puan}',
                       sayiEtiketi: sonuc.ilkAday.bant.etiket,
@@ -242,7 +243,7 @@ class _BebekIsmiScreenState extends ConsumerState<BebekIsmiScreen> {
                   ),
                 ),
                 icon: const Icon(Icons.ios_share_rounded),
-                label: const Text(ToolsStrings.paylas),
+                label: Text(l.araclarPaylas),
               ),
             ],
           ],
@@ -260,6 +261,7 @@ class _IlkAdayKarti extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return Card(
       margin: EdgeInsets.zero,
@@ -271,7 +273,7 @@ class _IlkAdayKarti extends StatelessWidget {
             Text(okuma.uyum.analiz.tamAd, style: yazi.titleLarge),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              '${ToolsStrings.puan(okuma.uyum.puan)} · ${okuma.bant.etiket}',
+              '${l.araclarPuan(okuma.uyum.puan)} · ${okuma.bant.etiket}',
               style: yazi.titleMedium?.copyWith(color: AppColors.gold),
             ),
             const SizedBox(height: AppSpacing.sm),
