@@ -18,7 +18,6 @@ import 'package:kader/features/profile/hesap_metni.dart';
 import 'package:kader/features/profile/kader_profili_screen.dart';
 import 'package:kader/features/profile/profile_strings.dart';
 import 'package:kader/features/settings/ayarlar_screen.dart';
-import 'package:kader/features/settings/ayarlar_strings.dart';
 
 import '../test_ortami.dart';
 
@@ -54,7 +53,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: ortam.overridelar(gun: sabitGun, premium: premium),
-          child: MaterialApp(home: ev),
+          child: testUygulamasi(ev),
         ),
       );
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -172,7 +171,8 @@ void main() {
       expect(find.text(UyumStrings.uyumEtiketi), findsOneWidget);
       expect(KisiRepository(ortam.kisiler).tumu().single.ad, 'Mert Kaya');
 
-      await tester.pageBack();
+      // pageBack() İngilizce "Back" ipucunu arar; arayüz Türkçe yerelleştirildi.
+      await tester.tap(find.byType(BackButton));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
       expect(find.text('Mert Kaya'), findsOneWidget);
@@ -207,11 +207,11 @@ void main() {
       await tester.runAsync(hazirla);
       await ac(tester, const AyarlarScreen());
 
-      await tester.scrollUntilVisible(find.text(AyarlarStrings.verileriSil), 200);
-      await tester.tap(find.text(AyarlarStrings.verileriSil));
+      await tester.scrollUntilVisible(find.text(trMetinler.ayarlarVerileriSil), 200);
+      await tester.tap(find.text(trMetinler.ayarlarVerileriSil));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
-      await tester.tap(find.text(AyarlarStrings.sil));
+      await tester.tap(find.text(trMetinler.ayarlarSil));
       await tester.pump();
       // Kutu temizleme gerçek disk I/O'dur: I/O gerçek event loop'ta
       // (runAsync) tamamlanır, devamı sahte zamanın mikro görevlerinde
@@ -231,13 +231,13 @@ void main() {
       await tester.runAsync(hazirla);
       await ac(tester, const AnaKabuk());
 
-      await tester.tap(find.text(AnaSekme.uyum.etiket));
+      await tester.tap(find.text(AnaSekme.uyum.etiketi(trMetinler)));
       await tester.pump();
       expect(find.text(UyumStrings.aciklama), findsOneWidget);
 
-      await tester.tap(find.text(AnaSekme.ayarlar.etiket));
+      await tester.tap(find.text(AnaSekme.ayarlar.etiketi(trMetinler)));
       await tester.pump();
-      expect(find.text(AyarlarStrings.profil.toUpperCase()), findsOneWidget);
+      expect(find.text(trMetinler.ayarlarProfil.toUpperCase()), findsOneWidget);
     });
   });
 }

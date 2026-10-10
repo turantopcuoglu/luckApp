@@ -28,7 +28,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: ortam.overridelar(gun: sabitGun),
-        child: const MaterialApp(home: WelcomeScreen()),
+        child: testUygulamasi(const WelcomeScreen()),
       ),
     );
     await tester.pump();

@@ -11,12 +11,12 @@
 
 | Bilgi | Değer |
 |---|---|
-| Tarih | 8 Ekim 2026 (E0, E1, E2 tamamlandı) |
-| Son commit | `1de5ed4` E0 + E1 (E2 commit'i istendiğinde) |
+| Tarih | 8 Ekim 2026 (E0–E3 tamamlandı) |
+| Son commit | `a934bae` E2 (E3 commit'i istendiğinde) |
 | Dal | `main` (her oturum doğrudan `main`'e commit edildi) |
-| Testler | 396 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi) |
+| Testler | 405 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi, +9 dil) |
 | Analiz | `flutter analyze` → No issues found |
-| Uygulama dili | Yalnızca Türkçe; tüm metinler Dart sabitleri, i18n altyapısı yok |
+| Uygulama dili | Türkçe. gen-l10n altyapısı kurulu (E3); İngilizce `DilConfig.ingilizceYayinda = false` ile kapalı (yalnız debug'da Ayarlar'dan seçilebilir) |
 
 ### Bu sohbette tamamlanan büyük işler (commit sırasıyla)
 
@@ -266,9 +266,27 @@ Her satır tek oturumdur. Kutuyu bitince işaretle.
       sıfır sorun kuralı); tüm kullanım taşınınca silinir. (3) Birleştirici
       içindeki satır içi Türkçe kalıplar (`'… burcu · …'`, `'Özün · …'`,
       `'Birlikte'`, `'Tavsiye'` …) E8'de paket getter'larına taşınır.
-- [ ] **E3 — i18n altyapısı (K1 onayı sonrası).** pubspec, `l10n.yaml`, boş
+- [x] **E3 — i18n altyapısı (K1 onayı sonrası).** pubspec, `l10n.yaml`, boş
       ARB'ler, `MaterialApp` locale bağlantısı, `dilProvider` (K3), Ayarlar'da dil
       seçimi. Bu oturumda yalnızca `ana_sekme` ve `ayarlar` metinleri taşınır.
+      **Yapıldı (8 Eki):** pubspec (`flutter_localizations`, `intl: any` →
+      0.20.2, `generate: true`), `l10n.yaml` (şablon `app_tr.arb`,
+      `nullable-getter: false`), `lib/l10n/app_tr.arb` + `app_en.arb` (sekme +
+      ayarlar, 41 anahtar). Üretilen `app_localizations*.dart` depoya
+      commit'lenir (ARB değişince `flutter gen-l10n`). `lib/l10n/dil_config.dart`
+      (`DilConfig.ingilizceYayinda`, dillerin yerel adları),
+      `lib/l10n/dil_providers.dart` (`uygulamaDiliniCoz`, `cihazDilKoduProvider`,
+      `dilTercihiProvider`, `uygulamaDiliProvider`); tercih
+      `UygulamaDurumu.dilKodu`'nda. `KaderApp` locale + delegeler.
+      `AnaSekme.etiketi(metinler)`; `AyarlarStrings` silindi. Testler:
+      `test/l10n/dil_test.dart`; `test_ortami.dart`'a `testUygulamasi(ev)` ve
+      `trMetinler` (AppLocalizations okuyan ekranların testleri bunu kullanır).
+      **Notlar:** (1) Yayın anahtarı kapalıyken herkes Türkçe görür; E12'de
+      `true` yapılınca K3 devreye girer. (2) Material/Cupertino bileşenleri
+      artık Türkçe yerelleştirilmiş (ör. saat seçici, tarih tekerleği gün-ay-yıl
+      sırası, geri düğmesi ipucu "Geri"); emülatörde kontrol edilmeli.
+      (3) Testte `tester.pageBack()` İngilizce "Back" ipucu aradığı için
+      çalışmaz; `find.byType(BackButton)` kullan.
 - [ ] **E4 — ARB taşıma: onboarding + legal ekranları (UI).** Yasal metin
       gövdesi hâlâ Türkçe kalabilir; E9'da yazılır.
 - [ ] **E5 — ARB taşıma: daily_luck + categories + feedback + share.**

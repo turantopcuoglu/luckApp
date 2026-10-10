@@ -1,0 +1,8 @@
+# Arayüz metinleri (gen-l10n). Türkçe referans dildir: yeni anahtar önce
+# app_tr.arb'ye (açıklamasıyla), sonra app_en.arb'ye eklenir.
+# Bkz. INGILIZCE_SURUM_PLANI.md §6.1.
+arb-dir: lib/l10n
+template-arb-file: app_tr.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false

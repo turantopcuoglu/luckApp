@@ -64,7 +64,7 @@ void main() {
               ),
             ],
           ),
-          child: MaterialApp(home: ev),
+          child: testUygulamasi(ev),
         ),
       );
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -91,7 +91,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await ac(tester, const AnaKabuk());
-    await tester.tap(find.text(AnaSekme.kesfet.etiket));
+    await tester.tap(find.text(AnaSekme.kesfet.etiketi(trMetinler)));
     await tester.pump();
     expect(find.byType(ToolsScreen), findsOneWidget);
     expect(find.text(ToolsStrings.isimBaslik), findsOneWidget);

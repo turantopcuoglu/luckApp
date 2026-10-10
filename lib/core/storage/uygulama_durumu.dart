@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 import 'storage_keys.dart';
 
 /// Kullanıcı verisi olmayan uygulama durumu: premium önbelleği, reklam
-/// sıklığı ve ilk açılış tarihi.
+/// sıklığı, ilk açılış tarihi ve dil tercihi.
 class UygulamaDurumu {
   /// Tüm alanları opsiyonel durum.
   const UygulamaDurumu({
@@ -14,6 +14,7 @@ class UygulamaDurumu {
     this.sonGecisReklami,
     this.gelistiriciPremium = false,
     this.sahipOlunanUrunler = const <String>{},
+    this.dilKodu,
   });
 
   /// Hive map'inden durum kurar.
@@ -28,6 +29,7 @@ class UygulamaDurumu {
       ...(map[_sahipOlunanUrunler] as List<dynamic>? ?? const <dynamic>[])
           .whereType<String>(),
     },
+    dilKodu: map[_dilKodu] as String?,
   );
 
   static const String _ilkAcilis = 'ilkAcilis';
@@ -37,6 +39,7 @@ class UygulamaDurumu {
   static const String _sonGecisReklami = 'sonGecisReklami';
   static const String _gelistiriciPremium = 'gelistiriciPremium';
   static const String _sahipOlunanUrunler = 'sahipOlunanUrunler';
+  static const String _dilKodu = 'dilKodu';
 
   static DateTime? _tarih(Object? ham) =>
       ham is String ? DateTime.tryParse(ham) : null;
@@ -65,6 +68,11 @@ class UygulamaDurumu {
   /// yükleme sonucu (ör. iade) bir ürünü listeden çıkarır.
   final Set<String> sahipOlunanUrunler;
 
+  /// Kullanıcının Ayarlar'da seçtiği dil kodu ("tr", "en"); `null` ise
+  /// cihaz dili izlenir. Depolama katmanı dil türünü bilmez, yalnız kodu
+  /// saklar (çözümleme `lib/l10n/dil_providers.dart`'ta).
+  final String? dilKodu;
+
   /// Hive'a yazılacak map.
   Map<String, dynamic> toMap() => <String, dynamic>{
     _ilkAcilis: ilkAcilis?.toIso8601String(),
@@ -74,9 +82,13 @@ class UygulamaDurumu {
     _sonGecisReklami: sonGecisReklami?.toIso8601String(),
     _gelistiriciPremium: gelistiriciPremium,
     _sahipOlunanUrunler: sahipOlunanUrunler.toList()..sort(),
+    _dilKodu: dilKodu,
   };
 
   /// Seçili alanları değiştirilmiş kopya.
+  ///
+  /// [dilKodu] `null` yapılamaz; cihaz diline dönmek için
+  /// [UygulamaDurumuRepository.dilKaydet] kullanılır.
   UygulamaDurumu copyWith({
     DateTime? ilkAcilis,
     bool? premiumAktif,
@@ -85,6 +97,7 @@ class UygulamaDurumu {
     DateTime? sonGecisReklami,
     bool? gelistiriciPremium,
     Set<String>? sahipOlunanUrunler,
+    String? dilKodu,
   }) => UygulamaDurumu(
     ilkAcilis: ilkAcilis ?? this.ilkAcilis,
     premiumAktif: premiumAktif ?? this.premiumAktif,
@@ -93,6 +106,7 @@ class UygulamaDurumu {
     sonGecisReklami: sonGecisReklami ?? this.sonGecisReklami,
     gelistiriciPremium: gelistiriciPremium ?? this.gelistiriciPremium,
     sahipOlunanUrunler: sahipOlunanUrunler ?? this.sahipOlunanUrunler,
+    dilKodu: dilKodu ?? this.dilKodu,
   );
 }
 
@@ -139,6 +153,7 @@ class UygulamaDurumuRepository {
         sonGecisReklami: mevcut.sonGecisReklami,
         gelistiriciPremium: mevcut.gelistiriciPremium,
         sahipOlunanUrunler: mevcut.sahipOlunanUrunler,
+        dilKodu: mevcut.dilKodu,
       ),
     );
   }
@@ -151,6 +166,23 @@ class UygulamaDurumuRepository {
   /// Geçiş reklamının gösterildiği anı yazar.
   Future<void> gecisReklamiGosterildi(DateTime an) =>
       kaydet(durum.copyWith(sonGecisReklami: an));
+
+  /// Dil tercihini yazar; [kod] `null` ise tercih silinir (cihaz dili).
+  Future<void> dilKaydet(String? kod) {
+    final UygulamaDurumu mevcut = durum;
+    return kaydet(
+      UygulamaDurumu(
+        ilkAcilis: mevcut.ilkAcilis,
+        premiumAktif: mevcut.premiumAktif,
+        premiumDogrulama: mevcut.premiumDogrulama,
+        premiumUrunId: mevcut.premiumUrunId,
+        sonGecisReklami: mevcut.sonGecisReklami,
+        gelistiriciPremium: mevcut.gelistiriciPremium,
+        sahipOlunanUrunler: mevcut.sahipOlunanUrunler,
+        dilKodu: kod,
+      ),
+    );
+  }
 
   /// Debug premium simülasyonunu açar/kapatır.
   Future<void> gelistiriciPremiumAyarla({required bool acik}) =>

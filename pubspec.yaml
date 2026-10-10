@@ -10,6 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # ONAY NOTU: flutter_localizations + intl, arayüz metinlerinin gen-l10n
+  # (ARB) ile çevrilmesi için eklendi (INGILIZCE_SURUM_PLANI.md K1, E3).
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
   cupertino_icons: ^1.0.8
   # ONAY NOTU: crypto, luck_engine'in deterministik SHA-256 seed'i için
@@ -42,6 +47,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # gen-l10n: lib/l10n/*.arb → AppLocalizations (bkz. l10n.yaml).
+  generate: true
 
   assets:
     - assets/svg/

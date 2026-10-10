@@ -1,10 +1,25 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:kader/core/storage/providers.dart';
 import 'package:kader/features/daily_luck/daily_luck_providers.dart';
 import 'package:kader/features/premium/premium_providers.dart';
+import 'package:kader/l10n/app_localizations.dart';
+import 'package:kader/l10n/app_localizations_tr.dart';
+
+/// Testlerin beklediği Türkçe arayüz metinleri (ARB'den üretilen sınıf).
+final AppLocalizations trMetinler = AppLocalizationsTr();
+
+/// [ev] ekranını Türkçe yerelleştirmeyle saran test uygulaması
+/// (`AppLocalizations.of` okuyan ekranlar için gerekli).
+MaterialApp testUygulamasi(Widget ev) => MaterialApp(
+  locale: const Locale('tr'),
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
+  home: ev,
+);
 
 /// Widget testleri için geçici Hive kutuları ve provider override'ları.
 ///

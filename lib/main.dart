@@ -20,6 +20,8 @@ import 'features/legal/uyari_screen.dart';
 import 'features/onboarding/welcome_screen.dart';
 import 'features/premium/magaza_servisi.dart';
 import 'features/premium/premium_kontrolcu.dart';
+import 'l10n/app_localizations.dart';
+import 'l10n/dil_providers.dart';
 import 'shared/widgets/app_route.dart';
 
 /// Kök gezgin anahtarı: bildirim dokunuşları context olmadan
@@ -113,7 +115,10 @@ Future<void> main() async {
   }
 }
 
-/// Uygulamanın kök widget'ı: temayı bağlar ve açılış ekranını seçer.
+/// Uygulamanın kök widget'ı: temayı ve dili bağlar, açılış ekranını seçer.
+///
+/// Dil [uygulamaDiliProvider]'dan gelir (Ayarlar'da değişince uygulama
+/// yeniden çizilir); Material/Cupertino bileşenleri de aynı dile geçer.
 ///
 /// - Onboarding tamamlanmadıysa: karşılama.
 /// - Kullanıcı güncel uyarı/koşullar sürümünü onaylamadıysa (ör. eski
@@ -153,6 +158,9 @@ class KaderApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Kader',
       debugShowCheckedModeBanner: false,
+      locale: dilLocale(ref.watch(uygulamaDiliProvider)),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: AppTheme.dark,
       navigatorKey: anaGezginAnahtari,
       scaffoldMessengerKey: anaMesajciAnahtari,

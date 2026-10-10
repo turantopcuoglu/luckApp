@@ -4,10 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/content/icerik_paketi.dart';
 import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
+import '../../l10n/dil_config.dart';
+import '../../l10n/dil_providers.dart';
 import '../../shared/widgets/app_images.dart';
 import '../../shared/widgets/app_route.dart';
 import '../../shared/widgets/sahne_arka_plani.dart';
@@ -25,28 +29,28 @@ import '../premium/paywall_screen.dart';
 import '../premium/premium_kontrolcu.dart';
 import '../premium/premium_strings.dart';
 import '../profile/tam_ad_duzenle.dart';
-import 'ayarlar_strings.dart';
 
-/// Ayarlar: profil, premium, bildirimler, gizlilik/yasal ve veri silme.
+/// Ayarlar: profil, premium, bildirimler, dil, gizlilik/yasal ve veri silme.
 class AyarlarScreen extends ConsumerWidget {
   /// Varsayılan kurucu.
   const AyarlarScreen({super.key});
 
   Future<void> _verileriSil(BuildContext context, WidgetRef ref) async {
+    final AppLocalizations l = AppLocalizations.of(context);
     final bool? onay = await showDialog<bool>(
       context: context,
       builder: (BuildContext d) => AlertDialog(
-        title: const Text(AyarlarStrings.silOnayBaslik),
-        content: const Text(AyarlarStrings.verileriSilAciklama),
+        title: Text(l.ayarlarSilOnayBaslik),
+        content: Text(l.ayarlarVerileriSilAciklama),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(d).pop(false),
-            child: const Text(AyarlarStrings.vazgec),
+            child: Text(l.ayarlarVazgec),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () => Navigator.of(d).pop(true),
-            child: const Text(AyarlarStrings.sil),
+            child: Text(l.ayarlarSil),
           ),
         ],
       ),
@@ -75,6 +79,7 @@ class AyarlarScreen extends ConsumerWidget {
   }
 
   void _bilgiGoster(BuildContext context, String metin) {
+    final AppLocalizations l = AppLocalizations.of(context);
     showDialog<void>(
       context: context,
       builder: (BuildContext d) => AlertDialog(
@@ -82,7 +87,7 @@ class AyarlarScreen extends ConsumerWidget {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(d).pop(),
-            child: const Text(AyarlarStrings.tamam),
+            child: Text(l.ayarlarTamam),
           ),
         ],
       ),
@@ -92,6 +97,8 @@ class AyarlarScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme yazi = Theme.of(context).textTheme;
+    final AppLocalizations l = AppLocalizations.of(context);
+    final IcerikDili? dilTercihi = ref.watch(dilTercihiProvider);
     final UserProfile profil = ref.watch(aktifProfilProvider);
     final PremiumDurumu premium = ref.watch(premiumKontrolcuProvider);
     final bool gizlilikGerekli = ref
@@ -122,35 +129,32 @@ class AyarlarScreen extends ConsumerWidget {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(AppSpacing.md),
-                child: Text(AyarlarStrings.baslik, style: yazi.headlineMedium),
+                child: Text(l.ayarlarBaslik, style: yazi.headlineMedium),
               ),
-              bolumBasligi(AyarlarStrings.profil),
+              bolumBasligi(l.ayarlarProfil),
+              ListTile(title: Text(l.ayarlarAd), trailing: Text(profil.isim)),
               ListTile(
-                title: const Text(AyarlarStrings.ad),
-                trailing: Text(profil.isim),
-              ),
-              ListTile(
-                title: const Text(AyarlarStrings.dogumTarihi),
-                subtitle: const Text(AyarlarStrings.sabitAlanNotu),
+                title: Text(l.ayarlarDogumTarihi),
+                subtitle: Text(l.ayarlarSabitAlanNotu),
                 trailing: Text(
                   TrStrings.tarihMetni(profil.dogumTarihi).split(',').first,
                 ),
               ),
               ListTile(
-                title: const Text(AyarlarStrings.tamAd),
-                subtitle: Text(profil.tamAd ?? AyarlarStrings.tamAdYok),
+                title: Text(l.ayarlarTamAd),
+                subtitle: Text(profil.tamAd ?? l.ayarlarTamAdYok),
                 trailing: const Icon(Icons.edit_outlined),
                 onTap: () => unawaited(tamAdiDuzenle(context, ref)),
               ),
               ListTile(
-                title: const Text(AyarlarStrings.tercihler),
-                subtitle: const Text(AyarlarStrings.tercihlerAciklama),
+                title: Text(l.ayarlarTercihler),
+                subtitle: Text(l.ayarlarTercihlerAciklama),
                 trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => Navigator.of(context).push(
                   fadeThroughRoute<void>(const TanismaScreen(duzenleme: true)),
                 ),
               ),
-              bolumBasligi(AyarlarStrings.premium),
+              bolumBasligi(l.ayarlarPremium),
               ListTile(
                 leading: Icon(
                   premium.aktif
@@ -159,9 +163,7 @@ class AyarlarScreen extends ConsumerWidget {
                   color: AppColors.gold,
                 ),
                 title: Text(
-                  premium.aktif
-                      ? AyarlarStrings.premiumAktif
-                      : AyarlarStrings.premiumDegil,
+                  premium.aktif ? l.ayarlarPremiumAktif : l.ayarlarPremiumDegil,
                 ),
                 trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: premium.aktif
@@ -171,28 +173,28 @@ class AyarlarScreen extends ConsumerWidget {
                       ).push(fadeThroughRoute<void>(const PaywallScreen())),
                 subtitle: Text(
                   premium.aktif
-                      ? AyarlarStrings.aboneligiYonet
-                      : AyarlarStrings.premiumaGec,
+                      ? l.ayarlarAboneligiYonet
+                      : l.ayarlarPremiumaGec,
                 ),
               ),
               ListTile(
                 leading: const Icon(Icons.restore_rounded),
-                title: const Text(AyarlarStrings.geriYukle),
+                title: Text(l.ayarlarGeriYukle),
                 onTap: premium.islemde
                     ? null
                     : () => unawaited(
                         ref.read(premiumKontrolcuProvider.notifier).geriYukle(),
                       ),
               ),
-              bolumBasligi(AyarlarStrings.bildirimler),
-              const ListTile(
-                leading: Icon(Icons.notifications_none_rounded),
-                title: Text(AyarlarStrings.bildirimSaatleri),
-                subtitle: Text(AyarlarStrings.bildirimAciklama),
+              bolumBasligi(l.ayarlarBildirimler),
+              ListTile(
+                leading: const Icon(Icons.notifications_none_rounded),
+                title: Text(l.ayarlarBildirimSaatleri),
+                subtitle: Text(l.ayarlarBildirimAciklama),
               ),
               ListTile(
                 leading: const Icon(Icons.refresh_rounded),
-                title: const Text(AyarlarStrings.bildirimleriTazele),
+                title: Text(l.ayarlarBildirimleriTazele),
                 onTap: () async {
                   final ScaffoldMessengerState mesajci = ScaffoldMessenger.of(
                     context,
@@ -206,17 +208,36 @@ class AyarlarScreen extends ConsumerWidget {
                     );
                   }
                   mesajci.showSnackBar(
-                    const SnackBar(
-                      content: Text(AyarlarStrings.bildirimlerKuruldu),
-                    ),
+                    SnackBar(content: Text(l.ayarlarBildirimlerKuruldu)),
                   );
                 },
               ),
-              bolumBasligi(AyarlarStrings.gizlilikYasal),
+              // İngilizce yayına kadar dil seçimi yalnız debug'da (DilConfig).
+              if (DilConfig.ingilizceYayinda || kDebugMode) ...<Widget>[
+                bolumBasligi(l.ayarlarDil),
+                for (final IcerikDili? dil in <IcerikDili?>[
+                  null,
+                  ...IcerikDili.values,
+                ])
+                  ListTile(
+                    key: ValueKey<String>('dil_${dil?.name ?? 'cihaz'}'),
+                    leading: const Icon(Icons.translate_rounded),
+                    title: Text(
+                      dil == null ? l.ayarlarDilCihaz : DilConfig.yerelAd(dil),
+                    ),
+                    trailing: dil == dilTercihi
+                        ? const Icon(Icons.check_rounded, color: AppColors.gold)
+                        : null,
+                    onTap: () => unawaited(
+                      ref.read(dilTercihiProvider.notifier).sec(dil),
+                    ),
+                  ),
+              ],
+              bolumBasligi(l.ayarlarGizlilikYasal),
               if (gizlilikGerekli)
                 ListTile(
                   leading: const Icon(Icons.privacy_tip_outlined),
-                  title: const Text(AyarlarStrings.reklamGizlilik),
+                  title: Text(l.ayarlarReklamGizlilik),
                   onTap: () => unawaited(
                     ref
                         .read(reklamServisiProvider)
@@ -225,7 +246,7 @@ class AyarlarScreen extends ConsumerWidget {
                 ),
               ListTile(
                 leading: const Icon(Icons.info_outline_rounded),
-                title: const Text(AyarlarStrings.uyari),
+                title: Text(l.ayarlarUyari),
                 onTap: () => _bilgiGoster(
                   context,
                   YasalMetinler.uyariMaddeleri.join('\n\n'),
@@ -244,16 +265,16 @@ class AyarlarScreen extends ConsumerWidget {
                   Icons.delete_forever_outlined,
                   color: AppColors.error,
                 ),
-                title: const Text(
-                  AyarlarStrings.verileriSil,
-                  style: TextStyle(color: AppColors.error),
+                title: Text(
+                  l.ayarlarVerileriSil,
+                  style: const TextStyle(color: AppColors.error),
                 ),
                 onTap: () => unawaited(_verileriSil(context, ref)),
               ),
               if (kDebugMode) ...<Widget>[
-                bolumBasligi(AyarlarStrings.gelistirici),
+                bolumBasligi(l.ayarlarGelistirici),
                 SwitchListTile(
-                  title: const Text(AyarlarStrings.premiumSimulasyonu),
+                  title: Text(l.ayarlarPremiumSimulasyonu),
                   value: premium.aktif,
                   onChanged: (bool acik) => unawaited(
                     ref
@@ -262,16 +283,14 @@ class AyarlarScreen extends ConsumerWidget {
                   ),
                 ),
                 ListTile(
-                  title: const Text(AyarlarStrings.rizaSifirla),
+                  title: Text(l.ayarlarRizaSifirla),
                   onTap: () async {
                     final ScaffoldMessengerState mesajci = ScaffoldMessenger.of(
                       context,
                     );
                     await ref.read(reklamServisiProvider).rizayiSifirla();
                     mesajci.showSnackBar(
-                      const SnackBar(
-                        content: Text(AyarlarStrings.rizaSifirlandi),
-                      ),
+                      SnackBar(content: Text(l.ayarlarRizaSifirlandi)),
                     );
                   },
                 ),
@@ -279,7 +298,7 @@ class AyarlarScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Text(
-                  AyarlarStrings.surum(LegalConfig.uygulamaSurumu),
+                  l.ayarlarSurum(LegalConfig.uygulamaSurumu),
                   style: yazi.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),

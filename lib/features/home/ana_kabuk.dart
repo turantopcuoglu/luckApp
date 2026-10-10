@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../l10n/app_localizations.dart';
 import '../compatibility/uyum_screen.dart';
 import '../daily_luck/daily_luck_screen.dart';
 import '../profile/kader_profili_screen.dart';
@@ -121,7 +122,7 @@ class _GezinmeOgesi extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              sekme.etiket,
+              sekme.etiketi(AppLocalizations.of(context)),
               style: Theme.of(
                 context,
               ).textTheme.labelSmall?.copyWith(color: renk),
