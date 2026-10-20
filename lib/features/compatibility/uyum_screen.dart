@@ -222,9 +222,7 @@ class _KisiEkleScreenState extends ConsumerState<KisiEkleScreen> {
   void _kaydet() {
     final String ad = _ad.text.trim().replaceAll(RegExp(r'\s+'), ' ');
     if (ad.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context).uyumAdBos)),
       );
       return;
@@ -244,6 +242,10 @@ class _KisiEkleScreenState extends ConsumerState<KisiEkleScreen> {
     final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final KisiRolu rol = ref.watch(kisiRolProvider);
+    // Tarih yalnızca seçicinin geri çağrısında yazılır; ekran izlemezse
+    // autoDispose provider dinleyicisiz kalıp varsayılana (1 Ocak 2000)
+    // döner ve kişi yanlış tarih/burçla kaydedilir.
+    ref.watch(kisiDogumProvider);
     return Scaffold(
       appBar: AppBar(title: Text(l.uyumFormBaslik)),
       // Kaydet butonu listenin dışında, altta sabit: klavye ve tarih
@@ -261,9 +263,7 @@ class _KisiEkleScreenState extends ConsumerState<KisiEkleScreen> {
                     key: const Key('kisi-ad-alani'),
                     controller: _ad,
                     textCapitalization: TextCapitalization.words,
-                    decoration: InputDecoration(
-                      hintText: l.uyumAdIpucu,
-                    ),
+                    decoration: InputDecoration(hintText: l.uyumAdIpucu),
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(l.uyumDogumEtiketi, style: yazi.titleMedium),
