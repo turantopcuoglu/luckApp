@@ -328,8 +328,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gunlukNedenBugun => 'Why today?';
 
   @override
-  String get gunlukNedenNotu =>
-      'Your score and reading come from these calculations. The same day always gives the same result.';
+  String get gunlukNedenNotu => 'Today\'s reading grows out of these signs.';
 
   @override
   String get gunlukAksamBaslik => 'How was your day?';
@@ -468,7 +467,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profilAciklama =>
-      'The numbers calculated from your birth date and name; they don\'t change over time. Tap any number to see how it was calculated.';
+      'The numbers that come from your birth date and name; they don\'t change over time. Tap any number to read its meaning.';
 
   @override
   String get profilYasamYolu => 'Life Path';
@@ -491,34 +490,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profilTamAdEksikAciklama =>
       'Your name, soul and personality numbers come from your full name at birth. Add it and two new sections open in your profile.';
-
-  @override
-  String get profilNasilHesaplandi => 'How was it calculated?';
-
-  @override
-  String get profilSistemNotu =>
-      'Kader uses the Pythagorean numerology system: A=1 … I=9, J=1 … R=9, S=1 … Z=8. Turkish letters take the value of their Latin counterparts (Ç=3, Ğ=7, I/İ=9, Ö=6, Ş=1, Ü=3). 11, 22 and 33 are kept as master numbers. Other numerology systems may give different results.';
-
-  @override
-  String get profilAdimAy => 'Birth month';
-
-  @override
-  String get profilAdimGun => 'Birth day';
-
-  @override
-  String get profilAdimYil => 'Birth year';
-
-  @override
-  String get profilAdimToplam => 'Total';
-
-  @override
-  String get profilAdimHarfler => 'All letters';
-
-  @override
-  String get profilAdimSesliler => 'Vowels';
-
-  @override
-  String get profilAdimSessizler => 'Consonants';
 
   @override
   String get profilUstaSayi => 'Master number';

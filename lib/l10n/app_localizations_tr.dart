@@ -328,8 +328,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get gunlukNedenBugun => 'Neden bugün?';
 
   @override
-  String get gunlukNedenNotu =>
-      'Skorun ve yorumun bu hesaplardan gelir. Aynı gün, aynı sonucu verir.';
+  String get gunlukNedenNotu => 'Günün okuması bu işaretlerden doğar.';
 
   @override
   String get gunlukAksamBaslik => 'Günün nasıldı?';
@@ -462,7 +461,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profilAciklama =>
-      'Doğum tarihin ve adından hesaplanan, zamanla değişmeyen sayıların. Her sayıya dokunarak nasıl hesaplandığını görebilirsin.';
+      'Doğum tarihin ve adından gelen, zamanla değişmeyen sayıların. Her sayıya dokunarak anlamını okuyabilirsin.';
 
   @override
   String get profilYasamYolu => 'Yaşam Yolu';
@@ -485,34 +484,6 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get profilTamAdEksikAciklama =>
       'İsim, ruh ve kişilik sayıların doğumdaki tam adından hesaplanır. Tam adını eklersen profiline iki yeni bölüm açılır.';
-
-  @override
-  String get profilNasilHesaplandi => 'Nasıl hesaplandı?';
-
-  @override
-  String get profilSistemNotu =>
-      'Kader, Pitagor numeroloji sistemini kullanır: A=1 … I=9, J=1 … R=9, S=1 … Z=8. Türkçe harfler Latin karşılıklarının değerini alır (Ç=3, Ğ=7, I/İ=9, Ö=6, Ş=1, Ü=3). 11, 22 ve 33 usta sayı olarak korunur. Farklı numeroloji sistemleri farklı sonuçlar verebilir.';
-
-  @override
-  String get profilAdimAy => 'Doğum ayı';
-
-  @override
-  String get profilAdimGun => 'Doğum günü';
-
-  @override
-  String get profilAdimYil => 'Doğum yılı';
-
-  @override
-  String get profilAdimToplam => 'Toplam';
-
-  @override
-  String get profilAdimHarfler => 'Tüm harfler';
-
-  @override
-  String get profilAdimSesliler => 'Sesli harfler';
-
-  @override
-  String get profilAdimSessizler => 'Sessiz harfler';
 
   @override
   String get profilUstaSayi => 'Usta sayı';

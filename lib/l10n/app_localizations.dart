@@ -695,7 +695,7 @@ abstract class AppLocalizations {
   /// Neden sayfasının alt notu.
   ///
   /// In tr, this message translates to:
-  /// **'Skorun ve yorumun bu hesaplardan gelir. Aynı gün, aynı sonucu verir.'**
+  /// **'Günün okuması bu işaretlerden doğar.'**
   String get gunlukNedenNotu;
 
   /// Akşam geri bildirim kartının başlığı.
@@ -941,7 +941,7 @@ abstract class AppLocalizations {
   /// Profil başlığının altındaki açıklama.
   ///
   /// In tr, this message translates to:
-  /// **'Doğum tarihin ve adından hesaplanan, zamanla değişmeyen sayıların. Her sayıya dokunarak nasıl hesaplandığını görebilirsin.'**
+  /// **'Doğum tarihin ve adından gelen, zamanla değişmeyen sayıların. Her sayıya dokunarak anlamını okuyabilirsin.'**
   String get profilAciklama;
 
   /// Sayı karosu etiketi.
@@ -985,60 +985,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'İsim, ruh ve kişilik sayıların doğumdaki tam adından hesaplanır. Tam adını eklersen profiline iki yeni bölüm açılır.'**
   String get profilTamAdEksikAciklama;
-
-  /// Hesap ayrıntısı başlığı.
-  ///
-  /// In tr, this message translates to:
-  /// **'Nasıl hesaplandı?'**
-  String get profilNasilHesaplandi;
-
-  /// Hesap sistemi notu (harf tablosu iki dilde aynıdır, D6).
-  ///
-  /// In tr, this message translates to:
-  /// **'Kader, Pitagor numeroloji sistemini kullanır: A=1 … I=9, J=1 … R=9, S=1 … Z=8. Türkçe harfler Latin karşılıklarının değerini alır (Ç=3, Ğ=7, I/İ=9, Ö=6, Ş=1, Ü=3). 11, 22 ve 33 usta sayı olarak korunur. Farklı numeroloji sistemleri farklı sonuçlar verebilir.'**
-  String get profilSistemNotu;
-
-  /// Hesap adımı etiketi.
-  ///
-  /// In tr, this message translates to:
-  /// **'Doğum ayı'**
-  String get profilAdimAy;
-
-  /// Hesap adımı etiketi.
-  ///
-  /// In tr, this message translates to:
-  /// **'Doğum günü'**
-  String get profilAdimGun;
-
-  /// Hesap adımı etiketi.
-  ///
-  /// In tr, this message translates to:
-  /// **'Doğum yılı'**
-  String get profilAdimYil;
-
-  /// Hesap adımı etiketi.
-  ///
-  /// In tr, this message translates to:
-  /// **'Toplam'**
-  String get profilAdimToplam;
-
-  /// Hesap adımı etiketi.
-  ///
-  /// In tr, this message translates to:
-  /// **'Tüm harfler'**
-  String get profilAdimHarfler;
-
-  /// Hesap adımı etiketi.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sesli harfler'**
-  String get profilAdimSesliler;
-
-  /// Hesap adımı etiketi.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sessiz harfler'**
-  String get profilAdimSessizler;
 
   /// Usta sayı notu (11, 22, 33).
   ///

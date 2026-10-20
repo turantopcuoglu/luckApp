@@ -12,11 +12,8 @@ import 'package:kader/features/home/ana_kabuk.dart';
 import 'package:kader/features/home/ana_sekme.dart';
 import 'package:kader/features/legal/legal_texts.dart';
 import 'package:kader/features/legal/yasal_belge_screen.dart';
-import 'package:kader/features/profile/hesap_metni.dart';
 import 'package:kader/features/profile/kader_profili_screen.dart';
 import 'package:kader/features/settings/ayarlar_screen.dart';
-
-import 'package:kader/l10n/app_localizations_en.dart';
 
 import '../test_ortami.dart';
 
@@ -60,61 +57,10 @@ void main() {
     await tester.pump();
   }
 
-  group('hesapSatirlari', () {
-    test('yaşam yolu adımları okunur biçimde', () {
-      final List<HesapSatiri> satirlar =
-          hesapSatirlari(
-            Numeroloji.yasamYolu(DateTime(1994, 3, 14)),
-            trMetinler,
-          );
-      expect(
-        satirlar.map((HesapSatiri s) => s.islem).toList(),
-        <String>[
-          '03 → 3',
-          '14 → 1+4 = 5',
-          '1994 → 1+9+9+4 = 23 → 5',
-          '3+5+5 = 13 → 4',
-        ],
-      );
-    });
-
-    test('usta gün korunur, harfler değerleriyle yazılır', () {
-      expect(
-        hesapSatirlari(
-          Numeroloji.yasamYolu(DateTime(2000, 11, 29)),
-          trMetinler,
-        )[1].islem,
-        '29 → 2+9 = 11',
-      );
-      expect(
-        hesapSatirlari(Numeroloji.isimSayisi('Ayşe')!, trMetinler).single.islem,
-        'A1 Y7 Ş1 E5 = 14 → 5',
-      );
-    });
-
-    test('adım etiketleri arayüz dilinde, işlemler iki dilde aynı', () {
-      final SayiHesabi hesap = Numeroloji.yasamYolu(DateTime(1994, 3, 14));
-      final List<HesapSatiri> tr = hesapSatirlari(hesap, trMetinler);
-      final List<HesapSatiri> en = hesapSatirlari(hesap, AppLocalizationsEn());
-      expect(tr.first.etiket, trMetinler.profilAdimAy);
-      expect(en.first.etiket, 'Birth month');
-      expect(
-        en.map((HesapSatiri s) => s.islem).toList(),
-        tr.map((HesapSatiri s) => s.islem).toList(),
-      );
-    });
-
-    test('indirgeme zinciri usta sayıda durur', () {
-      expect(indirgemeZinciri(29), <int>[29, 11]);
-      expect(indirgemeZinciri(38), <int>[38, 11]);
-      expect(indirgemeZinciri(7), <int>[7]);
-      expect(indirgemeZinciri(1994), <int>[1994, 23, 5]);
-    });
-  });
-
   group('KaderProfiliScreen', () {
-    testWidgets('sayılar görünür; premium bölümler kilitli, ücretsizler açık',
-        (WidgetTester tester) async {
+    testWidgets('sayılar görünür; premium bölümler kilitli, ücretsizler açık', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(hazirla);
       await ac(tester, const KaderProfiliScreen());
 
@@ -128,8 +74,9 @@ void main() {
       expect(find.text(trMetinler.profilKilidiAc), findsWidgets);
     });
 
-    testWidgets('yaşam yolu karosu hesap adımlarını gösterir',
-        (WidgetTester tester) async {
+    testWidgets('yaşam yolu karosu anlamı gösterir, hesap adımı göstermez', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(hazirla);
       await ac(tester, const KaderProfiliScreen());
 
@@ -140,12 +87,15 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
-      expect(find.text(trMetinler.profilNasilHesaplandi), findsOneWidget);
-      expect(find.text('1994 → 1+9+9+4 = 23 → 5'), findsOneWidget);
+      // Yaşam yolu 4 (Kurucu): lakap ve doğa; toplama işlemi yok.
+      expect(find.textContaining('Kurucu: doğanda'), findsOneWidget);
+      expect(find.textContaining('→'), findsNothing);
+      expect(find.textContaining('1+9+9+4'), findsNothing);
     });
 
-    testWidgets('premium kullanıcıda kilit yok; tam ad yoksa uyarı kartı',
-        (WidgetTester tester) async {
+    testWidgets('premium kullanıcıda kilit yok; tam ad yoksa uyarı kartı', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(
         () => hazirla(
           profil: UserProfile(
@@ -168,8 +118,9 @@ void main() {
   });
 
   group('UyumScreen', () {
-    testWidgets('kişi ekle → sonuç ekranı; ikinci kişi premium ister',
-        (WidgetTester tester) async {
+    testWidgets('kişi ekle → sonuç ekranı; ikinci kişi premium ister', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(hazirla);
       await ac(tester, const UyumScreen());
 
@@ -178,7 +129,10 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
-      await tester.enterText(find.byKey(const Key('kisi-ad-alani')), 'Mert Kaya');
+      await tester.enterText(
+        find.byKey(const Key('kisi-ad-alani')),
+        'Mert Kaya',
+      );
       await tester.tap(find.text(trMetinler.uyumKaydet));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
@@ -201,13 +155,17 @@ void main() {
   });
 
   group('AyarlarScreen ve kabuk', () {
-    testWidgets('profil bilgileri ve yasal belgeler erişilebilir',
-        (WidgetTester tester) async {
+    testWidgets('profil bilgileri ve yasal belgeler erişilebilir', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(hazirla);
       await ac(tester, const AyarlarScreen());
 
       expect(find.text('Ayşe'), findsWidgets);
-      await tester.scrollUntilVisible(find.text(YasalBelge.gizlilik.baslik(trMetinler)), 200);
+      await tester.scrollUntilVisible(
+        find.text(YasalBelge.gizlilik.baslik(trMetinler)),
+        200,
+      );
       await tester.tap(find.text(YasalBelge.gizlilik.baslik(trMetinler)));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
@@ -219,12 +177,16 @@ void main() {
       );
     });
 
-    testWidgets('verilerimi sil tüm kutuları temizler',
-        (WidgetTester tester) async {
+    testWidgets('verilerimi sil tüm kutuları temizler', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(hazirla);
       await ac(tester, const AyarlarScreen());
 
-      await tester.scrollUntilVisible(find.text(trMetinler.ayarlarVerileriSil), 200);
+      await tester.scrollUntilVisible(
+        find.text(trMetinler.ayarlarVerileriSil),
+        200,
+      );
       await tester.tap(find.text(trMetinler.ayarlarVerileriSil));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
@@ -244,7 +206,9 @@ void main() {
       expect(ortam.kayit.isEmpty, isTrue);
     });
 
-    testWidgets('alt gezinme sekmeleri değiştirir', (WidgetTester tester) async {
+    testWidgets('alt gezinme sekmeleri değiştirir', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(hazirla);
       await ac(tester, const AnaKabuk());
 

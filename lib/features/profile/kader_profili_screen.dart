@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/content/fortune_composer.dart';
 import '../../core/content/gunluk_okuma.dart';
 import '../../core/content/sayi_metinleri.dart';
+import '../../core/content/yorum_yonu.dart';
 import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
@@ -22,7 +23,6 @@ import '../legal/legal_texts.dart';
 import '../premium/kilit_secenekleri.dart';
 import '../premium/premium_providers.dart';
 import 'dogum_haritasi_screen.dart';
-import 'hesap_metni.dart';
 import 'kilitli_bolum_karti.dart';
 import 'numeroloji_raporu_screen.dart';
 import 'profile_config.dart';
@@ -32,8 +32,8 @@ import 'tam_ad_duzenle.dart';
 /// uzun kişilik okuması.
 ///
 /// Rakibin en sevilen yanı olan "beni anlattı" hissini üreten ekran:
-/// sayılar şeffaf biçimde hesaplanır, metinler sayının karakterinden
-/// yazılmıştır. İlk üç bölüm ücretsizdir; kalanı Premium ya da günlük
+/// her sayıya dokununca anlamı açılır (hesaplama yöntemi gösterilmez),
+/// metinler sayının karakterinden yazılmıştır. İlk üç bölüm ücretsizdir; kalanı Premium ya da günlük
 /// ödüllü reklamla açılır.
 class KaderProfiliScreen extends ConsumerWidget {
   /// Varsayılan kurucu.
@@ -66,85 +66,93 @@ class KaderProfiliScreen extends ConsumerWidget {
               AppSpacing.md,
             ),
             child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text(
-              l.profilBaslik,
-              style: yazi.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              l.profilAciklama,
-              style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _KimlikKarti(profil: profil, kader: kader, karakter: karakter),
-            const SizedBox(height: AppSpacing.md),
-            const BuyukUcluKarti(),
-            const SizedBox(height: AppSpacing.md),
-            const KoleksiyonOzetKarti(),
-            const SizedBox(height: AppSpacing.md),
-            _SayiKarolari(kader: kader),
-            if (kader.isimSayisi == null) ...<Widget>[
-              const SizedBox(height: AppSpacing.md),
-              Card(
-                margin: EdgeInsets.zero,
-                child: ListTile(
-                  leading: const Icon(Icons.edit_note_rounded,
-                      color: AppColors.gold),
-                  title: Text(l.profilTamAdEksikBaslik),
-                  subtitle: Text(l.profilTamAdEksikAciklama),
-                  onTap: () => unawaited(tamAdiDuzenle(context, ref)),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Text(
+                  l.profilBaslik,
+                  style: yazi.headlineMedium,
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            ],
-            const SizedBox(height: AppSpacing.md),
-            Card(
-              margin: EdgeInsets.zero,
-              child: ListTile(
-                leading: Image.asset(
-                  AppImages.raporKitap,
-                  width: ProfileConfig.raporKitapIkonu,
-                  height: ProfileConfig.raporKitapIkonu,
-                  excludeFromSemantics: true,
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  l.profilAciklama,
+                  style: yazi.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                title: Text(l.profilRaporGirisBaslik),
-                subtitle: Text(l.profilRaporGirisAciklama),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => unawaited(
-                  Navigator.of(context).push(
-                    fadeThroughRoute<void>(const NumerolojiRaporuScreen()),
+                const SizedBox(height: AppSpacing.md),
+                _KimlikKarti(profil: profil, kader: kader, karakter: karakter),
+                const SizedBox(height: AppSpacing.md),
+                const BuyukUcluKarti(),
+                const SizedBox(height: AppSpacing.md),
+                const KoleksiyonOzetKarti(),
+                const SizedBox(height: AppSpacing.md),
+                _SayiKarolari(kader: kader),
+                if (kader.isimSayisi == null) ...<Widget>[
+                  const SizedBox(height: AppSpacing.md),
+                  Card(
+                    margin: EdgeInsets.zero,
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.edit_note_rounded,
+                        color: AppColors.gold,
+                      ),
+                      title: Text(l.profilTamAdEksikBaslik),
+                      subtitle: Text(l.profilTamAdEksikAciklama),
+                      onTap: () => unawaited(tamAdiDuzenle(context, ref)),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.md),
+                Card(
+                  margin: EdgeInsets.zero,
+                  child: ListTile(
+                    leading: Image.asset(
+                      AppImages.raporKitap,
+                      width: ProfileConfig.raporKitapIkonu,
+                      height: ProfileConfig.raporKitapIkonu,
+                      excludeFromSemantics: true,
+                    ),
+                    title: Text(l.profilRaporGirisBaslik),
+                    subtitle: Text(l.profilRaporGirisAciklama),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => unawaited(
+                      Navigator.of(context).push(
+                        fadeThroughRoute<void>(const NumerolojiRaporuScreen()),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            for (final ProfilBolumu bolum in bolumler) ...<Widget>[
-              KilitliBolumKarti(
-                baslik: bolum.baslik,
-                metin: bolum.metin,
-                kilitli: bolum.premium && kilitli,
-                onKilidiAc: () => unawaited(
-                  kilitSecenekleriniGoster(
-                    context,
-                    ref,
-                    kilitAnahtari: KilitAnahtarlari.profil,
-                    aciklama: l.profilKilitAciklamasi,
+                const SizedBox(height: AppSpacing.lg),
+                for (final ProfilBolumu bolum in bolumler) ...<Widget>[
+                  KilitliBolumKarti(
+                    baslik: bolum.baslik,
+                    metin: bolum.metin,
+                    kilitli: bolum.premium && kilitli,
+                    onKilidiAc: () => unawaited(
+                      kilitSecenekleriniGoster(
+                        context,
+                        ref,
+                        kilitAnahtari: KilitAnahtarlari.profil,
+                        aciklama: l.profilKilitAciklamasi,
+                      ),
+                    ),
                   ),
+                  const SizedBox(height: AppSpacing.md),
+                ],
+                BannerReklamAlani(
+                  goster: ref.watch(bannerGosterilebilirProvider),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-            ],
-            BannerReklamAlani(goster: ref.watch(bannerGosterilebilirProvider)),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              YasalMetinler.kisaNot,
-              style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
-              textAlign: TextAlign.center,
-            ),
-          ],
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  YasalMetinler.kisaNot,
+                  style: yazi.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
         ],
@@ -198,9 +206,9 @@ class _ProfilBasligi extends StatelessWidget {
               ),
               child: Text(
                 basHarf,
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  color: AppColors.goldAcik,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.displaySmall?.copyWith(color: AppColors.goldAcik),
               ),
             );
           },
@@ -291,12 +299,26 @@ class _SayiKarolari extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations l = AppLocalizations.of(context);
-    final List<(String, SayiHesabi?)> karolar = <(String, SayiHesabi?)>[
-      (l.profilYasamYolu, kader.yasamYolu),
-      (l.profilIsimSayisi, kader.isimSayisi),
-      (l.profilRuhSayisi, kader.ruhSayisi),
-      (l.profilKisilikSayisi, kader.kisilikSayisi),
-    ];
+    // Her sayının dokununca açılan anlamı (hesap adımları gösterilmez).
+    final List<(String, SayiHesabi?, String Function(int))> karolar =
+        <(String, SayiHesabi?, String Function(int))>[
+          (l.profilYasamYolu, kader.yasamYolu, _yasamYoluAnlami),
+          (
+            l.profilIsimSayisi,
+            kader.isimSayisi,
+            _anlamBul(SayiMetinleri.isimSayisi),
+          ),
+          (
+            l.profilRuhSayisi,
+            kader.ruhSayisi,
+            _anlamBul(SayiMetinleri.ruhSayisi),
+          ),
+          (
+            l.profilKisilikSayisi,
+            kader.kisilikSayisi,
+            _anlamBul(SayiMetinleri.kisilikSayisi),
+          ),
+        ];
     return Row(
       children: <Widget>[
         for (int i = 0; i < karolar.length; i++) ...<Widget>[
@@ -307,7 +329,12 @@ class _SayiKarolari extends ConsumerWidget {
               hesap: karolar[i].$2,
               onTap: karolar[i].$2 == null
                   ? () => unawaited(tamAdiDuzenle(context, ref))
-                  : () => _hesabiGoster(context, karolar[i].$1, karolar[i].$2!),
+                  : () => _anlamiGoster(
+                      context,
+                      karolar[i].$1,
+                      karolar[i].$2!,
+                      karolar[i].$3(karolar[i].$2!.deger),
+                    ),
             ),
           ),
         ],
@@ -315,7 +342,23 @@ class _SayiKarolari extends ConsumerWidget {
     );
   }
 
-  void _hesabiGoster(BuildContext context, String etiket, SayiHesabi hesap) {
+  /// Yaşam yolu sayısının anlamı: lakap ve doğa.
+  static String _yasamYoluAnlami(int deger) {
+    final String lakap = SayiMetinleri.yasamYolu[deger]?.lakap ?? '';
+    final String? doga = YorumYonu.karakterler[deger]?.doga;
+    return doga == null ? lakap : '$lakap: doğanda $doga var.';
+  }
+
+  /// [metinler] haritasından sayının anlamını bulan fonksiyon.
+  static String Function(int) _anlamBul(Map<int, String> metinler) =>
+      (int deger) => metinler[deger] ?? '';
+
+  void _anlamiGoster(
+    BuildContext context,
+    String etiket,
+    SayiHesabi hesap,
+    String anlam,
+  ) {
     final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     showModalBottomSheet<void>(
@@ -339,41 +382,12 @@ class _SayiKarolari extends ConsumerWidget {
                 '${hesap.ustaMi ? ' · ${l.profilUstaSayi}' : ''}',
                 style: yazi.titleLarge?.copyWith(color: AppColors.gold),
               ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(l.profilNasilHesaplandi, style: yazi.titleSmall),
               const SizedBox(height: AppSpacing.md),
-              for (final HesapSatiri satir in hesapSatirlari(hesap, l))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        width: ProfileConfig.adimEtiketGenisligi,
-                        child: Text(
-                          satir.etiket,
-                          style: yazi.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          satir.islem,
-                          style: yazi.bodyMedium?.copyWith(
-                            fontFeatures: const <FontFeature>[
-                              FontFeature.tabularFigures(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              const SizedBox(height: AppSpacing.sm),
               Text(
-                l.profilSistemNotu,
-                style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
+                anlam,
+                style: yazi.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),
