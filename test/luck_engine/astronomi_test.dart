@@ -205,4 +205,35 @@ void main() {
       expect(istanbul.yukselenBoylami, closeTo(utc.yukselenBoylami!, 1e-9));
     });
   });
+  group('günün Ay burcu', () {
+    test('bilinen yeni ay ve dolunay günleri', () {
+      // 8 Nisan 2024 tutulması (yeni ay 19° Koç, 18:21 UT) — öğlen ~14° Koç.
+      expect(Astronomi.gununAyBurcu(DateTime(2024, 4, 8)), Burc.koc);
+      // 2 Ekim 2024 yeni ayı (10° Terazi, 18:49 UT) — öğlen ~5° Terazi.
+      expect(Astronomi.gununAyBurcu(DateTime(2024, 10, 2)), Burc.terazi);
+      // 17 Ekim 2024 dolunayı (24° Koç, 11:26 UT) — öğlen ~23° Koç.
+      expect(Astronomi.gununAyBurcu(DateTime(2024, 10, 17)), Burc.koc);
+    });
+
+    test('yalnızca tarihe bağlıdır: günün saati sonucu değiştirmez', () {
+      final DateTime gun = DateTime(2026, 10, 20);
+      expect(
+        Astronomi.gununAyBurcu(DateTime(2026, 10, 20, 23, 59)),
+        Astronomi.gununAyBurcu(gun),
+      );
+    });
+
+    test('bir ayda 12 burcun hepsinden geçer, her burçta 1-4 gün kalır', () {
+      final List<Burc> gunler = <Burc>[
+        for (int i = 0; i < 28; i++)
+          Astronomi.gununAyBurcu(DateTime(2026, 1, 1).add(Duration(days: i))),
+      ];
+      expect(gunler.toSet(), hasLength(12));
+      int seri = 1;
+      for (int i = 1; i < gunler.length; i++) {
+        seri = gunler[i] == gunler[i - 1] ? seri + 1 : 1;
+        expect(seri, lessThanOrEqualTo(4));
+      }
+    });
+  });
 }

@@ -126,6 +126,12 @@ abstract final class EngineConfig {
   /// Bir burcun ekliptik genişliği (derece).
   static const double burcGenisligi = 30;
 
+  /// Günün Ay burcunun okunduğu an (UTC saat): Türkiye'de öğlen (UTC+3).
+  ///
+  /// Ay gün içinde burç değiştirebilir; günün tek bir Ay burcu olsun diye
+  /// konum her gün bu saatte alınır.
+  static const int gununAyBurcuUtcSaati = 9;
+
   /// Ay burcu bu kadar dereceden sınıra yakınsa "kesin değil" sayılır:
   /// Ay saatte ~0.5° ilerler; ~0.5° ≈ 1 saatlik doğum saati belirsizliği.
   static const double aySinirToleransi = 0.5;

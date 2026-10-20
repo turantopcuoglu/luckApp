@@ -183,6 +183,25 @@ abstract final class Astronomi {
   static Burc burc(double boylam) =>
       ekliptikBurclari[normalize(boylam) ~/ EngineConfig.burcGenisligi];
 
+  /// [gun] takvim gününde Ay'ın bulunduğu burç (günün gökyüzü).
+  ///
+  /// Ay bir burçta ~2,5 gün kalır ve gün içinde burç değiştirebilir; günün
+  /// tek bir Ay burcu olsun diye [EngineConfig.gununAyBurcuUtcSaati]
+  /// anındaki konum kullanılır. Yalnızca tarihe bağlıdır: aynı gün herkes
+  /// için aynı burcu verir (saat ve saat dilimi bilgisi yok sayılır).
+  static Burc gununAyBurcu(DateTime gun) => burc(
+    ayBoylami(
+      julyenGunu(
+        DateTime.utc(
+          gun.year,
+          gun.month,
+          gun.day,
+          EngineConfig.gununAyBurcuUtcSaati,
+        ),
+      ),
+    ),
+  );
+
   /// [boylam]ın en yakın burç sınırına uzaklığı (derece, 0-15).
   static double sinirUzakligi(double boylam) {
     final double burcIci = normalize(boylam) % EngineConfig.burcGenisligi;

@@ -179,6 +179,14 @@ YasamYoluIliskisi _yasamYoluIliskisi(int a, int b) {
       : YasamYoluIliskisi.zorlayici;
 }
 
+/// İki burç elementinin ilişkisi (simetrik): aynı, tamamlayıcı
+/// (ateş–hava, toprak–su), zıt (ateş–su, toprak–hava) ya da nötr.
+///
+/// Uyum hesabının yanı sıra günlük okumada Ay'ın elementiyle kişinin
+/// Güneş elementi arasındaki ilişki için de kullanılır.
+ElementIliskisi elementIliskisi(BurcElementi a, BurcElementi b) =>
+    _elementIliskisi(a, b);
+
 ElementIliskisi _elementIliskisi(BurcElementi a, BurcElementi b) {
   if (a == b) {
     return ElementIliskisi.ayni;

@@ -229,4 +229,24 @@ void main() {
       }
     });
   });
+  group('elementIliskisi', () {
+    test('aynı, tamamlayıcı, zıt ve nötr; simetrik', () {
+      const BurcElementi ates = BurcElementi.ates;
+      const BurcElementi toprak = BurcElementi.toprak;
+      const BurcElementi hava = BurcElementi.hava;
+      const BurcElementi su = BurcElementi.su;
+      expect(elementIliskisi(hava, hava), ElementIliskisi.ayni);
+      expect(elementIliskisi(ates, hava), ElementIliskisi.tamamlayici);
+      expect(elementIliskisi(toprak, su), ElementIliskisi.tamamlayici);
+      expect(elementIliskisi(ates, su), ElementIliskisi.zit);
+      expect(elementIliskisi(toprak, hava), ElementIliskisi.zit);
+      expect(elementIliskisi(ates, toprak), ElementIliskisi.notr);
+      expect(elementIliskisi(hava, su), ElementIliskisi.notr);
+      for (final BurcElementi a in BurcElementi.values) {
+        for (final BurcElementi b in BurcElementi.values) {
+          expect(elementIliskisi(a, b), elementIliskisi(b, a));
+        }
+      }
+    });
+  });
 }
