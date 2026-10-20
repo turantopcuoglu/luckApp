@@ -345,6 +345,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get kategoriSansliSaat => 'Your lucky hours';
 
   @override
+  String get kategoriYap => 'Do';
+
+  @override
+  String get kategoriYapma => 'Don\'t';
+
+  @override
   String kategoriKilitAciklamasi(String kategori) {
     return 'Today\'s $kategori score, your personal reading and your lucky hours are open to Premium members. You can also unlock them for today only by watching a short ad.';
   }

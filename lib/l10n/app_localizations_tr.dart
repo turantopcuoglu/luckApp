@@ -345,6 +345,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get kategoriSansliSaat => 'Şanslı saat aralığın';
 
   @override
+  String get kategoriYap => 'Yap';
+
+  @override
+  String get kategoriYapma => 'Yapma';
+
+  @override
   String kategoriKilitAciklamasi(String kategori) {
     return '$kategori kategorisinin bugünkü skoru, sana özel yorumu ve şanslı saati Premium üyelere açık. İstersen kısa bir reklam izleyerek yalnızca bugün için de açabilirsin.';
   }

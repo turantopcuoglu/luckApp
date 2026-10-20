@@ -722,6 +722,18 @@ abstract class AppLocalizations {
   /// **'Şanslı saat aralığın'**
   String get kategoriSansliSaat;
 
+  /// Kategori detayı: günün önerileri listesinin başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yap'**
+  String get kategoriYap;
+
+  /// Kategori detayı: günün kaçınılacakları listesinin başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapma'**
+  String get kategoriYapma;
+
   /// Kilitli kategorinin kilit seçenekleri sayfasındaki açıklama.
   ///
   /// In tr, this message translates to:

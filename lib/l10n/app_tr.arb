@@ -230,6 +230,10 @@
 
   "kategoriSansliSaat": "Şanslı saat aralığın",
   "@kategoriSansliSaat": {"description": "Kategori detayı: şanslı saat kartının başlığı."},
+  "kategoriYap": "Yap",
+  "@kategoriYap": {"description": "Kategori detayı: günün önerileri listesinin başlığı."},
+  "kategoriYapma": "Yapma",
+  "@kategoriYapma": {"description": "Kategori detayı: günün kaçınılacakları listesinin başlığı."},
   "kategoriKilitAciklamasi": "{kategori} kategorisinin bugünkü skoru, sana özel yorumu ve şanslı saati Premium üyelere açık. İstersen kısa bir reklam izleyerek yalnızca bugün için de açabilirsin.",
   "@kategoriKilitAciklamasi": {
     "description": "Kilitli kategorinin kilit seçenekleri sayfasındaki açıklama.",

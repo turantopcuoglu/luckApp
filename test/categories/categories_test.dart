@@ -68,11 +68,19 @@ void main() {
   }
 
   group('CategoryDetailScreen', () {
-    testWidgets('skor, kişisel paragraf, eylem ve şanslı saat gösterilir',
-        (WidgetTester tester) async {
+    testWidgets('skor, kişisel paragraf, eylem ve şanslı saat gösterilir', (
+      WidgetTester tester,
+    ) async {
+      // Yap / Yapma kartı şanslı saat kartını aşağı iter; tüm liste tek
+      // ekrana sığsın (ListView görünmeyeni kurmaz).
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
       await tester.runAsync(hazirla);
-      final LuckResult sonuc =
-          motor.hesapla(kullanici: profil.seed, gun: sabitGun);
+      final LuckResult sonuc = motor.hesapla(
+        kullanici: profil.seed,
+        gun: sabitGun,
+      );
       final KategoriOkumasi beklenen = composer.kategoriOkumasi(
         motor: motor,
         okuyucu: profil.okuyucu,
@@ -95,18 +103,74 @@ void main() {
       expect(find.text(trMetinler.kategoriSansliSaat), findsOneWidget);
       expect(find.text(beklenen.sansliSaat.etiket), findsOneWidget);
     });
+
+    testWidgets('gökyüzü kategorisi: başlık ve Yap / Yapma listeleri', (
+      WidgetTester tester,
+    ) async {
+      // Tüm liste tek ekrana sığsın (ListView görünmeyeni kurmaz).
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.runAsync(hazirla);
+      final KategoriOkumasi beklenen = composer.kategoriOkumasi(
+        motor: motor,
+        okuyucu: profil.okuyucu,
+        sonuc: motor.hesapla(kullanici: profil.seed, gun: sabitGun),
+        kategori: LuckCategory.risk,
+      );
+
+      await ekraniAc(
+        tester,
+        const CategoryDetailScreen(kategori: LuckCategory.risk),
+      );
+
+      expect(beklenen.baslik, isNotNull);
+      expect(find.text(beklenen.baslik!), findsOneWidget);
+      expect(find.text(trMetinler.kategoriYap), findsOneWidget);
+      expect(find.text(trMetinler.kategoriYapma), findsOneWidget);
+      for (final String madde in <String>[...beklenen.yap, ...beklenen.yapma]) {
+        expect(find.text(madde), findsOneWidget, reason: madde);
+      }
+    });
+
+    testWidgets('Aşk (Premium): başlık ve Yap / Yapma listeleri', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.runAsync(hazirla);
+      final KategoriOkumasi beklenen = composer.kategoriOkumasi(
+        motor: motor,
+        okuyucu: profil.okuyucu,
+        sonuc: motor.hesapla(kullanici: profil.seed, gun: sabitGun),
+        kategori: LuckCategory.ask,
+      );
+
+      await ekraniAc(
+        tester,
+        const CategoryDetailScreen(kategori: LuckCategory.ask),
+        premium: true,
+      );
+
+      expect(find.text(beklenen.baslik!), findsOneWidget);
+      expect(find.text(trMetinler.kategoriYap), findsOneWidget);
+      expect(find.text(trMetinler.kategoriYapma), findsOneWidget);
+    });
   });
 
   group('premium kilidi (ana ekran)', () {
-    testWidgets('aşk ve para kutuları kilit ikonu taşır',
-        (WidgetTester tester) async {
+    testWidgets('aşk ve para kutuları kilit ikonu taşır', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(hazirla);
       await ekraniAc(tester, const DailyLuckScreen());
       expect(find.byType(KilitAmblemi), findsNWidgets(2));
     });
 
-    testWidgets('kilitli kutu kilit seçeneklerini, oradan paywall açılır',
-        (WidgetTester tester) async {
+    testWidgets('kilitli kutu kilit seçeneklerini, oradan paywall açılır', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(hazirla);
       await anaEkraniAcVeKartiCevir(tester);
 
@@ -138,8 +202,9 @@ void main() {
       expect(find.text(trMetinler.premiumYenilemeBilgisi), findsOneWidget);
     });
 
-    testWidgets('kilitsiz kutuya dokunmak detay sayfası açar',
-        (WidgetTester tester) async {
+    testWidgets('kilitsiz kutuya dokunmak detay sayfası açar', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(hazirla);
       await anaEkraniAcVeKartiCevir(tester);
 
@@ -151,8 +216,9 @@ void main() {
       expect(find.byType(CategoryDetailScreen), findsOneWidget);
     });
 
-    testWidgets('premium yetkisi kilidi kaldırır: aşk detaya gider',
-        (WidgetTester tester) async {
+    testWidgets('premium yetkisi kilidi kaldırır: aşk detaya gider', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(hazirla);
       await anaEkraniAcVeKartiCevir(tester, premium: true);
 
@@ -166,8 +232,9 @@ void main() {
       expect(find.byType(CategoryDetailScreen), findsOneWidget);
     });
 
-    testWidgets('bugün reklamla açılan kategori kilitsiz görünür',
-        (WidgetTester tester) async {
+    testWidgets('bugün reklamla açılan kategori kilitsiz görünür', (
+      WidgetTester tester,
+    ) async {
       await tester.runAsync(
         () => hazirla(
           kilitler: <String>{KilitAnahtarlari.kategori(LuckCategory.ask)},

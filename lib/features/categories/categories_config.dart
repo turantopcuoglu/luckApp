@@ -14,4 +14,7 @@ abstract final class CategoriesConfig {
 
   /// Detay sayfasındaki kategori ikonunun boyutu.
   static const double detayIkonBoyutu = 32;
+
+  /// "Yap / Yapma" listelerindeki madde ikonunun boyutu.
+  static const double oneriIkonBoyutu = 18;
 }

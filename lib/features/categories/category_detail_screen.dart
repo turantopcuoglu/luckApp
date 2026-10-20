@@ -85,6 +85,18 @@ class CategoryDetailScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xl),
+                  // Gökyüzü tabanlı kategorilerde (Sağlık, Risk, Sosyal)
+                  // okuma kısa bir başlıkla açılır.
+                  if (okuma.baslik case final String baslik) ...<Widget>[
+                    Text(
+                      baslik,
+                      textAlign: TextAlign.center,
+                      style: yaziTemasi.headlineSmall?.copyWith(
+                        color: AppColors.gold,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
                   // Orijinal tek yorum kartı: paragraf ve eylem önerisi.
                   Card(
                     margin: EdgeInsets.zero,
@@ -96,6 +108,34 @@ class CategoryDetailScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  if (okuma.yap.isNotEmpty ||
+                      okuma.yapma.isNotEmpty) ...<Widget>[
+                    const SizedBox(height: AppSpacing.md),
+                    Card(
+                      margin: EdgeInsets.zero,
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            _OneriListesi(
+                              baslik: l.kategoriYap,
+                              maddeler: okuma.yap,
+                              ikon: Icons.check_rounded,
+                              renk: AppColors.sahneYuksek,
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            _OneriListesi(
+                              baslik: l.kategoriYapma,
+                              maddeler: okuma.yapma,
+                              ikon: Icons.close_rounded,
+                              renk: AppColors.error,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.md),
                   Card(
                     margin: EdgeInsets.zero,
@@ -140,6 +180,52 @@ class CategoryDetailScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// "Yap" ya da "Yapma" başlıklı, ikonlu kısa öneri listesi.
+class _OneriListesi extends StatelessWidget {
+  const _OneriListesi({
+    required this.baslik,
+    required this.maddeler,
+    required this.ikon,
+    required this.renk,
+  });
+
+  /// Liste başlığı ("Yap" / "Yapma").
+  final String baslik;
+
+  /// Öneri cümleleri.
+  final List<String> maddeler;
+
+  /// Her maddenin başındaki ikon.
+  final IconData ikon;
+
+  /// Başlık ve ikon rengi.
+  final Color renk;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme yazi = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(baslik, style: yazi.titleSmall?.copyWith(color: renk)),
+        const SizedBox(height: AppSpacing.xs),
+        for (final String madde in maddeler)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Icon(ikon, size: CategoriesConfig.oneriIkonBoyutu, color: renk),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(child: Text(madde, style: yazi.bodyMedium)),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
