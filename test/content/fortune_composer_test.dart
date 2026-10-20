@@ -2,10 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kader/core/content/content_config.dart';
 import 'package:kader/core/content/dongu_metinleri.dart';
 import 'package:kader/core/content/fortune_composer.dart';
+import 'package:kader/core/content/gokyuzu_metinleri.dart';
 import 'package:kader/core/content/gunluk_okuma.dart';
 import 'package:kader/core/content/kisisel_havuzlar.dart';
 import 'package:kader/core/content/okuyucu.dart';
-import 'package:kader/core/content/slot_doldurucu.dart';
+import 'package:kader/core/content/tr_icerik_paketi.dart';
 import 'package:kader/core/content/yorum_yonu.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 
@@ -92,7 +93,8 @@ void main() {
       );
     });
 
-    test('günün bölümü: tema durumu → doğayla buluşma → sahne → öneri', () {
+    test('günün bölümü: tema durumu → günün gökyüzü → buluşma ya da sahne '
+        '→ öneri', () {
       final Okuyucu o = okuyucu(
         tercihler: const OkuyucuTercihleri(ugras: Ugras.ogrenci),
       );
@@ -107,14 +109,20 @@ void main() {
       expect(karakter.bulusma(4), BulusmaTuru.uyumlu);
       expect(karakter.gucTavsiyeleri.any(metin.contains), isTrue);
       expect(
-        YorumYonu.gunSahneleri[4]!['ogrenci']!.any(metin.contains),
-        isTrue,
-      );
-      expect(
         YorumYonu.gunTemalari[4]!.durum[GunTonu.yuksek]!.any(
           (String s) => metin.startsWith(s.replaceAll('{isim}', 'Ayşe')),
         ),
         isTrue,
+      );
+      // Günün Ay burcu açılışın hemen ardından anılır.
+      expect(metin, contains(trIcerik.burcAdi(Astronomi.gununAyBurcu(gun))));
+      // Buluşma cümlesi ve gündelik sahne gün aşırı dönüşümlüdür.
+      final bool sahneVar = YorumYonu.gunSahneleri[4]!['ogrenci']!.any(
+        metin.contains,
+      );
+      expect(
+        sahneVar,
+        LuckEngine.gunNumarasi(gun) % ContentConfig.bulusmaDonusumu != 0,
       );
     });
 
@@ -170,30 +178,21 @@ void main() {
           okuyucu: okuyucu(tercihler: OkuyucuTercihleri(iliski: d)),
           sonuc: sonucKur(genel: 70, skorlar: askBaskin),
         ).bolumler[1].metin;
-        final List<String> bekarHavuz =
-            YorumYonu.kategoriDurumlari[LuckCategory
-                .ask]!['bekar']![KategoriTonu.yuksek]!;
-        final List<String> partnerHavuz =
-            YorumYonu.kategoriDurumlari[LuckCategory
-                .ask]!['partnerli']![KategoriTonu.yuksek]!;
-        expect(bekarHavuz.any(parlayan(IliskiDurumu.bekar).startsWith), isTrue);
+        // Aşk sahnesi ilişki durumuna göre ayrı havuzdan gelir (bkz.
+        // GokyuzuMetinleri.sahneler); metin durumu adıyla anmaz.
+        List<String> havuz(String anahtar) => GokyuzuMetinleri
+            .sahneler[LuckCategory.ask]![anahtar]![SahneYonu.akis]!;
         expect(
-          partnerHavuz.any(parlayan(IliskiDurumu.evli).startsWith),
+          havuz(
+            GokyuzuMetinleri.bekarAnahtari,
+          ).any(parlayan(IliskiDurumu.bekar).contains),
           isTrue,
         );
-        // Günün temasının aşka etkisi her gün, kişinin aşk tarzı ise
-        // tarz cümlesinin bu paragrafa düştüğü günlerde yer alır.
-        final bool tarzBurada =
-            LuckEngine.gunNumarasi(gun) % ContentConfig.tarzDonusumu == 0;
         expect(
-          YorumYonu.karakterler[4]!.kategoriTarzi[LuckCategory.ask]!.any(
-            parlayan(IliskiDurumu.bekar).contains,
-          ),
-          tarzBurada,
-        );
-        expect(
-          parlayan(IliskiDurumu.bekar),
-          contains(YorumYonu.temaKategori[4]![LuckCategory.ask]),
+          havuz(
+            GokyuzuMetinleri.partnerliAnahtari,
+          ).any(parlayan(IliskiDurumu.evli).contains),
+          isTrue,
         );
       },
     );
@@ -313,14 +312,68 @@ void main() {
           .map((NedenOgesi n) => n.etiket)
           .toSet();
       expect(etiketler.length, okuma.nedenler.length);
-      final NedenOgesi ay = okuma.nedenler.firstWhere(
-        (NedenOgesi n) => n.tur == NedenTuru.ayEvresi,
+      // Ay evresi, Ay burcu ve günün sayısı çipleri var; denge çipi yok.
+      final Set<NedenTuru> turler = okuma.nedenler
+          .map((NedenOgesi n) => n.tur)
+          .toSet();
+      expect(
+        turler,
+        containsAll(<NedenTuru>[
+          NedenTuru.ayEvresi,
+          NedenTuru.ayBurcu,
+          NedenTuru.gunSayisi,
+        ]),
       );
-      expect(ay.etki, ayEvresiModifiyeri(g).etki);
+      final NedenOgesi ayBurcu = okuma.nedenler.firstWhere(
+        (NedenOgesi n) => n.tur == NedenTuru.ayBurcu,
+      );
+      expect(
+        ayBurcu.etiket,
+        contains(trIcerik.burcAdi(Astronomi.gununAyBurcu(g))),
+      );
       final NedenOgesi kg = okuma.nedenler.firstWhere(
         (NedenOgesi n) => n.tur == NedenTuru.kisiselGun,
       );
       expect(kg.aciklama, contains(YorumYonu.gunTemalari[4]!.istek));
+    });
+
+    test('neden öğeleri hesaplama yöntemini ve puanı göstermez', () {
+      // Düşük seri: motor denge etkisi uygular ama bu bir neden olarak
+      // kullanıcıya gösterilmez.
+      final LuckResult s = motor.hesapla(
+        kullanici: okuyucu().seed,
+        gun: gun,
+        sonUcGunSkorlari: const <int>[10, 12, 15],
+      );
+      expect(
+        s.modifiyerler.any((LuckModifier m) => m.ad == seriDengesiAdi),
+        isTrue,
+      );
+      for (int i = 0; i < 40; i++) {
+        final DateTime g = gun.add(Duration(days: i));
+        final GunlukOkuma okuma = gunlukOkuma(
+          motor: motor,
+          okuyucu: okuyucu(),
+          sonuc: i == 0 ? s : motor.hesapla(kullanici: okuyucu().seed, gun: g),
+        );
+        for (final NedenOgesi n in okuma.nedenler) {
+          final String metin = '${n.etiket} ${n.aciklama}'.toLowerCase();
+          for (final String yasak in <String>[
+            'puan',
+            'formül',
+            'hesap',
+            'toplan',
+            'indirge',
+            'herkes için aynı',
+            'zor günlerin ardından',
+            '+',
+            '−',
+            '±',
+          ]) {
+            expect(metin.contains(yasak), isFalse, reason: '$yasak: $metin');
+          }
+        }
+      }
     });
   });
 
@@ -348,45 +401,6 @@ void main() {
   });
 
   group('kategoriOkumasi', () {
-    test('durum + günün etkisi + kişinin tarzı + tavsiye; eylem saatli', () {
-      final Okuyucu o = okuyucu(
-        tercihler: const OkuyucuTercihleri(enerji: EnerjiTarzi.iceDonuk),
-      );
-      final KategoriOkumasi k = kategoriOkumasi(
-        motor: motor,
-        okuyucu: o,
-        sonuc: sonucKur(genel: 50, skorlar: ornekSkorlar),
-        kategori: LuckCategory.sosyal,
-      );
-      expect(k.ton, KategoriTonu.dusuk);
-      expect(
-        YorumYonu
-            .kategoriDurumlari[LuckCategory.sosyal]!['iceDonuk']![KategoriTonu
-                .dusuk]!
-            .any(k.paragraf.startsWith),
-        isTrue,
-      );
-      expect(
-        k.paragraf,
-        contains(YorumYonu.temaKategori[4]![LuckCategory.sosyal]),
-      );
-      expect(
-        YorumYonu.karakterler[4]!.kategoriTarzi[LuckCategory.sosyal]!.any(
-          k.paragraf.contains,
-        ),
-        isTrue,
-      );
-      expect(k.eylem, contains(k.sansliSaat.etiket));
-      expect(
-        KisiselHavuzlar.eylemCumleleri[LuckCategory.sosyal]!.any(
-          (String e) =>
-              slotDoldur(e, <String, String>{'saat': k.sansliSaat.etiket}) ==
-              k.eylem,
-        ),
-        isTrue,
-      );
-    });
-
     test('deterministik ve yer tutucusuz, her kategoride', () {
       final Okuyucu o = okuyucu();
       for (final LuckCategory kat in LuckCategory.values) {
@@ -404,7 +418,12 @@ void main() {
         );
         expect(a.paragraf, b.paragraf);
         expect(a.paragraf.contains('{'), isFalse);
-        expect(a.paragraf.split(' ').length, greaterThanOrEqualTo(30));
+        // Gökyüzü kategorileri bilerek kısadır (başlık + iki cümle +
+        // yap/yapma); eski yapı dört cümlelik paragraf üretir.
+        expect(
+          a.paragraf.split(' ').length,
+          greaterThanOrEqualTo(GokyuzuMetinleri.destekler(kat) ? 15 : 30),
+        );
       }
     });
   });

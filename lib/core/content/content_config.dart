@@ -187,6 +187,72 @@ abstract final class ContentConfig {
   /// Tema × uğraş başına en az sahne varyantı.
   static const int enAzSahneVaryanti = 2;
 
+  // ---- Gökyüzü tabanlı kategoriler (bkz. gokyuzu_metinleri.dart) ----
+
+  /// Ay burcu × element ilişkisi × ton cümlesi.
+  static const String amacGokyuzu = 'gokyuzu';
+
+  /// Kategori okumasının uğraşa göre sahne cümlesi.
+  static const String amacKategoriSahne = 'kategoriSahne';
+
+  /// Kategori okumasının kısa başlığı.
+  static const String amacKategoriBaslik = 'kategoriBaslik';
+
+  /// Burç kişilik cümlesi.
+  static const String amacKisilikBurc = 'kisilikBurc';
+
+  /// Yaşam yolu kişilik (tarz) cümlesi.
+  static const String amacKisilikSayi = 'kisilikSayi';
+
+  /// Günlük kartın açılış paragrafındaki gökyüzü cümlesi.
+  static const String amacGunGokyuzu = 'gunGokyuzu';
+
+  /// Açılış paragrafında "doğanla buluşma" cümlesi ile gündelik sahnenin
+  /// dönüşüm periyodu (gün): çift günlerde buluşma, tek günlerde sahne.
+  static const int bulusmaDonusumu = 2;
+
+  /// Günlük kartın öne çıkan alan paragrafında sahne cümlesinin yer aldığı
+  /// gün periyodu (her N günde bir).
+  static const int sahneDonusumu = 2;
+
+  /// Yaşam yolu havuzunda okuyucunun cevaplarıyla uyumlu en az bu kadar
+  /// cümle kalmazsa kişilik cümlesi o gün burçtan seçilir (tek seçenek
+  /// ayda çok kez tekrar ederdi).
+  static const int enAzKisilikSecenegi = 2;
+
+  /// Kişilik cümlesinin burç ve yaşam yolu arasında dönüşüm periyodu
+  /// (gün): çift günlerde burç, tek günlerde yaşam yolu.
+  static const int kisilikDonusumu = 2;
+
+  /// Genel "Yap" önerileri.
+  static const String amacYap = 'yap';
+
+  /// "Yapma" önerileri.
+  static const String amacYapma = 'yapma';
+
+  /// Kişinin doğasına göre seçilen "Yap" önerisi.
+  static const String amacKisiselYap = 'kisiselYap';
+
+  /// Bir kategori okumasında gösterilen "Yap" önerisi sayısı.
+  static const int gokyuzuYapSayisi = 2;
+
+  /// Bir kategori okumasında gösterilen "Yapma" önerisi sayısı.
+  static const int gokyuzuYapmaSayisi = 2;
+
+  /// Gökyüzü cümlelerinde tekrar denetiminin geriye baktığı gün sayısı:
+  /// dünkü seçim bu derinlikte yeniden hesaplanarak dışlanır.
+  static const int tekrarGeriBakis = 3;
+
+  /// Döngü sınırında yer değiştirme kuralının tutarlı çalıştığı en küçük
+  /// havuz boyutu (bkz. `_ardisikTekrarsizIndeks`).
+  static const int tekrarsizEnAzHavuz = 3;
+
+  /// Gökyüzü havuzlarında hücre başına en az varyant.
+  static const int enAzGokyuzuVaryanti = 3;
+
+  /// Kişisel "Yap" havuzlarında hücre başına en az varyant.
+  static const int enAzKisiselYapVaryanti = 2;
+
   /// Kategori detay sayfasındaki seçimlerin amaç eki (günlük kartla aynı
   /// cümleyi göstermemek için).
   static const String amacDetayEki = 'detay';
@@ -294,6 +360,112 @@ abstract final class ContentConfig {
 
   /// Günlük okuma toplamı için en az kelime sayısı.
   static const int gunlukEnAzKelime = 90;
+
+  /// Kişinin cevabıyla çelişen kişilik ifadeleri (küçük harf, içerir).
+  ///
+  /// Anahtar: enerji/karar tarzı adı ya da `bekar` / `partnerli`. Örneğin
+  /// "insanlarla şarj olurum" diyen birine "kalabalık yerine az ve derin
+  /// ilişkileri tercih edersin" denmez; okuyucu kendini tanımaz ve okumayı
+  /// bırakır. Kullanım: `KisilikMetinleri.uyumlular`.
+  static const Map<String, List<String>> celiskiIfadeleri =
+      <String, List<String>>{
+        'disaDonuk': <String>[
+          'kalabalık yerine',
+          'yalnız kalmaya',
+          'yalnız zamana',
+          'az ama',
+          'az ve derin',
+          'çevren az',
+          'açılman zaman alır',
+          'az konuşur',
+          'kalabalıktan çok',
+          'kişi sayısı azdır',
+          'kalabalıkta kolay yorul',
+          'şarj kaynağın',
+          'kalabalıktan uzak',
+          'tek başına yapılan',
+          'gürültü ve yoğunluk',
+          'küçük ama güçlü bir çevre',
+          'kısa bir yalnızlık',
+          'yalnız kaldığında olur',
+          'yalnızlık isteğin',
+          'dışarıdan mesafeli',
+          'uyaran fazlası',
+          'yalnız kalma ihtiyacını',
+          'kendini geri çekmek istediğinde',
+        ],
+        'iceDonuk': <String>[
+          'geniş bir çevrede rahat',
+          'geniş ve çeşitli bir çevren',
+          'kısa sürede herkesle',
+          'doğal olarak dikkat çekersin',
+          'enerjinle canlanır',
+          'son dakika davet',
+          'plansız buluşma',
+          'sohbetin havası değişir',
+          'yabancılarla bile',
+          'kolay tanışırsın',
+          'ortamın merkezinde',
+          'insanlarla kolay bağ kurar',
+          'insanlarla kolay konuşursun',
+          'ortamı canlandırmak sende doğal',
+        ],
+        'kalp': <String>[
+          'araştırmadan bir şeye girmezsin',
+          'her ayrıntıyı incele',
+          'hesaplanması gereken',
+          'karşılaştırır, yorumları okur',
+          'riski ancak hesapladıktan',
+          'her şeyi anlamadan karar vermemek',
+        ],
+        'akil': <String>[
+          'ilk hissin',
+          'kalbinin sesi',
+          'içindeki ses',
+          'anlık kararların',
+          'hızla heveslenirsin',
+          'çabuk heveslenirsin',
+          'rakamlardan önce hissedersin',
+          'hesabı sonraya bırakırsın',
+          'heyecanın rakamların önüne',
+          'ruhunu hissedersin',
+          'ilk hisse güven',
+        ],
+        'bekar': <String>['partnerin', 'ilişkine az'],
+        'partnerli': <String>[
+          'flört senin için bir oyun',
+          'çabuk ilgilenirsin',
+        ],
+      };
+
+  /// Onboarding cevaplarını metinde geri söyleyen ifadeler (küçük harf).
+  ///
+  /// Okuma kişinin cevabına göre seçilir ama cevabı tekrar etmez; aksi
+  /// hâlde metin "verdiğim bilgiyi bana geri okuyor" gibi hissettirir.
+  static const List<String> yankiIfadeleri = <String>[
+    'şarj ol',
+    'yalnız kalınca',
+    'kalbini dinle',
+    'kalbimi dinle',
+    'aklını dinle',
+    'aklımı dinle',
+    'içe dönük',
+    'dışa dönük',
+    'bekarsan',
+    'bekârsan',
+    'bekarım',
+    'ilişkin var',
+    'ilişkideysen',
+    'evliysen',
+    'öğrenciysen',
+    'öğrencisin',
+    'öğrencilik',
+    'iş arıyorsun',
+    'iş ararken',
+    'çalışıyorsan',
+    'kendi işin var',
+    'kendi işinde',
+  ];
 
   /// Uygun olmayan içerik testinde yasaklı ifadeler (küçük harf).
   ///

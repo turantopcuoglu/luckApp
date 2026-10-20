@@ -88,37 +88,42 @@ abstract final class KisiselHavuzlar {
 
   /// Profil "Aşkta" bölümüne ilişki durumuna göre eklenen cümle
   /// (false: bekar, true: partnerli).
+  ///
+  /// Cevabı geri söylemez ("yalnız yürüyorsan", "ilişkinin içindeysen"
+  /// gibi koşullar yok); durum yalnızca hangi cümlenin seçileceğini
+  /// belirler (bkz. `ContentConfig.yankiIfadeleri`).
   static const Map<bool, String> profilIliskiEki = <bool, String>{
     false:
-        'Şu an yalnız yürüyorsan bu dönem, kimi aradığını değil kim '
-        'olduğunu netleştirmek için değerli; doğru kişi en çok kendine '
-        'benzediğin anlarda fark eder seni.',
+        'Bu dönem aşkta kimi aradığından çok kim olduğunu netleştirmek '
+        'sana kapı açar; doğru bağ, en çok kendine benzediğin anlarda '
+        'kurulur.',
     true:
-        'Bir ilişkinin içindeysen, bu özelliklerin partnerinle kurduğun '
-        'günlük ritimde görünür; ona ne zaman alan, ne zaman yakınlık '
-        'gerektiğini söylemek bağınızı güçlendirir.',
+        'Bu özelliklerin en çok sevdiğinle kurduğun günlük ritimde görünür; '
+        'ne zaman alan, ne zaman yakınlık istediğini söylemek bağını '
+        'güçlendirir.',
   };
 
   /// Profil "İşte ve parada" bölümüne uğraşa göre eklenen cümle.
+  ///
+  /// Uğraşı adıyla anmaz ("öğrencilik döneminde", "kendi işinde" yok);
+  /// yalnızca hangi sahnenin anlatılacağını belirler.
   static const Map<Ugras, String> profilUgrasEki = <Ugras, String>{
     Ugras.calisiyor:
-        'Bugünkü işinde bu yanını görünür kılmak — bir '
-        'toplantıda sözü almak ya da bir süreci sahiplenmek — değerini '
-        'daha hızlı fark ettirir.',
+        'Bu yanını iş hayatında görünür kılmak — bir toplantıda sözü almak '
+        'ya da bir süreci sahiplenmek — değerini daha hızlı fark ettirir.',
     Ugras.ogrenci:
-        'Öğrencilik döneminde bu eğilimlerin, hangi derslerde '
-        'zamanın nasıl geçtiğini unuttuğuna bakınca kendini gösterir; '
-        'o dersler sana ileride bir yön fısıldıyor olabilir.',
+        'Hangi konularda zamanın nasıl geçtiğini unuttuğuna bak; bu '
+        'eğilimler sana ileride bir yön fısıldıyor olabilir.',
     Ugras.isArayan:
-        'İş ararken bu güçlü yanlarını özgeçmişinde ve '
-        'görüşmelerde somut bir örnekle anlatmak, seni kalabalıktan ayırır.',
+        'Bu güçlü yanlarını özgeçmişinde ve görüşmelerde somut bir örnekle '
+        'anlatmak seni kalabalıktan ayırır.',
     Ugras.girisimci:
-        'Kendi işinde bu yanın hem motorun hem de kör '
-        'noktan olabilir; güçlü olduğun alanı büyütürken zayıf kaldığın '
-        'yeri güvendiğin biriyle paylaşmak işini hızlandırır.',
+        'Kendi kurduğun düzende bu yanın hem motorun hem kör noktan '
+        'olabilir; güçlü olduğun alanı büyütürken zayıf kaldığın yeri '
+        'güvendiğin biriyle paylaşmak işini hızlandırır.',
     Ugras.evde:
-        'Ev ve aile düzenini yönetmek de gerçek bir iştir; bu '
-        'yeteneklerin orada her gün sessizce çalışıyor ve istersen yeni '
-        'bir üretime de dönüşebilir.',
+        'Bir evi ve insanlarını ayakta tutmak da gerçek bir emektir; bu '
+        'yeteneklerin orada her gün sessizce çalışıyor ve istersen yeni bir '
+        'üretime de dönüşebilir.',
   };
 }

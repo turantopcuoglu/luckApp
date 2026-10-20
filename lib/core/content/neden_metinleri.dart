@@ -5,85 +5,84 @@ import 'yorum_yonu.dart';
 
 /// "Neden bugün?" çiplerinin ve açıklamalarının metinleri.
 ///
-/// Amaç şeffaflık: kullanıcı skorun ve yorumun hangi hesaplardan
-/// geldiğini görür. Açıklamalar gerçek hesap değerlerini kullanır;
-/// hiçbir sayı süs için uydurulmaz.
+/// Çipler günün okumasının hangi işaretlerden doğduğunu anlatır: kişisel
+/// gün, günün sayısı, Ay'ın burcu ve evresi. Açıklamalar yalnızca ANLAMI
+/// söyler; hesaplama yöntemi, toplama işlemleri, puan etkileri ve
+/// "herkes için aynı" gibi ifadeler kullanıcıya gösterilmez.
 abstract final class NedenMetinleri {
-  /// Puan etkisini işaretli biçimde yazar: +3, −2, ±0.
-  static String etkiMetni(int etki) {
-    if (etki > 0) {
-      return '+$etki';
-    }
-    if (etki < 0) {
-      return '−${etki.abs()}';
-    }
-    return '±0';
-  }
-
   /// Kişisel gün çipi.
   static String kisiselGunEtiketi(int kisiselGun) => 'Kişisel gün $kisiselGun';
 
   /// Kişisel gün açıklaması: günün teması ve kişinin doğasıyla buluşması.
   static String kisiselGunAciklamasi(GunDongusu dongu, BulusmaTuru bulusma) =>
-      'Doğum günün ve ayın bu yılın rakamlarıyla toplanınca kişisel yılın '
-      '${dongu.kisiselYil} çıkıyor; buna bu ayı eklemek kişisel ayını '
-      '(${dongu.kisiselAy}), bugünün tarihini eklemek kişisel gününü '
-      '(${dongu.kisiselGun}) veriyor. Bu sayı günün temasını belirler: '
+      'Doğum tarihine özel bugünün sayısı ${dongu.kisiselGun}. Bu sayı '
+      'günün temasını belirler: '
       '${YorumYonu.gunTemalari[dongu.kisiselGun]!.istek}. '
-      '${_bulusmaAciklamasi[bulusma]!} Bu hesap senin doğum tarihine özeldir.';
+      '${_bulusmaAciklamasi[bulusma]!}';
 
   static const Map<BulusmaTuru, String> _bulusmaAciklamasi =
       <BulusmaTuru, String>{
-    BulusmaTuru.uyumlu: 'Bu tema yaşam yolu sayının doğasıyla uyumlu olduğu '
-        'için yorum, güçlü yanını kullanmanı öneriyor.',
-    BulusmaTuru.dengeli: 'Bu tema yaşam yolu sayının doğasını tamamlayan bir '
-        'tema olduğu için yorum, iki yanı dengelemeni öneriyor.',
-    BulusmaTuru.zorlayici: 'Bu tema yaşam yolu sayının doğasına ters düştüğü '
-        'için yorum, günün sürtünmesini nasıl yöneteceğini anlatıyor.',
-  };
+        BulusmaTuru.uyumlu:
+            'Bu tema senin doğanla aynı yönde aktığı için okuman güçlü '
+            'yanını kullanmanı öneriyor.',
+        BulusmaTuru.dengeli:
+            'Bu tema senin doğanı tamamlıyor; okuman iki yanı dengelemeni '
+            'öneriyor.',
+        BulusmaTuru.zorlayici:
+            'Bu tema senin doğana ters düşüyor; okuman günün sürtünmesini '
+            'nasıl yöneteceğini anlatıyor.',
+      };
 
-  /// Çakışma çipi.
-  static const String cakismaEtiketi = 'Kişisel gün = yaşam yolu';
+  /// Kişisel günün kişinin temel sayısıyla aynı olduğu günün çipi.
+  static const String cakismaEtiketi = 'Sayınla aynı gün';
 
   /// Çakışma açıklaması.
   static const String cakismaAciklamasi =
-      'Bugünün kişisel gün sayısı yaşam yolu sayınla aynı. Numerolojide bu '
-      'günler kişinin doğal eğilimlerinin en rahat aktığı günler olarak '
-      'yorumlanır.';
+      'Bugünün sayısı senin temel sayınla aynı. Numerolojide bu günler '
+      'kişinin doğal eğilimlerinin en rahat aktığı günler olarak yorumlanır.';
 
-  /// Ay evresi çipi.
-  static String ayEvresiEtiketi(AyEvresi evre, int etki) =>
-      '${trIcerik.ayEvresiAdi(evre)} ${etkiMetni(etki)}';
+  /// Ay burcu çipi ("Ay Kova burcunda").
+  static String ayBurcuEtiketi(Burc ayBurcu) =>
+      'Ay ${trIcerik.burcAdi(ayBurcu)} burcunda';
+
+  /// Ay burcu açıklaması: Ay'ın elementi ile kişinin Güneş elementinin
+  /// ilişkisi.
+  static String ayBurcuAciklamasi(Burc ayBurcu, Burc gunesBurcu) =>
+      'Ay bugün ${trIcerik.burcAdi(ayBurcu)} burcunda; '
+      '${_ayIliskisi[elementIliskisi(ayBurcu.element, gunesBurcu.element)]!} '
+      'Ay iki üç günde bir burç değiştirir ve okumanın havası buradan gelir.';
+
+  static const Map<ElementIliskisi, String> _ayIliskisi =
+      <ElementIliskisi, String>{
+        ElementIliskisi.ayni:
+            'senin burcunla aynı elementte. Duyguların tanıdık ve güçlü, '
+            'kendine güvenin artar.',
+        ElementIliskisi.tamamlayici:
+            'senin burcunun elementini destekleyen bir yerde. Gün sana arkadan '
+            'esen bir rüzgâr gibi eşlik eder.',
+        ElementIliskisi.notr:
+            'senin burcuna yabancı bir elementte. Gün sana alışık olmadığın '
+            'bir ritim önerir.',
+        ElementIliskisi.zit:
+            'senin burcunun elementine ters bir yerde. Hafif sürtünmeler '
+            'olabilir; bu gerilim aynı zamanda kıvılcım taşır.',
+      };
+
+  /// Ay evresi çipi (evrenin adı).
+  static String ayEvresiEtiketi(AyEvresi evre) => trIcerik.ayEvresiAdi(evre);
 
   /// Ay evresi açıklaması.
-  static String ayEvresiAciklamasi(AyEvresi evre, int etki) =>
-      '${DonguMetinleri.ayEvresi[evre]!.first} Kader, ayın evresini basit '
-      'bir astronomik hesapla bulur: yeni aya yaklaştıkça enerji içe döner '
-      've skor biraz düşer, dolunaya yaklaştıkça yükselir. Bugün bu etki '
-      '${etkiMetni(etki)} puan. Herkes için aynıdır.';
+  static String ayEvresiAciklamasi(AyEvresi evre) =>
+      '${DonguMetinleri.ayEvresi[evre]!.first} Ayın evresi günün enerjisine '
+      'ritim verir: yeni aya yaklaşırken enerji içe döner, dolunaya '
+      'yaklaştıkça dışa açılır.';
 
-  /// Gün sayısı çipi.
-  static String gunSayisiEtiketi(int sayi, int etki) =>
-      'Gün sayısı $sayi ${etkiMetni(etki)}';
+  /// Günün sayısı çipi.
+  static String gunSayisiEtiketi(int sayi) => 'Günün sayısı $sayi';
 
-  /// Gün sayısı açıklaması.
-  static String gunSayisiAciklamasi(DateTime gun, int sayi, int etki) {
-    final String rakamlar = '${gun.year}${gun.month}${gun.day}'
-        .split('')
-        .join('+');
-    return 'Bugünün tarihindeki rakamlar ($rakamlar) toplanıp tek haneye '
-        'indirgenince evrensel gün sayısı $sayi çıkıyor. Kader formülünde '
-        'bu sayı 1 ile 9 arasında −8 ile +8 puan arası bir etkiye çevrilir; '
-        'bugün skoruna ${etkiMetni(etki)} puan olarak yansıdı. Herkes için '
-        'aynıdır.';
-  }
-
-  /// Seri dengesi çipi.
-  static String seriEtiketi(int etki) => 'Denge ${etkiMetni(etki)}';
-
-  /// Seri dengesi açıklaması.
-  static String seriAciklamasi(int etki) =>
-      'Son günlerde skorların ortalamanın altında kaldı. Kader, arka arkaya '
-      'zor günlerin ardından dengeleyici bir etki uygular; bugün skoruna '
-      '${etkiMetni(etki)} puan eklendi.';
+  /// Günün sayısı açıklaması: sayının taşıdığı enerji.
+  static String gunSayisiAciklamasi(int sayi) =>
+      'Bugünün tarihi $sayi sayısının enerjisini taşıyor: '
+      '${YorumYonu.gunTemalari[sayi]!.istek}. Bu enerji günün genel '
+      'havasına karışır.';
 }

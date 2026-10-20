@@ -17,6 +17,9 @@ abstract final class SlotAnahtarlari {
   /// Güneş burcunun adı ("Balık").
   static const String burc = 'burc';
 
+  /// Günün Ay burcunun adı ("İkizler"); bkz. `Astronomi.gununAyBurcu`.
+  static const String ayBurcu = 'ayBurcu';
+
   /// Yaşam yolu sayısı ("4").
   static const String yasamYolu = 'yasamYolu';
 
@@ -51,6 +54,7 @@ abstract final class SlotAnahtarlari {
     isim,
     isimIlgi,
     burc,
+    ayBurcu,
     yasamYolu,
     kisiselGun,
     kisiselYil,

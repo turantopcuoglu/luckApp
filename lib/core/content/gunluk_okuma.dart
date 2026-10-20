@@ -42,14 +42,14 @@ class OkumaBolumu {
 
 /// "Neden bugün?" açıklama öğesinin türü.
 enum NedenTuru {
-  /// Ay evresi modifiyeri.
+  /// Ay evresi.
   ayEvresi,
 
-  /// Takvim gününün numerolojisi modifiyeri.
+  /// Takvim gününün sayısı.
   gunSayisi,
 
-  /// Düşük seriyi telafi eden denge modifiyeri.
-  seriDengesi,
+  /// Ay'ın günlük burcu.
+  ayBurcu,
 
   /// Kişisel gün sayısı.
   kisiselGun,
@@ -65,7 +65,6 @@ class NedenOgesi {
     required this.tur,
     required this.etiket,
     required this.aciklama,
-    this.etki,
   });
 
   /// Öğenin türü.
@@ -76,9 +75,6 @@ class NedenOgesi {
 
   /// Dokununca açılan açıklama metni.
   final String aciklama;
-
-  /// Skora puan etkisi (varsa).
-  final int? etki;
 }
 
 /// Bir günün kişiye özel, bölümlü okuması.
@@ -158,6 +154,9 @@ class KategoriOkumasi {
     required this.paragraf,
     required this.eylem,
     required this.sansliSaat,
+    this.baslik,
+    this.yap = const <String>[],
+    this.yapma = const <String>[],
   });
 
   /// Kategori.
@@ -169,8 +168,19 @@ class KategoriOkumasi {
   /// Skorun tonu.
   final KategoriTonu ton;
 
-  /// Ana paragraf (durum + günün etkisi + kişinin tarzı + tavsiye).
+  /// Ana paragraf: günün Ay burcu cümlesi + kişilik cümlesi (burç ya da
+  /// yaşam yolu) + gündelik sahne. Gökyüzü yapısı dışındaki bir kategori
+  /// için (şu an yok) durum + günün etkisi + kişinin tarzı + tavsiye.
   final String paragraf;
+
+  /// Kısa başlık (gökyüzü yapısı dışındaki kategorilerde null).
+  final String? baslik;
+
+  /// "Yap" önerileri (gökyüzü tabanlı kategorilerde; diğerlerinde boş).
+  final List<String> yap;
+
+  /// "Yapma" önerileri (gökyüzü tabanlı kategorilerde; diğerlerinde boş).
+  final List<String> yapma;
 
   /// Şanslı saatli eylem önerisi.
   final String eylem;

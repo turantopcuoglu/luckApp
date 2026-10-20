@@ -118,7 +118,7 @@ void main() {
         HaritaMetinleri.ozet(Burc.balik, Burc.yay, null),
         'Güneş Balık · Ay Yay · Yükselen ?',
       );
-      expect(NedenMetinleri.ayEvresiEtiketi(AyEvresi.dolunay, 3), 'Dolunay +3');
+      expect(NedenMetinleri.ayEvresiEtiketi(AyEvresi.dolunay), 'Dolunay');
     });
   });
 

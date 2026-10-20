@@ -130,7 +130,7 @@ abstract final class SayiMetinleri {
           'Aşkta sadık, romantik ve özenlisin. Küçük jestleri hatırlar, '
           'sevdiğinin ruh halini ondan önce fark edersin. Seni en çok '
           'duygularını ciddiye alan biri mutlu eder. Tartışmadan kaçmak '
-          'için susmak yerine, istediğini nazikçe söylemek ilişkini '
+          'için susmak yerine, istediğini nazikçe söylemek bağını '
           'derinleştirir.',
       isteVeParada:
           'İşbirliği, danışmanlık, arabuluculuk, tasarım ve '
@@ -212,7 +212,7 @@ abstract final class SayiMetinleri {
           'Aşkta sadık, istikrarlı ve korumacısın. Sevgini büyük '
           'sözlerden çok, yaptıklarınla gösterirsin: tamir edilen bir '
           'eşya, hatırlanan bir randevu. Güven duymadan tam açılmazsın. '
-          'Arada bir planı bozup kendiliğinden bir şey yapmak, ilişkine '
+          'Arada bir planı bozup kendiliğinden bir şey yapmak, aşkına '
           'beklenmedik bir tat katar.',
       isteVeParada:
           'Planlama, mühendislik, finans, yönetim, zanaat ve '
@@ -326,7 +326,7 @@ abstract final class SayiMetinleri {
           'Aşkta yavaş açılır, derin bağlanırsın. Zihinsel bir yakınlık '
           'hissetmeden kalbini tam vermezsin. Seni en çok, sessizliğini '
           'kişisel algılamayan ve merakını paylaşan biri mutlu eder. '
-          'Hissettiğini söylediğin anlar, ilişkini beklenmedik ölçüde '
+          'Hissettiğini söylediğin anlar, bağını beklenmedik ölçüde '
           'güçlendirir.',
       isteVeParada:
           'Araştırma, bilim, teknoloji, yazılım, psikoloji, '
@@ -367,7 +367,7 @@ abstract final class SayiMetinleri {
           'Aşkta koruyucu, cömert ve güçlü bir partnersin. Sevdiğinin '
           'güvende olmasını istersin. Duygularını göstermek yerine sorun '
           'çözmeyi seçebilirsin; bazen karşı taraf yalnızca dinlenmek ister. '
-          'Kırılganlığını gösterdiğin anlar ilişkini derinleştirir.',
+          'Kırılganlığını gösterdiğin anlar bağını derinleştirir.',
       isteVeParada:
           'Yönetim, girişimcilik, finans, hukuk, gayrimenkul ve '
           'büyük organizasyonlarda doğal olarak öne çıkarsın. Parayla '
@@ -480,7 +480,7 @@ abstract final class SayiMetinleri {
       askta:
           'Aşkta güvenilir, sadık ve ortak hedefler kurmayı seven bir '
           'partnersin. Birlikte bir gelecek inşa edebildiğin biriyle '
-          'huzur bulursun. İş yoğunluğunda sevgini ertelememek, ilişkinin '
+          'huzur bulursun. İş yoğunluğunda sevgini ertelememek, bağının '
           'temelini sağlam tutar.',
       isteVeParada:
           'Büyük projeler, mimari, mühendislik, kurumsal yönetim, '
@@ -518,7 +518,7 @@ abstract final class SayiMetinleri {
       askta:
           'Aşkta derin, fedakâr ve besleyicisin. Sevdiğinin gelişimini '
           'desteklemek sana mutluluk verir. Kendi ihtiyaçlarını da '
-          'ilişkinin merkezine koyduğunda, verdiğin sevgi tükenmeden '
+          'sevginin merkezine koyduğunda, verdiğin sevgi tükenmeden '
           'çoğalır.',
       isteVeParada:
           'Öğretmenlik, rehberlik, danışmanlık, sanat ve topluma '
