@@ -31,7 +31,7 @@ class KapaliKategoriKutusu extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.surface.withValues(
+        color: AppColors.background.withValues(
           alpha: DailyLuckConfig.kapaliKaroOpakligi,
         ),
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -70,17 +70,32 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextTheme yazi = Theme.of(context).textTheme;
     final Color renk = kategoriRengi(kategori);
+    // Koyu, neredeyse opak taban: karo sahnenin parlak ışıklarının üstüne
+    // düştüğünde bile yazı okunur. Kategori rengi tabanın üstüne üstten
+    // hafif bir ton olarak biner.
+    final Color taban = AppColors.background.withValues(
+      alpha: DailyLuckConfig.kapaliKaroOpakligi,
+    );
+    final List<Shadow> golge = <Shadow>[
+      Shadow(
+        color: AppColors.golge.withValues(
+          alpha: DailyLuckConfig.karoYaziGolgeOpakligi,
+        ),
+        blurRadius: DailyLuckConfig.karoYaziGolgeBulanikligi,
+      ),
+    ];
     return DecoratedBox(
       decoration: BoxDecoration(
-        // Üstten kategori rengi, alta doğru koyu yüzeye inen ton.
+        // Üstten kategori rengi, alta doğru koyu tabana inen ton.
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: <Color>[
-            renk.withValues(alpha: DailyLuckConfig.karoZeminOpakligi),
-            AppColors.surface.withValues(
-              alpha: DailyLuckConfig.kapaliKaroOpakligi,
+            Color.alphaBlend(
+              renk.withValues(alpha: DailyLuckConfig.karoZeminOpakligi),
+              taban,
             ),
+            taban,
           ],
         ),
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -103,7 +118,10 @@ class CategoryCard extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: Text(
                 kategori.etiket,
-                style: yazi.labelSmall?.copyWith(color: AppColors.textPrimary),
+                style: yazi.labelSmall?.copyWith(
+                  color: AppColors.textPrimary,
+                  shadows: golge,
+                ),
               ),
             ),
             Text(
@@ -115,6 +133,7 @@ class CategoryCard extends StatelessWidget {
                   DailyLuckConfig.karoSkorAcikligi,
                 ),
                 fontWeight: FontWeight.w600,
+                shadows: golge,
               ),
             ),
           ],

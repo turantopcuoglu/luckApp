@@ -271,7 +271,25 @@ abstract final class DailyLuckConfig {
   static const double kemerKenarOrani = 0.08;
 
   /// Skorun arkasındaki yumuşak ışık halesinin opaklığı.
-  static const double puanHaleOpakligi = 0.35;
+  static const double puanHaleOpakligi = 0.22;
+
+  /// Skor yazılarının arkasındaki koyu zeminin merkez opaklığı.
+  ///
+  /// Sahne görselleri kartın arkasında en parlak hâlini alır (altın kapı,
+  /// gün batımı); zemin olmadan altın rakam ve açıklamalar kaybolur.
+  static const double puanZeminOpakligi = 0.78;
+
+  /// Koyu zeminin opaklığını koruduğu iç bölge (yarıçap oranı, 0-1).
+  static const double puanZeminIcOrani = 0.55;
+
+  /// Koyu zeminin yarıçapı (kart genişliği oranı).
+  static const double puanZeminYariCapOrani = 0.58;
+
+  /// Kart üzerindeki yazıların gölge opaklığı.
+  static const double puanYaziGolgeOpakligi = 0.75;
+
+  /// Kart üzerindeki yazıların gölge bulanıklığı.
+  static const double puanYaziGolgeBulanikligi = 10;
 
   // ---- Kategori karoları ----
 
@@ -291,10 +309,18 @@ abstract final class DailyLuckConfig {
   static const double karoKenarOpakligi = 0.55;
 
   /// Karo skor rakamının kategori renginden beyaza açılma oranı.
-  static const double karoSkorAcikligi = 0.35;
+  static const double karoSkorAcikligi = 0.55;
 
-  /// Kapalı karo zemininin opaklığı (cam görünümü).
-  static const double kapaliKaroOpakligi = 0.55;
+  /// Karo zemininin (kapalı ve açık) koyu taban opaklığı. Karolar sahnenin
+  /// parlak ışık çizgilerinin üstüne düştüğü için yazının okunması bu
+  /// tabana bağlıdır.
+  static const double kapaliKaroOpakligi = 0.84;
+
+  /// Karo yazılarının gölge opaklığı.
+  static const double karoYaziGolgeOpakligi = 0.6;
+
+  /// Karo yazılarının gölge bulanıklığı.
+  static const double karoYaziGolgeBulanikligi = 6;
 
   /// Kapalı karodaki ikonun opaklığı.
   static const double kapaliIkonOpakligi = 0.7;

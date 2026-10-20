@@ -38,6 +38,14 @@ class GununPuani extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
+    final List<Shadow> golge = <Shadow>[
+      Shadow(
+        color: AppColors.golge.withValues(
+          alpha: DailyLuckConfig.puanYaziGolgeOpakligi,
+        ),
+        blurRadius: DailyLuckConfig.puanYaziGolgeBulanikligi,
+      ),
+    ];
     return Semantics(
       label: l.gunlukPuanSemantik(skor, EngineConfig.skorMaks),
       excludeSemantics: true,
@@ -83,12 +91,15 @@ class GununPuani extends StatelessWidget {
                         l.gunlukPuanPaydasi(EngineConfig.skorMaks),
                         style: yazi.titleMedium?.copyWith(
                           color: AppColors.goldAcik,
+                          shadows: golge,
                         ),
                       ),
                       Text(
                         l.gunlukSansPuani,
                         style: yazi.labelMedium?.copyWith(
                           color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                          shadows: golge,
                         ),
                       ),
                     ],
@@ -119,6 +130,23 @@ class _KemerPainter extends CustomPainter {
       return;
     }
     final Offset merkez = size.center(Offset.zero);
+
+    // Koyu zemin: sahnenin en parlak yeri tam kartın arkasına düşer; altın
+    // rakam ve açıklamalar okunabilsin diye yazıların arkası, kenarlara
+    // doğru yumuşakça kaybolan koyu bir daireyle karartılır.
+    final double zeminR = size.width * DailyLuckConfig.puanZeminYariCapOrani;
+    final Color zemin = AppColors.background.withValues(
+      alpha: DailyLuckConfig.puanZeminOpakligi * ilerleme,
+    );
+    canvas.drawCircle(
+      merkez,
+      zeminR,
+      Paint()
+        ..shader = RadialGradient(
+          colors: <Color>[zemin, zemin, zemin.withValues(alpha: 0)],
+          stops: const <double>[0, DailyLuckConfig.puanZeminIcOrani, 1],
+        ).createShader(Rect.fromCircle(center: merkez, radius: zeminR)),
+    );
 
     // Hale: rakamın arkasında sahne renginde yumuşak ışık.
     final double haleR = size.width / 2;
