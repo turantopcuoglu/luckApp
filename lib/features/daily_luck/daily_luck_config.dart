@@ -273,17 +273,38 @@ abstract final class DailyLuckConfig {
   /// Skorun arkasındaki yumuşak ışık halesinin opaklığı.
   static const double puanHaleOpakligi = 0.22;
 
-  /// Skor yazılarının arkasındaki koyu zeminin merkez opaklığı.
+  /// Skorun oturduğu koyu plakanın (madalyonun) yarıçapı (kart genişliği
+  /// oranı).
   ///
   /// Sahne görselleri kartın arkasında en parlak hâlini alır (altın kapı,
-  /// gün batımı); zemin olmadan altın rakam ve açıklamalar kaybolur.
-  static const double puanZeminOpakligi = 0.78;
+  /// gün batımı, su yansıması). Kenara doğru sönen yarı saydam bir zemin
+  /// Ken Burns yakınlaşmasında ve kısa ekranlarda yetmiyordu: güneş
+  /// rakamın tam arkasına düşünce altın rakam kayboluyordu. Plaka bu
+  /// yüzden neredeyse opak ve keskin kenarlıdır.
+  static const double puanPlakaYariCapOrani = 0.43;
 
-  /// Koyu zeminin opaklığını koruduğu iç bölge (yarıçap oranı, 0-1).
-  static const double puanZeminIcOrani = 0.55;
+  /// Plakanın opaklığı (neredeyse opak: arkadaki ışık rakama sızmaz).
+  static const double puanPlakaOpakligi = 0.92;
 
-  /// Koyu zeminin yarıçapı (kart genişliği oranı).
-  static const double puanZeminYariCapOrani = 0.58;
+  /// Plakanın dışındaki koyu gölge halkasının yarıçapı (plaka yarıçapının
+  /// katı): plakayı parlak sahneden ayırır.
+  static const double puanPlakaGolgeCarpani = 1.35;
+
+  /// Dış gölge halkasının iç kenardaki opaklığı.
+  static const double puanPlakaGolgeOpakligi = 0.55;
+
+  /// Plakanın altın kenar çizgisinin kalınlığı.
+  static const double puanPlakaKenarKalinligi = 1.4;
+
+  /// Plakanın altın kenar çizgisinin opaklığı.
+  static const double puanPlakaKenarOpakligi = 0.75;
+
+  /// Sahnenin doğrudan üstündeki başlıkların (selamlama, günün başlığı)
+  /// gölge opaklığı: parlak su yansımasının üstünde de okunsunlar.
+  static const double sahneYaziGolgeOpakligi = 0.9;
+
+  /// Sahne üstü başlıkların gölge bulanıklığı.
+  static const double sahneYaziGolgeBulanikligi = 16;
 
   /// Kart üzerindeki yazıların gölge opaklığı.
   static const double puanYaziGolgeOpakligi = 0.75;
@@ -291,39 +312,82 @@ abstract final class DailyLuckConfig {
   /// Kart üzerindeki yazıların gölge bulanıklığı.
   static const double puanYaziGolgeBulanikligi = 10;
 
-  // ---- Kategori karoları ----
+  // ---- Kategori satırları ("Bugünün alanları") ----
+  //
+  // Eski tek satırlık beş küçük karo (genişlik ~60 px) dar ekranda
+  // göze çarpmıyordu ve kilitli olanlar bulanık bir boşluk gibi
+  // görünüyordu. Her kategori artık tam genişlikte bir satır.
 
-  /// Kategori karosunun yüksekliği.
-  static const double kategoriKaroYuksekligi = 96;
+  /// Bir kategori satırının yüksekliği.
+  static const double kategoriSatirYuksekligi = 76;
 
-  /// Açık karodaki kategori ikonunun boyutu.
-  static const double kategoriIkonBoyutu = 22;
+  /// Ardışık satırlar arasındaki boşluk.
+  static const double kategoriSatirAraligi = 8;
 
-  /// Kapalı karodaki ikonun boyutu.
-  static const double kapaliKutuIkonBoyutu = 26;
+  /// Satır içindeki en küçük dikey boşluk (başlık ↔ alt satır).
+  static const double satirIcBosluk = 2;
 
-  /// Açık karo zeminindeki kategori renginin opaklığı.
-  static const double karoZeminOpakligi = 0.20;
+  /// Satır zemininin koyu taban opaklığı. Satırlar sahnenin parlak ışık
+  /// çizgilerinin üstüne düşebildiği için yazının okunması bu tabana
+  /// bağlıdır.
+  static const double satirZeminOpakligi = 0.86;
 
-  /// Açık karo kenar çizgisinin opaklığı.
-  static const double karoKenarOpakligi = 0.55;
+  /// Satır zemininin solundaki kategori tonunun opaklığı.
+  static const double satirTonOpakligi = 0.22;
 
-  /// Karo skor rakamının kategori renginden beyaza açılma oranı.
+  /// Açık satır kenar çizgisinin opaklığı.
+  static const double satirKenarOpakligi = 0.45;
+
+  /// Günün yıldızı satırının (en yüksek skor) kenar opaklığı.
+  static const double yildizSatirKenarOpakligi = 1;
+
+  /// Kapalı satırın altın kenar opaklığı.
+  static const double kapaliSatirKenarOpakligi = 0.2;
+
+  /// Glifin oturduğu yuvarlağın çapı.
+  static const double satirIkonZeminCapi = 44;
+
+  /// Glif yuvarlağının kategori rengi opaklığı.
+  static const double satirIkonZeminOpakligi = 0.16;
+
+  /// Açık satırdaki glif boyutu.
+  static const double satirIkonBoyutu = 26;
+
+  /// Kapalı satırdaki glif boyutu.
+  static const double kapaliSatirIkonBoyutu = 28;
+
+  /// Kapalı satırdaki glifin opaklığı.
+  static const double kapaliIkonOpakligi = 0.7;
+
+  /// Sağdaki skor sütununun genişliği ("100" sığar, sayılar hizalı).
+  static const double satirSkorGenisligi = 52;
+
+  /// Skor rakamının kategori renginden beyaza açılma oranı.
   static const double karoSkorAcikligi = 0.55;
 
-  /// Karo zemininin (kapalı ve açık) koyu taban opaklığı. Karolar sahnenin
-  /// parlak ışık çizgilerinin üstüne düştüğü için yazının okunması bu
-  /// tabana bağlıdır.
-  static const double kapaliKaroOpakligi = 0.84;
+  /// Skor çubuğunun kalınlığı.
+  static const double satirCubukYuksekligi = 5;
 
-  /// Karo yazılarının gölge opaklığı.
-  static const double karoYaziGolgeOpakligi = 0.6;
+  /// Skor çubuğu zemininin opaklığı.
+  static const double cubukZeminOpakligi = 0.10;
 
-  /// Karo yazılarının gölge bulanıklığı.
-  static const double karoYaziGolgeBulanikligi = 6;
+  /// Kilitliyken çubuğun sabit doluluğu (gerçek skor sezdirilmez).
+  static const double gizliCubukDolulugu = 0.6;
 
-  /// Kapalı karodaki ikonun opaklığı.
-  static const double kapaliIkonOpakligi = 0.7;
+  /// Kilitli çubuğun renk opaklığı.
+  static const double gizliCubukOpakligi = 0.5;
+
+  /// Kilitli çubuğun bulanıklığı.
+  static const double gizliCubukBulanikligi = 2.5;
+
+  /// Kilitli satırdaki kilit amblemi boyutu.
+  static const double satirKilitBoyutu = 26;
+
+  /// "Günün yıldızı" rozetinin zemin opaklığı.
+  static const double rozetZeminOpakligi = 0.16;
+
+  /// "Günün yıldızı" rozetindeki ikonun boyutu.
+  static const double rozetIkonBoyutu = 12;
 
   /// Kutunun açılış (mini flip) süresi.
   static const Duration kutuAcilisSuresi = Duration(milliseconds: 350);
@@ -336,11 +400,28 @@ abstract final class DailyLuckConfig {
 
   // ---- Günlük okuma v2 ----
 
+  /// Gün gözcüsü zamanlayıcısının payı: zamanlayıcı tam sınırda (gece
+  /// yarısı ya da akşam kartı saati) değil bu kadar sonra çalışır ki saat
+  /// okunduğunda sınır kesin geçilmiş olsun.
+  static const Duration gunDevriPayi = Duration(seconds: 1);
+
   /// Okuma bölüm kartı ikon boyutu.
   static const double bolumIkonBoyutu = 18;
 
-  /// Büyük harfli bölüm etiketlerinin harf aralığı.
-  static const double etiketHarfAraligi = 1.2;
+  /// "Çünkü" satırının (okumanın dayanağı) altın tonlu zemin opaklığı.
+  static const double cunkuZeminOpakligi = 0.08;
+
+  /// "Çünkü" satırının kenar çizgisi opaklığı.
+  static const double cunkuKenarOpakligi = 0.35;
+
+  /// "Çünkü" satırının başındaki yıldız ikonunun boyutu.
+  static const double cunkuIkonBoyutu = 16;
+
+  /// Bölüm etiketlerinin harf aralığı.
+  static const double etiketHarfAraligi = 0.4;
+
+  /// Okuma metninin satır yüksekliği (uzun paragraflar rahat okunsun).
+  static const double okumaSatirYuksekligi = 1.5;
 
   /// "Neden bugün?" ay evresi açıklamasındaki ay görselinin boyutu.
   static const double nedenAyBoyutu = 88;

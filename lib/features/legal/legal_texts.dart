@@ -60,9 +60,8 @@ abstract final class YasalMetinler {
     ),
     YasalBolum(
       baslik: 'Cihazında saklanan veriler',
-      metin: 'Uygulamayı kullanabilmen için girdiğin adın, isteğe bağlı '
-          'tam adın, doğum tarihin, tanışma sorularına verdiğin cevaplar '
-          '(enerji tarzı, karar tarzı, ilişki durumu, günlük uğraş), '
+      metin: 'Uygulamayı kullanabilmen için girdiğin tam adın, doğum '
+          'tarihin, isteğe bağlı olarak doğum saatin ve doğduğun il, '
           'günlük skor kayıtların, yorumlara verdiğin geri bildirimler ve '
           'uyum ekranına eklediğin kişilerin ad ve doğum tarihleri '
           'YALNIZCA cihazındaki yerel veritabanında saklanır. Bu veriler '

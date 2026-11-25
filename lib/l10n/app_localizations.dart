@@ -170,18 +170,6 @@ abstract class AppLocalizations {
   /// **'Eklenmedi — isim sayıların için ekle'**
   String get ayarlarTamAdYok;
 
-  /// Onboarding tercih cevaplarını düzenleme satırı.
-  ///
-  /// In tr, this message translates to:
-  /// **'Tanışma cevapların'**
-  String get ayarlarTercihler;
-
-  /// Tercihler satırının alt yazısı.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yorumlarının sana uyması için verdiğin cevaplar'**
-  String get ayarlarTercihlerAciklama;
-
   /// Ayarlar bölüm başlığı: premium.
   ///
   /// In tr, this message translates to:
@@ -368,22 +356,10 @@ abstract class AppLocalizations {
   /// **'Başla'**
   String get onboardingBasla;
 
-  /// Profil formu: isim alanı etiketi.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sana nasıl hitap edelim?'**
-  String get onboardingIsimEtiketi;
-
-  /// Profil formu: isim alanı yer tutucusu.
-  ///
-  /// In tr, this message translates to:
-  /// **'Adın'**
-  String get onboardingIsimIpucu;
-
   /// Profil formu: numeroloji için tam ad alanı etiketi.
   ///
   /// In tr, this message translates to:
-  /// **'Doğumdaki tam adın (isteğe bağlı)'**
+  /// **'Doğumdaki tam adın'**
   String get onboardingTamAdEtiketi;
 
   /// Profil formu: tam ad alanı yer tutucusu.
@@ -395,7 +371,7 @@ abstract class AppLocalizations {
   /// Profil formu: tam adın neden istendiği.
   ///
   /// In tr, this message translates to:
-  /// **'İsim, ruh ve kişilik sayıların nüfus kaydındaki tam adından hesaplanır. Boş bırakırsan bunları daha sonra profilinden ekleyebilirsin.'**
+  /// **'İsim, ruh ve kişilik sayıların nüfus kaydındaki tam adından hesaplanır. Sana ilk adınla hitap ederiz.'**
   String get onboardingTamAdAciklama;
 
   /// Profil formu: doğum tarihi bölümü etiketi.
@@ -410,29 +386,23 @@ abstract class AppLocalizations {
   /// **'Yaşam yolu sayın ve burcun bu tarihten hesaplanır; lütfen doğru gir.'**
   String get onboardingDogumTarihiAciklama;
 
-  /// Profil formu ana butonu.
+  /// Profil formu: doğum saati ve doğum ili bölümünün etiketi.
   ///
   /// In tr, this message translates to:
-  /// **'Devam'**
-  String get onboardingDevam;
+  /// **'Doğum saatin ve yerin (biliyorsan)'**
+  String get onboardingDogumSaatiYeriEtiketi;
+
+  /// Profil formu: doğum saati ve yerinin neden istendiği, boş bırakılabileceği.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ay ve yükselen burcun bunlardan hesaplanır. Saatini bilmiyorsan ya da Türkiye dışında doğduysan boş bırak; sonradan profilinden ekleyebilirsin.'**
+  String get onboardingDogumSaatiYeriAciklama;
 
   /// Tanışma ekranı: hesaplamayı başlatan buton.
   ///
   /// In tr, this message translates to:
   /// **'Kaderimi hesapla'**
   String get onboardingKaderimiHesapla;
-
-  /// Tanışma ekranı (Ayarlar'dan düzenleme modu): kaydet butonu.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kaydet'**
-  String get onboardingKaydet;
-
-  /// Tanışma ekranı: soruları atlama butonu.
-  ///
-  /// In tr, this message translates to:
-  /// **'Şimdilik atla'**
-  String get onboardingAtla;
 
   /// İsim boşken gösterilen SnackBar.
   ///
@@ -499,48 +469,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kartıma geç'**
   String get onboardingKartimaGec;
-
-  /// Tanışma ekranı başlığı.
-  ///
-  /// In tr, this message translates to:
-  /// **'Seni biraz tanıyalım'**
-  String get onboardingTanismaBaslik;
-
-  /// Tanışma ekranı açıklaması.
-  ///
-  /// In tr, this message translates to:
-  /// **'Cevapların yorumlarının sana gerçekten uymasını sağlar: bir öğrenciye iş yeri, bekar birine partner cümlesi göstermeyiz. Hepsi isteğe bağlı ve sonradan Ayarlar\'dan değiştirilebilir.'**
-  String get onboardingTanismaAciklama;
-
-  /// Tanışma sorusu: enerji tarzı.
-  ///
-  /// In tr, this message translates to:
-  /// **'Enerjini nasıl toplarsın?'**
-  String get onboardingSoruEnerji;
-
-  /// Tanışma sorusu: karar tarzı.
-  ///
-  /// In tr, this message translates to:
-  /// **'Karar verirken…'**
-  String get onboardingSoruKarar;
-
-  /// Tanışma sorusu: ilişki durumu.
-  ///
-  /// In tr, this message translates to:
-  /// **'İlişki durumun'**
-  String get onboardingSoruIliski;
-
-  /// Tanışma sorusu: günlük uğraş.
-  ///
-  /// In tr, this message translates to:
-  /// **'Günlerini en çok ne dolduruyor?'**
-  String get onboardingSoruUgras;
-
-  /// Tanışma ekranı gizlilik notu.
-  ///
-  /// In tr, this message translates to:
-  /// **'Cevapların yalnızca bu cihazda saklanır.'**
-  String get onboardingTanismaGizlilik;
 
   /// Uyarı/onay ekranı başlığı.
   ///
@@ -716,6 +644,60 @@ abstract class AppLocalizations {
   /// **'Cevapla'**
   String get gunlukAksamButon;
 
+  /// Ana ekran: kategori listesinin başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünün alanları'**
+  String get gunlukAlanlarBaslik;
+
+  /// Ana ekran: kategori listesi başlığının altındaki ipucu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir alana dokun, ayrıntısını gör.'**
+  String get gunlukAlanlarAlt;
+
+  /// Ana ekran: günün en yüksek skorlu kategorisinin rozeti (kilitli olsa da gösterilir).
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün yıldızı'**
+  String get gunlukGununYildizi;
+
+  /// Ana ekran: kilitli kategori satırındaki eylem etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kilidi aç'**
+  String get gunlukKilidiAc;
+
+  /// Ekran okuyucu: kilitli kategori satırının puanı.
+  ///
+  /// In tr, this message translates to:
+  /// **'{kategori} puanı kilitli'**
+  String gunlukKilitliPuanSemantik(String kategori);
+
+  /// Günlük okuma: ilk bölümün başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün enerjisi'**
+  String get gunlukBolumEnerji;
+
+  /// Günlük okuma: en yüksek skorlu kategori bölümünün başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öne çıkan · {kategori}'**
+  String gunlukBolumParlayan(String kategori);
+
+  /// Günlük okuma: en düşük skorlu kategori bölümünün başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dikkat · {kategori}'**
+  String gunlukBolumDikkat(String kategori);
+
+  /// Günlük okuma: bölüm sonundaki, kategori detayını (kilitliyse kilit seçeneklerini) açan bağlantı.
+  ///
+  /// In tr, this message translates to:
+  /// **'{kategori} okumanın tamamı'**
+  String gunlukDevaminiOku(String kategori);
+
   /// Kategori detayı: şanslı saat kartının başlığı.
   ///
   /// In tr, this message translates to:
@@ -739,6 +721,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'{kategori} kategorisinin bugünkü skoru, sana özel yorumu ve şanslı saati Premium üyelere açık. İstersen kısa bir reklam izleyerek yalnızca bugün için de açabilirsin.'**
   String kategoriKilitAciklamasi(String kategori);
+
+  /// Kilit sayfası: kategorinin günlük başlığının (önizleme) üstündeki satır.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün {kategori} alanında seni bekleyen:'**
+  String kategoriKilitOnizleme(String kategori);
+
+  /// Kilit sayfası: kilitli kategori günün en yüksek skorlusuysa gösterilen not.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün en yüksek puanın bu alanda.'**
+  String get kategoriKilitEnYuksek;
+
+  /// Kilit sayfası: kilit açılınca görülecek içeriklerin kısa listesi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Puanın · Sana özel yorum · Yap / Yapma · Şanslı saatin'**
+  String get kategoriKilitIcerik;
 
   /// Akşam bildiriminin ve geri bildirim ekranının ana sorusu.
   ///
@@ -1861,6 +1861,366 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'{rol} · {burc} · Yaşam yolu {yasamYolu}'**
   String uyumKisiOzeti(String rol, String burc, int yasamYolu);
+
+  /// Koleksiyon ekran ve panel başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Koleksiyon'**
+  String get koleksiyonBaslik;
+
+  /// Koleksiyon sayacı.
+  ///
+  /// In tr, this message translates to:
+  /// **'{kazanilan} / {toplam} kart'**
+  String koleksiyonSayac(int kazanilan, int toplam);
+
+  /// Kartın kaç farklı günde geldiği.
+  ///
+  /// In tr, this message translates to:
+  /// **'{gun, plural, =1{İlk kez katıldın.} other{{gun} farklı günde katıldın.}}'**
+  String koleksiyonGunSayisi(int gun);
+
+  /// İlk kazanılma tarihi satırı (tarih kısa biçimde).
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk kez {tarih} tarihinde geldi.'**
+  String koleksiyonIlkGun(String tarih);
+
+  /// Nadir kart rozeti.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nadir'**
+  String get koleksiyonNadir;
+
+  /// Henüz kazanılmamış kartın açıklaması.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kart henüz gelmedi. Her gün kartını açtığında koleksiyonuna bir kart katılır.'**
+  String get koleksiyonKilitliAciklama;
+
+  /// Koleksiyon boşken davet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz kartın yok. Bugün kartını açtığında ilk kartın gelecek.'**
+  String get koleksiyonBosDurum;
+
+  /// Ana ekrandaki panelin üst etiketi (büyük harf).
+  ///
+  /// In tr, this message translates to:
+  /// **'BUGÜNÜN KARTI'**
+  String get koleksiyonBugununKarti;
+
+  /// Kart koleksiyona girdi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Koleksiyonuna eklendi'**
+  String get koleksiyonEklendi;
+
+  /// Kart nadir olarak geldi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nadir! Koleksiyonuna eklendi'**
+  String get koleksiyonNadirEklendi;
+
+  /// Profil özet kartının açıklaması.
+  ///
+  /// In tr, this message translates to:
+  /// **'Her gün açtığın kart burada birikir. Nadir kartlar altın çerçeveyle gelir.'**
+  String get koleksiyonOzetAciklama;
+
+  /// Koleksiyon ekranının alt notu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kartlar eğlence amaçlıdır; günün skorunu ya da okumasını etkilemez.'**
+  String get koleksiyonAltNot;
+
+  /// Koleksiyon kartı adı (hilal_kemer).
+  ///
+  /// In tr, this message translates to:
+  /// **'Hilal Kemeri'**
+  String get koleksiyonKartHilalKemerAd;
+
+  /// Koleksiyon kartı sözü (hilal_kemer).
+  ///
+  /// In tr, this message translates to:
+  /// **'Kemerin ardındaki ince ışık, yolunu sessizce aydınlatır.'**
+  String get koleksiyonKartHilalKemerSoz;
+
+  /// Koleksiyon kartı adı (isik_kapisi).
+  ///
+  /// In tr, this message translates to:
+  /// **'Işık Kapısı'**
+  String get koleksiyonKartIsikKapisiAd;
+
+  /// Koleksiyon kartı sözü (isik_kapisi).
+  ///
+  /// In tr, this message translates to:
+  /// **'Açılan her kapı, yeni bir başlangıca verilen küçük bir evettir.'**
+  String get koleksiyonKartIsikKapisiSoz;
+
+  /// Koleksiyon kartı adı (mor_gece).
+  ///
+  /// In tr, this message translates to:
+  /// **'Mor Gece'**
+  String get koleksiyonKartMorGeceAd;
+
+  /// Koleksiyon kartı sözü (mor_gece).
+  ///
+  /// In tr, this message translates to:
+  /// **'Yavaşlamak da ilerlemektir; gece, dinlenen her şeyi besler.'**
+  String get koleksiyonKartMorGeceSoz;
+
+  /// Koleksiyon kartı adı (acik_kapi).
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık Kapı'**
+  String get koleksiyonKartAcikKapiAd;
+
+  /// Koleksiyon kartı sözü (acik_kapi).
+  ///
+  /// In tr, this message translates to:
+  /// **'Kapı aralık; içeri girmek için tek bir adım yeter.'**
+  String get koleksiyonKartAcikKapiSoz;
+
+  /// Koleksiyon kartı adı (hilal_yildiz).
+  ///
+  /// In tr, this message translates to:
+  /// **'Hilal ve Yıldız'**
+  String get koleksiyonKartHilalYildizAd;
+
+  /// Koleksiyon kartı sözü (hilal_yildiz).
+  ///
+  /// In tr, this message translates to:
+  /// **'Küçük bir ışık, karanlığın bütün havasını değiştirir.'**
+  String get koleksiyonKartHilalYildizSoz;
+
+  /// Koleksiyon kartı adı (kopruler).
+  ///
+  /// In tr, this message translates to:
+  /// **'Kesişen Yollar'**
+  String get koleksiyonKartKoprulerAd;
+
+  /// Koleksiyon kartı sözü (kopruler).
+  ///
+  /// In tr, this message translates to:
+  /// **'Farklı yollar bazen aynı göle varır.'**
+  String get koleksiyonKartKoprulerSoz;
+
+  /// Koleksiyon kartı adı (cam_fanus).
+  ///
+  /// In tr, this message translates to:
+  /// **'Sessiz Tohum'**
+  String get koleksiyonKartCamFanusAd;
+
+  /// Koleksiyon kartı sözü (cam_fanus).
+  ///
+  /// In tr, this message translates to:
+  /// **'Büyüme sessizdir; görünmeden önce kök salar.'**
+  String get koleksiyonKartCamFanusSoz;
+
+  /// Koleksiyon kartı adı (kagit_ucak).
+  ///
+  /// In tr, this message translates to:
+  /// **'Uçan Not'**
+  String get koleksiyonKartKagitUcakAd;
+
+  /// Koleksiyon kartı sözü (kagit_ucak).
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir düşünceyi yazmak, onu yola çıkarmaktır.'**
+  String get koleksiyonKartKagitUcakSoz;
+
+  /// Koleksiyon kartı adı (tas_kule).
+  ///
+  /// In tr, this message translates to:
+  /// **'Dengeli Taş'**
+  String get koleksiyonKartTasKuleAd;
+
+  /// Koleksiyon kartı sözü (tas_kule).
+  ///
+  /// In tr, this message translates to:
+  /// **'Denge, her taşı yerine sabırla koymaktır.'**
+  String get koleksiyonKartTasKuleSoz;
+
+  /// Koleksiyon kartı adı (dag_yolu).
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Patika'**
+  String get koleksiyonKartDagYoluAd;
+
+  /// Koleksiyon kartı sözü (dag_yolu).
+  ///
+  /// In tr, this message translates to:
+  /// **'Dağa giden yol, ilk adımla başlar.'**
+  String get koleksiyonKartDagYoluSoz;
+
+  /// Koleksiyon kartı adı (sonsuzluk).
+  ///
+  /// In tr, this message translates to:
+  /// **'Geri Dönen Şerit'**
+  String get koleksiyonKartSonsuzlukAd;
+
+  /// Koleksiyon kartı sözü (sonsuzluk).
+  ///
+  /// In tr, this message translates to:
+  /// **'Bazı anlar döner; her dönüşte biraz daha parlar.'**
+  String get koleksiyonKartSonsuzlukSoz;
+
+  /// Koleksiyon kartı adı (tas_kopru).
+  ///
+  /// In tr, this message translates to:
+  /// **'Küçük Köprü'**
+  String get koleksiyonKartTasKopruAd;
+
+  /// Koleksiyon kartı sözü (tas_kopru).
+  ///
+  /// In tr, this message translates to:
+  /// **'İki kıyıyı birleştirmek için büyük olmak gerekmez.'**
+  String get koleksiyonKartTasKopruSoz;
+
+  /// Koleksiyon kartı adı (dolunay).
+  ///
+  /// In tr, this message translates to:
+  /// **'Dolunay'**
+  String get koleksiyonKartDolunayAd;
+
+  /// Koleksiyon kartı sözü (dolunay).
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamlanan her döngü, yeni bir ışık getirir.'**
+  String get koleksiyonKartDolunaySoz;
+
+  /// Koleksiyon kartı adı (teras).
+  ///
+  /// In tr, this message translates to:
+  /// **'Sessiz Teras'**
+  String get koleksiyonKartTerasAd;
+
+  /// Koleksiyon kartı sözü (teras).
+  ///
+  /// In tr, this message translates to:
+  /// **'Durup nefes almak da yolun bir parçasıdır.'**
+  String get koleksiyonKartTerasSoz;
+
+  /// Koleksiyon kartı adı (isik_yolu).
+  ///
+  /// In tr, this message translates to:
+  /// **'Işık Yolu'**
+  String get koleksiyonKartIsikYoluAd;
+
+  /// Koleksiyon kartı sözü (isik_yolu).
+  ///
+  /// In tr, this message translates to:
+  /// **'Suyun üstündeki ışık, her adımda biraz daha uzar.'**
+  String get koleksiyonKartIsikYoluSoz;
+
+  /// Koleksiyon kartı adı (yildiz_yolu).
+  ///
+  /// In tr, this message translates to:
+  /// **'Yıldız Yolu'**
+  String get koleksiyonKartYildizYoluAd;
+
+  /// Koleksiyon kartı sözü (yildiz_yolu).
+  ///
+  /// In tr, this message translates to:
+  /// **'Uzak görünen yıldız, yolun yönünü gösterir.'**
+  String get koleksiyonKartYildizYoluSoz;
+
+  /// Koleksiyon kartı adı (acik_pencere).
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık Pencere'**
+  String get koleksiyonKartAcikPencereAd;
+
+  /// Koleksiyon kartı sözü (acik_pencere).
+  ///
+  /// In tr, this message translates to:
+  /// **'Açılan pencereden ışıkla birlikte yeni bir fikir de girer.'**
+  String get koleksiyonKartAcikPencereSoz;
+
+  /// Koleksiyon kartı adı (yuzen_fener).
+  ///
+  /// In tr, this message translates to:
+  /// **'Yüzen Fener'**
+  String get koleksiyonKartYuzenFenerAd;
+
+  /// Koleksiyon kartı sözü (yuzen_fener).
+  ///
+  /// In tr, this message translates to:
+  /// **'Tek bir fener bile göle kendi yolunu çizer.'**
+  String get koleksiyonKartYuzenFenerSoz;
+
+  /// Koleksiyon kartı adı (kum_saati).
+  ///
+  /// In tr, this message translates to:
+  /// **'Kum Saati'**
+  String get koleksiyonKartKumSaatiAd;
+
+  /// Koleksiyon kartı sözü (kum_saati).
+  ///
+  /// In tr, this message translates to:
+  /// **'Zaman akar; her tanesi bir yıldız tozu.'**
+  String get koleksiyonKartKumSaatiSoz;
+
+  /// Koleksiyon kartı adı (altin_tuy).
+  ///
+  /// In tr, this message translates to:
+  /// **'Altın Tüy'**
+  String get koleksiyonKartAltinTuyAd;
+
+  /// Koleksiyon kartı sözü (altin_tuy).
+  ///
+  /// In tr, this message translates to:
+  /// **'Hafiflik de bir güçtür; bırakınca süzülürsün.'**
+  String get koleksiyonKartAltinTuySoz;
+
+  /// Koleksiyon kartı adı (cam_merdiven).
+  ///
+  /// In tr, this message translates to:
+  /// **'Cam Merdiven'**
+  String get koleksiyonKartCamMerdivenAd;
+
+  /// Koleksiyon kartı sözü (cam_merdiven).
+  ///
+  /// In tr, this message translates to:
+  /// **'Her basamak, bir öncekinin üstüne kurulur.'**
+  String get koleksiyonKartCamMerdivenSoz;
+
+  /// Koleksiyon kartı adı (yildiz_cesmesi).
+  ///
+  /// In tr, this message translates to:
+  /// **'Yıldız Çeşmesi'**
+  String get koleksiyonKartYildizCesmesiAd;
+
+  /// Koleksiyon kartı sözü (yildiz_cesmesi).
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaştıkça çoğalan ışık gibi bir gün.'**
+  String get koleksiyonKartYildizCesmesiSoz;
+
+  /// Koleksiyon kartı adı (ay_salincagi).
+  ///
+  /// In tr, this message translates to:
+  /// **'Ay Salıncağı'**
+  String get koleksiyonKartAySalincagiAd;
+
+  /// Koleksiyon kartı sözü (ay_salincagi).
+  ///
+  /// In tr, this message translates to:
+  /// **'Biraz oyun, ruhun en sevdiği moladır.'**
+  String get koleksiyonKartAySalincagiSoz;
+
+  /// Koleksiyon kartı adı (pusula).
+  ///
+  /// In tr, this message translates to:
+  /// **'Pusula'**
+  String get koleksiyonKartPusulaAd;
+
+  /// Koleksiyon kartı sözü (pusula).
+  ///
+  /// In tr, this message translates to:
+  /// **'Yön bulmak için önce durup içine bakmak gerekir.'**
+  String get koleksiyonKartPusulaSoz;
 }
 
 class _AppLocalizationsDelegate

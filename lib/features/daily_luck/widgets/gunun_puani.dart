@@ -131,24 +131,8 @@ class _KemerPainter extends CustomPainter {
     }
     final Offset merkez = size.center(Offset.zero);
 
-    // Koyu zemin: sahnenin en parlak yeri tam kartın arkasına düşer; altın
-    // rakam ve açıklamalar okunabilsin diye yazıların arkası, kenarlara
-    // doğru yumuşakça kaybolan koyu bir daireyle karartılır.
-    final double zeminR = size.width * DailyLuckConfig.puanZeminYariCapOrani;
-    final Color zemin = AppColors.background.withValues(
-      alpha: DailyLuckConfig.puanZeminOpakligi * ilerleme,
-    );
-    canvas.drawCircle(
-      merkez,
-      zeminR,
-      Paint()
-        ..shader = RadialGradient(
-          colors: <Color>[zemin, zemin, zemin.withValues(alpha: 0)],
-          stops: const <double>[0, DailyLuckConfig.puanZeminIcOrani, 1],
-        ).createShader(Rect.fromCircle(center: merkez, radius: zeminR)),
-    );
-
-    // Hale: rakamın arkasında sahne renginde yumuşak ışık.
+    // Hale: plakanın arkasında sahne renginde yumuşak ışık (skorun
+    // tonunu taşır: turkuaz / amber / lavanta).
     final double haleR = size.width / 2;
     canvas.drawCircle(
       merkez,
@@ -161,6 +145,47 @@ class _KemerPainter extends CustomPainter {
           ],
         ).createShader(Rect.fromCircle(center: merkez, radius: haleR)),
     );
+
+    // Puan plakası: sahnenin en parlak yeri (güneş, altın kapı) tam
+    // kartın arkasına düşebilir. Altın rakam her koşulda okunsun diye
+    // yazılar neredeyse opak, keskin kenarlı koyu bir madalyona oturur;
+    // dışındaki koyu gölge halkası onu parlak zeminden ayırır.
+    final double plakaR = size.width * DailyLuckConfig.puanPlakaYariCapOrani;
+    final double golgeR = plakaR * DailyLuckConfig.puanPlakaGolgeCarpani;
+    canvas
+      ..drawCircle(
+        merkez,
+        golgeR,
+        Paint()
+          ..shader = RadialGradient(
+            colors: <Color>[
+              AppColors.background.withValues(
+                alpha: DailyLuckConfig.puanPlakaGolgeOpakligi * ilerleme,
+              ),
+              AppColors.background.withValues(alpha: 0),
+            ],
+            // Gölge plakanın kenarında başlar, dışa doğru söner.
+            stops: <double>[plakaR / golgeR, 1],
+          ).createShader(Rect.fromCircle(center: merkez, radius: golgeR)),
+      )
+      ..drawCircle(
+        merkez,
+        plakaR,
+        Paint()
+          ..color = AppColors.background.withValues(
+            alpha: DailyLuckConfig.puanPlakaOpakligi * ilerleme,
+          ),
+      )
+      ..drawCircle(
+        merkez,
+        plakaR,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = DailyLuckConfig.puanPlakaKenarKalinligi
+          ..color = AppColors.gold.withValues(
+            alpha: DailyLuckConfig.puanPlakaKenarOpakligi * ilerleme,
+          ),
+      );
 
     // Kemer: üstte yarım daire, iki yanda dikey ayaklar. Tepeden başlayan
     // iki ayrı yol olarak kurulur ki iki yana simetrik inerek çizilsin.

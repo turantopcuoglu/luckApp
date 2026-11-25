@@ -1,19 +1,50 @@
+import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/app_images.dart';
-import 'koleksiyon_strings.dart';
 
 /// Koleksiyondaki tek bir kart: kimlik, ad, kısa söz ve görsel.
 class KoleksiyonKarti {
-  /// [id] kimlikli kart (metinleri [KoleksiyonStrings.kartlar]'dan gelir).
+  /// [id] kimlikli kart (metinleri ARB'deki `koleksiyonKart*` anahtarları).
   const KoleksiyonKarti(this.id);
 
-  /// Kalıcı kimlik: depolamada ve görsel dosya adında kullanılır.
+  /// Kalıcı kimlik: depolamada ve görsel dosya adında kullanılır; dilden
+  /// bağımsızdır.
   final String id;
 
-  /// Kartın adı.
-  String get ad => KoleksiyonStrings.kartlar[id]!.$1;
+  /// Kartın [l] dilindeki adı.
+  String ad(AppLocalizations l) => _metinler(l).$1;
 
-  /// Kartın kısa sözü.
-  String get soz => KoleksiyonStrings.kartlar[id]!.$2;
+  /// Kartın [l] dilindeki kısa sözü.
+  String soz(AppLocalizations l) => _metinler(l).$2;
+
+  /// Kimliğe göre (ad, söz) çifti. Katalogda olmayan kimlik bir
+  /// programlama hatasıdır.
+  (String, String) _metinler(AppLocalizations l) => switch (id) {
+      'hilal_kemer' => (l.koleksiyonKartHilalKemerAd, l.koleksiyonKartHilalKemerSoz),
+      'isik_kapisi' => (l.koleksiyonKartIsikKapisiAd, l.koleksiyonKartIsikKapisiSoz),
+      'mor_gece' => (l.koleksiyonKartMorGeceAd, l.koleksiyonKartMorGeceSoz),
+      'acik_kapi' => (l.koleksiyonKartAcikKapiAd, l.koleksiyonKartAcikKapiSoz),
+      'hilal_yildiz' => (l.koleksiyonKartHilalYildizAd, l.koleksiyonKartHilalYildizSoz),
+      'kopruler' => (l.koleksiyonKartKoprulerAd, l.koleksiyonKartKoprulerSoz),
+      'cam_fanus' => (l.koleksiyonKartCamFanusAd, l.koleksiyonKartCamFanusSoz),
+      'kagit_ucak' => (l.koleksiyonKartKagitUcakAd, l.koleksiyonKartKagitUcakSoz),
+      'tas_kule' => (l.koleksiyonKartTasKuleAd, l.koleksiyonKartTasKuleSoz),
+      'dag_yolu' => (l.koleksiyonKartDagYoluAd, l.koleksiyonKartDagYoluSoz),
+      'sonsuzluk' => (l.koleksiyonKartSonsuzlukAd, l.koleksiyonKartSonsuzlukSoz),
+      'tas_kopru' => (l.koleksiyonKartTasKopruAd, l.koleksiyonKartTasKopruSoz),
+      'dolunay' => (l.koleksiyonKartDolunayAd, l.koleksiyonKartDolunaySoz),
+      'teras' => (l.koleksiyonKartTerasAd, l.koleksiyonKartTerasSoz),
+      'isik_yolu' => (l.koleksiyonKartIsikYoluAd, l.koleksiyonKartIsikYoluSoz),
+      'yildiz_yolu' => (l.koleksiyonKartYildizYoluAd, l.koleksiyonKartYildizYoluSoz),
+      'acik_pencere' => (l.koleksiyonKartAcikPencereAd, l.koleksiyonKartAcikPencereSoz),
+      'yuzen_fener' => (l.koleksiyonKartYuzenFenerAd, l.koleksiyonKartYuzenFenerSoz),
+      'kum_saati' => (l.koleksiyonKartKumSaatiAd, l.koleksiyonKartKumSaatiSoz),
+      'altin_tuy' => (l.koleksiyonKartAltinTuyAd, l.koleksiyonKartAltinTuySoz),
+      'cam_merdiven' => (l.koleksiyonKartCamMerdivenAd, l.koleksiyonKartCamMerdivenSoz),
+      'yildiz_cesmesi' => (l.koleksiyonKartYildizCesmesiAd, l.koleksiyonKartYildizCesmesiSoz),
+      'ay_salincagi' => (l.koleksiyonKartAySalincagiAd, l.koleksiyonKartAySalincagiSoz),
+      'pusula' => (l.koleksiyonKartPusulaAd, l.koleksiyonKartPusulaSoz),
+      _ => throw StateError('Katalogda olmayan kart: $id'),
+    };
 
   /// Kart görselinin asset yolu.
   String get gorsel => AppImages.koleksiyonKarti(id);

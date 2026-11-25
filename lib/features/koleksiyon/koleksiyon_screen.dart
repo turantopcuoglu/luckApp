@@ -16,7 +16,6 @@ import '../../shared/widgets/sahne_config.dart';
 import 'koleksiyon_config.dart';
 import 'koleksiyon_katalogu.dart';
 import 'koleksiyon_providers.dart';
-import 'koleksiyon_strings.dart';
 import 'widgets/koleksiyon_karti_gorseli.dart';
 
 /// Koleksiyon ekranı (mockup `9635f67f` 2. ekran): sayaç, en son gelen
@@ -28,6 +27,7 @@ class KoleksiyonScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final Map<String, KazanilanKart> kazanilan = ref.watch(koleksiyonProvider);
     const List<KoleksiyonKarti> katalog = KoleksiyonKatalogu.kartlar;
@@ -52,13 +52,13 @@ class KoleksiyonScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text(KoleksiyonStrings.baslik),
+        title: Text(l.koleksiyonBaslik),
         actions: <Widget>[
           Center(
             child: Padding(
               padding: const EdgeInsets.only(right: AppSpacing.md),
               child: Text(
-                KoleksiyonStrings.sayac(sayi, katalog.length),
+                l.koleksiyonSayac(sayi, katalog.length),
                 style: yazi.bodyMedium?.copyWith(color: AppColors.goldAcik),
               ),
             ),
@@ -81,7 +81,7 @@ class KoleksiyonScreen extends ConsumerWidget {
                             vertical: AppSpacing.lg,
                           ),
                           child: Text(
-                            KoleksiyonStrings.bosDurum,
+                            l.koleksiyonBosDurum,
                             style: yazi.bodyMedium?.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -108,7 +108,7 @@ class KoleksiyonScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 sliver: SliverToBoxAdapter(
                   child: Text(
-                    KoleksiyonStrings.altNot,
+                    l.koleksiyonAltNot,
                     style: yazi.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -158,6 +158,7 @@ class _OneCikanKart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: () => _detayaGit(context, kart),
@@ -180,7 +181,7 @@ class _OneCikanKart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Flexible(child: Text(kart.ad, style: yazi.headlineSmall)),
+              Flexible(child: Text(kart.ad(l), style: yazi.headlineSmall)),
               if (kayit.nadir) ...<Widget>[
                 const SizedBox(width: AppSpacing.sm),
                 const NadirRozeti(),
@@ -189,7 +190,7 @@ class _OneCikanKart extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            KoleksiyonStrings.gunSayisi(kayit.gunSayisi),
+            l.koleksiyonGunSayisi(kayit.gunSayisi),
             style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
           ),
         ],
@@ -207,6 +208,7 @@ class _IzgaraHucresi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final bool kazanildi = kayit != null;
     final Widget gorsel = KoleksiyonKartiGorseli(
       kart: kart,
@@ -215,7 +217,7 @@ class _IzgaraHucresi extends StatelessWidget {
     );
     return Semantics(
       button: true,
-      label: kart.ad,
+      label: kart.ad(l),
       child: GestureDetector(
         onTap: () => _detayaGit(context, kart),
         child: Column(
@@ -228,7 +230,7 @@ class _IzgaraHucresi extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             ExcludeSemantics(
               child: Text(
-                kart.ad,
+                kart.ad(l),
                 maxLines: KoleksiyonConfig.adSatirSayisi,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
@@ -253,6 +255,7 @@ class NadirRozeti extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.sm,
@@ -266,7 +269,7 @@ class NadirRozeti extends StatelessWidget {
         ),
       ),
       child: Text(
-        KoleksiyonStrings.nadir,
+        l.koleksiyonNadir,
         style: Theme.of(
           context,
         ).textTheme.labelSmall?.copyWith(color: AppColors.goldAcik),
@@ -325,7 +328,7 @@ class KartDetayScreen extends ConsumerWidget {
                 children: <Widget>[
                   Flexible(
                     child: Text(
-                      kart.ad,
+                      kart.ad(l),
                       style: yazi.headlineMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -338,7 +341,7 @@ class KartDetayScreen extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                kazanildi ? kart.soz : KoleksiyonStrings.kilitliAciklama,
+                kazanildi ? kart.soz(l) : l.koleksiyonKilitliAciklama,
                 style: yazi.bodyLarge?.copyWith(
                   color: kazanildi
                       ? AppColors.goldAcik
@@ -349,7 +352,7 @@ class KartDetayScreen extends ConsumerWidget {
               if (kayit != null) ...<Widget>[
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  KoleksiyonStrings.ilkGun(
+                  l.koleksiyonIlkGun(
                     kisaTarihMetni(l, kayit.ilkGun),
                   ),
                   style: yazi.bodySmall?.copyWith(
@@ -358,7 +361,7 @@ class KartDetayScreen extends ConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
                 Text(
-                  KoleksiyonStrings.gunSayisi(kayit.gunSayisi),
+                  l.koleksiyonGunSayisi(kayit.gunSayisi),
                   style: yazi.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),

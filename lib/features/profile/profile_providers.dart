@@ -44,29 +44,11 @@ final ProviderFamily<YillikRaporOkumasi, int> yillikRaporProvider =
 final Provider<HaritaOkumasi> haritaOkumasiProvider = Provider<HaritaOkumasi>(
   (Ref ref) {
     final UserProfile p = ref.watch(aktifProfilProvider);
-    final int? dakika = p.dogumSaatiDakika;
-    final bool saatVar = dakika != null;
-    final DateTime yerel = DateTime(
-      p.dogumTarihi.year,
-      p.dogumTarihi.month,
-      p.dogumTarihi.day,
-      saatVar ? dakika ~/ Duration.minutesPerHour : EngineConfig.bilinmeyenSaat,
-      saatVar ? dakika % Duration.minutesPerHour : 0,
-    );
-    final SaatDilimiSonucu dilim = TurkiyeSaatDilimi.utcFarki(yerel);
-    final int? plaka = p.dogumIliPlaka;
-    final Il? il = plaka == null ? null : TurkiyeIlleri.plakadan(plaka);
     return haritaOkumasi(
-      harita: DogumHaritasi.hesapla(
-        yerelDogum: yerel,
-        utcFarkiSaat: dilim.farkSaat.toDouble(),
-        saatBiliniyor: saatVar,
-        enlem: il?.enlem,
-        boylam: il?.boylam,
-      ),
-      saatBiliniyor: saatVar,
-      konumBiliniyor: il != null,
-      saatDilimiKesin: dilim.kesin,
+      harita: p.dogumHaritasi,
+      saatBiliniyor: p.dogumSaatiBiliniyor,
+      konumBiliniyor: p.dogumIli != null,
+      saatDilimiKesin: TurkiyeSaatDilimi.utcFarki(p.yerelDogumAni).kesin,
     );
   },
 );

@@ -17,6 +17,7 @@ library;
 import '../luck_engine/luck_engine.dart';
 import 'content_config.dart';
 import 'okuyucu.dart';
+import 'turkce_ek.dart';
 
 /// Kişilik cümleleri ve çelişki süzgeci.
 abstract final class KisilikMetinleri {
@@ -352,20 +353,29 @@ abstract final class KisilikMetinleri {
 
   /// Okuyucunun cevaplarından çelişki anahtarları: enerji ve karar tarzı
   /// adı, ilişki durumu için `bekar` / `partnerli`.
+  ///
+  /// İlişki durumu bilinmiyorsa İKİ anahtar birden döner: partneri
+  /// olduğunu varsayan cümleler de ("partnerinin mutluluğunu…"), bekâr
+  /// olduğunu varsayanlar da ("flört senin için bir oyun…") elenir.
   static Set<String> celiskiAnahtarlari(OkuyucuTercihleri t) => <String>{
     ?t.enerji?.name,
     ?t.karar?.name,
-    if (t.iliski case final IliskiDurumu d)
-      d.partnerliMi ? 'partnerli' : 'bekar',
+    ...switch (t.iliski) {
+      null => const <String>['bekar', 'partnerli'],
+      final IliskiDurumu d => <String>[d.partnerliMi ? 'partnerli' : 'bekar'],
+    },
   };
 
   /// [metin] okuyucunun cevaplarından biriyle çelişiyor mu?
+  ///
+  /// İfadeler kelime başından eşleşir: "eşin" ifadesi "peşin" kelimesini,
+  /// "ders" ifadesi "hissedersin" kelimesini yakalamaz.
   static bool celisir(String metin, OkuyucuTercihleri t) {
-    final String kucuk = metin.toLowerCase();
+    final String kucuk = TurkceEk.kucukHarf(metin);
     for (final String anahtar in celiskiAnahtarlari(t)) {
       for (final String ifade
           in ContentConfig.celiskiIfadeleri[anahtar] ?? const <String>[]) {
-        if (kucuk.contains(ifade)) {
+        if (_kelimeBasindaGecer(kucuk, ifade)) {
           return true;
         }
       }
@@ -373,16 +383,39 @@ abstract final class KisilikMetinleri {
     return false;
   }
 
-  /// [havuz]dan okuyucunun cevaplarıyla çelişmeyen cümleler.
+  /// Türkçe küçük harfler (kelime sınırı tespiti için).
+  static final RegExp _harf = RegExp('[a-zçğıöşüâîû]');
+
+  /// [ifade], [kucuk] metinde bir kelimenin başında geçiyor mu? (Önündeki
+  /// karakter harf değilse ya da ifade metnin başındaysa.)
+  static bool _kelimeBasindaGecer(String kucuk, String ifade) {
+    int i = kucuk.indexOf(ifade);
+    while (i >= 0) {
+      if (i == 0 || !_harf.hasMatch(kucuk[i - 1])) {
+        return true;
+      }
+      i = kucuk.indexOf(ifade, i + 1);
+    }
+    return false;
+  }
+
+  /// [havuz]dan okuyucunun portresiyle çelişmeyen cümleler: bütün okuma
+  /// havuzlarının seçimden önce geçtiği kapı. [t] olarak `Okuyucu.portre`
+  /// verilir.
   ///
-  /// Hepsi çelişirse havuz olduğu gibi döner (okuma boş kalmasın); havuz
-  /// bütünlük testleri bunun hiçbir kombinasyonda olmadığını doğrular.
-  static List<String> uyumlular(List<String> havuz, OkuyucuTercihleri t) {
+  /// Geriye [enAz]'dan az cümle kalırsa havuz olduğu gibi döner (okuma
+  /// boş ya da eksik kalmasın); havuz bütünlük testleri bunun hiçbir
+  /// portrede olmadığını doğrular.
+  static List<String> uyumlular(
+    List<String> havuz,
+    OkuyucuTercihleri t, {
+    int enAz = 1,
+  }) {
     final List<String> kalan = <String>[
       for (final String m in havuz)
         if (!celisir(m, t)) m,
     ];
-    return kalan.isEmpty ? havuz : kalan;
+    return kalan.length < enAz ? havuz : kalan;
   }
 
   /// Profil metinlerinde (yaşam yolu özü, güçlü yanlar, gölge yan, aşkta,
@@ -440,6 +473,25 @@ abstract final class KisilikMetinleri {
           'Meraklısın, çok yönlüsün; insanlara seçerek açılsan da '
           'açıldığında sohbetin akıcıdır.',
     },
+    // Yaşam yolu 2 · güçlü yanlar
+    'Sezgilerin güçlüdür; "bir şey doğru değil" dediğinde genellikle haklı '
+        'çıkarsın.': <String, String>{
+      'akil':
+          'Ayrıntılardaki tutarsızlığı çabuk yakalarsın; "bir şey doğru '
+          'değil" dediğinde genellikle haklı çıkarsın.',
+    },
+    // Yaşam yolu 11 · iş ve para
+    'Parayla ilişkin dalgalı olabilir; sezgine güvendiğin kadar, sade bir '
+        'bütçeye de güvenmek seni rahatlatır.': <String, String>{
+      'akil':
+          'Parayla ilişkin dalgalı olabilir; büyük hayallerinin yanına sade '
+          'bir bütçe koymak seni rahatlatır.',
+    },
+    // Yaşam yolu 11 · yaşam dersi
+    'Senin dersin, sezgine güvenirken ayaklarını yere basmak.':
+        <String, String>{
+          'akil': 'Senin dersin, büyük düşünürken ayaklarını yere basmak.',
+        },
   };
 
   /// [metin]in cümlelerinden okuyucunun cevabıyla çelişenleri

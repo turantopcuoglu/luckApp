@@ -16,30 +16,44 @@ import 'premium_providers.dart';
 /// Kilitli içeriğe dokunulunca açılan seçenekler: Premium'a geç ya da
 /// ödüllü reklam izleyerek içeriği YALNIZCA BUGÜN için aç.
 ///
+/// [onizleme] verilirse başlığın altında gösterilir: kilitli içeriğin
+/// merak uyandıran bir parçası (ör. kategorinin günlük başlığı).
+///
 /// Döndürdüğü değer: içerik bu akışla açıldıysa true.
 Future<bool> kilitSecenekleriniGoster(
   BuildContext context,
   WidgetRef ref, {
   required String kilitAnahtari,
   required String aciklama,
+  Widget? onizleme,
 }) async {
   final bool? sonuc = await showModalBottomSheet<bool>(
     context: context,
     backgroundColor: AppColors.surface,
     showDragHandle: true,
+    // Önizlemeli içerik kısa ekranlarda taşmasın: sayfa kaydırılabilir.
+    isScrollControlled: onizleme != null,
     builder: (BuildContext sheetContext) => _KilitSheet(
       kilitAnahtari: kilitAnahtari,
       aciklama: aciklama,
+      onizleme: onizleme,
     ),
   );
   return sonuc ?? false;
 }
 
 class _KilitSheet extends ConsumerWidget {
-  const _KilitSheet({required this.kilitAnahtari, required this.aciklama});
+  const _KilitSheet({
+    required this.kilitAnahtari,
+    required this.aciklama,
+    this.onizleme,
+  });
 
   final String kilitAnahtari;
   final String aciklama;
+
+  /// Kilitli içeriğin önizlemesi (opsiyonel).
+  final Widget? onizleme;
 
   Future<void> _reklamIzle(BuildContext context, WidgetRef ref) async {
     final AppLocalizations l = AppLocalizations.of(context);
@@ -96,6 +110,10 @@ class _KilitSheet extends ConsumerWidget {
               style: yazi.titleLarge,
               textAlign: TextAlign.center,
             ),
+            if (onizleme case final Widget o) ...<Widget>[
+              const SizedBox(height: AppSpacing.md),
+              o,
+            ],
             const SizedBox(height: AppSpacing.sm),
             Text(
               aciklama,

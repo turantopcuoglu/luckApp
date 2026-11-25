@@ -127,6 +127,8 @@ class Okuyucu {
     required this.seed,
     required this.profil,
     this.tercihler = const OkuyucuTercihleri(),
+    this.dogumAyi,
+    this.yukselen,
   });
 
   /// Selamlamada ve metinde kullanılan görünen ad.
@@ -140,4 +142,57 @@ class Okuyucu {
 
   /// Onboarding tercih cevapları.
   final OkuyucuTercihleri tercihler;
+
+  /// Doğum anındaki Ay burcu; kesin değilse (doğum saati bilinmiyor ve Ay
+  /// o gün burç değiştirmiş, ya da burç sınırına çok yakın) null.
+  ///
+  /// Yanlış burç söylemek güveni en hızlı yıkan hatadır; emin
+  /// olunmadığında okuma Ay burcundan hiç söz etmez.
+  final Burc? dogumAyi;
+
+  /// Yükselen burç; doğum saati ya da yeri bilinmiyorsa, ya da yükselen
+  /// burç sınırına çok yakınsa null.
+  final Burc? yukselen;
+
+  /// Cevap verilmemişse enerji tarzının türetildiği element eşlemesi:
+  /// ateş ve hava dışa, toprak ve su içe dönük okunur (burçların en yaygın
+  /// bilinen tarifi; kişi kendi burcunu bu tarifle tanır).
+  static const Map<BurcElementi, EnerjiTarzi> elementEnerjisi =
+      <BurcElementi, EnerjiTarzi>{
+        BurcElementi.ates: EnerjiTarzi.disaDonuk,
+        BurcElementi.hava: EnerjiTarzi.disaDonuk,
+        BurcElementi.toprak: EnerjiTarzi.iceDonuk,
+        BurcElementi.su: EnerjiTarzi.iceDonuk,
+      };
+
+  /// Cevap verilmemişse karar tarzının türetildiği element eşlemesi: ateş
+  /// ve su kalbiyle, toprak ve hava aklıyla karar verir.
+  static const Map<BurcElementi, KararTarzi> elementKarari =
+      <BurcElementi, KararTarzi>{
+        BurcElementi.ates: KararTarzi.kalp,
+        BurcElementi.su: KararTarzi.kalp,
+        BurcElementi.toprak: KararTarzi.akil,
+        BurcElementi.hava: KararTarzi.akil,
+      };
+
+  /// Çekirdek portre: bütün okumaların çelişki kapısında kullandığı TEK
+  /// kişilik tarifi.
+  ///
+  /// Enerji ve karar tarzı için okuyucunun kendi cevabı esastır; soru
+  /// atlanmışsa Güneş burcunun elementinden türetilir ([elementEnerjisi],
+  /// [elementKarari]). Böylece burç ve yaşam yolu metinleri aynı kişiyi
+  /// anlatır: Balık burcu bir okura bir gün "kalabalıkta kolay yorulursun"
+  /// (burç), ertesi gün "ortamın merkezindesin" (yaşam yolu 3) denmez.
+  ///
+  /// Türetilen değerler yalnızca cümle DIŞLAMAK için kullanılır (bkz.
+  /// `KisilikMetinleri.uyumlular`); kişiye özel havuz seçimi (ör. içe
+  /// dönüklere yazılmış öneriler) yalnızca verilen cevaplara
+  /// ([tercihler]) dayanır. İlişki durumu ve uğraş hayatın olgusudur,
+  /// türetilmez; bilinmiyorsa o konuda varsayım yapan cümleler elenir.
+  OkuyucuTercihleri get portre => OkuyucuTercihleri(
+    enerji: tercihler.enerji ?? elementEnerjisi[profil.burc.element],
+    karar: tercihler.karar ?? elementKarari[profil.burc.element],
+    iliski: tercihler.iliski,
+    ugras: tercihler.ugras,
+  );
 }

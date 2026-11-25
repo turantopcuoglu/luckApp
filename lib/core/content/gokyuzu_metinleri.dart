@@ -48,19 +48,6 @@ enum SahneYonu {
 
 /// Gökyüzü tabanlı kategori metin havuzları.
 abstract final class GokyuzuMetinleri {
-  /// Bu yapıyla okunan kategoriler (tümü).
-  static const Set<LuckCategory> kategoriler = <LuckCategory>{
-    LuckCategory.ask,
-    LuckCategory.para,
-    LuckCategory.saglik,
-    LuckCategory.risk,
-    LuckCategory.sosyal,
-  };
-
-  /// [kategori] gökyüzü yapısıyla mı okunuyor?
-  static bool destekler(LuckCategory kategori) =>
-      kategoriler.contains(kategori);
-
   /// Cevap bilinmediğinde kullanılan sahne anahtarı.
   static const String genelAnahtar = 'genel';
 
@@ -106,7 +93,7 @@ abstract final class GokyuzuMetinleri {
       ],
       GunTonu.orta: <String>[
         'Ay {ayBurcu} burcunda, {burc} burcunla aynı elementte; kendini evinde hissettiğin, sakin ve tanıdık bir akış var.',
-        '{ayBurcu} burcundaki Ay sana tanıdık geliyor; içgüdülerin doğru yeri gösteriyor, onları dinlemek yeterli.',
+        '{ayBurcu} burcundaki Ay sana tanıdık geliyor; neyin sana iyi geldiğini bugün her zamankinden net görüyorsun.',
         'Ay senin elementinde dolaşıyor ({ayBurcu}); olduğun gibi davrandığında işler kendiliğinden yerine oturur.',
       ],
       GunTonu.yuksek: <String>[

@@ -13,8 +13,9 @@ import 'package:kader/features/daily_luck/widgets/fortune_reveal_card.dart';
 import 'package:kader/features/koleksiyon/koleksiyon_katalogu.dart';
 import 'package:kader/features/koleksiyon/koleksiyon_providers.dart';
 import 'package:kader/features/koleksiyon/koleksiyon_screen.dart';
-import 'package:kader/features/koleksiyon/koleksiyon_strings.dart';
 import 'package:kader/features/koleksiyon/widgets/koleksiyon_panelleri.dart';
+import 'package:kader/l10n/app_localizations.dart';
+import 'package:kader/l10n/app_localizations_en.dart';
 import 'package:kader/shared/widgets/app_images.dart';
 
 import '../test_ortami.dart';
@@ -31,22 +32,42 @@ void main() {
   );
 
   group('KoleksiyonKatalogu', () {
-    test('24 kart, kimlikler benzersiz, her kartın metni ve görseli var', () {
+    test('24 kart, kimlikler benzersiz, her kartın iki dilde metni ve '
+        'görseli var', () {
       const List<KoleksiyonKarti> k = KoleksiyonKatalogu.kartlar;
+      final AppLocalizations en = AppLocalizationsEn();
       expect(k, hasLength(24));
       expect(k.map((KoleksiyonKarti x) => x.id).toSet(), hasLength(24));
       for (final KoleksiyonKarti kart in k) {
-        expect(kart.ad, isNotEmpty);
-        expect(kart.soz, isNotEmpty);
+        for (final AppLocalizations l in <AppLocalizations>[trMetinler, en]) {
+          expect(kart.ad(l), isNotEmpty, reason: kart.id);
+          expect(kart.soz(l), isNotEmpty, reason: kart.id);
+        }
+        expect(kart.ad(en), isNot(kart.ad(trMetinler)), reason: kart.id);
         expect(File(kart.gorsel).existsSync(), isTrue, reason: kart.gorsel);
       }
-      expect(KoleksiyonStrings.kartlar, hasLength(24));
+    });
+
+    test('Türkçe metinler ARB taşımasından önceki haliyle aynı (E6b)', () {
+      final KoleksiyonKarti pusula = KoleksiyonKatalogu.bul('pusula')!;
+      expect(pusula.ad(trMetinler), 'Pusula');
+      expect(
+        pusula.soz(trMetinler),
+        'Yön bulmak için önce durup içine bakmak gerekir.',
+      );
+      expect(
+        KoleksiyonKatalogu.bul('kopruler')!.ad(trMetinler),
+        'Kesişen Yollar',
+      );
+      expect(trMetinler.koleksiyonGunSayisi(1), 'İlk kez katıldın.');
+      expect(trMetinler.koleksiyonGunSayisi(3), '3 farklı günde katıldın.');
+      expect(trMetinler.koleksiyonSayac(5, 24), '5 / 24 kart');
     });
 
     test('çerçeve görselleri var; bul kimlikle kartı döndürür', () {
       expect(File(AppImages.cerceveNormal).existsSync(), isTrue);
       expect(File(AppImages.cerceveNadir).existsSync(), isTrue);
-      expect(KoleksiyonKatalogu.bul('pusula')!.ad, 'Pusula');
+      expect(KoleksiyonKatalogu.bul('pusula')!.id, 'pusula');
       expect(KoleksiyonKatalogu.bul('yok'), isNull);
     });
   });
@@ -100,8 +121,8 @@ void main() {
   testWidgets('boş koleksiyon: sayaç 0/24 ve davet metni',
       (WidgetTester tester) async {
     await ac(tester, const KoleksiyonScreen());
-    expect(find.text(KoleksiyonStrings.sayac(0, 24)), findsOneWidget);
-    expect(find.text(KoleksiyonStrings.bosDurum), findsOneWidget);
+    expect(find.text(trMetinler.koleksiyonSayac(0, 24)), findsOneWidget);
+    expect(find.text(trMetinler.koleksiyonBosDurum), findsOneWidget);
   });
 
   testWidgets('kazanılan kart öne çıkar; dokununca detay ve söz görünür',
@@ -113,16 +134,16 @@ void main() {
     );
     await ac(tester, const KoleksiyonScreen());
 
-    expect(find.text(KoleksiyonStrings.sayac(1, 24)), findsOneWidget);
-    expect(find.text(KoleksiyonStrings.nadir), findsOneWidget);
-    expect(find.text(KoleksiyonStrings.gunSayisi(1)), findsOneWidget);
+    expect(find.text(trMetinler.koleksiyonSayac(1, 24)), findsOneWidget);
+    expect(find.text(trMetinler.koleksiyonNadir), findsOneWidget);
+    expect(find.text(trMetinler.koleksiyonGunSayisi(1)), findsOneWidget);
 
     await tester.tap(find.text('Pusula').first);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 
     expect(find.byType(KartDetayScreen), findsOneWidget);
-    expect(find.text(KoleksiyonKatalogu.bul('pusula')!.soz), findsOneWidget);
+    expect(find.text(KoleksiyonKatalogu.bul('pusula')!.soz(trMetinler)), findsOneWidget);
   });
 
   testWidgets('kazanılmamış kartın detayı kilitli açıklamayı gösterir',
@@ -131,7 +152,7 @@ void main() {
       tester,
       KartDetayScreen(kart: KoleksiyonKatalogu.bul('dolunay')!),
     );
-    expect(find.text(KoleksiyonStrings.kilitliAciklama), findsOneWidget);
+    expect(find.text(trMetinler.koleksiyonKilitliAciklama), findsOneWidget);
   });
 
   testWidgets('ana ekranda kart açılınca günün kartı koleksiyona katılır',
@@ -150,6 +171,6 @@ void main() {
       kart.id,
     ]);
     await tester.ensureVisible(find.byType(GununKartiPaneli));
-    expect(find.text(kart.ad), findsOneWidget);
+    expect(find.text(kart.ad(trMetinler)), findsOneWidget);
   });
 }

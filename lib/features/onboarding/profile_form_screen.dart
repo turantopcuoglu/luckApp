@@ -13,8 +13,9 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/altin_buton.dart';
 import '../../shared/widgets/app_route.dart';
 import '../legal/legal_config.dart';
+import '../profile/dogum_bilgisi_duzenle.dart';
+import 'calculating_screen.dart';
 import 'onboarding_config.dart';
-import 'tanisma_screen.dart';
 import 'widgets/astrolab.dart';
 import 'widgets/onboarding_zemini.dart';
 
@@ -27,11 +28,28 @@ final StateProvider<DateTime> secilenDogumTarihiProvider =
       (Ref ref) => OnboardingConfig.varsayilanDogumTarihi,
     );
 
-/// Onboarding profil adımı: hitap adı, doğumdaki tam ad (opsiyonel) ve
-/// doğum tarihi.
+/// Formda seçili doğum saati (gece yarısından itibaren dakika); kullanıcı
+/// saatini bilmiyorsa null kalır.
+final StateProvider<int?> secilenDogumSaatiProvider = StateProvider<int?>(
+  (Ref ref) => null,
+);
+
+/// Formda seçili doğum ilinin plaka kodu; seçilmediyse null.
+final StateProvider<int?> secilenDogumIliProvider = StateProvider<int?>(
+  (Ref ref) => null,
+);
+
+/// Onboarding'in TEK veri adımı: doğumdaki tam ad, doğum tarihi, (biliniyorsa)
+/// doğum saati ve doğum yeri.
 ///
-/// Rakip uygulamanın en çok 1★ aldığı nokta giriş formuydu (iki göbek
-/// adı, tire, soyad girilemiyordu). Burada tam ad serbest metindir:
+/// Kullanıcıya kendini tarif ettiren sorular (enerji, karar tarzı, ilişki
+/// durumu, uğraş) BİLEREK sorulmaz: okumada geri duyulduğunda "bana sordu,
+/// şimdi cevabımı bana satıyor" hissi yaratıyordu. Okuma yalnızca doğum
+/// verisinden kurulur.
+///
+/// Hitap adı ayrıca sorulmaz, tam adın ilk kelimesidir ("Ayşe Yılmaz" →
+/// "Ayşe"). Rakip uygulamanın en çok 1★ aldığı nokta giriş formuydu (iki
+/// göbek adı, tire, soyad girilemiyordu); burada tam ad serbest metindir:
 /// boşluk, tire ve Türkçe karakterler hesapta doğru ele alınır.
 /// Geri tuşu varsayılan pop davranışıyla uyarı ekranına döner.
 class ProfileFormScreen extends ConsumerStatefulWidget {
@@ -43,27 +61,26 @@ class ProfileFormScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
-  /// İsim alanının denetleyicisi (setState gerektirmez).
-  final TextEditingController _isimKontrol = TextEditingController();
-
-  /// Tam ad alanının denetleyicisi.
+  /// Tam ad alanının denetleyicisi (setState gerektirmez).
   final TextEditingController _tamAdKontrol = TextEditingController();
 
   @override
   void dispose() {
-    _isimKontrol.dispose();
     _tamAdKontrol.dispose();
     super.dispose();
   }
 
-  /// İsim doğrulanır, profil (uyarı onayıyla) kaydedilir ve tanışma
-  /// sorularına geçilir.
+  /// Ad doğrulanır, profil (uyarı onayıyla) kaydedilir ve hazırlık
+  /// ekranına geçilir.
   ///
   /// Hive yazması bilinçli olarak await edilmez: bellek içi kutu anında
   /// güncellenir, disk yazması arkada tamamlanır; akış beklemesin.
   void _devamEt() {
-    final String isim = _isimKontrol.text.trim();
-    if (isim.isEmpty) {
+    final String tamAd = _tamAdKontrol.text.trim().replaceAll(
+      RegExp(r'\s+'),
+      ' ',
+    );
+    if (tamAd.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).onboardingIsimBosUyarisi),
@@ -71,10 +88,9 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
       );
       return;
     }
-    final String tamAd = _tamAdKontrol.text.trim().replaceAll(
-      RegExp(r'\s+'),
-      ' ',
-    );
+    // Hitap adı: tam adın ilk kelimesi. Günün skoru bu ad ve doğum
+    // tarihinden tohumlanır (bkz. UserProfile.seed).
+    final String isim = tamAd.split(' ').first;
 
     unawaited(
       ref
@@ -83,12 +99,16 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
             UserProfile(
               isim: isim,
               dogumTarihi: ref.read(secilenDogumTarihiProvider),
-              tamAd: tamAd.isEmpty ? null : tamAd,
+              tamAd: tamAd,
               uyariKabulSurumu: LegalConfig.uyariSurumu,
+              dogumSaatiDakika: ref.read(secilenDogumSaatiProvider),
+              dogumIliPlaka: ref.read(secilenDogumIliProvider),
             ),
           ),
     );
-    Navigator.of(context).push(fadeThroughRoute<void>(const TanismaScreen()));
+    Navigator.of(
+      context,
+    ).push(fadeThroughRoute<void>(const CalculatingScreen()));
   }
 
   @override
@@ -117,20 +137,6 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                       child: Astrolab(boyut: OnboardingConfig.astrolabKucuk),
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    Text(
-                      l.onboardingIsimEtiketi,
-                      style: yaziTemasi.titleMedium,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    TextField(
-                      key: const Key('isim-alani'),
-                      controller: _isimKontrol,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: InputDecoration(
-                        hintText: l.onboardingIsimIpucu,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
                     Text(
                       l.onboardingTamAdEtiketi,
                       style: yaziTemasi.titleMedium,
@@ -168,6 +174,28 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                                 yeni,
                       ),
                     ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      l.onboardingDogumSaatiYeriEtiketi,
+                      style: yaziTemasi.titleMedium,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      l.onboardingDogumSaatiYeriAciklama,
+                      style: aciklamaStili,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    DogumSaatiYeriAlanlari(
+                      saat: ref.watch(secilenDogumSaatiProvider),
+                      plaka: ref.watch(secilenDogumIliProvider),
+                      onSaat: (int? dakika) =>
+                          ref.read(secilenDogumSaatiProvider.notifier).state =
+                              dakika,
+                      onIl: (int plaka) =>
+                          ref.read(secilenDogumIliProvider.notifier).state =
+                              plaka,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
                   ],
                 ),
               ),
@@ -175,7 +203,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: AltinButon(
                   genislik: null,
-                  metin: l.onboardingDevam,
+                  metin: l.onboardingKaderimiHesapla,
                   onPressed: _devamEt,
                 ),
               ),

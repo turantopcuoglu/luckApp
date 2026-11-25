@@ -23,7 +23,6 @@ import '../feedback/notification_service.dart';
 import '../legal/legal_config.dart';
 import '../legal/legal_texts.dart';
 import '../legal/yasal_belge_screen.dart';
-import '../onboarding/tanisma_screen.dart';
 import '../onboarding/welcome_screen.dart';
 import '../premium/paywall_screen.dart';
 import '../premium/premium_kontrolcu.dart';
@@ -144,14 +143,6 @@ class AyarlarScreen extends ConsumerWidget {
                 subtitle: Text(profil.tamAd ?? l.ayarlarTamAdYok),
                 trailing: const Icon(Icons.edit_outlined),
                 onTap: () => unawaited(tamAdiDuzenle(context, ref)),
-              ),
-              ListTile(
-                title: Text(l.ayarlarTercihler),
-                subtitle: Text(l.ayarlarTercihlerAciklama),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => Navigator.of(context).push(
-                  fadeThroughRoute<void>(const TanismaScreen(duzenleme: true)),
-                ),
               ),
               bolumBasligi(l.ayarlarPremium),
               ListTile(

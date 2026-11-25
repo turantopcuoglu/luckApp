@@ -1,6 +1,8 @@
 import '../luck_engine/luck_engine.dart';
 import 'dongu_metinleri.dart';
 import 'tr_icerik_paketi.dart';
+import 'turkce_ek.dart';
+import 'yillik_rapor_metinleri.dart';
 import 'yorum_yonu.dart';
 
 /// "Neden bugün?" çiplerinin ve açıklamalarının metinleri.
@@ -10,6 +12,68 @@ import 'yorum_yonu.dart';
 /// söyler; hesaplama yöntemi, toplama işlemleri, puan etkileri ve
 /// "herkes için aynı" gibi ifadeler kullanıcıya gösterilmez.
 abstract final class NedenMetinleri {
+  /// Okumanın başındaki tek satırlık "çünkü": okumanın kişinin HANGİ
+  /// verisine dayandığını adıyla söyler (doğum günü, burcu, elementi) ve
+  /// bugünün Ay'ını o elemente bağlar.
+  ///
+  /// Kişi kendi verisini metinde gördüğünde okumayı "bana yazılmış" diye
+  /// okur. Satır yalnızca dayanağı söyler: yöntem, puan etkisi ya da
+  /// "iyi/kötü" yargısı yoktur (yargı okumanın işidir; böylece satır günün
+  /// tonuyla hiçbir zaman çelişmez). Gökyüzündeki Ay'ın burç adı burada
+  /// anılmaz, çünkü okumanın açılış paragrafı ve "Neden bugün?" çipi onu
+  /// zaten söyler.
+  ///
+  /// [dogumAyi] ve [yukselen] biliniyorsa (doğum saati ve yeri girilmişse)
+  /// satır doğum haritasının üç noktasını da sayar: "burcun Balık (su), Ay
+  /// burcun Yengeç, yükselenin Aslan". Doğum Ay'ı "Ay burcun", gökyüzündeki
+  /// Ay "Ay bugün…" diye anılır ki ikisi karışmasın.
+  static String cunku({
+    required DateTime dogumTarihi,
+    required Burc gunesBurcu,
+    required Burc ayBurcu,
+    Burc? dogumAyi,
+    Burc? yukselen,
+  }) {
+    final String element = TurkceEk.kucukHarf(
+      trIcerik.elementAdi(gunesBurcu.element),
+    );
+    final String ayElementi = TurkceEk.kucukHarf(
+      trIcerik.elementAdi(ayBurcu.element),
+    );
+    final String ay =
+        _cunkuAy[elementIliskisi(ayBurcu.element, gunesBurcu.element)]!
+            .replaceAll(_ayElementiYeri, ayElementi);
+    final String giris =
+        'Sana özel, çünkü ${dogumTarihi.day} '
+        '${YillikRaporMetinleri.ayAdlari[dogumTarihi.month - 1]} doğumlusun: '
+        'burcun ${trIcerik.burcAdi(gunesBurcu)}';
+    if (dogumAyi == null && yukselen == null) {
+      return '$giris, elementin $element. $ay';
+    }
+    final String harita = <String>[
+      '$giris ($element)',
+      if (dogumAyi != null) 'Ay burcun ${trIcerik.burcAdi(dogumAyi)}',
+      if (yukselen != null) 'yükselenin ${trIcerik.burcAdi(yukselen)}',
+    ].join(', ');
+    return '$harita. $ay';
+  }
+
+  /// [_cunkuAy] şablonlarında Ay'ın elementinin yer tutucusu.
+  static const String _ayElementiYeri = '{ayElementi}';
+
+  /// "Çünkü" satırının Ay cümlesi: Ay'ın bugünkü elementi ile kişinin
+  /// elementinin ilişkisi (yalnızca konum; yargı içermez).
+  static const Map<ElementIliskisi, String> _cunkuAy =
+      <ElementIliskisi, String>{
+        ElementIliskisi.ayni: 'Ay da bugün bir {ayElementi} burcunda.',
+        ElementIliskisi.tamamlayici:
+            'Ay bugün bir {ayElementi} burcunda, elementini besleyen yerde.',
+        ElementIliskisi.notr:
+            'Ay bugün bir {ayElementi} burcunda, elementine yabancı bir yerde.',
+        ElementIliskisi.zit:
+            'Ay bugün bir {ayElementi} burcunda, elementinin tam karşısında.',
+      };
+
   /// Kişisel gün çipi.
   static String kisiselGunEtiketi(int kisiselGun) => 'Kişisel gün $kisiselGun';
 

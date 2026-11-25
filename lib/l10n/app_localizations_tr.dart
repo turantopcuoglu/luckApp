@@ -46,13 +46,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ayarlarTamAdYok => 'Eklenmedi — isim sayıların için ekle';
 
   @override
-  String get ayarlarTercihler => 'Tanışma cevapların';
-
-  @override
-  String get ayarlarTercihlerAciklama =>
-      'Yorumlarının sana uyması için verdiğin cevaplar';
-
-  @override
   String get ayarlarPremium => 'Premium';
 
   @override
@@ -152,20 +145,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get onboardingBasla => 'Başla';
 
   @override
-  String get onboardingIsimEtiketi => 'Sana nasıl hitap edelim?';
-
-  @override
-  String get onboardingIsimIpucu => 'Adın';
-
-  @override
-  String get onboardingTamAdEtiketi => 'Doğumdaki tam adın (isteğe bağlı)';
+  String get onboardingTamAdEtiketi => 'Doğumdaki tam adın';
 
   @override
   String get onboardingTamAdIpucu => 'Ad Göbek adı Soyad';
 
   @override
   String get onboardingTamAdAciklama =>
-      'İsim, ruh ve kişilik sayıların nüfus kaydındaki tam adından hesaplanır. Boş bırakırsan bunları daha sonra profilinden ekleyebilirsin.';
+      'İsim, ruh ve kişilik sayıların nüfus kaydındaki tam adından hesaplanır. Sana ilk adınla hitap ederiz.';
 
   @override
   String get onboardingDogumTarihiEtiketi => 'Doğum tarihin';
@@ -175,16 +162,15 @@ class AppLocalizationsTr extends AppLocalizations {
       'Yaşam yolu sayın ve burcun bu tarihten hesaplanır; lütfen doğru gir.';
 
   @override
-  String get onboardingDevam => 'Devam';
+  String get onboardingDogumSaatiYeriEtiketi =>
+      'Doğum saatin ve yerin (biliyorsan)';
+
+  @override
+  String get onboardingDogumSaatiYeriAciklama =>
+      'Ay ve yükselen burcun bunlardan hesaplanır. Saatini bilmiyorsan ya da Türkiye dışında doğduysan boş bırak; sonradan profilinden ekleyebilirsin.';
 
   @override
   String get onboardingKaderimiHesapla => 'Kaderimi hesapla';
-
-  @override
-  String get onboardingKaydet => 'Kaydet';
-
-  @override
-  String get onboardingAtla => 'Şimdilik atla';
 
   @override
   String get onboardingIsimBosUyarisi => 'Devam etmek için adını yazmalısın.';
@@ -219,29 +205,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboardingKartimaGec => 'Kartıma geç';
-
-  @override
-  String get onboardingTanismaBaslik => 'Seni biraz tanıyalım';
-
-  @override
-  String get onboardingTanismaAciklama =>
-      'Cevapların yorumlarının sana gerçekten uymasını sağlar: bir öğrenciye iş yeri, bekar birine partner cümlesi göstermeyiz. Hepsi isteğe bağlı ve sonradan Ayarlar\'dan değiştirilebilir.';
-
-  @override
-  String get onboardingSoruEnerji => 'Enerjini nasıl toplarsın?';
-
-  @override
-  String get onboardingSoruKarar => 'Karar verirken…';
-
-  @override
-  String get onboardingSoruIliski => 'İlişki durumun';
-
-  @override
-  String get onboardingSoruUgras => 'Günlerini en çok ne dolduruyor?';
-
-  @override
-  String get onboardingTanismaGizlilik =>
-      'Cevapların yalnızca bu cihazda saklanır.';
 
   @override
   String get yasalUyariBaslik => 'Başlamadan önce';
@@ -341,6 +304,41 @@ class AppLocalizationsTr extends AppLocalizations {
   String get gunlukAksamButon => 'Cevapla';
 
   @override
+  String get gunlukAlanlarBaslik => 'Bugünün alanları';
+
+  @override
+  String get gunlukAlanlarAlt => 'Bir alana dokun, ayrıntısını gör.';
+
+  @override
+  String get gunlukGununYildizi => 'Günün yıldızı';
+
+  @override
+  String get gunlukKilidiAc => 'Kilidi aç';
+
+  @override
+  String gunlukKilitliPuanSemantik(String kategori) {
+    return '$kategori puanı kilitli';
+  }
+
+  @override
+  String get gunlukBolumEnerji => 'Günün enerjisi';
+
+  @override
+  String gunlukBolumParlayan(String kategori) {
+    return 'Öne çıkan · $kategori';
+  }
+
+  @override
+  String gunlukBolumDikkat(String kategori) {
+    return 'Dikkat · $kategori';
+  }
+
+  @override
+  String gunlukDevaminiOku(String kategori) {
+    return '$kategori okumanın tamamı';
+  }
+
+  @override
   String get kategoriSansliSaat => 'Şanslı saat aralığın';
 
   @override
@@ -353,6 +351,18 @@ class AppLocalizationsTr extends AppLocalizations {
   String kategoriKilitAciklamasi(String kategori) {
     return '$kategori kategorisinin bugünkü skoru, sana özel yorumu ve şanslı saati Premium üyelere açık. İstersen kısa bir reklam izleyerek yalnızca bugün için de açabilirsin.';
   }
+
+  @override
+  String kategoriKilitOnizleme(String kategori) {
+    return 'Bugün $kategori alanında seni bekleyen:';
+  }
+
+  @override
+  String get kategoriKilitEnYuksek => 'Bugün en yüksek puanın bu alanda.';
+
+  @override
+  String get kategoriKilitIcerik =>
+      'Puanın · Sana özel yorum · Yap / Yapma · Şanslı saatin';
 
   @override
   String get geriBildirimAksamSorusu => 'Bugün gerçekten şanslı mıydın?';
@@ -991,4 +1001,223 @@ class AppLocalizationsTr extends AppLocalizations {
   String uyumKisiOzeti(String rol, String burc, int yasamYolu) {
     return '$rol · $burc · Yaşam yolu $yasamYolu';
   }
+
+  @override
+  String get koleksiyonBaslik => 'Koleksiyon';
+
+  @override
+  String koleksiyonSayac(int kazanilan, int toplam) {
+    return '$kazanilan / $toplam kart';
+  }
+
+  @override
+  String koleksiyonGunSayisi(int gun) {
+    String _temp0 = intl.Intl.pluralLogic(
+      gun,
+      locale: localeName,
+      other: '$gun farklı günde katıldın.',
+      one: 'İlk kez katıldın.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String koleksiyonIlkGun(String tarih) {
+    return 'İlk kez $tarih tarihinde geldi.';
+  }
+
+  @override
+  String get koleksiyonNadir => 'Nadir';
+
+  @override
+  String get koleksiyonKilitliAciklama =>
+      'Bu kart henüz gelmedi. Her gün kartını açtığında koleksiyonuna bir kart katılır.';
+
+  @override
+  String get koleksiyonBosDurum =>
+      'Henüz kartın yok. Bugün kartını açtığında ilk kartın gelecek.';
+
+  @override
+  String get koleksiyonBugununKarti => 'BUGÜNÜN KARTI';
+
+  @override
+  String get koleksiyonEklendi => 'Koleksiyonuna eklendi';
+
+  @override
+  String get koleksiyonNadirEklendi => 'Nadir! Koleksiyonuna eklendi';
+
+  @override
+  String get koleksiyonOzetAciklama =>
+      'Her gün açtığın kart burada birikir. Nadir kartlar altın çerçeveyle gelir.';
+
+  @override
+  String get koleksiyonAltNot =>
+      'Kartlar eğlence amaçlıdır; günün skorunu ya da okumasını etkilemez.';
+
+  @override
+  String get koleksiyonKartHilalKemerAd => 'Hilal Kemeri';
+
+  @override
+  String get koleksiyonKartHilalKemerSoz =>
+      'Kemerin ardındaki ince ışık, yolunu sessizce aydınlatır.';
+
+  @override
+  String get koleksiyonKartIsikKapisiAd => 'Işık Kapısı';
+
+  @override
+  String get koleksiyonKartIsikKapisiSoz =>
+      'Açılan her kapı, yeni bir başlangıca verilen küçük bir evettir.';
+
+  @override
+  String get koleksiyonKartMorGeceAd => 'Mor Gece';
+
+  @override
+  String get koleksiyonKartMorGeceSoz =>
+      'Yavaşlamak da ilerlemektir; gece, dinlenen her şeyi besler.';
+
+  @override
+  String get koleksiyonKartAcikKapiAd => 'Açık Kapı';
+
+  @override
+  String get koleksiyonKartAcikKapiSoz =>
+      'Kapı aralık; içeri girmek için tek bir adım yeter.';
+
+  @override
+  String get koleksiyonKartHilalYildizAd => 'Hilal ve Yıldız';
+
+  @override
+  String get koleksiyonKartHilalYildizSoz =>
+      'Küçük bir ışık, karanlığın bütün havasını değiştirir.';
+
+  @override
+  String get koleksiyonKartKoprulerAd => 'Kesişen Yollar';
+
+  @override
+  String get koleksiyonKartKoprulerSoz =>
+      'Farklı yollar bazen aynı göle varır.';
+
+  @override
+  String get koleksiyonKartCamFanusAd => 'Sessiz Tohum';
+
+  @override
+  String get koleksiyonKartCamFanusSoz =>
+      'Büyüme sessizdir; görünmeden önce kök salar.';
+
+  @override
+  String get koleksiyonKartKagitUcakAd => 'Uçan Not';
+
+  @override
+  String get koleksiyonKartKagitUcakSoz =>
+      'Bir düşünceyi yazmak, onu yola çıkarmaktır.';
+
+  @override
+  String get koleksiyonKartTasKuleAd => 'Dengeli Taş';
+
+  @override
+  String get koleksiyonKartTasKuleSoz =>
+      'Denge, her taşı yerine sabırla koymaktır.';
+
+  @override
+  String get koleksiyonKartDagYoluAd => 'Yeni Patika';
+
+  @override
+  String get koleksiyonKartDagYoluSoz => 'Dağa giden yol, ilk adımla başlar.';
+
+  @override
+  String get koleksiyonKartSonsuzlukAd => 'Geri Dönen Şerit';
+
+  @override
+  String get koleksiyonKartSonsuzlukSoz =>
+      'Bazı anlar döner; her dönüşte biraz daha parlar.';
+
+  @override
+  String get koleksiyonKartTasKopruAd => 'Küçük Köprü';
+
+  @override
+  String get koleksiyonKartTasKopruSoz =>
+      'İki kıyıyı birleştirmek için büyük olmak gerekmez.';
+
+  @override
+  String get koleksiyonKartDolunayAd => 'Dolunay';
+
+  @override
+  String get koleksiyonKartDolunaySoz =>
+      'Tamamlanan her döngü, yeni bir ışık getirir.';
+
+  @override
+  String get koleksiyonKartTerasAd => 'Sessiz Teras';
+
+  @override
+  String get koleksiyonKartTerasSoz =>
+      'Durup nefes almak da yolun bir parçasıdır.';
+
+  @override
+  String get koleksiyonKartIsikYoluAd => 'Işık Yolu';
+
+  @override
+  String get koleksiyonKartIsikYoluSoz =>
+      'Suyun üstündeki ışık, her adımda biraz daha uzar.';
+
+  @override
+  String get koleksiyonKartYildizYoluAd => 'Yıldız Yolu';
+
+  @override
+  String get koleksiyonKartYildizYoluSoz =>
+      'Uzak görünen yıldız, yolun yönünü gösterir.';
+
+  @override
+  String get koleksiyonKartAcikPencereAd => 'Açık Pencere';
+
+  @override
+  String get koleksiyonKartAcikPencereSoz =>
+      'Açılan pencereden ışıkla birlikte yeni bir fikir de girer.';
+
+  @override
+  String get koleksiyonKartYuzenFenerAd => 'Yüzen Fener';
+
+  @override
+  String get koleksiyonKartYuzenFenerSoz =>
+      'Tek bir fener bile göle kendi yolunu çizer.';
+
+  @override
+  String get koleksiyonKartKumSaatiAd => 'Kum Saati';
+
+  @override
+  String get koleksiyonKartKumSaatiSoz =>
+      'Zaman akar; her tanesi bir yıldız tozu.';
+
+  @override
+  String get koleksiyonKartAltinTuyAd => 'Altın Tüy';
+
+  @override
+  String get koleksiyonKartAltinTuySoz =>
+      'Hafiflik de bir güçtür; bırakınca süzülürsün.';
+
+  @override
+  String get koleksiyonKartCamMerdivenAd => 'Cam Merdiven';
+
+  @override
+  String get koleksiyonKartCamMerdivenSoz =>
+      'Her basamak, bir öncekinin üstüne kurulur.';
+
+  @override
+  String get koleksiyonKartYildizCesmesiAd => 'Yıldız Çeşmesi';
+
+  @override
+  String get koleksiyonKartYildizCesmesiSoz =>
+      'Paylaştıkça çoğalan ışık gibi bir gün.';
+
+  @override
+  String get koleksiyonKartAySalincagiAd => 'Ay Salıncağı';
+
+  @override
+  String get koleksiyonKartAySalincagiSoz =>
+      'Biraz oyun, ruhun en sevdiği moladır.';
+
+  @override
+  String get koleksiyonKartPusulaAd => 'Pusula';
+
+  @override
+  String get koleksiyonKartPusulaSoz =>
+      'Yön bulmak için önce durup içine bakmak gerekir.';
 }

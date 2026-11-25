@@ -12,6 +12,7 @@ import 'core/storage/uygulama_durumu.dart';
 import 'core/theme/app_theme.dart';
 import 'features/ads/ads_providers.dart';
 import 'features/ads/reklam_servisi.dart';
+import 'features/daily_luck/widgets/gun_devri_gozcusu.dart';
 import 'features/feedback/feedback_screen.dart';
 import 'features/feedback/notification_service.dart';
 import 'features/home/ana_kabuk.dart';
@@ -159,16 +160,20 @@ class KaderApp extends ConsumerWidget {
       acilis = const AnaKabuk();
     }
 
-    return MaterialApp(
-      title: 'Kader',
-      debugShowCheckedModeBanner: false,
-      locale: dilLocale(ref.watch(uygulamaDiliProvider)),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.dark,
-      navigatorKey: anaGezginAnahtari,
-      scaffoldMessengerKey: anaMesajciAnahtari,
-      home: acilis,
+    // Gün gözcüsü kökü sarar: uygulama kapatılmadan ertesi güne kalırsa
+    // yeni günün kartı gösterilir.
+    return GunDevriGozcusu(
+      child: MaterialApp(
+        title: 'Kader',
+        debugShowCheckedModeBanner: false,
+        locale: dilLocale(ref.watch(uygulamaDiliProvider)),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: AppTheme.dark,
+        navigatorKey: anaGezginAnahtari,
+        scaffoldMessengerKey: anaMesajciAnahtari,
+        home: acilis,
+      ),
     );
   }
 }

@@ -157,10 +157,11 @@ void main() {
   });
 
   testWidgets(
-      'kart açılınca başlık, tek yorum kartında okuma ve şans ögeleri belirir',
-      (WidgetTester tester) async {
-    final GunlukOkuma beklenen = beklenenOkuma();
-    await ekraniAc(tester);
+    'kart açılınca başlık, bölümlü yorum kartında okuma ve şans ögeleri '
+    'belirir',
+    (WidgetTester tester) async {
+      final GunlukOkuma beklenen = beklenenOkuma();
+      await ekraniAc(tester);
 
     for (final LuckCategory kategori in LuckCategory.values) {
       expect(find.text(kategori.etiket), findsNothing);
@@ -168,17 +169,39 @@ void main() {
 
     await kartiAc(tester);
 
-    for (final LuckCategory kategori in LuckCategory.values) {
-      expect(find.text(kategori.etiket), findsOneWidget);
-    }
-    expect(find.text(beklenen.baslik), findsOneWidget);
-    expect(find.byType(CommentCard), findsOneWidget);
-    expect(find.text(beklenen.kartMetni), findsOneWidget);
-    expect(find.text(beklenen.sansRengi.ad), findsOneWidget);
-    expect(find.text(beklenen.tavsiye), findsOneWidget);
-    expect(find.text(trMetinler.gunlukNedenBugun), findsOneWidget);
-    expect(find.byType(ShareButton), findsOneWidget);
-  });
+      for (final LuckCategory kategori in LuckCategory.values) {
+        expect(find.text(kategori.etiket), findsOneWidget);
+      }
+      expect(find.text(beklenen.baslik), findsOneWidget);
+      expect(find.byType(CommentCard), findsOneWidget);
+      // En üstte okumanın dayanağı ("çünkü" satırı); ardından okuma bölüm
+      // bölüm, başlıklarıyla; en altta dönem cümlesi.
+      expect(find.text(beklenen.cunku), findsOneWidget);
+      expect(beklenen.cunku, startsWith('Sana özel, çünkü'));
+      for (final OkumaBolumu bolum in beklenen.bolumler) {
+        expect(find.text(bolum.metin), findsOneWidget);
+      }
+      expect(find.text(beklenen.kapanis), findsOneWidget);
+      expect(find.text(trMetinler.gunlukBolumEnerji), findsOneWidget);
+      expect(
+        find.text(
+          trMetinler.gunlukBolumParlayan(beklenen.parlayanKategori.etiket),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(trMetinler.gunlukBolumDikkat(beklenen.dikkatKategori.etiket)),
+        findsOneWidget,
+      );
+      // Kategori listesi başlığı ve günün yıldızı rozeti.
+      expect(find.text(trMetinler.gunlukAlanlarBaslik), findsOneWidget);
+      expect(find.text(trMetinler.gunlukGununYildizi), findsOneWidget);
+      expect(find.text(beklenen.sansRengi.ad), findsOneWidget);
+      expect(find.text(beklenen.tavsiye), findsOneWidget);
+      expect(find.text(trMetinler.gunlukNedenBugun), findsOneWidget);
+      expect(find.byType(ShareButton), findsOneWidget);
+    },
+  );
 
   testWidgets('👎 okumanın tüm bölümleri için cevabı bugünün kaydına işler',
       (WidgetTester tester) async {

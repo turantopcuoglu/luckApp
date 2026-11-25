@@ -40,35 +40,45 @@ void main() {
         'onboardingTamam': true,
       });
       expect(p.tamAd, isNull);
-      expect(p.tercihler, const OkuyucuTercihleri());
+      expect(p.dogumSaatiDakika, isNull);
+      expect(p.dogumIliPlaka, isNull);
       expect(p.uyariKabulSurumu, isNull);
       expect(p.onboardingTamam, isTrue);
     });
 
-    test('tüm yeni alanlar gidip gelir; bilinmeyen enum null olur', () async {
+    test('tüm yeni alanlar gidip gelir', () async {
       final UserRepository repo = UserRepository(profilKutusu);
       await repo.kaydet(
         UserProfile(
           isim: 'Ayşe',
           dogumTarihi: DateTime(1994, 3, 14),
           tamAd: 'Ayşe Yılmaz',
-          tercihler: const OkuyucuTercihleri(
-            enerji: EnerjiTarzi.iceDonuk,
-            karar: KararTarzi.kalp,
-            iliski: IliskiDurumu.evli,
-            ugras: Ugras.girisimci,
-          ),
           uyariKabulSurumu: 1,
+          dogumSaatiDakika: 14 * Duration.minutesPerHour + 30,
+          dogumIliPlaka: 35,
         ),
       );
       final UserProfile okunan = repo.profil()!;
       expect(okunan.tamAd, 'Ayşe Yılmaz');
-      expect(okunan.tercihler.ugras, Ugras.girisimci);
       expect(okunan.uyariKabulSurumu, 1);
+      expect(okunan.dogumSaatiDakika, 14 * Duration.minutesPerHour + 30);
+      expect(okunan.dogumIliPlaka, 35);
+    });
 
-      final Map<dynamic, dynamic> bozuk =
-          Map<dynamic, dynamic>.of(okunan.toMap())..['ugras'] = 'uzayda';
-      expect(UserProfile.fromMap(bozuk).tercihler.ugras, isNull);
+    test('eski kayıttaki tercih cevapları yok sayılır: okuma yalnızca doğum '
+        'verisine dayanır', () {
+      final UserProfile p = UserProfile.fromMap(<String, dynamic>{
+        'isim': 'Ayşe',
+        'dogumTarihi': DateTime(1994, 3, 14).toIso8601String(),
+        'onboardingTamam': true,
+        // Eski sürümün sakladığı tanışma cevapları.
+        'enerji': 'iceDonuk',
+        'karar': 'kalp',
+        'iliski': 'evli',
+        'ugras': 'girisimci',
+      });
+      expect(p.okuyucu.tercihler, const OkuyucuTercihleri());
+      expect(p.toMap().keys, isNot(contains('ugras')));
     });
 
     test('okuyucu profili tam adla hesaplar; seed isimden değişmez', () {

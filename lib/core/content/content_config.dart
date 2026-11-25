@@ -98,39 +98,15 @@ abstract final class ContentConfig {
 
   // ---- Minimum havuz boyutları (bütünlük testleri için) ----
 
-  /// Bant başına en az açılış cümlesi sayısı.
-  static const int enAzAcilisVaryanti = 6;
-
-  /// (kategori, ton) başına en az orta cümle sayısı.
-  static const int enAzOrtaVaryanti = 4;
-
-  /// En az kapanış cümlesi sayısı.
-  static const int enAzKapanis = 12;
-
   /// En az günün tavsiyesi sayısı.
   static const int enAzTavsiye = 24;
 
   /// En az şans rengi sayısı.
   static const int enAzRenk = 12;
 
-  /// (kategori, ton) başına en az kategori açılış cümlesi sayısı.
-  static const int enAzKategoriVaryanti = 4;
-
-  /// Kategori başına en az tavsiye cümlesi sayısı.
-  static const int enAzKategoriTavsiye = 4;
-
   // ---- Tohum amaç etiketleri ----
   // Her içerik alanı kendi etiketiyle bağımsız tohumdan seçim yapar;
   // etiket değişirse o alanın seçimi değişir, diğerleri etkilenmez.
-
-  /// Günlük yorumun açılış cümlesi.
-  static const String amacAcilis = 'acilis';
-
-  /// Günlük yorumun orta (baskın kategori) cümlesi.
-  static const String amacOrta = 'orta';
-
-  /// Günlük yorumun kapanış cümlesi.
-  static const String amacKapanis = 'kapanis';
 
   /// Günün tavsiyesi.
   static const String amacTavsiye = 'tavsiye';
@@ -143,7 +119,7 @@ abstract final class ContentConfig {
 
   /// [kategori] detayındaki [alan] için amaç etiketi üretir.
   ///
-  /// Örn. `kategoriAmaci(LuckCategory.ask, 'acilis')` → `'ask:acilis'`.
+  /// Örn. `kategoriAmaci(LuckCategory.ask, 'eylem')` → `'ask:eylem'`.
   static String kategoriAmaci(LuckCategory kategori, String alan) =>
       '${kategori.name}:$alan';
 
@@ -158,9 +134,6 @@ abstract final class ContentConfig {
   /// Günün teması ile kişinin doğasının buluşma cümlesi.
   static const String amacBulusma = 'bulusma';
 
-  /// Kategori durum cümlesi (kategori × kişinin durumu × ton).
-  static const String amacDurum = 'durum';
-
   /// Dönem (kişisel yıl) cümlesi.
   static const String amacYil = 'yil';
 
@@ -173,21 +146,13 @@ abstract final class ContentConfig {
   /// Buluşma türüne göre karakter önerisi.
   static const String amacOneri = 'oneri';
 
-  /// Kişinin bir kategorideki tarz cümlesi.
-  static const String amacTarz = 'tarz';
-
-  /// Tarz cümlesinin öne çıkan alan ve dikkat paragrafları arasında
-  /// dönüşüm periyodu (gün): çift günlerde öne çıkan alanda, tek günlerde
-  /// dikkat paragrafında yer alır.
-  static const int tarzDonusumu = 2;
-
   /// Günün temasının gündelik hayattaki sahnesi.
   static const String amacSahne = 'sahne';
 
   /// Tema × uğraş başına en az sahne varyantı.
   static const int enAzSahneVaryanti = 2;
 
-  // ---- Gökyüzü tabanlı kategoriler (bkz. gokyuzu_metinleri.dart) ----
+  // ---- Kategori okumaları (bkz. gokyuzu_metinleri.dart) ----
 
   /// Ay burcu × element ilişkisi × ton cümlesi.
   static const String amacGokyuzu = 'gokyuzu';
@@ -198,6 +163,10 @@ abstract final class ContentConfig {
   /// Kategori okumasının kısa başlığı.
   static const String amacKategoriBaslik = 'kategoriBaslik';
 
+  /// Günlük okumanın açılış paragrafındaki doğum haritası portresi
+  /// (yükselen × Ay burcu) seçiminin amaç etiketi.
+  static const String amacPortre = 'portre';
+
   /// Burç kişilik cümlesi.
   static const String amacKisilikBurc = 'kisilikBurc';
 
@@ -207,9 +176,34 @@ abstract final class ContentConfig {
   /// Günlük kartın açılış paragrafındaki gökyüzü cümlesi.
   static const String amacGunGokyuzu = 'gunGokyuzu';
 
-  /// Açılış paragrafında "doğanla buluşma" cümlesi ile gündelik sahnenin
-  /// dönüşüm periyodu (gün): çift günlerde buluşma, tek günlerde sahne.
-  static const int bulusmaDonusumu = 2;
+  /// Gökyüzü cümlesinde Ay'ı anan yarı ile alana etkisini anlatan yarıyı
+  /// ayıran işaret (bkz. `ayOnekisizHali`).
+  static const String gokyuzuAyraci = '; ';
+
+  /// Ay'sız bırakılan gökyüzü cümlesinin başından atılan zaman sözü.
+  static const String bugunOneki = 'bugün ';
+
+  /// Gökyüzü cümlesinin ikinci yarısı bu sözlerle başlıyorsa ilk yarıya
+  /// bağlıdır, tek başına kullanılmaz (küçük harf).
+  static const List<String> bagimliKuyrukBaslangiclari = <String>[
+    'bu ',
+    'onu ',
+    'yine de',
+  ];
+
+  /// Gökyüzü cümlesinin ikinci yarısında geçince ilk yarıdaki Ay'a
+  /// gönderme yapan ifadeler (küçük harf).
+  static const List<String> bagimliKuyrukIfadeleri = <String>[
+    'bundan',
+    'bu sürtünme',
+    'bu uyumsuzluk',
+    'bu gerilim',
+    'bu fark',
+    'bu destek',
+    'bu fazlalık',
+    'bu yabancılık',
+    'bu kontrast',
+  ];
 
   /// Günlük kartın öne çıkan alan paragrafında sahne cümlesinin yer aldığı
   /// gün periyodu (her N günde bir).
@@ -221,7 +215,10 @@ abstract final class ContentConfig {
   static const int enAzKisilikSecenegi = 2;
 
   /// Kişilik cümlesinin burç ve yaşam yolu arasında dönüşüm periyodu
-  /// (gün): çift günlerde burç, tek günlerde yaşam yolu.
+  /// (gün): çift günlerde burç, tek günlerde yaşam yolu. Açılış
+  /// paragrafındaki "doğanla buluşma" cümlesi (yaşam yolu) da yaşam yolu
+  /// günlerine düşer, burç günlerinde yerini gündelik sahne alır: bir
+  /// okuma tek sesle konuşur.
   static const int kisilikDonusumu = 2;
 
   /// Genel "Yap" önerileri.
@@ -272,12 +269,6 @@ abstract final class ContentConfig {
   ///
   /// Kişisel gün ~9 günde bir geldiği için iki varyant yeterlidir.
   static const int enAzDurumVaryanti = 2;
-
-  /// Kategori durum havuzlarında (kategori × durum × ton) en az varyant.
-  ///
-  /// Öne çıkan kategori ayda 10-15 kez aynı tonda gelebildiği için
-  /// gün temasından daha geniş tutulur.
-  static const int enAzKategoriDurumVaryanti = 4;
 
   /// Buluşma türü başına en az "doğanla buluşma" cümlesi (her gün
   /// kullanılır).
@@ -361,6 +352,10 @@ abstract final class ContentConfig {
   /// Günlük okuma toplamı için en az kelime sayısı.
   static const int gunlukEnAzKelime = 90;
 
+  /// "Çünkü" satırının en çok karakter sayısı: telefonda iki üç satırı
+  /// geçmesin, yorumun önüne geçmesin (bkz. `NedenMetinleri.cunku`).
+  static const int cunkuEnCokKarakter = 160;
+
   /// Kişinin cevabıyla çelişen kişilik ifadeleri (küçük harf, içerir).
   ///
   /// Anahtar: enerji/karar tarzı adı ya da `bekar` / `partnerli`. Örneğin
@@ -395,6 +390,8 @@ abstract final class ContentConfig {
           'kendini geri çekmek istediğinde',
         ],
         'iceDonuk': <String>[
+          'insanlarla temas kurmak seni canlandır',
+          'bir gruba fikrini sun',
           'geniş bir çevrede rahat',
           'geniş ve çeşitli bir çevren',
           'kısa sürede herkesle',
@@ -409,6 +406,12 @@ abstract final class ContentConfig {
           'insanlarla kolay bağ kurar',
           'insanlarla kolay konuşursun',
           'ortamı canlandırmak sende doğal',
+          'yeni bir gruba katıl',
+          'karşılaşmak seni canlandırır',
+          'bir araya gelmek seni canlandırır',
+          'sosyal ortamlarda yön veren',
+          'grubu bir araya getiren',
+          'evde kalıp bu enerjiyi',
         ],
         'kalp': <String>[
           'araştırmadan bir şeye girmezsin',
@@ -417,6 +420,11 @@ abstract final class ContentConfig {
           'karşılaştırır, yorumları okur',
           'riski ancak hesapladıktan',
           'her şeyi anlamadan karar vermemek',
+          'mantığınla süzmeye',
+          'kendi mantığını izlersin',
+          'araştırmacısın',
+          'önceden hesaplarsın',
+          'riski planlı alırsın',
         ],
         'akil': <String>[
           'ilk hissin',
@@ -430,6 +438,12 @@ abstract final class ContentConfig {
           'heyecanın rakamların önüne',
           'ruhunu hissedersin',
           'ilk hisse güven',
+          'ilk hissettiğine güven',
+          'sezgilerine güven',
+          'sezgine güven',
+          'sezgilerin genellikle doğru',
+          'sezgilerin risk konusunda',
+          'sezgilerin güçlüdür',
         ],
         'bekar': <String>['partnerin', 'ilişkine az'],
         'partnerli': <String>[

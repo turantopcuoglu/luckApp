@@ -12,24 +12,16 @@ enum GunTonu {
   yuksek,
 }
 
-/// Kişisel yıl metni: başlık + profil ekranı paragrafı + günlük kısa
-/// cümle varyantları.
+/// Kişisel yıl metni: başlık + profil ekranı paragrafı.
 class KisiselYilMetni {
   /// Tüm alanlarıyla metin oluşturur.
-  const KisiselYilMetni({
-    required this.baslik,
-    required this.uzun,
-    required this.gunluk,
-  });
+  const KisiselYilMetni({required this.baslik, required this.uzun});
 
   /// Yılın teması ("Tohum Yılı").
   final String baslik;
 
   /// Profil ekranındaki yıl paragrafı.
   final String uzun;
-
-  /// Günlük okumadaki kısa yıl bağlamı varyantları.
-  final List<String> gunluk;
 }
 
 /// Zaman döngülerinin (kişisel yıl/ay/gün, ay evresi) metin havuzları.
@@ -61,13 +53,6 @@ abstract final class DonguMetinleri {
           'başlangıçlara, yeni işlere ve kendine ait bir yol çizmeye açık '
           'bir yıl. Tek dikkat noktası: her şeyi aynı anda başlatmak yerine '
           'en çok önemsediğin birkaç tohumu seçmek.',
-      gunluk: <String>[
-        '{yil} senin için bir 1 yılı: yeni döngünün tohum yılı. Bugün '
-            'attığın küçük adımlar yılın geri kalanına iz bırakıyor.',
-        'Kişisel yılın 1; bu yıl başlangıçların yılı. Bugünkü küçük '
-            'cesaretler, büyük bir yolun ilk taşları.',
-        '1 yılındasın; evren senden ertelemeden başlamanı istiyor.',
-      ],
     ),
     2: KisiselYilMetni(
       baslik: 'Sabır ve Ortaklık Yılı',
@@ -77,13 +62,6 @@ abstract final class DonguMetinleri {
           'iş birliği ön planda. İlişkiler, ortaklıklar ve duygusal bağlar '
           'bu yıl derinleşebilir. Sonuçlar yavaş görünse de toprağın altında '
           'çok şey oluyor; beklemeyi bir boşluk değil bir hazırlık olarak gör.',
-      gunluk: <String>[
-        '{yil} senin için bir 2 yılı: sabrın ve ortaklığın yılı. Bugün '
-            'tek başına zorlamak yerine birlikte ilerlemek daha kolay.',
-        'Kişisel yılın 2; kökler toprağın altında büyüyor. Görünmeyen '
-            'ilerlemeye güven.',
-        '2 yılındasın; ilişkiler ve uyum bu yılın asıl gündemi.',
-      ],
     ),
     3: KisiselYilMetni(
       baslik: 'İfade ve Genişleme Yılı',
@@ -93,12 +71,6 @@ abstract final class DonguMetinleri {
           'kurduklarının meyveleri renklenmeye başlar. Yeni insanlar, yeni '
           'fikirler ve keyifli fırsatlar kapıyı çalabilir. Dikkat noktası: '
           'enerjini çok fazla yöne dağıtmamak ve söz verdiklerini tutmak.',
-      gunluk: <String>[
-        '{yil} senin için bir 3 yılı: kendini ifade etmenin yılı. Bugün '
-            'sesini duyurmak için doğal bir akış var.',
-        'Kişisel yılın 3; bu yıl paylaştıkça büyüyorsun.',
-        '3 yılındasın; neşe ve yaratıcılık bu yılın yakıtı.',
-      ],
     ),
     4: KisiselYilMetni(
       baslik: 'Temel Atma Yılı',
@@ -109,12 +81,6 @@ abstract final class DonguMetinleri {
           'alışkanlıklar gibi hayatının iskeletini güçlendirmek için ideal. '
           'Yorgunluk hissettiğinde, bu yıl kurduğun her şeyin sonraki '
           'yılları taşıyacağını hatırla.',
-      gunluk: <String>[
-        '{yil} senin için bir 4 yılı: temel atma yılı. Bugünkü sabırlı '
-            'emek, yılın sonunda sağlam bir zemine dönüşecek.',
-        'Kişisel yılın 4; bu yıl düzen ve istikrar yılı.',
-        '4 yılındasın; hızdan çok sağlamlık kazandırıyor.',
-      ],
     ),
     5: KisiselYilMetni(
       baslik: 'Değişim Yılı',
@@ -124,12 +90,6 @@ abstract final class DonguMetinleri {
           'bir bakış açısı gibi hayatını hareketlendiren gelişmeler olası. '
           'Esnek kaldıkça fırsatlar çoğalır. Dikkat noktası: özgürlük '
           'isteğinin aceleye ve aşırılığa dönüşmemesi.',
-      gunluk: <String>[
-        '{yil} senin için bir 5 yılı: değişimin yılı. Bugün esneyebildiğin '
-            'ölçüde yeni kapılar açılıyor.',
-        'Kişisel yılın 5; hareket ve yenilik bu yılın anahtarı.',
-        '5 yılındasın; rüzgâr sık yön değiştiriyor, yelkenini ayarlamayı öğren.',
-      ],
     ),
     6: KisiselYilMetni(
       baslik: 'Yuva ve Sorumluluk Yılı',
@@ -139,12 +99,6 @@ abstract final class DonguMetinleri {
           'yaşadığın alanı güzelleştirme isteği artabilir. Başkalarına '
           'destek olurken kendi ihtiyaçlarını da gözetmek bu yılın sınavı. '
           'Verdiğin emek, sevdiklerinle kurduğun bağda karşılık bulur.',
-      gunluk: <String>[
-        '{yil} senin için bir 6 yılı: yuvanın ve sevginin yılı. Bugün '
-            'yakınlarına gösterdiğin özen sana huzur olarak dönüyor.',
-        'Kişisel yılın 6; bu yıl sorumluluk ve şefkat yılı.',
-        '6 yılındasın; önce kendi fincanını doldurmayı unutma.',
-      ],
     ),
     7: KisiselYilMetni(
       baslik: 'İç Görü Yılı',
@@ -154,12 +108,6 @@ abstract final class DonguMetinleri {
           'önem kazandığı bir dönem. Eğitim, araştırma, manevi arayış ve '
           'kendini tanıma için çok verimli. Yalnız kalma isteğin artabilir; '
           'bu bir kayıp değil, bir yeniden ayarlanmadır.',
-      gunluk: <String>[
-        '{yil} senin için bir 7 yılı: iç görünün yılı. Bugün sessizlikte '
-            'bulduğun cevaplar değerli.',
-        'Kişisel yılın 7; bu yıl derinleşme ve öğrenme yılı.',
-        '7 yılındasın; hızlanmak yerine anlamak kazandırıyor.',
-      ],
     ),
     8: KisiselYilMetni(
       baslik: 'Hasat ve Güç Yılı',
@@ -169,12 +117,6 @@ abstract final class DonguMetinleri {
           'görünürlük artabilir; kararlı adımlar ödüllendirilir. Dikkat '
           'noktası: hedeflere odaklanırken dengeyi, dinlenmeyi ve '
           'sevdiklerini ikinci plana atmamak.',
-      gunluk: <String>[
-        '{yil} senin için bir 8 yılı: hasat yılı. Bugün kararlılığın '
-            'karşılık bulmaya yakın.',
-        'Kişisel yılın 8; bu yıl güç ve sonuç yılı.',
-        '8 yılındasın; emeğinin değerini bilmek ve istemek bu yılın dersi.',
-      ],
     ),
     9: KisiselYilMetni(
       baslik: 'Tamamlama Yılı',
@@ -184,12 +126,6 @@ abstract final class DonguMetinleri {
           'bırakmanın yılı. Bir şeylerin bitmesi kayıp gibi hissedilebilir '
           'ama aslında yeni döngüye yer açılıyor. Affetmek, ayıklamak ve '
           'teşekkür etmek bu yıl sana hafiflik getirir.',
-      gunluk: <String>[
-        '{yil} senin için bir 9 yılı: kapanışların ve ayıklamanın yılı. '
-            'Bugün "neyi bırakmalıyım?" sorusu arka planda çalışıyor.',
-        'Kişisel yılın 9; bu yıl tamamlama yılı, yeni döngü kapıda.',
-        '9 yılındasın; bıraktıkça hafifliyor, hafifledikçe yer açıyorsun.',
-      ],
     ),
   };
 

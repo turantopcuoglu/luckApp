@@ -6,13 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/storage/koleksiyon_repository.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_route.dart';
 import '../../../shared/widgets/cam_panel.dart';
 import '../koleksiyon_config.dart';
 import '../koleksiyon_katalogu.dart';
 import '../koleksiyon_providers.dart';
 import '../koleksiyon_screen.dart';
-import '../koleksiyon_strings.dart';
 import 'koleksiyon_karti_gorseli.dart';
 
 /// Koleksiyon ekranını açar.
@@ -33,6 +33,7 @@ class GununKartiPaneli extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final GununKarti gunun = ref.watch(gununKartiProvider);
     final KazanilanKart? kayit = ref.watch(koleksiyonProvider)[gunun.kart.id];
@@ -54,21 +55,21 @@ class GununKartiPaneli extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  KoleksiyonStrings.bugununKarti,
+                  l.koleksiyonBugununKarti,
                   style: yazi.labelSmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  gunun.kart.ad,
+                  gunun.kart.ad(l),
                   style: yazi.titleMedium?.copyWith(color: AppColors.goldAcik),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   gunun.nadir
-                      ? KoleksiyonStrings.nadirEklendi
-                      : KoleksiyonStrings.eklendi,
+                      ? l.koleksiyonNadirEklendi
+                      : l.koleksiyonEklendi,
                   style: yazi.bodySmall?.copyWith(
                     color: gunun.nadir
                         ? AppColors.gold
@@ -93,6 +94,7 @@ class KoleksiyonOzetKarti extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AppLocalizations l = AppLocalizations.of(context);
     final TextTheme yazi = Theme.of(context).textTheme;
     final Map<String, KazanilanKart> kazanilan = ref.watch(koleksiyonProvider);
     const List<KoleksiyonKarti> katalog = KoleksiyonKatalogu.kartlar;
@@ -111,10 +113,10 @@ class KoleksiyonOzetKarti extends ConsumerWidget {
           Row(
             children: <Widget>[
               Expanded(
-                child: Text(KoleksiyonStrings.baslik, style: yazi.titleMedium),
+                child: Text(l.koleksiyonBaslik, style: yazi.titleMedium),
               ),
               Text(
-                KoleksiyonStrings.sayac(sonlar.length, katalog.length),
+                l.koleksiyonSayac(sonlar.length, katalog.length),
                 style: yazi.bodySmall?.copyWith(color: AppColors.goldAcik),
               ),
               const Icon(Icons.chevron_right_rounded, color: AppColors.gold),
@@ -122,7 +124,7 @@ class KoleksiyonOzetKarti extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            KoleksiyonStrings.ozetAciklama,
+            l.koleksiyonOzetAciklama,
             style: yazi.bodySmall?.copyWith(color: AppColors.textSecondary),
           ),
           if (sonlar.isNotEmpty) ...<Widget>[

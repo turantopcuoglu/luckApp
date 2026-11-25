@@ -11,10 +11,10 @@
 
 | Bilgi | Değer |
 |---|---|
-| Tarih | 11 Ekim 2026 (E0–E6 tamamlandı) |
-| Son commit | `b82a9b4` E5 (E6 commit'i istendiğinde) |
+| Tarih | 11 Ekim 2026 (E0–E6b tamamlandı; arayüz metinleri tamamen ARB'de) |
+| Son commit | `e12a420` E6 (E6b commit'i istendiğinde) |
 | Dal | `main` (her oturum doğrudan `main`'e commit edildi) |
-| Testler | 414 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi, +11 dil, +5 E5, +2 E6) |
+| Testler | 415 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi, +11 dil, +5 E5, +2 E6, +1 E6b) |
 | Analiz | `flutter analyze` → No issues found |
 | Uygulama dili | Türkçe. gen-l10n altyapısı kurulu (E3); İngilizce `DilConfig.ingilizceYayinda = false` ile kapalı (yalnız debug'da Ayarlar'dan seçilebilir) |
 
@@ -120,7 +120,7 @@ bozmamak** için konuldu. Her biri bir testle korunmalı.
 | ~~`features/categories/categories_strings.dart`~~ (E5) | — |
 | `features/home/ana_sekme.dart` (sekme etiketleri enum içinde) | — |
 | ~~`features/profile/tam_ad_duzenle.dart` (`TamAdStrings`)~~ (E6) | — |
-| `features/koleksiyon/koleksiyon_strings.dart` (E6'da fark edildi, taşınmadı) | — |
+| ~~`features/koleksiyon/koleksiyon_strings.dart`~~ (E6b) | — |
 | `features/legal/legal_texts.dart` (KVKK/koşullar — **hukuki metin**, çeviri değil yeniden yazım) | 216 |
 
 ### 4.2 Motor içindeki Türkçe etiketler (taşınmalı)
@@ -348,9 +348,16 @@ Her satır tek oturumdur. Kutuyu bitince işaretle.
       ipucu şimdilik "Type a province (e.g. İzmir)". Plaka/telefon ipuçları
       İngilizcede genel örneklerle yazıldı.
       **Kalanlar:** burç/rol/bant/yıl lakabı gibi etiketler içerik
-      katmanından gelir (E8). **Envanterde unutulmuş:**
-      `features/koleksiyon/koleksiyon_strings.dart` hâlâ duruyor (4.1
-      tablosunda yoktu); ayrı bir oturumda (E6b) aynı yöntemle taşınmalı.
+      katmanından gelir (E8).
+- [x] **E6b — ARB taşıma: koleksiyon** (envanterde unutulmuştu).
+      **Yapıldı (11 Eki):** `KoleksiyonStrings` silindi; 12 arayüz anahtarı
+      + 24 kartın adı ve sözü (`koleksiyonKart<Ad>Ad/Soz`, 48 anahtar).
+      `KoleksiyonKarti.ad(l)` / `soz(l)`; kimlik (`id`) ve katalog sırası
+      dilden bağımsız, günün kartı seçimi değişmez. `koleksiyonGunSayisi`
+      ICU çoğul biçimi. Test: iki dilde her kartın metni var, Türkçe metinler
+      eskisiyle aynı. **Durum:** `lib/features/**` içinde `*_strings.dart`
+      kalmadı; arayüzde elle yazılmış Türkçe metin yok (yasal gövde ve
+      `LegalConfig.sonGuncelleme` E9'da).
 - [ ] **E7 — İngilizce günlük okuma (content).** `yorum_yonu_en.dart`,
       `karakter_yonleri_en.dart`, `kategori_durumlari_en.dart`,
       `kisisel_havuzlar_en.dart`, `fortune_pools_en.dart`, `dongu_metinleri_en.dart`,

@@ -12,7 +12,6 @@ import 'package:kader/features/legal/legal_config.dart';
 import 'package:kader/features/legal/uyari_screen.dart';
 import 'package:kader/features/onboarding/calculating_screen.dart';
 import 'package:kader/features/onboarding/profile_form_screen.dart';
-import 'package:kader/features/onboarding/tanisma_screen.dart';
 import 'package:kader/features/onboarding/welcome_screen.dart';
 
 import '../test_ortami.dart';
@@ -74,65 +73,87 @@ void main() {
     );
   });
 
-  testWidgets('form: boş isim uyarı verir, geçirmez',
+  testWidgets('form: boş ad uyarı verir, geçirmez',
       (WidgetTester tester) async {
     await akisiBaslat(tester);
     await formaKadarIlerle(tester);
     expect(find.byType(ProfileFormScreen), findsOneWidget);
 
-    await tester.tap(find.text(trMetinler.onboardingDevam));
+    await tester.tap(find.text(trMetinler.onboardingKaderimiHesapla));
     await tester.pump();
     expect(find.text(trMetinler.onboardingIsimBosUyarisi), findsOneWidget);
     expect(find.byType(ProfileFormScreen), findsOneWidget);
   });
 
-  testWidgets(
-      'tam akış: uyarı → isim + tam ad → tanışma → hesaplama → ana kabuk',
+  testWidgets('form yalnızca doğum verisini sorar: tam ad, tarih, saat, yer',
       (WidgetTester tester) async {
     await akisiBaslat(tester);
     await formaKadarIlerle(tester);
 
-    // Profil formu: hitap adı ve tam ad.
-    await tester.enterText(find.byKey(const Key('isim-alani')), 'Turan');
+    expect(find.byKey(const Key('tam-ad-form-alani')), findsOneWidget);
+    expect(find.text(trMetinler.onboardingDogumTarihiEtiketi), findsOneWidget);
+    // Ayrı bir hitap adı alanı yok.
+    expect(find.byKey(const Key('isim-alani')), findsNothing);
+
+    // Saat ve yer formun altında: liste tembel kurulduğu için kaydırılır.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('dogum-ili-alani')),
+      100,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(
+      find.text(trMetinler.onboardingDogumSaatiYeriEtiketi),
+      findsOneWidget,
+    );
+    expect(find.text(trMetinler.profilDogumSaati), findsOneWidget);
+    expect(find.byKey(const Key('dogum-ili-alani')), findsOneWidget);
+    // Kişiyi tarif ettiren sorular yok.
+    for (final String secenek in <String>[
+      EnerjiTarzi.iceDonuk.etiket,
+      KararTarzi.kalp.etiket,
+      IliskiDurumu.bekar.etiket,
+      Ugras.ogrenci.etiket,
+    ]) {
+      expect(find.text(secenek), findsNothing);
+    }
+  });
+
+  testWidgets('tam akış: uyarı → tam ad + doğum yeri → hesaplama → ana kabuk',
+      (WidgetTester tester) async {
+    await akisiBaslat(tester);
+    await formaKadarIlerle(tester);
+
+    // Profil formu: tam ad ve doğum ili (saat bilinmiyor bırakılır).
     await tester.enterText(
       find.byKey(const Key('tam-ad-form-alani')),
       '  Turan   Ali Kaya ',
     );
-    await tester.tap(find.text(trMetinler.onboardingDevam));
-    await gecis(tester);
-
-    // Profil bellekte kayıtlı: tam ad boşlukları temizlenmiş, uyarı
-    // sürümü işlenmiş, onboarding henüz bitmemiş.
-    final UserRepository repo = UserRepository(ortam.profil);
-    final UserProfile kayitli = repo.profil()!;
-    expect(kayitli.isim, 'Turan');
-    expect(kayitli.tamAd, 'Turan Ali Kaya');
-    expect(kayitli.uyariKabulSurumu, LegalConfig.uyariSurumu);
-    expect(kayitli.onboardingTamam, isFalse);
-
-    // Tanışma: bir soruyu cevapla.
-    expect(find.byType(TanismaScreen), findsOneWidget);
-    // Alttaki rotanın (profil formu) listesi de ağaçta: tanışma listesi
-    // açıkça seçilir.
     await tester.scrollUntilVisible(
-      find.text(Ugras.ogrenci.etiket),
+      find.byKey(const Key('dogum-ili-alani')),
       100,
-      scrollable: find
-          .descendant(
-            of: find.byType(TanismaScreen),
-            matching: find.byType(Scrollable),
-          )
-          .first,
+      scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.text(Ugras.ogrenci.etiket));
+    await tester.enterText(find.byKey(const Key('dogum-ili-alani')), 'İzm');
     await tester.pump();
-    await tester.tap(find.text(Ugras.ogrenci.etiket));
+    await tester.tap(find.text('İzmir').last);
     await tester.pump();
     await tester.tap(find.text(trMetinler.onboardingKaderimiHesapla));
     await gecis(tester);
 
+    // Profil bellekte kayıtlı: tam ad boşlukları temizlenmiş, hitap adı
+    // ilk kelime, doğum ili işlenmiş, saat boş, uyarı sürümü işlenmiş,
+    // onboarding henüz bitmemiş.
+    final UserRepository repo = UserRepository(ortam.profil);
+    final UserProfile kayitli = repo.profil()!;
+    expect(kayitli.isim, 'Turan');
+    expect(kayitli.tamAd, 'Turan Ali Kaya');
+    expect(kayitli.dogumIliPlaka, TurkiyeIlleri.ara('İzmir').first.plaka);
+    expect(kayitli.dogumSaatiDakika, isNull);
+    expect(kayitli.uyariKabulSurumu, LegalConfig.uyariSurumu);
+    expect(kayitli.onboardingTamam, isFalse);
+
+    // Tercih soruları yok: form doğrudan hazırlık ekranına geçer.
     expect(find.byType(CalculatingScreen), findsOneWidget);
-    expect(repo.profil()!.tercihler.ugras, Ugras.ogrenci);
 
     // Bugünün kaydı önceden tohumlanır: ana ekran diske yazmasın.
     await tester.runAsync(() async {

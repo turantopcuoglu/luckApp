@@ -86,9 +86,9 @@ void main() {
     test('her kategori × element ilişkisi × ton dolu ve varyantlı', () {
       expect(
         GokyuzuMetinleri.gokyuzu.keys.toSet(),
-        GokyuzuMetinleri.kategoriler,
+        LuckCategory.values.toSet(),
       );
-      for (final LuckCategory k in GokyuzuMetinleri.kategoriler) {
+      for (final LuckCategory k in LuckCategory.values) {
         for (final ElementIliskisi i in ElementIliskisi.values) {
           for (final KategoriTonu t in KategoriTonu.values) {
             final List<String> h = GokyuzuMetinleri.gokyuzu[k]![i]![t]!;
@@ -152,7 +152,7 @@ void main() {
         GokyuzuMetinleri.partnerliAnahtari,
         GokyuzuMetinleri.genelAnahtar,
       };
-      for (final LuckCategory k in GokyuzuMetinleri.kategoriler) {
+      for (final LuckCategory k in LuckCategory.values) {
         final Map<String, Map<SahneYonu, List<String>>> s =
             GokyuzuMetinleri.sahneler[k]!;
         expect(
@@ -192,7 +192,7 @@ void main() {
               GokyuzuMetinleri.partnerliAnahtari,
             },
           };
-      for (final LuckCategory k in GokyuzuMetinleri.kategoriler) {
+      for (final LuckCategory k in LuckCategory.values) {
         final Map<String, Map<KategoriTonu, List<String>>> h =
             GokyuzuMetinleri.kisiselYap[k]!;
         expect(h.keys.toSet(), beklenen[k], reason: '$k');
@@ -472,7 +472,7 @@ void main() {
   group('kategoriOkumasi (gökyüzü)', () {
     test('başlık, Ay burcunu anan paragraf, iki yap ve iki yapma', () {
       final String ayBurcu = trIcerik.burcAdi(Astronomi.gununAyBurcu(gun));
-      for (final LuckCategory k in GokyuzuMetinleri.kategoriler) {
+      for (final LuckCategory k in LuckCategory.values) {
         final KategoriOkumasi o = kategoriOkumasi(
           motor: motor,
           okuyucu: okuyucu(),
@@ -630,7 +630,6 @@ void main() {
         expect(a.baslik, b.baslik);
         expect(a.yap, b.yap);
         expect(a.yapma, b.yapma);
-        expect(GokyuzuMetinleri.destekler(k), isTrue);
         expect(a.baslik, isNotNull);
         expect(a.yap, isNotEmpty);
         expect(a.yapma, isNotEmpty);
@@ -697,7 +696,7 @@ void main() {
         );
         for (final OkumaBolumu b in gunluk.bolumler) {
           final LuckCategory? k = b.kategori;
-          if (k == null || !GokyuzuMetinleri.destekler(k)) {
+          if (k == null) {
             continue;
           }
           final KategoriOkumasi detay = kategoriOkumasi(
@@ -724,7 +723,7 @@ void main() {
           ugras: Ugras.ogrenci,
         ),
       );
-      for (final LuckCategory k in GokyuzuMetinleri.kategoriler) {
+      for (final LuckCategory k in LuckCategory.values) {
         final List<String> paragraflar = <String>[
           for (int i = 0; i < 30; i++)
             kategoriOkumasi(
@@ -763,8 +762,11 @@ void main() {
         (OkumaBolumu b) => b.tur == OkumaBolumTuru.parlayan,
       );
       expect(parlayan.kategori, LuckCategory.saglik);
+      // Ay burcu açılış paragrafında anılır; öne çıkan alan onu tekrar
+      // etmez (okuma makine işi gibi okunmasın).
       final String ayBurcu = trIcerik.burcAdi(Astronomi.gununAyBurcu(gun));
-      expect(parlayan.metin, contains(ayBurcu));
+      expect(g.bolumler.first.metin, contains(ayBurcu));
+      expect(parlayan.metin, isNot(contains(ayBurcu)));
       expect(parlayan.metin, contains(g.sansliSaat.etiket));
       final Okuyucu o = okuyucu();
       final String burcAdi = trIcerik.burcAdi(o.profil.burc);

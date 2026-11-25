@@ -46,13 +46,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ayarlarTamAdYok => 'Not added — add it for your name numbers';
 
   @override
-  String get ayarlarTercihler => 'Your intro answers';
-
-  @override
-  String get ayarlarTercihlerAciklama =>
-      'The answers that help your readings fit you';
-
-  @override
   String get ayarlarPremium => 'Premium';
 
   @override
@@ -153,20 +146,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingBasla => 'Get started';
 
   @override
-  String get onboardingIsimEtiketi => 'What should we call you?';
-
-  @override
-  String get onboardingIsimIpucu => 'Your name';
-
-  @override
-  String get onboardingTamAdEtiketi => 'Your full name at birth (optional)';
+  String get onboardingTamAdEtiketi => 'Your full name at birth';
 
   @override
   String get onboardingTamAdIpucu => 'First Middle Last';
 
   @override
   String get onboardingTamAdAciklama =>
-      'Your name, soul and personality numbers are calculated from your full name as registered at birth. If you leave it empty, you can add it later from your profile.';
+      'Your name, soul and personality numbers are calculated from your full name as registered at birth. We will call you by your first name.';
 
   @override
   String get onboardingDogumTarihiEtiketi => 'Your birth date';
@@ -176,16 +163,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your life path number and zodiac sign come from this date, so please enter it correctly.';
 
   @override
-  String get onboardingDevam => 'Continue';
+  String get onboardingDogumSaatiYeriEtiketi =>
+      'Your birth time and place (if you know them)';
+
+  @override
+  String get onboardingDogumSaatiYeriAciklama =>
+      'Your Moon and rising signs are calculated from these. If you do not know the time, or were born outside Türkiye, leave them empty; you can add them later from your profile.';
 
   @override
   String get onboardingKaderimiHesapla => 'Calculate my destiny';
-
-  @override
-  String get onboardingKaydet => 'Save';
-
-  @override
-  String get onboardingAtla => 'Skip for now';
 
   @override
   String get onboardingIsimBosUyarisi => 'Enter your name to continue.';
@@ -220,29 +206,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingKartimaGec => 'Go to my card';
-
-  @override
-  String get onboardingTanismaBaslik => 'Let\'s get to know you';
-
-  @override
-  String get onboardingTanismaAciklama =>
-      'Your answers help your readings truly fit you: we won\'t show a workplace line to a student or a partner line to someone who\'s single. Every question is optional and can be changed later in Settings.';
-
-  @override
-  String get onboardingSoruEnerji => 'How do you recharge?';
-
-  @override
-  String get onboardingSoruKarar => 'When making decisions…';
-
-  @override
-  String get onboardingSoruIliski => 'Your relationship status';
-
-  @override
-  String get onboardingSoruUgras => 'What fills most of your days?';
-
-  @override
-  String get onboardingTanismaGizlilik =>
-      'Your answers are stored only on this device.';
 
   @override
   String get yasalUyariBaslik => 'Before you begin';
@@ -341,6 +304,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gunlukAksamButon => 'Answer';
 
   @override
+  String get gunlukAlanlarBaslik => 'Today\'s areas';
+
+  @override
+  String get gunlukAlanlarAlt => 'Tap an area to see the details.';
+
+  @override
+  String get gunlukGununYildizi => 'Today\'s star';
+
+  @override
+  String get gunlukKilidiAc => 'Unlock';
+
+  @override
+  String gunlukKilitliPuanSemantik(String kategori) {
+    return '$kategori score locked';
+  }
+
+  @override
+  String get gunlukBolumEnerji => 'Today\'s energy';
+
+  @override
+  String gunlukBolumParlayan(String kategori) {
+    return 'Spotlight · $kategori';
+  }
+
+  @override
+  String gunlukBolumDikkat(String kategori) {
+    return 'Watch out · $kategori';
+  }
+
+  @override
+  String gunlukDevaminiOku(String kategori) {
+    return 'Your full $kategori reading';
+  }
+
+  @override
   String get kategoriSansliSaat => 'Your lucky hours';
 
   @override
@@ -353,6 +351,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String kategoriKilitAciklamasi(String kategori) {
     return 'Today\'s $kategori score, your personal reading and your lucky hours are open to Premium members. You can also unlock them for today only by watching a short ad.';
   }
+
+  @override
+  String kategoriKilitOnizleme(String kategori) {
+    return 'What\'s waiting for you in $kategori today:';
+  }
+
+  @override
+  String get kategoriKilitEnYuksek =>
+      'Your highest score today is in this area.';
+
+  @override
+  String get kategoriKilitIcerik =>
+      'Your score · Personal reading · Do / Don\'t · Lucky hours';
 
   @override
   String get geriBildirimAksamSorusu => 'Were you really lucky today?';
@@ -1000,4 +1011,224 @@ class AppLocalizationsEn extends AppLocalizations {
   String uyumKisiOzeti(String rol, String burc, int yasamYolu) {
     return '$rol · $burc · Life path $yasamYolu';
   }
+
+  @override
+  String get koleksiyonBaslik => 'Collection';
+
+  @override
+  String koleksiyonSayac(int kazanilan, int toplam) {
+    return '$kazanilan / $toplam cards';
+  }
+
+  @override
+  String koleksiyonGunSayisi(int gun) {
+    String _temp0 = intl.Intl.pluralLogic(
+      gun,
+      locale: localeName,
+      other: 'Collected on $gun different days.',
+      one: 'Collected for the first time.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String koleksiyonIlkGun(String tarih) {
+    return 'First arrived on $tarih.';
+  }
+
+  @override
+  String get koleksiyonNadir => 'Rare';
+
+  @override
+  String get koleksiyonKilitliAciklama =>
+      'This card hasn\'t arrived yet. Each day you open your card, a card joins your collection.';
+
+  @override
+  String get koleksiyonBosDurum =>
+      'You don\'t have any cards yet. Your first card arrives when you open today\'s card.';
+
+  @override
+  String get koleksiyonBugununKarti => 'TODAY\'S CARD';
+
+  @override
+  String get koleksiyonEklendi => 'Added to your collection';
+
+  @override
+  String get koleksiyonNadirEklendi => 'Rare! Added to your collection';
+
+  @override
+  String get koleksiyonOzetAciklama =>
+      'The card you open each day collects here. Rare cards arrive with a golden frame.';
+
+  @override
+  String get koleksiyonAltNot =>
+      'Cards are just for fun; they don\'t affect the day\'s score or reading.';
+
+  @override
+  String get koleksiyonKartHilalKemerAd => 'Crescent Arch';
+
+  @override
+  String get koleksiyonKartHilalKemerSoz =>
+      'The thin light behind the arch quietly lights your way.';
+
+  @override
+  String get koleksiyonKartIsikKapisiAd => 'Gate of Light';
+
+  @override
+  String get koleksiyonKartIsikKapisiSoz =>
+      'Every door that opens is a small yes to a new beginning.';
+
+  @override
+  String get koleksiyonKartMorGeceAd => 'Violet Night';
+
+  @override
+  String get koleksiyonKartMorGeceSoz =>
+      'Slowing down is moving forward too; the night nourishes all that rests.';
+
+  @override
+  String get koleksiyonKartAcikKapiAd => 'Open Door';
+
+  @override
+  String get koleksiyonKartAcikKapiSoz =>
+      'The door is ajar; a single step is enough to go in.';
+
+  @override
+  String get koleksiyonKartHilalYildizAd => 'Crescent and Star';
+
+  @override
+  String get koleksiyonKartHilalYildizSoz =>
+      'A small light changes the whole mood of the dark.';
+
+  @override
+  String get koleksiyonKartKoprulerAd => 'Crossing Paths';
+
+  @override
+  String get koleksiyonKartKoprulerSoz =>
+      'Different paths sometimes reach the same lake.';
+
+  @override
+  String get koleksiyonKartCamFanusAd => 'Quiet Seed';
+
+  @override
+  String get koleksiyonKartCamFanusSoz =>
+      'Growth is quiet; it takes root before it shows.';
+
+  @override
+  String get koleksiyonKartKagitUcakAd => 'Flying Note';
+
+  @override
+  String get koleksiyonKartKagitUcakSoz =>
+      'Writing down a thought sets it on its way.';
+
+  @override
+  String get koleksiyonKartTasKuleAd => 'Balanced Stone';
+
+  @override
+  String get koleksiyonKartTasKuleSoz =>
+      'Balance is setting each stone in place with patience.';
+
+  @override
+  String get koleksiyonKartDagYoluAd => 'New Trail';
+
+  @override
+  String get koleksiyonKartDagYoluSoz =>
+      'The road to the mountain begins with the first step.';
+
+  @override
+  String get koleksiyonKartSonsuzlukAd => 'Returning Ribbon';
+
+  @override
+  String get koleksiyonKartSonsuzlukSoz =>
+      'Some moments come back; each time they shine a little brighter.';
+
+  @override
+  String get koleksiyonKartTasKopruAd => 'Little Bridge';
+
+  @override
+  String get koleksiyonKartTasKopruSoz =>
+      'You don\'t have to be big to join two shores.';
+
+  @override
+  String get koleksiyonKartDolunayAd => 'Full Moon';
+
+  @override
+  String get koleksiyonKartDolunaySoz =>
+      'Every completed cycle brings a new light.';
+
+  @override
+  String get koleksiyonKartTerasAd => 'Quiet Terrace';
+
+  @override
+  String get koleksiyonKartTerasSoz =>
+      'Pausing to breathe is part of the journey too.';
+
+  @override
+  String get koleksiyonKartIsikYoluAd => 'Path of Light';
+
+  @override
+  String get koleksiyonKartIsikYoluSoz =>
+      'The light on the water stretches a little further with every step.';
+
+  @override
+  String get koleksiyonKartYildizYoluAd => 'Starry Path';
+
+  @override
+  String get koleksiyonKartYildizYoluSoz =>
+      'A star that seems far away shows you which way to go.';
+
+  @override
+  String get koleksiyonKartAcikPencereAd => 'Open Window';
+
+  @override
+  String get koleksiyonKartAcikPencereSoz =>
+      'Through an open window, a new idea comes in with the light.';
+
+  @override
+  String get koleksiyonKartYuzenFenerAd => 'Floating Lantern';
+
+  @override
+  String get koleksiyonKartYuzenFenerSoz =>
+      'Even a single lantern draws its own path across the lake.';
+
+  @override
+  String get koleksiyonKartKumSaatiAd => 'Hourglass';
+
+  @override
+  String get koleksiyonKartKumSaatiSoz =>
+      'Time flows; every grain is a speck of stardust.';
+
+  @override
+  String get koleksiyonKartAltinTuyAd => 'Golden Feather';
+
+  @override
+  String get koleksiyonKartAltinTuySoz =>
+      'Lightness is a strength too; let go and you glide.';
+
+  @override
+  String get koleksiyonKartCamMerdivenAd => 'Glass Staircase';
+
+  @override
+  String get koleksiyonKartCamMerdivenSoz =>
+      'Every step is built on the one before it.';
+
+  @override
+  String get koleksiyonKartYildizCesmesiAd => 'Star Fountain';
+
+  @override
+  String get koleksiyonKartYildizCesmesiSoz =>
+      'A day like light that grows the more you share it.';
+
+  @override
+  String get koleksiyonKartAySalincagiAd => 'Moon Swing';
+
+  @override
+  String get koleksiyonKartAySalincagiSoz =>
+      'A little play is the soul\'s favorite break.';
+
+  @override
+  String get koleksiyonKartPusulaAd => 'Compass';
+
+  @override
+  String get koleksiyonKartPusulaSoz =>
+      'To find your way, first pause and look within.';
 }

@@ -1,9 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kader/core/content/category_pools.dart';
 import 'package:kader/core/content/content_config.dart';
 import 'package:kader/core/content/fortune_pools.dart';
 import 'package:kader/core/content/sans_rengi.dart';
-import 'package:kader/core/luck_engine/luck_engine.dart';
 
 /// Bir metin havuzunun bütünlüğünü doğrular: boş/duplicate eleman yok,
 /// her cümle noktalama ile bitiyor (kombinasyon kuralı).
@@ -29,42 +27,7 @@ void havuzuDogrula(String ad, List<String> havuz) {
 
 void main() {
   group('FortunePools bütünlük', () {
-    test('açılış: her bant mevcut ve minimum boyutta', () {
-      for (final SkorBandi bant in SkorBandi.values) {
-        final List<String>? havuz = FortunePools.acilisCumleleri[bant];
-        expect(havuz, isNotNull, reason: '$bant açılış havuzu eksik');
-        expect(
-          havuz!.length,
-          greaterThanOrEqualTo(ContentConfig.enAzAcilisVaryanti),
-        );
-        havuzuDogrula('acilis[$bant]', havuz);
-      }
-    });
-
-    test('orta: her (kategori, ton) mevcut ve minimum boyutta', () {
-      for (final LuckCategory kategori in LuckCategory.values) {
-        final Map<KategoriTonu, List<String>>? tonlar =
-            FortunePools.ortaCumleleri[kategori];
-        expect(tonlar, isNotNull, reason: '$kategori orta havuzu eksik');
-        for (final KategoriTonu ton in KategoriTonu.values) {
-          final List<String>? havuz = tonlar![ton];
-          expect(havuz, isNotNull, reason: '($kategori, $ton) eksik');
-          expect(
-            havuz!.length,
-            greaterThanOrEqualTo(ContentConfig.enAzOrtaVaryanti),
-          );
-          havuzuDogrula('orta[$kategori][$ton]', havuz);
-        }
-      }
-    });
-
-    test('kapanış ve tavsiye havuzları minimum boyutta ve temiz', () {
-      expect(
-        FortunePools.kapanisCumleleri.length,
-        greaterThanOrEqualTo(ContentConfig.enAzKapanis),
-      );
-      havuzuDogrula('kapanis', FortunePools.kapanisCumleleri);
-
+    test('tavsiye havuzu minimum boyutta ve temiz', () {
       expect(
         FortunePools.gununTavsiyeleri.length,
         greaterThanOrEqualTo(ContentConfig.enAzTavsiye),
@@ -85,38 +48,6 @@ void main() {
         // Alpha kanalı 0xFF olmalı: kart üzerinde soluk renk istenmez.
         expect(renk.hexArgb >> 24 & 0xFF, 0xFF,
             reason: '${renk.ad} tam opak değil');
-      }
-    });
-  });
-
-  group('CategoryPools bütünlük', () {
-    test('kategori açılışları: her (kategori, ton) mevcut ve yeterli', () {
-      for (final LuckCategory kategori in LuckCategory.values) {
-        final Map<KategoriTonu, List<String>>? tonlar =
-            CategoryPools.kategoriAcilislari[kategori];
-        expect(tonlar, isNotNull, reason: '$kategori açılışları eksik');
-        for (final KategoriTonu ton in KategoriTonu.values) {
-          final List<String>? havuz = tonlar![ton];
-          expect(havuz, isNotNull, reason: '($kategori, $ton) eksik');
-          expect(
-            havuz!.length,
-            greaterThanOrEqualTo(ContentConfig.enAzKategoriVaryanti),
-          );
-          havuzuDogrula('kategoriAcilis[$kategori][$ton]', havuz);
-        }
-      }
-    });
-
-    test('kategori tavsiyeleri: her kategori mevcut ve yeterli', () {
-      for (final LuckCategory kategori in LuckCategory.values) {
-        final List<String>? havuz =
-            CategoryPools.kategoriTavsiyeleri[kategori];
-        expect(havuz, isNotNull, reason: '$kategori tavsiyeleri eksik');
-        expect(
-          havuz!.length,
-          greaterThanOrEqualTo(ContentConfig.enAzKategoriTavsiye),
-        );
-        havuzuDogrula('kategoriTavsiye[$kategori]', havuz);
       }
     });
   });

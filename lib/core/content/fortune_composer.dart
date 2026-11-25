@@ -19,13 +19,13 @@ library;
 
 import '../luck_engine/luck_engine.dart';
 import 'burc_metinleri.dart';
-import 'category_pools.dart';
 import 'content_config.dart';
 import 'dongu_metinleri.dart';
 import 'fortune_pools.dart';
 import 'gokyuzu_metinleri.dart';
 import 'gunluk_okuma.dart';
 import 'icerik_paketi.dart';
+import 'kimlik_metinleri.dart';
 import 'kisilik_metinleri.dart';
 import 'kisisel_havuzlar.dart';
 import 'neden_metinleri.dart';
@@ -104,15 +104,32 @@ List<String> begenilenleriSec(
   return kalan.length >= ContentConfig.enAzKalanVaryant ? kalan : havuz;
 }
 
+/// Çelişki kapısı: [havuz]dan [okuyucu]nun çekirdek portresiyle
+/// ([Okuyucu.portre]) çelişen cümleleri çıkarır.
+///
+/// Günlük okuma ve kategori okumalarındaki HER metin havuzu seçimden önce
+/// buradan geçer; böylece içe dönük birine "bir gruba fikrini sun", aklıyla
+/// karar verene "ilk hissine güven", ilişki durumu bilinmeyene
+/// "partnerin…" cümlesi seçilemez. Geriye [enAz]'dan az cümle kalırsa
+/// havuz olduğu gibi döner (bkz. [KisilikMetinleri.uyumlular]).
+List<String> _kapi(Okuyucu okuyucu, List<String> havuz, {int enAz = 1}) =>
+    KisilikMetinleri.uyumlular(havuz, okuyucu.portre, enAz: enAz);
+
 /// Havuzdan deterministik ve döngü içinde tekrarsız eleman seçer.
+///
+/// Metin havuzları seçimden önce çelişki kapısından ([_kapi]) geçer.
 T _sec<T>(
   LuckEngine motor,
   Okuyucu okuyucu,
   DateTime gun,
   String amac,
-  List<T> havuz, {
+  List<T> aday, {
   int adimGun = 1,
 }) {
+  final Object ham = aday;
+  final List<T> havuz = ham is List<String>
+      ? _kapi(okuyucu, ham) as List<T>
+      : aday;
   return havuz[motor.donguselIndeks(
     kullanici: okuyucu.seed,
     gun: gun,
@@ -202,43 +219,7 @@ LuckCategory enZayifKategori(
 KarakterYonu _karakter(Okuyucu okuyucu) =>
     YorumYonu.karakterler[okuyucu.profil.yasamYolu.deger]!;
 
-/// [okuyucu]nun [kategori] alanındaki tarz cümlesi.
-///
-/// Tarz varyantları kategori başına döngüsel seçilir; [ek] verilirse
-/// (ör. detay sayfası) ayrı bir döngü kullanılır ki aynı gün kart ile
-/// detay aynı cümleyi göstermesin.
-String _tarz(
-  LuckEngine motor,
-  Okuyucu okuyucu,
-  DateTime gun,
-  LuckCategory kategori, {
-  String? ek,
-}) {
-  final String amac = ContentConfig.kategoriAmaci(
-    kategori,
-    ContentConfig.amacTarz,
-  );
-  return _sec(
-    motor,
-    okuyucu,
-    gun,
-    ek == null ? amac : '$amac:$ek',
-    _karakter(okuyucu).kategoriTarzi[kategori]!,
-  );
-}
-
-/// [kategori] alanında bugünün durum cümlesi varyantları.
-List<String> _durumHavuzu(
-  Okuyucu okuyucu,
-  LuckCategory kategori,
-  KategoriTonu ton,
-) =>
-    YorumYonu.kategoriDurumlari[kategori]![YorumYonu.durumAnahtari(
-      kategori,
-      okuyucu.tercihler,
-    )]![ton]!;
-
-/// Gökyüzü tabanlı bir kategori okumasının doldurulmuş parçaları (bkz.
+/// Bir kategori okumasının doldurulmuş parçaları (bkz.
 /// `gokyuzu_metinleri.dart`).
 class _GokyuzuParcalari {
   const _GokyuzuParcalari({
@@ -359,8 +340,13 @@ _GokyuzuParcalari _gokyuzuParcalari({
     ].take(adet).toList(growable: false);
   }
 
-  final List<String> gokyuzuHavuzu =
-      GokyuzuMetinleri.gokyuzu[kategori]![iliski]![ton]!;
+  // Bu fonksiyondaki bütün havuzlar çelişki kapısından geçer.
+  List<String> kapi(List<String> havuz, {int enAz = 1}) =>
+      _kapi(okuyucu, havuz, enAz: enAz);
+
+  final List<String> gokyuzuHavuzu = kapi(
+    GokyuzuMetinleri.gokyuzu[kategori]![iliski]![ton]!,
+  );
   final String gokyuzu = sec(
     suz == null ? gokyuzuHavuzu : suz(gokyuzuHavuzu),
     ContentConfig.amacGokyuzu,
@@ -373,7 +359,7 @@ _GokyuzuParcalari _gokyuzuParcalari({
   // havuzunda cevaplarla uyumlu yeterli cümle yoksa burç kullanılır.
   final List<String> sayiUyumlu = <String>[
     for (final String m in _karakter(okuyucu).kategoriTarzi[kategori]!)
-      if (!KisilikMetinleri.celisir(m, okuyucu.tercihler)) m,
+      if (!KisilikMetinleri.celisir(m, okuyucu.portre)) m,
   ];
   final bool sayiYeterli =
       sayiUyumlu.length >= ContentConfig.enAzKisilikSecenegi;
@@ -385,10 +371,7 @@ _GokyuzuParcalari _gokyuzuParcalari({
   // kurulur (adimGun): ardışık kullanımlar döngüde ardışık konumlara düşer
   // ve cümleler eşit sıklıkla döner.
   final List<String> kisilikHavuzu = burcCumlesi
-      ? KisilikMetinleri.uyumlular(
-          KisilikMetinleri.burc[okuyucu.profil.burc]![kategori]!,
-          okuyucu.tercihler,
-        )
+      ? kapi(KisilikMetinleri.burc[okuyucu.profil.burc]![kategori]!)
       : sayiUyumlu;
   int kisilikIndeksi = motor.donguselIndeks(
     kullanici: okuyucu.seed,
@@ -413,9 +396,9 @@ _GokyuzuParcalari _gokyuzuParcalari({
     okuyucu.tercihler,
   );
   final SahneYonu yon = SahneYonu.tondan(ton);
-  final List<String> sahneHavuzu =
-      (sahneler[sahneAnahtari] ??
-      sahneler[GokyuzuMetinleri.genelAnahtar]!)[yon]!;
+  final List<String> sahneHavuzu = kapi(
+    (sahneler[sahneAnahtari] ?? sahneler[GokyuzuMetinleri.genelAnahtar]!)[yon]!,
+  );
   final String sahne = sec(
     sahneHavuzu,
     ContentConfig.amacKategoriSahne,
@@ -423,7 +406,7 @@ _GokyuzuParcalari _gokyuzuParcalari({
   );
 
   final String baslik = sec(
-    GokyuzuMetinleri.basliklar[kategori]![ton]!,
+    kapi(GokyuzuMetinleri.basliklar[kategori]![ton]!),
     ContentConfig.amacKategoriBaslik,
     ton.name,
   );
@@ -433,9 +416,12 @@ _GokyuzuParcalari _gokyuzuParcalari({
     kategori,
     okuyucu.tercihler,
   );
-  final List<String>? kisiselHavuz = kisiselAnahtar == null
+  final List<String>? hamKisiselHavuz = kisiselAnahtar == null
       ? null
       : GokyuzuMetinleri.kisiselYap[kategori]?[kisiselAnahtar]?[ton];
+  final List<String>? kisiselHavuz = hamKisiselHavuz == null
+      ? null
+      : kapi(hamKisiselHavuz);
   final String? kisiselYap = kisiselHavuz == null
       ? null
       : sec(
@@ -443,7 +429,12 @@ _GokyuzuParcalari _gokyuzuParcalari({
           ContentConfig.amacKisiselYap,
           '$kisiselAnahtar:${ton.name}',
         );
-  final List<String> genelYap = GokyuzuMetinleri.yap[kategori]![ton]!;
+  // Yap / Yapma listeleri sabit sayıda öneri gösterir; kapıdan en az o
+  // kadar cümle çıkmalıdır.
+  final List<String> genelYap = kapi(
+    GokyuzuMetinleri.yap[kategori]![ton]!,
+    enAz: ContentConfig.gokyuzuYapSayisi,
+  );
   final List<String> yap = <String>[
     ?kisiselYap,
     ...ardisik(
@@ -452,7 +443,10 @@ _GokyuzuParcalari _gokyuzuParcalari({
       ContentConfig.gokyuzuYapSayisi - (kisiselYap == null ? 0 : 1),
     ),
   ];
-  final List<String> yapmaHavuzu = GokyuzuMetinleri.yapma[kategori]![ton]!;
+  final List<String> yapmaHavuzu = kapi(
+    GokyuzuMetinleri.yapma[kategori]![ton]!,
+    enAz: ContentConfig.gokyuzuYapmaSayisi,
+  );
   final List<String> yapma = ardisik(
     yapmaHavuzu,
     sec(yapmaHavuzu, ContentConfig.amacYapma, ton.name),
@@ -468,6 +462,48 @@ _GokyuzuParcalari _gokyuzuParcalari({
     yap: yap.map(doldur).toList(growable: false),
     yapma: yapma.map(doldur).toList(growable: false),
   );
+}
+
+/// Doldurulmuş bir gökyüzü cümlesinin Ay'ı anan ilk yarısı atılmış hâli.
+///
+/// Gökyüzü cümleleri "Ay burcu ve elementi; bu alana etkisi"
+/// kalıbındadır. Günlük kartta Ay burcu açılış paragrafında zaten
+/// anıldığı için kategori paragrafları onu tekrar etmez: eskiden aynı
+/// okumada "Ay Yay burcunda, Balık burcunun elementine ters düşüyor"
+/// üç kez geçiyor, metin makine işi gibi okunuyordu.
+///
+/// İkinci yarı ilkine bağlıysa ("bu gerilim …", "yine de …") tek başına
+/// anlamsız kalır; o zaman null döner ve cümle o paragrafta hiç yer
+/// almaz. Detay sayfası cümlenin tamamını gösterir.
+String? ayOnekisizHali(String dolu) {
+  final int ayrac = dolu.indexOf(ContentConfig.gokyuzuAyraci);
+  if (ayrac < 0) {
+    return null;
+  }
+  String kuyruk = dolu
+      .substring(ayrac + ContentConfig.gokyuzuAyraci.length)
+      .trim();
+  // Yalnız açılış cümlesi "Bugün" diye başlar; ikinci yarının başındaki
+  // "bugün" atılır ("bugün enerjin yüksek" → "Enerjin yüksek").
+  if (kuyruk.startsWith(ContentConfig.bugunOneki)) {
+    kuyruk = kuyruk.substring(ContentConfig.bugunOneki.length).trimLeft();
+  }
+  final String kucuk = kuyruk.toLowerCase();
+  final bool bagimli =
+      kuyruk.isEmpty ||
+      ContentConfig.bagimliKuyrukBaslangiclari.any(kucuk.startsWith) ||
+      ContentConfig.bagimliKuyrukIfadeleri.any(kucuk.contains);
+  if (bagimli) {
+    return null;
+  }
+  // Türkçe büyük harf: i → İ, ı → I.
+  final String ilk = kuyruk[0];
+  final String buyukIlk = switch (ilk) {
+    'i' => 'İ',
+    'ı' => 'I',
+    _ => ilk.toUpperCase(),
+  };
+  return '$buyukIlk${kuyruk.substring(1)}';
 }
 
 /// [okuyucu] için [sonuc] gününün tam, bölümlü okumasını üretir.
@@ -524,8 +560,11 @@ GunlukOkuma gunlukOkuma({
     okuyucu,
     gun,
     '${ContentConfig.amacEnerji}:$k:${gunTonu.name}',
+    // Günün durumu da okuyucunun cevaplarıyla çelişmeyenlerden seçilir
+    // (ör. yalnız kalınca toparlanan birine "insanlarla temas kurmak seni
+    // canlandıracak" denmez).
     begenilenleriSec(
-      YorumYonu.gunTemalari[k]!.durum[gunTonu]!,
+      _kapi(okuyucu, YorumYonu.gunTemalari[k]!.durum[gunTonu]!),
       OkumaBolumTuru.enerji,
       begenilmeyenler,
     ),
@@ -555,10 +594,7 @@ GunlukOkuma gunlukOkuma({
   // varyant alır, aynı kişisel gün sonraki dönemde başka varyant görür.
   // Öneriler de okuyucunun cevaplarıyla çelişmeyenler arasından seçilir
   // (ör. insanlarla beslenen birine "yalnız kalma ihtiyacını koru" denmez).
-  final List<String> oneriler = KisilikMetinleri.uyumlular(
-    karakter.tavsiyeler(bulusma),
-    okuyucu.tercihler,
-  );
+  final List<String> oneriler = _kapi(okuyucu, karakter.tavsiyeler(bulusma));
   final int oneriTabani = motor.donguselIndeks(
     kullanici: okuyucu.seed,
     gun: gun,
@@ -575,8 +611,10 @@ GunlukOkuma gunlukOkuma({
     ayBurcu.element,
     okuyucu.profil.burc.element,
   );
-  final List<String> gunGokyuzuHavuzu =
-      GokyuzuMetinleri.gunler[gunIliskisi]![gunTonu]!;
+  final List<String> gunGokyuzuHavuzu = _kapi(
+    okuyucu,
+    GokyuzuMetinleri.gunler[gunIliskisi]![gunTonu]!,
+  );
   final String gunGokyuzuAmaci =
       '${ContentConfig.amacGunGokyuzu}:${gunIliskisi.name}:${gunTonu.name}';
   // Ay 2-3 gün aynı burçta kalır; aynı cümle art arda iki gün gelmesin.
@@ -590,54 +628,55 @@ GunlukOkuma gunlukOkuma({
       )];
 
   // Paragraf kısa kalsın diye numerolojinin "doğanla buluşma" cümlesi ve
-  // gündelik sahne gün aşırı dönüşümlü yer alır.
+  // gündelik sahne gün aşırı dönüşümlü yer alır. Buluşma cümlesi yaşam
+  // yolunun sesidir; kategori paragraflarındaki kişilik cümlesinin de
+  // yaşam yolundan geldiği günlere denk getirilir. Böylece bir gün TEK
+  // sesle konuşur: ya burç ya sayı. Eskiden aynı okumada "doğan düzen
+  // kurmak" (yaşam yolu 4) ile "aşkı bir masal gibi yaşarsın" (Balık)
+  // yan yana düşüyor, okur iki farklı insanın tarif edildiğini sanıyordu.
   final bool bulusmaGunu =
-      LuckEngine.gunNumarasi(gun) % ContentConfig.bulusmaDonusumu == 0;
+      LuckEngine.gunNumarasi(gun) % ContentConfig.kisilikDonusumu != 0;
+  // Sayı sesinin konuşmadığı günlerde, doğum haritası biliniyorsa gündelik
+  // sahnenin yerini kişinin portresi alır: yükselenin dışarıya gösterdiği
+  // yüz ile Ay burcunun iç dünyası (bkz. KimlikMetinleri). Portre gün
+  // aşırı kullanıldığı için döngü o aralıkla kurulur (adimGun): ardışık
+  // kullanımlar farklı cümleye düşer.
+  final List<String> portreHavuzu = KimlikMetinleri.portreler(
+    dogumAyi: okuyucu.dogumAyi,
+    yukselen: okuyucu.yukselen,
+  );
+  final String? portre = portreHavuzu.isEmpty
+      ? null
+      : _sec(
+          motor,
+          okuyucu,
+          gun,
+          ContentConfig.amacPortre,
+          portreHavuzu,
+          adimGun: ContentConfig.kisilikDonusumu,
+        );
   final String enerjiMetni = <String>[
     gunDurumu,
     gunGokyuzu,
-    if (bulusmaGunu) bulusmaCumlesi else sahne,
+    if (bulusmaGunu) bulusmaCumlesi else portre ?? sahne,
     oneri,
   ].map(doldur).join(' ');
 
-  // ---- Öne çıkan alan: durum → günün etkisi → kişinin tarzı → eylem ----
+  // ---- Öne çıkan alan: gökyüzü → kişilik → (gün aşırı) sahne → eylem ----
   final KategoriTonu parlayanTon = KategoriTonu.tonuBul(
     sonuc.kategoriSkorlari[parlayan] ?? 0,
   );
-  // Gökyüzü tabanlı kategorilerde (Sağlık, Risk, Sosyal) paragraf günün
-  // Ay burcundan kurulur; diğerlerinde durum + tema + tarz yapısı sürer.
-  final _GokyuzuParcalari? parlayanGokyuzu =
-      GokyuzuMetinleri.destekler(parlayan)
-      ? _gokyuzuParcalari(
-          motor: motor,
-          okuyucu: okuyucu,
-          gun: gun,
-          kategori: parlayan,
-          ton: parlayanTon,
-          doldur: doldur,
-          suz: (List<String> h) =>
-              begenilenleriSec(h, OkumaBolumTuru.parlayan, begenilmeyenler),
-        )
-      : null;
-  final String parlayanDurum =
-      parlayanGokyuzu?.gokyuzuSablonu ??
-      _sec(
-        motor,
-        okuyucu,
-        gun,
-        ContentConfig.kategoriAmaci(parlayan, ContentConfig.amacOrta),
-        begenilenleriSec(
-          _durumHavuzu(okuyucu, parlayan, parlayanTon),
-          OkumaBolumTuru.parlayan,
-          begenilmeyenler,
-        ),
-      );
-  // Kişinin tarz cümlesi günde yalnızca bir paragrafta yer alır; hangisine
-  // düşeceği takvim gününe göre dönüşümlüdür. İki paragrafta birden yer
-  // aldığında neredeyse her gün öne çıkan bir kategorinin tarzı ayda
-  // 7-8 kez tekrar ediyordu.
-  final bool tarzParlayanda =
-      LuckEngine.gunNumarasi(gun) % ContentConfig.tarzDonusumu == 0;
+  // Paragraf günün Ay burcundan kurulur.
+  final _GokyuzuParcalari parlayanGokyuzu = _gokyuzuParcalari(
+    motor: motor,
+    okuyucu: okuyucu,
+    gun: gun,
+    kategori: parlayan,
+    ton: parlayanTon,
+    doldur: doldur,
+    suz: (List<String> h) =>
+        begenilenleriSec(h, OkumaBolumTuru.parlayan, begenilmeyenler),
+  );
   final String parlayanEylem = _sec(
     motor,
     okuyucu,
@@ -645,27 +684,22 @@ GunlukOkuma gunlukOkuma({
     ContentConfig.kategoriAmaci(parlayan, ContentConfig.amacEylem),
     KisiselHavuzlar.eylemCumleleri[parlayan]!,
   );
-  final String parlayanMetni = parlayanGokyuzu != null
-      ? <String>[
-          parlayanGokyuzu.gokyuzu,
-          parlayanGokyuzu.kisilik,
-          // Sahne günlük kartta gün aşırı yer alır: öne çıkan kategori
-          // ayda 20 güne kadar aynı kalabildiği için her gün gösterilen
-          // sahneler kısa sürede ezber olurdu. Detay sayfası her gün
-          // gösterir.
-          if (LuckEngine.gunNumarasi(gun) % ContentConfig.sahneDonusumu == 0)
-            parlayanGokyuzu.sahne,
-          doldur(parlayanEylem),
-        ].join(' ')
-      : <String>[
-          parlayanDurum,
-          YorumYonu.temaKategori[k]![parlayan]!,
-          if (tarzParlayanda) _tarz(motor, okuyucu, gun, parlayan),
-          parlayanEylem,
-        ].map(doldur).join(' ');
+  final String parlayanMetni = <String>[
+    // Ay burcu açılış paragrafında anıldı; burada yalnızca cümlenin
+    // bu alana dair kısmı kalır (bkz. [ayOnekisizHali]).
+    ?ayOnekisizHali(parlayanGokyuzu.gokyuzu),
+    parlayanGokyuzu.kisilik,
+    // Sahne günlük kartta gün aşırı yer alır: öne çıkan kategori
+    // ayda 20 güne kadar aynı kalabildiği için her gün gösterilen
+    // sahneler kısa sürede ezber olurdu. Detay sayfası her gün
+    // gösterir.
+    if (LuckEngine.gunNumarasi(gun) % ContentConfig.sahneDonusumu == 0)
+      parlayanGokyuzu.sahne,
+    doldur(parlayanEylem),
+  ].join(' ');
 
-  // ---- Dikkat: zayıf alanın durumu (öneriyi zaten içerir) → kişinin
-  // o alandaki eğilimi ("neden sende böyle hissedilir") ----
+  // ---- Dikkat: zayıf alanın gökyüzü cümlesi → kişinin o alandaki
+  // eğilimi ("neden sende böyle hissedilir") → bir "yapma" önerisi ----
   final LuckCategory zayif = enZayifKategori(
     sonuc.kategoriSkorlari,
     haric: parlayan,
@@ -688,7 +722,7 @@ GunlukOkuma gunlukOkuma({
       ),
     );
     dikkatMetni = dikkatVaryanti;
-  } else if (GokyuzuMetinleri.destekler(zayif)) {
+  } else {
     // Dikkat paragrafı: günün gökyüzü cümlesi + bir "yapma" önerisi.
     final _GokyuzuParcalari parca = _gokyuzuParcalari(
       motor: motor,
@@ -702,26 +736,10 @@ GunlukOkuma gunlukOkuma({
     );
     dikkatVaryanti = parca.gokyuzuSablonu;
     dikkatMetni = <String>[
-      parca.gokyuzu,
+      ?ayOnekisizHali(parca.gokyuzu),
       parca.kisilik,
       parca.yapma.first,
     ].join(' ');
-  } else {
-    dikkatVaryanti = _sec(
-      motor,
-      okuyucu,
-      gun,
-      ContentConfig.kategoriAmaci(zayif, ContentConfig.amacDurum),
-      begenilenleriSec(
-        _durumHavuzu(okuyucu, zayif, zayifTon),
-        OkumaBolumTuru.dikkat,
-        begenilmeyenler,
-      ),
-    );
-    dikkatMetni = <String>[
-      dikkatVaryanti,
-      if (!tarzParlayanda) _tarz(motor, okuyucu, gun, zayif),
-    ].map(doldur).join(' ');
   }
 
   // ---- Kapanış (dönem + ay cümlesi), tavsiye, renk, sayı ----
@@ -774,7 +792,10 @@ GunlukOkuma gunlukOkuma({
       ),
       OkumaBolumu(
         tur: OkumaBolumTuru.parlayan,
-        kimlik: bolumKimligi(OkumaBolumTuru.parlayan, parlayanDurum),
+        kimlik: bolumKimligi(
+          OkumaBolumTuru.parlayan,
+          parlayanGokyuzu.gokyuzuSablonu,
+        ),
         metin: parlayanMetni,
         kategori: parlayan,
       ),
@@ -786,6 +807,13 @@ GunlukOkuma gunlukOkuma({
       ),
     ],
     kapanis: donem,
+    cunku: NedenMetinleri.cunku(
+      dogumTarihi: okuyucu.profil.dogumTarihi,
+      gunesBurcu: okuyucu.profil.burc,
+      ayBurcu: ayBurcu,
+      dogumAyi: okuyucu.dogumAyi,
+      yukselen: okuyucu.yukselen,
+    ),
     nedenler: nedenOgeleri(
       sonuc: sonuc,
       dongu: dongu,
@@ -860,11 +888,9 @@ List<NedenOgesi> nedenOgeleri({
 
 /// [kategori] detay sayfasının okumasını üretir.
 ///
-/// Gökyüzü tabanlı kategorilerde (bkz. [GokyuzuMetinleri.kategoriler])
-/// başlık + paragraf (günün Ay burcu × kişinin burcu × ton, kişilik
-/// cümlesi, gündelik sahne) + "Yap / Yapma" önerileri. Diğerlerinde paragraf:
-/// bugünün o alandaki durumu + günün temasının o alana etkisi + kişinin
-/// o alandaki tarzı + somut tavsiye. [paket]: içerik dili.
+/// Başlık + paragraf (günün Ay burcu × kişinin burcu × ton, kişilik
+/// cümlesi, gündelik sahne) + "Yap / Yapma" önerileri (bkz.
+/// `gokyuzu_metinleri.dart`). [paket]: içerik dili.
 KategoriOkumasi kategoriOkumasi({
   required LuckEngine motor,
   required Okuyucu okuyucu,
@@ -904,55 +930,25 @@ KategoriOkumasi kategoriOkumasi({
     ),
   );
 
-  if (GokyuzuMetinleri.destekler(kategori)) {
-    final _GokyuzuParcalari parca = _gokyuzuParcalari(
-      motor: motor,
-      okuyucu: okuyucu,
-      gun: gun,
-      kategori: kategori,
-      ton: ton,
-      doldur: doldur,
-      ek: ContentConfig.amacDetayEki,
-    );
-    return KategoriOkumasi(
-      kategori: kategori,
-      skor: skor,
-      ton: ton,
-      paragraf: '${parca.gokyuzu} ${parca.kisilik} ${parca.sahne}',
-      eylem: eylem,
-      sansliSaat: saat,
-      baslik: parca.baslik,
-      yap: parca.yap,
-      yapma: parca.yapma,
-    );
-  }
-
-  final String paragraf = <String>[
-    _sec(
-      motor,
-      okuyucu,
-      gun,
-      '${ContentConfig.kategoriAmaci(kategori, ContentConfig.amacDurum)}:${ContentConfig.amacDetayEki}',
-      _durumHavuzu(okuyucu, kategori, ton),
-    ),
-    YorumYonu.temaKategori[dongu.kisiselGun]![kategori]!,
-    _tarz(motor, okuyucu, gun, kategori, ek: ContentConfig.amacDetayEki),
-    _sec(
-      motor,
-      okuyucu,
-      gun,
-      ContentConfig.kategoriAmaci(kategori, ContentConfig.amacTavsiye),
-      CategoryPools.kategoriTavsiyeleri[kategori]!,
-    ),
-  ].map(doldur).join(' ');
-
+  final _GokyuzuParcalari parca = _gokyuzuParcalari(
+    motor: motor,
+    okuyucu: okuyucu,
+    gun: gun,
+    kategori: kategori,
+    ton: ton,
+    doldur: doldur,
+    ek: ContentConfig.amacDetayEki,
+  );
   return KategoriOkumasi(
     kategori: kategori,
     skor: skor,
     ton: ton,
-    paragraf: paragraf,
+    paragraf: '${parca.gokyuzu} ${parca.kisilik} ${parca.sahne}',
     eylem: eylem,
     sansliSaat: saat,
+    baslik: parca.baslik,
+    yap: parca.yap,
+    yapma: parca.yapma,
   );
 }
 
@@ -980,7 +976,7 @@ List<ProfilBolumu> profilOkumasi({
   // uyarlanır (ör. insanlarla beslenen birine "asıl yenilenmen yalnız
   // kaldığında olur" denmez).
   String uyarla(String metin) =>
-      KisilikMetinleri.profilMetniniUyarla(metin, okuyucu.tercihler);
+      KisilikMetinleri.profilMetniniUyarla(metin, okuyucu.portre);
   final IliskiDurumu? iliski = okuyucu.tercihler.iliski;
   final Ugras? ugras = okuyucu.tercihler.ugras;
 

@@ -12,10 +12,11 @@
 /// 3. Hayatında nerede görünür? (günün teması × günlük uğraş)
 /// 4. Ne yapmalısın? (karakterin güçlü/gölge yanı × buluşma türü)
 ///
-/// Kategori yorumları da aynı mantıkla kurulur: durum (kategori × ton ×
-/// kişinin durumu) + günün temasının bu alana etkisi + kişinin bu alandaki
-/// tarzı. Numeroloji terimleri (kişisel gün, yaşam yolu sayısı, ay evresi)
-/// ana metinde KULLANILMAZ; yalnızca "Neden bugün?" açıklamalarındadır.
+/// Kategori yorumları günün Ay burcundan kurulur (bkz.
+/// `gokyuzu_metinleri.dart`); kişinin o alandaki tarzı buradaki
+/// karakterlerden gelir. Numeroloji terimleri (kişisel gün, yaşam yolu
+/// sayısı, ay evresi) ana metinde KULLANILMAZ; yalnızca "Neden bugün?"
+/// açıklamalarındadır.
 ///
 /// v4 (tekrar denetimi): v3'te öneri, kategori tarzı ve dönem cümleleri
 /// tek varyantlıydı; bir kullanıcı 30 günde okuduğu cümlelerin yarıdan
@@ -32,7 +33,6 @@ import '../luck_engine/luck_engine.dart';
 import 'content_config.dart';
 import 'dongu_metinleri.dart';
 import 'karakter_yonleri.dart';
-import 'kategori_durumlari.dart';
 import 'okuyucu.dart';
 
 /// Günün teması ile kişinin doğası arasındaki buluşma türü.
@@ -553,117 +553,6 @@ abstract final class YorumYonu {
   /// Yaşam yolu karakterleri (1-9, 11, 22, 33).
   static const Map<int, KarakterYonu> karakterler = KarakterYonleri.hepsi;
 
-  /// Kategori × kişinin durumu × ton: o alanda bugün ne oluyor.
-  ///
-  /// Durum anahtarı [durumAnahtari] ile bulunur; her kategoride
-  /// [genelAnahtar] her zaman vardır.
-  static const Map<LuckCategory, Map<String, Map<KategoriTonu, List<String>>>>
-  kategoriDurumlari = KategoriDurumlari.hepsi;
-
-  /// Günün temasının her kategoriye etkisi (tema × kategori).
-  static const Map<int, Map<LuckCategory, String>>
-  temaKategori = <int, Map<LuckCategory, String>>{
-    1: <LuckCategory, String>{
-      LuckCategory.ask:
-          'Başlangıç enerjisi aşkta yeni bir tanışmaya ya da ilişkinde yeni bir sayfaya kapı aralıyor.',
-      LuckCategory.para:
-          'Yeni bir gelir fikrini ya da birikim alışkanlığını başlatmak için zemin hazır.',
-      LuckCategory.saglik:
-          'Yeni bir spora ya da sağlıklı bir alışkanlığa başlamak için içinde bir kıpırtı var.',
-      LuckCategory.risk: 'İlk adımı atma cesaretin her zamankinden yüksek.',
-      LuckCategory.sosyal: 'Yeni insanlarla tanışmak bu sefer daha kolay.',
-    },
-    2: <LuckCategory, String>{
-      LuckCategory.ask:
-          'Sabır ve anlayış isteyen konuşmalar aşkta daha yumuşak ilerliyor.',
-      LuckCategory.para:
-          'Ortaklık, anlaşma ve pazarlıklarda uzlaşmacı tavrın işine yarar.',
-      LuckCategory.saglik:
-          'Sakin tempo bedenine dinlenme ve denge fırsatı veriyor.',
-      LuckCategory.risk:
-          'Aceleci risklerden çok beklemenin kazandırdığı bir zamandasın.',
-      LuckCategory.sosyal:
-          'Barışmak, arabuluculuk yapmak ya da bir kırgınlığı onarmak kolaylaşıyor.',
-    },
-    3: <LuckCategory, String>{
-      LuckCategory.ask:
-          'Hislerini söze dökmek aşkta kolaylaşıyor; tek bir mesaj bile bağını ısıtabilir.',
-      LuckCategory.para:
-          'Kendini ya da işini tanıtmak, görünür olmak maddi tarafa da yansıyor.',
-      LuckCategory.saglik:
-          'Keyif aldığın bir hareket, zorunlu bir egzersizden daha çok enerji verir.',
-      LuckCategory.risk:
-          'Heyecan seni hevesle karar vermeye itebilir; bir gece beklemek zarar vermez.',
-      LuckCategory.sosyal:
-          'Paylaşma isteğin sosyal ortamlarda seni öne çıkarıyor.',
-    },
-    4: <LuckCategory, String>{
-      LuckCategory.ask:
-          'Aşkta güven veren, istikrarlı adımlar daha çok karşılık buluyor.',
-      LuckCategory.para:
-          'Bütçe, fatura ve birikim gibi somut işler için zihnin net.',
-      LuckCategory.saglik:
-          'Uyku ve beslenme rutinini oturtmak için iyi bir fırsat var.',
-      LuckCategory.risk:
-          'Plansız risklerden çok hesaplı adımlar ödüllendiriliyor.',
-      LuckCategory.sosyal:
-          'Sosyal planlarını netleştirmek ve verdiğin sözleri tutmak öne çıkıyor.',
-    },
-    5: <LuckCategory, String>{
-      LuckCategory.ask: 'Aşkta sürprizler ve rutinden çıkmak gündemde.',
-      LuckCategory.para:
-          'Beklenmedik bir fırsat ya da harcama kapıyı çalabilir.',
-      LuckCategory.saglik:
-          'Yeni bir aktivite denemek bedenini de zihnini de canlandırır.',
-      LuckCategory.risk:
-          'Risk cazip görünebilir; sınırını baştan koymak önemli.',
-      LuckCategory.sosyal: 'Yeni ortamlar ve tanışmalar için kapılar açık.',
-    },
-    6: <LuckCategory, String>{
-      LuckCategory.ask: 'Özen, ilgi ve bağlılık aşkta her zamankinden değerli.',
-      LuckCategory.para:
-          'Aile ve ev giderleri gündemin üst sıralarına çıkabilir.',
-      LuckCategory.saglik:
-          'Kendine iyi bakmayı hatırlamak için güzel bir zaman.',
-      LuckCategory.risk:
-          'Sevdiklerini etkileyecek kararlarda temkinli olmak akıllıca.',
-      LuckCategory.sosyal:
-          'Yakınlarınla bağlarını güçlendirmek için doğal bir sıcaklık var.',
-    },
-    7: <LuckCategory, String>{
-      LuckCategory.ask:
-          'Aşkta önce kendi duygularını anlamaya vakit ayırmak işe yarar.',
-      LuckCategory.para:
-          'Araştırma ve dikkatli değerlendirme maddi kararlarında seni korur.',
-      LuckCategory.saglik: 'Zihinsel dinlenme ve uyku önceliğin olmalı.',
-      LuckCategory.risk:
-          'Riskleri incelemek için doğru zaman; ani adımlar için değil.',
-      LuckCategory.sosyal:
-          'Kalabalık yerine az ve derin sohbetler öne çıkıyor.',
-    },
-    8: <LuckCategory, String>{
-      LuckCategory.ask:
-          'Net konuşmak ve ilişkinin yönünü belirlemek aşkta kolaylaşıyor.',
-      LuckCategory.para: 'Kazanç, tahsilat ve pazarlık konularında elin güçlü.',
-      LuckCategory.saglik:
-          'Yoğun tempo seni çok çalışmaya itebilir; stresini boşaltmayı ihmal etme.',
-      LuckCategory.risk: 'Hesaplı risklerde kararlılığın işine yarıyor.',
-      LuckCategory.sosyal: 'Sosyal ortamlarda sözünün dinlenmesi kolaylaşıyor.',
-    },
-    9: <LuckCategory, String>{
-      LuckCategory.ask:
-          'Aşkta eski bir konuyu kapatmak ya da affetmek için zemin hazır.',
-      LuckCategory.para:
-          'Bir borcu kapatmak ya da yarım kalan bir ödemeyi bitirmek rahatlatıcı olabilir.',
-      LuckCategory.saglik:
-          'Seni yoran bir alışkanlığı bırakmak için içinden bir istek geliyor.',
-      LuckCategory.risk:
-          'Yeni risklerden çok eldeki işleri bitirmek daha çok kazandırıyor.',
-      LuckCategory.sosyal:
-          'Seni yoran bir ilişkiye mesafe koymak artık daha kolay.',
-    },
-  };
-
   /// Kişisel yıla göre yorumun sonundaki "bu dönem" cümlesi (sayı yok).
   static const Map<int, List<String>> donemCumleleri = <int, List<String>>{
     1: <String>[
@@ -789,26 +678,4 @@ abstract final class YorumYonu {
     ...donemCumleleri[kisiselYil]!,
     ...ayCumleleri[kisiselAy]!,
   ];
-
-  /// Okuyucunun durumuna göre [kategori] durum anahtarı.
-  ///
-  /// Aşk: ilişki durumu; para: uğraş; risk: karar tarzı; sosyal: enerji
-  /// tarzı; sağlık: her zaman genel. Bilinmeyen durumda [genelAnahtar].
-  static String durumAnahtari(LuckCategory kategori, OkuyucuTercihleri t) {
-    final String? anahtar = switch (kategori) {
-      LuckCategory.ask =>
-        t.iliski == null
-            ? null
-            : (t.iliski!.partnerliMi ? 'partnerli' : 'bekar'),
-      LuckCategory.para => t.ugras?.name,
-      LuckCategory.risk => t.karar?.name,
-      LuckCategory.sosyal => t.enerji?.name,
-      LuckCategory.saglik => null,
-    };
-    final Map<String, Map<KategoriTonu, List<String>>> durumlar =
-        kategoriDurumlari[kategori]!;
-    return anahtar != null && durumlar.containsKey(anahtar)
-        ? anahtar
-        : genelAnahtar;
-  }
 }

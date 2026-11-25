@@ -12,7 +12,7 @@ abstract final class TurkceEk {
 
   /// Son ünlüyü (küçük harf) bulur; şapkalılar karşılıklarına indirgenir.
   static String? _sonUnlu(String kelime) {
-    final String kucuk = _kucuk(kelime);
+    final String kucuk = kucukHarf(kelime);
     for (int i = kucuk.length - 1; i >= 0; i--) {
       final String k = kucuk[i];
       if (_tumUnluler.contains(k)) {
@@ -27,11 +27,13 @@ abstract final class TurkceEk {
     return null;
   }
 
-  static String _kucuk(String s) =>
+  /// [s]nin Türkçe kurallarıyla küçük harfli hâli: `I` → `ı`, `İ` → `i`
+  /// (Dart'ın `toLowerCase`'i `I`yı `i` yapar, `İ`ye birleşik nokta ekler).
+  static String kucukHarf(String s) =>
       s.replaceAll('I', 'ı').replaceAll('İ', 'i').toLowerCase();
 
   static bool _unluyleBitiyor(String kelime) {
-    final String kucuk = _kucuk(kelime.trim());
+    final String kucuk = kucukHarf(kelime.trim());
     return kucuk.isNotEmpty && _tumUnluler.contains(kucuk[kucuk.length - 1]);
   }
 

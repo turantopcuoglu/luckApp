@@ -5,6 +5,7 @@ import 'package:kader/core/content/fortune_composer.dart';
 import 'package:kader/core/content/gokyuzu_metinleri.dart';
 import 'package:kader/core/content/gunluk_okuma.dart';
 import 'package:kader/core/content/kisisel_havuzlar.dart';
+import 'package:kader/core/content/neden_metinleri.dart';
 import 'package:kader/core/content/okuyucu.dart';
 import 'package:kader/core/content/tr_icerik_paketi.dart';
 import 'package:kader/core/content/yorum_yonu.dart';
@@ -55,6 +56,77 @@ void main() {
       .map((String c) => c.trim())
       .where((String c) => c.isNotEmpty)
       .toList();
+
+  group('ayOnekisizHali', () {
+    test("Ay'ı anan ilk yarıyı atar, Türkçe büyük harfle başlatır", () {
+      expect(
+        ayOnekisizHali(
+          'Ay Yay burcunda, Balık burcunun elementine ters düşüyor; '
+          'farklı fikirler çatışabilir.',
+        ),
+        'Farklı fikirler çatışabilir.',
+      );
+      expect(
+        ayOnekisizHali('Ay Koç burcunda; içgüdülerin güçlü.'),
+        'İçgüdülerin güçlü.',
+      );
+      expect(ayOnekisizHali('Ay Koç burcunda; ılık bir gün.'), 'Ilık bir gün.');
+    });
+
+    test('ikinci yarının başındaki "bugün" atılır', () {
+      expect(
+        ayOnekisizHali('Ay Boğa burcunda; bugün enerjin yüksek.'),
+        'Enerjin yüksek.',
+      );
+    });
+
+    test('ilk yarıya bağlı ya da ayraçsız cümlede null', () {
+      expect(ayOnekisizHali('Ay Boğa burcunda; bu gerilim kıvılcım.'), isNull);
+      expect(ayOnekisizHali('Ay Boğa burcunda; yine de temkinli ol.'), isNull);
+      expect(
+        ayOnekisizHali('Ay Boğa burcunda; yorgunluk hissi bundan.'),
+        isNull,
+      );
+      expect(ayOnekisizHali('Ay Boğa burcunda: denge kolay.'), isNull);
+    });
+  });
+
+  group('gunlukOkuma tutarlılığı', () {
+    test('Ay burcu kategori bölümlerinde tekrar etmez (60 gün)', () {
+      final Okuyucu o = okuyucu();
+      for (int i = 0; i < 60; i++) {
+        final DateTime g = DateTime(2026, 10, 1 + i);
+        final GunlukOkuma r = gunlukOkuma(
+          motor: motor,
+          okuyucu: o,
+          sonuc: motor.hesapla(kullanici: o.seed, gun: g),
+        );
+        final String ay = trIcerik.burcAdi(Astronomi.gununAyBurcu(g));
+        for (final OkumaBolumu b in r.bolumler.skip(1)) {
+          expect(b.metin, isNot(contains('$ay burcunda')), reason: '$g');
+          expect(b.metin, isNot(contains('$ay burcundaki')), reason: '$g');
+        }
+      }
+    });
+
+    test('yalnız kalınca toparlanan okura kalabalık önerilmez (120 gün)', () {
+      final Okuyucu o = okuyucu(
+        tercihler: const OkuyucuTercihleri(enerji: EnerjiTarzi.iceDonuk),
+      );
+      for (int i = 0; i < 120; i++) {
+        final DateTime g = DateTime(2026, 9, 1 + i);
+        final String metin = gunlukOkuma(
+          motor: motor,
+          okuyucu: o,
+          sonuc: motor.hesapla(kullanici: o.seed, gun: g),
+        ).tamMetin.toLowerCase();
+        for (final String ifade
+            in ContentConfig.celiskiIfadeleri['iceDonuk']!) {
+          expect(metin, isNot(contains(ifade)), reason: '$g: $ifade');
+        }
+      }
+    });
+  });
 
   group('gunlukOkuma', () {
     test('deterministik: aynı girdiler aynı okuma', () {
@@ -116,13 +188,14 @@ void main() {
       );
       // Günün Ay burcu açılışın hemen ardından anılır.
       expect(metin, contains(trIcerik.burcAdi(Astronomi.gununAyBurcu(gun))));
-      // Buluşma cümlesi ve gündelik sahne gün aşırı dönüşümlüdür.
+      // Buluşma cümlesi ve gündelik sahne gün aşırı dönüşümlüdür: sahne
+      // burç günlerinde, buluşma (yaşam yolu) yaşam yolu günlerinde.
       final bool sahneVar = YorumYonu.gunSahneleri[4]!['ogrenci']!.any(
         metin.contains,
       );
       expect(
         sahneVar,
-        LuckEngine.gunNumarasi(gun) % ContentConfig.bulusmaDonusumu != 0,
+        LuckEngine.gunNumarasi(gun) % ContentConfig.kisilikDonusumu == 0,
       );
     });
 
@@ -132,11 +205,17 @@ void main() {
       final List<DateTime> adaylar = <DateTime>[
         for (int i = 0; i < 400; i++) DateTime(1980, 1, 1 + i * 17),
       ];
+      // Buluşma cümlesi (yaşam yolunun doğası) yaşam yolu günlerinde yer
+      // alır (bkz. ContentConfig.kisilikDonusumu); test öyle bir günde.
+      final DateTime sayiGunu =
+          LuckEngine.gunNumarasi(gun) % ContentConfig.kisilikDonusumu != 0
+          ? gun
+          : DateTime(gun.year, gun.month, gun.day + 1);
       final Okuyucu ayse = okuyucu();
       final GunlukOkuma a = gunlukOkuma(
         motor: motor,
         okuyucu: ayse,
-        sonuc: sonucKur(genel: 70, skorlar: ornekSkorlar),
+        sonuc: sonucKur(genel: 70, skorlar: ornekSkorlar, hangiGun: sayiGunu),
       );
       // Aynı takvim gününde zorlayıcı buluşma yaşayan bir kişi bul.
       final Okuyucu baska = adaylar
@@ -144,7 +223,7 @@ void main() {
           .firstWhere((Okuyucu o) {
             final int k = GunDongusu.hesapla(
               dogumTarihi: o.profil.dogumTarihi,
-              gun: gun,
+              gun: sayiGunu,
             ).kisiselGun;
             return YorumYonu.karakterler[o.profil.yasamYolu.deger]!.bulusma(
                   k,
@@ -154,12 +233,24 @@ void main() {
       final GunlukOkuma b = gunlukOkuma(
         motor: motor,
         okuyucu: baska,
-        sonuc: sonucKur(genel: 70, skorlar: ornekSkorlar),
+        sonuc: sonucKur(genel: 70, skorlar: ornekSkorlar, hangiGun: sayiGunu),
       );
       final KarakterYonu kb =
           YorumYonu.karakterler[baska.profil.yasamYolu.deger]!;
       expect(kb.golgeTavsiyeleri.any(b.bolumler.first.metin.contains), isTrue);
-      expect(b.bolumler.first.metin, contains(kb.doga));
+      // Zorlayıcı buluşma cümlelerinden biri (slotları doldurulmuş hâliyle)
+      // açılış paragrafında yer alır.
+      expect(
+        YorumYonu.bulusmaCumleleri[BulusmaTuru.zorlayici]!.any(
+          (String sablon) => sablon
+              .split(RegExp(r'\{[^}]+\}'))
+              .map((String p) => p.trim())
+              .where((String p) => p.length > 2)
+              .every(b.bolumler.first.metin.contains),
+        ),
+        isTrue,
+        reason: b.bolumler.first.metin,
+      );
       expect(a.bolumler.first.metin, isNot(b.bolumler.first.metin));
     });
 
@@ -377,6 +468,152 @@ void main() {
     });
   });
 
+  group('çünkü satırı', () {
+    /// 14 Mart doğumlu: Balık, su elementi.
+    final DateTime dogum = DateTime(1992, 3, 14);
+
+    test('dört element ilişkisinde de kişinin verisini adıyla söyler', () {
+      // Ay'ın burcu: Yengeç (su, aynı), Boğa (toprak, tamamlayıcı),
+      // Kova (hava, nötr), Koç (ateş, zıt).
+      final Map<Burc, String> beklenen = <Burc, String>{
+        Burc.yengec:
+            'Sana özel, çünkü 14 Mart doğumlusun: burcun Balık, elementin '
+            'su. Ay da bugün bir su burcunda.',
+        Burc.boga:
+            'Sana özel, çünkü 14 Mart doğumlusun: burcun Balık, elementin '
+            'su. Ay bugün bir toprak burcunda, elementini besleyen yerde.',
+        Burc.kova:
+            'Sana özel, çünkü 14 Mart doğumlusun: burcun Balık, elementin '
+            'su. Ay bugün bir hava burcunda, elementine yabancı bir yerde.',
+        Burc.koc:
+            'Sana özel, çünkü 14 Mart doğumlusun: burcun Balık, elementin '
+            'su. Ay bugün bir ateş burcunda, elementinin tam karşısında.',
+      };
+      expect(
+        beklenen.keys
+            .map((Burc ay) => elementIliskisi(ay.element, Burc.balik.element))
+            .toSet(),
+        ElementIliskisi.values.toSet(),
+      );
+      for (final MapEntry<Burc, String> e in beklenen.entries) {
+        expect(
+          NedenMetinleri.cunku(
+            dogumTarihi: dogum,
+            gunesBurcu: Burc.balik,
+            ayBurcu: e.key,
+          ),
+          e.value,
+        );
+      }
+    });
+
+    test('günlük okumada: doğum günü, burç ve element; Ay burç değiştirince '
+        'değişir, aynı gün hep aynıdır', () {
+      final Okuyucu o = Okuyucu(
+        isim: 'Deniz',
+        seed: UserSeed.fromIsim(isim: 'Deniz', dogumTarihi: dogum),
+        profil: KaderProfili.hesapla(dogumTarihi: dogum),
+      );
+      final Set<String> satirlar = <String>{};
+      for (int i = 0; i < 30; i++) {
+        final DateTime g = DateTime(2026, 9, 1 + i);
+        final LuckResult s = motor.hesapla(kullanici: o.seed, gun: g);
+        final String cunku = gunlukOkuma(
+          motor: motor,
+          okuyucu: o,
+          sonuc: s,
+        ).cunku;
+        expect(gunlukOkuma(motor: motor, okuyucu: o, sonuc: s).cunku, cunku);
+        expect(
+          cunku,
+          NedenMetinleri.cunku(
+            dogumTarihi: dogum,
+            gunesBurcu: o.profil.burc,
+            ayBurcu: Astronomi.gununAyBurcu(g),
+          ),
+        );
+        expect(cunku, contains('14 Mart doğumlusun'));
+        expect(cunku, contains('burcun Balık'));
+        expect(cunku, contains('elementin su'));
+        expect(cunku.contains('{'), isFalse, reason: cunku);
+        satirlar.add(cunku);
+      }
+      // Bir ayda Ay dört elementi de dolaşır.
+      expect(satirlar, hasLength(ElementIliskisi.values.length));
+    });
+
+    test('doğum haritası biliniyorsa üç noktayı da adıyla sayar', () {
+      expect(
+        NedenMetinleri.cunku(
+          dogumTarihi: dogum,
+          gunesBurcu: Burc.balik,
+          ayBurcu: Burc.koc,
+          dogumAyi: Burc.yengec,
+          yukselen: Burc.aslan,
+        ),
+        'Sana özel, çünkü 14 Mart doğumlusun: burcun Balık (su), Ay burcun '
+        'Yengeç, yükselenin Aslan. Ay bugün bir ateş burcunda, elementinin '
+        'tam karşısında.',
+      );
+      // Yalnızca Ay burcu (doğum saati ya da yeri yok).
+      expect(
+        NedenMetinleri.cunku(
+          dogumTarihi: dogum,
+          gunesBurcu: Burc.balik,
+          ayBurcu: Burc.yengec,
+          dogumAyi: Burc.yay,
+        ),
+        'Sana özel, çünkü 14 Mart doğumlusun: burcun Balık (su), Ay burcun '
+        'Yay. Ay da bugün bir su burcunda.',
+      );
+      // Yalnızca yükselen (Ay o gün burç değiştirdiği için kesin değil).
+      expect(
+        NedenMetinleri.cunku(
+          dogumTarihi: dogum,
+          gunesBurcu: Burc.balik,
+          ayBurcu: Burc.yengec,
+          yukselen: Burc.kova,
+        ),
+        'Sana özel, çünkü 14 Mart doğumlusun: burcun Balık (su), yükselenin '
+        'Kova. Ay da bugün bir su burcunda.',
+      );
+    });
+
+    test('yöntem, puan ya da yargı içermez; tek satır kadar kısadır', () {
+      // En uzun hâl: uzun ay adı, en uzun burç adları, üç nokta birden.
+      for (final Burc gunes in Burc.values) {
+        for (final Burc ay in Burc.values) {
+          final String cunku = NedenMetinleri.cunku(
+            dogumTarihi: DateTime(1992, 11, 30),
+            gunesBurcu: gunes,
+            ayBurcu: ay,
+            dogumAyi: Burc.ikizler,
+            yukselen: Burc.ikizler,
+          );
+          final String kucuk = cunku.toLowerCase();
+          for (final String yasak in <String>[
+            'puan',
+            'formül',
+            'hesap',
+            'toplan',
+            'şans',
+            'iyi',
+            'kötü',
+            '+',
+            '−',
+          ]) {
+            expect(kucuk.contains(yasak), isFalse, reason: '$yasak: $cunku');
+          }
+          expect(
+            cunku.length,
+            lessThanOrEqualTo(ContentConfig.cunkuEnCokKarakter),
+            reason: cunku,
+          );
+        }
+      }
+    });
+  });
+
   group('baskın ve zayıf kategori', () {
     test('en yüksek skorlu kategori; eşitlikte enum sırası', () {
       expect(baskinKategori(ornekSkorlar), LuckCategory.para);
@@ -418,12 +655,9 @@ void main() {
         );
         expect(a.paragraf, b.paragraf);
         expect(a.paragraf.contains('{'), isFalse);
-        // Gökyüzü kategorileri bilerek kısadır (başlık + iki cümle +
-        // yap/yapma); eski yapı dört cümlelik paragraf üretir.
-        expect(
-          a.paragraf.split(' ').length,
-          greaterThanOrEqualTo(GokyuzuMetinleri.destekler(kat) ? 15 : 30),
-        );
+        // Kategori paragrafı bilerek kısadır (başlık + üç cümle +
+        // yap/yapma).
+        expect(a.paragraf.split(' ').length, greaterThanOrEqualTo(15));
       }
     });
   });

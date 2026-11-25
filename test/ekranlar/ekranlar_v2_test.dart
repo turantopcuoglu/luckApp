@@ -187,6 +187,10 @@ void main() {
         find.text(trMetinler.ayarlarVerileriSil),
         200,
       );
+      // Düğme görünür sayılsa da ekranın alt kenarında kalabilir;
+      // dokunulabilsin diye görünür alanın içine hizalanır.
+      await tester.ensureVisible(find.text(trMetinler.ayarlarVerileriSil));
+      await tester.pump();
       await tester.tap(find.text(trMetinler.ayarlarVerileriSil));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));

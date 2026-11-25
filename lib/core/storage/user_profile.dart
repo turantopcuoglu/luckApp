@@ -1,7 +1,8 @@
 import '../content/okuyucu.dart';
 import '../luck_engine/luck_engine.dart';
 
-/// Kullanıcı profili: isim, doğum tarihi, tam ad, tercihler ve onaylar.
+/// Kullanıcı profili: isim, doğum tarihi, tam ad, doğum saati/yeri ve
+/// onaylar.
 ///
 /// user_profile kutusunda tek bir map kaydı olarak saklanır
 /// (plan Session 2, madde 1). Sonradan eklenen alanlar opsiyoneldir ve
@@ -13,7 +14,6 @@ class UserProfile {
     required this.dogumTarihi,
     this.onboardingTamam = false,
     this.tamAd,
-    this.tercihler = const OkuyucuTercihleri(),
     this.uyariKabulSurumu,
     this.dogumSaatiDakika,
     this.dogumIliPlaka,
@@ -26,12 +26,6 @@ class UserProfile {
       dogumTarihi: DateTime.parse(map[_dogumTarihiAnahtari] as String),
       onboardingTamam: map[_onboardingAnahtari] as bool? ?? false,
       tamAd: map[_tamAdAnahtari] as String?,
-      tercihler: OkuyucuTercihleri(
-        enerji: _enumOku(EnerjiTarzi.values, map[_enerjiAnahtari]),
-        karar: _enumOku(KararTarzi.values, map[_kararAnahtari]),
-        iliski: _enumOku(IliskiDurumu.values, map[_iliskiAnahtari]),
-        ugras: _enumOku(Ugras.values, map[_ugrasAnahtari]),
-      ),
       uyariKabulSurumu: map[_uyariAnahtari] as int?,
       dogumSaatiDakika: map[_dogumSaatiAnahtari] as int?,
       dogumIliPlaka: map[_dogumIliAnahtari] as int?,
@@ -42,27 +36,9 @@ class UserProfile {
   static const String _dogumTarihiAnahtari = 'dogumTarihi';
   static const String _onboardingAnahtari = 'onboardingTamam';
   static const String _tamAdAnahtari = 'tamAd';
-  static const String _enerjiAnahtari = 'enerji';
-  static const String _kararAnahtari = 'karar';
-  static const String _iliskiAnahtari = 'iliski';
-  static const String _ugrasAnahtari = 'ugras';
   static const String _uyariAnahtari = 'uyariKabulSurumu';
   static const String _dogumSaatiAnahtari = 'dogumSaatiDakika';
   static const String _dogumIliAnahtari = 'dogumIliPlaka';
-
-  /// Kayıtlı enum adını değere çevirir; bilinmeyen/boş değer null olur
-  /// (ileride bir seçenek kaldırılırsa eski kayıt uygulamayı çökertmez).
-  static T? _enumOku<T extends Enum>(List<T> degerler, Object? ham) {
-    if (ham is! String) {
-      return null;
-    }
-    for (final T deger in degerler) {
-      if (deger.name == ham) {
-        return deger;
-      }
-    }
-    return null;
-  }
 
   /// Kullanıcının girdiği görünen isim (selamlama ve skor tohumu için).
   ///
@@ -78,9 +54,6 @@ class UserProfile {
 
   /// Doğumdaki tam ad (isim numerolojisi için; opsiyonel, düzenlenebilir).
   final String? tamAd;
-
-  /// Onboarding tercih cevapları.
-  final OkuyucuTercihleri tercihler;
 
   /// Kabul edilen uyarı/koşullar metninin sürümü (null = kabul yok).
   final int? uyariKabulSurumu;
@@ -100,13 +73,61 @@ class UserProfile {
   KaderProfili get kaderProfili =>
       KaderProfili.hesapla(dogumTarihi: dogumTarihi, tamAd: tamAd);
 
-  /// İçerik birleştiricisinin girdisi.
-  Okuyucu get okuyucu => Okuyucu(
-        isim: isim,
-        seed: seed,
-        profil: kaderProfili,
-        tercihler: tercihler,
-      );
+  /// Doğum saati girilmiş mi?
+  bool get dogumSaatiBiliniyor => dogumSaatiDakika != null;
+
+  /// Doğum anının yerel saati; saat bilinmiyorsa günün ortası
+  /// ([EngineConfig.bilinmeyenSaat]).
+  DateTime get yerelDogumAni {
+    final int? dakika = dogumSaatiDakika;
+    return DateTime(
+      dogumTarihi.year,
+      dogumTarihi.month,
+      dogumTarihi.day,
+      dakika == null
+          ? EngineConfig.bilinmeyenSaat
+          : dakika ~/ Duration.minutesPerHour,
+      dakika == null ? 0 : dakika % Duration.minutesPerHour,
+    );
+  }
+
+  /// Doğum ili; seçilmediyse null.
+  Il? get dogumIli {
+    final int? plaka = dogumIliPlaka;
+    return plaka == null ? null : TurkiyeIlleri.plakadan(plaka);
+  }
+
+  /// Doğum haritası (Güneş, Ay ve biliniyorsa Yükselen).
+  ///
+  /// Doğum saati yoksa Ay öğlen için hesaplanır ve Yükselen hesaplanmaz;
+  /// saat dilimi Türkiye'nin o tarihteki kuralından bulunur.
+  DogumHaritasi get dogumHaritasi {
+    final DateTime yerel = yerelDogumAni;
+    final Il? il = dogumIli;
+    return DogumHaritasi.hesapla(
+      yerelDogum: yerel,
+      utcFarkiSaat: TurkiyeSaatDilimi.utcFarki(yerel).farkSaat.toDouble(),
+      saatBiliniyor: dogumSaatiBiliniyor,
+      enlem: il?.enlem,
+      boylam: il?.boylam,
+    );
+  }
+
+  /// İçerik birleştiricisinin girdisi: yorumu okuyacak kişi.
+  ///
+  /// Doğum Ay'ı ve yükselen yalnızca KESİN olduklarında aktarılır (Ay o gün
+  /// burç değiştirmediyse; yükselen burç sınırından yeterince uzaksa):
+  /// okuma emin olmadığı bir burcu söylemez.
+  Okuyucu get okuyucu {
+    final DogumHaritasi harita = dogumHaritasi;
+    return Okuyucu(
+      isim: isim,
+      seed: seed,
+      profil: kaderProfili,
+      dogumAyi: harita.ayBurcuKesin ? harita.ayBurcu : null,
+      yukselen: harita.yukselenSinirda ? null : harita.yukselen,
+    );
+  }
 
   /// Hive'a yazılacak map gösterimi.
   Map<String, dynamic> toMap() => <String, dynamic>{
@@ -114,10 +135,6 @@ class UserProfile {
         _dogumTarihiAnahtari: dogumTarihi.toIso8601String(),
         _onboardingAnahtari: onboardingTamam,
         _tamAdAnahtari: tamAd,
-        _enerjiAnahtari: tercihler.enerji?.name,
-        _kararAnahtari: tercihler.karar?.name,
-        _iliskiAnahtari: tercihler.iliski?.name,
-        _ugrasAnahtari: tercihler.ugras?.name,
         _uyariAnahtari: uyariKabulSurumu,
         _dogumSaatiAnahtari: dogumSaatiDakika,
         _dogumIliAnahtari: dogumIliPlaka,
@@ -133,7 +150,6 @@ class UserProfile {
     bool? onboardingTamam,
     String? tamAd,
     bool tamAdiTemizle = false,
-    OkuyucuTercihleri? tercihler,
     int? uyariKabulSurumu,
     int? dogumSaatiDakika,
     bool dogumSaatiniTemizle = false,
@@ -145,7 +161,6 @@ class UserProfile {
         dogumTarihi: dogumTarihi,
         onboardingTamam: onboardingTamam ?? this.onboardingTamam,
         tamAd: tamAdiTemizle ? null : (tamAd ?? this.tamAd),
-        tercihler: tercihler ?? this.tercihler,
         uyariKabulSurumu: uyariKabulSurumu ?? this.uyariKabulSurumu,
         dogumSaatiDakika: dogumSaatiniTemizle
             ? null

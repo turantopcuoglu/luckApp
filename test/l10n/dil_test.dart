@@ -14,7 +14,6 @@ import 'package:kader/features/home/ana_sekme.dart';
 import 'package:kader/features/legal/legal_config.dart';
 import 'package:kader/features/legal/yasal_belge_screen.dart';
 import 'package:kader/features/onboarding/profile_form_screen.dart';
-import 'package:kader/features/onboarding/tanisma_screen.dart';
 import 'package:kader/features/onboarding/welcome_screen.dart';
 import 'package:kader/l10n/app_localizations.dart';
 import 'package:kader/l10n/app_localizations_en.dart';
@@ -222,6 +221,10 @@ void main() {
       await tester.pump();
       const Key ingilizce = ValueKey<String>('dil_en');
       await tester.scrollUntilVisible(find.byKey(ingilizce), 200);
+      // Seçenek görünür sayılsa da alt gezinme çubuğunun altında kalabilir;
+      // dokunulabilsin diye görünür alanın içine hizalanır.
+      await tester.ensureVisible(find.byKey(ingilizce));
+      await tester.pump();
       await tester.tap(find.byKey(ingilizce));
       await tester.pump();
       await tester.pump();
@@ -279,17 +282,11 @@ void main() {
       expect(find.text(YasalBelge.kosullar.baslik(en)), findsOneWidget);
     });
 
-    testWidgets('profil formu ve tanışma soruları İngilizce açılır', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('profil formu İngilizce açılır', (WidgetTester tester) async {
       await ingilizceAc(tester, const ProfileFormScreen());
-      expect(find.text(en.onboardingIsimEtiketi), findsOneWidget);
-      expect(find.text(en.onboardingDevam), findsOneWidget);
-
-      await ingilizceAc(tester, const TanismaScreen());
-      expect(find.text(en.onboardingTanismaBaslik), findsOneWidget);
-      expect(find.text(en.onboardingSoruEnerji), findsOneWidget);
-      expect(find.text(en.onboardingAtla), findsOneWidget);
+      expect(find.text(en.onboardingTamAdEtiketi), findsOneWidget);
+      expect(find.text(en.onboardingDogumTarihiEtiketi), findsOneWidget);
+      expect(find.text(en.onboardingKaderimiHesapla), findsOneWidget);
     });
   });
 }

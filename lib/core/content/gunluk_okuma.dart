@@ -88,6 +88,7 @@ class GunlukOkuma {
     required this.dongu,
     required this.bolumler,
     required this.kapanis,
+    required this.cunku,
     required this.nedenler,
     required this.sansRengi,
     required this.sansliSayi,
@@ -108,6 +109,11 @@ class GunlukOkuma {
 
   /// Kapanış cümlesi.
   final String kapanis;
+
+  /// Okumanın dayanağını söyleyen tek satır: "Sana özel, çünkü 14 Mart
+  /// doğumlusun: burcun Balık, elementin su. Ay da bugün bir su burcunda."
+  /// Okuma kartının başında gösterilir (bkz. `NedenMetinleri.cunku`).
+  final String cunku;
 
   /// "Neden bugün?" öğeleri.
   final List<NedenOgesi> nedenler;
@@ -169,17 +175,16 @@ class KategoriOkumasi {
   final KategoriTonu ton;
 
   /// Ana paragraf: günün Ay burcu cümlesi + kişilik cümlesi (burç ya da
-  /// yaşam yolu) + gündelik sahne. Gökyüzü yapısı dışındaki bir kategori
-  /// için (şu an yok) durum + günün etkisi + kişinin tarzı + tavsiye.
+  /// yaşam yolu) + gündelik sahne.
   final String paragraf;
 
-  /// Kısa başlık (gökyüzü yapısı dışındaki kategorilerde null).
+  /// Kısa başlık (`kategoriOkumasi` her zaman doldurur).
   final String? baslik;
 
-  /// "Yap" önerileri (gökyüzü tabanlı kategorilerde; diğerlerinde boş).
+  /// "Yap" önerileri.
   final List<String> yap;
 
-  /// "Yapma" önerileri (gökyüzü tabanlı kategorilerde; diğerlerinde boş).
+  /// "Yapma" önerileri.
   final List<String> yapma;
 
   /// Şanslı saatli eylem önerisi.

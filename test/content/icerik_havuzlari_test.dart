@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kader/core/content/burc_metinleri.dart';
-import 'package:kader/core/content/category_pools.dart';
 import 'package:kader/core/content/content_config.dart';
 import 'package:kader/core/content/dongu_metinleri.dart';
 import 'package:kader/core/content/fortune_pools.dart';
@@ -38,7 +37,7 @@ List<String> _tumMetinler() {
   ekle(SayiMetinleri.kisilikSayisi.values);
   DonguMetinleri.gunBasliklari.values.forEach(ekle);
   for (final KisiselYilMetni y in DonguMetinleri.kisiselYil.values) {
-    ekle(<String>[y.uzun, ...y.gunluk]);
+    ekle(<String>[y.uzun]);
   }
   DonguMetinleri.ayEvresi.values.forEach(ekle);
   ekle(BurcMetinleri.oz.values);
@@ -66,20 +65,10 @@ List<String> _tumMetinler() {
     ekle(k.dengeTavsiyeleri);
     k.kategoriTarzi.values.forEach(ekle);
   }
-  for (final Map<String, Map<KategoriTonu, List<String>>> d
-      in YorumYonu.kategoriDurumlari.values) {
-    for (final Map<KategoriTonu, List<String>> tonlar in d.values) {
-      tonlar.values.forEach(ekle);
-    }
-  }
-  for (final Map<LuckCategory, String> t in YorumYonu.temaKategori.values) {
-    ekle(t.values);
-  }
   YorumYonu.donemCumleleri.values.forEach(ekle);
   YorumYonu.ayCumleleri.values.forEach(ekle);
-  // Kullanılmaya devam eden v1 havuzları.
+  // Kullanılmaya devam eden v1 havuzu.
   ekle(FortunePools.gununTavsiyeleri);
-  CategoryPools.kategoriTavsiyeleri.values.forEach(ekle);
   return m;
 }
 
@@ -184,12 +173,6 @@ void main() {
           ...k.golgeTavsiyeleri,
           ...k.dengeTavsiyeleri,
         ],
-        for (final Map<String, Map<KategoriTonu, List<String>>> d
-            in YorumYonu.kategoriDurumlari.values)
-          for (final Map<KategoriTonu, List<String>> tonlar in d.values)
-            ...tonlar.values.expand((List<String> l) => l),
-        for (final Map<LuckCategory, String> t in YorumYonu.temaKategori.values)
-          ...t.values,
         ...KisiselHavuzlar.golgesizGun,
         ...YorumYonu.donemCumleleri.values.expand((List<String> l) => l),
         ...YorumYonu.ayCumleleri.values.expand((List<String> l) => l),
@@ -234,46 +217,6 @@ void main() {
           havuzuDogrula('sahne[$k][$anahtar]', havuz);
         }
       }
-    });
-
-    test('her kategori için durum anahtarları ve üç ton mevcut', () {
-      for (final LuckCategory kat in LuckCategory.values) {
-        final Map<String, Map<KategoriTonu, List<String>>> d =
-            YorumYonu.kategoriDurumlari[kat]!;
-        expect(d.containsKey(YorumYonu.genelAnahtar), isTrue, reason: '$kat');
-        for (final MapEntry<String, Map<KategoriTonu, List<String>>> e
-            in d.entries) {
-          for (final KategoriTonu ton in KategoriTonu.values) {
-            final List<String> havuz = e.value[ton]!;
-            expect(
-              havuz.length,
-              greaterThanOrEqualTo(ContentConfig.enAzKategoriDurumVaryanti),
-            );
-            havuzuDogrula('durum[$kat][${e.key}][$ton]', havuz);
-          }
-        }
-        for (int k = 1; k <= 9; k++) {
-          expect(YorumYonu.temaKategori[k]![kat], isNotNull);
-        }
-      }
-    });
-
-    test('durum anahtarı kişinin durumuna göre değişir', () {
-      const OkuyucuTercihleri t = OkuyucuTercihleri(
-        iliski: IliskiDurumu.evli,
-        ugras: Ugras.ogrenci,
-        karar: KararTarzi.akil,
-        enerji: EnerjiTarzi.disaDonuk,
-      );
-      expect(YorumYonu.durumAnahtari(LuckCategory.ask, t), 'partnerli');
-      expect(YorumYonu.durumAnahtari(LuckCategory.para, t), 'ogrenci');
-      expect(YorumYonu.durumAnahtari(LuckCategory.risk, t), 'akil');
-      expect(YorumYonu.durumAnahtari(LuckCategory.sosyal, t), 'disaDonuk');
-      expect(YorumYonu.durumAnahtari(LuckCategory.saglik, t), 'genel');
-      expect(
-        YorumYonu.durumAnahtari(LuckCategory.ask, const OkuyucuTercihleri()),
-        'genel',
-      );
     });
 
     test('dönem ve ay cümleleri 1-9, eylem cümleleri şanslı saati taşır', () {

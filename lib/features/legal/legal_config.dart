@@ -31,7 +31,7 @@ abstract final class LegalConfig {
   );
 
   /// Metinlerin son güncellenme tarihi.
-  static const String sonGuncelleme = '13 Eylül 2026';
+  static const String sonGuncelleme = '11 Kasım 2026';
 
   /// Kullanıcının kabul ettiği uyarı/koşullar sürümü.
   ///
