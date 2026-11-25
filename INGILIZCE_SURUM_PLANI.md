@@ -11,11 +11,11 @@
 
 | Bilgi | Değer |
 |---|---|
-| Tarih | 11 Ekim 2026 (E0–E6b tamamlandı; arayüz metinleri tamamen ARB'de) |
-| Son commit | `e12a420` E6 (E6b commit'i istendiğinde) |
-| Dal | `main` (her oturum doğrudan `main`'e commit edildi) |
-| Testler | 415 test, tamamı yeşil (`flutter test`; +11 altın kayıt, +8 içerik paketi, +11 dil, +5 E5, +2 E6, +1 E6b) |
-| Analiz | `flutter analyze` → No issues found |
+| Tarih | 27 Kasım 2026 (E0–E6b tamamlandı; 11 Kasım içerik yeniden yazımı commit'lendi, Turan onayı bekliyor) |
+| Son commit | `gece/2026-11-27` dalında; `main` hâlâ `3ac2c95` (20 Eki). 11 Kasım işi `2bbbe9d` kurtarma commit'inde, değiştirilmeden |
+| Dal | `gece/2026-11-27` (birleştirme Turan'ın kararı). Önceki oturumlar doğrudan `main`'e commit edildi |
+| Testler | 488 test, tamamı yeşil (`flutter test`, 27 Kas; E6b'deki 415'ten bu yana 20 Eki commit'leri ve 11 Kasım işi: çelişki kapısı, kimlik portresi, gün devri) |
+| Analiz | `flutter analyze` → No issues found (`build/**` 27 Kas'ta analizden çıkarıldı) |
 | Uygulama dili | Türkçe. gen-l10n altyapısı kurulu (E3); İngilizce `DilConfig.ingilizceYayinda = false` ile kapalı (yalnız debug'da Ayarlar'dan seçilebilir) |
 
 ### Bu sohbette tamamlanan büyük işler (commit sırasıyla)
@@ -30,6 +30,10 @@
 
 ### Geliştiricinin (Turan) bekleyen işleri
 
+- [ ] **11 Kasım işine bak ve karar ver** (dal `gece/2026-11-27`): emülatör turu, sonra `main`'e birleştirme izni. Belge: `reports/11_kasim_icerik_yeniden_yazimi.md`. E7 buna bağlı.
+- [ ] **K7** (§5): tanışma soruları geri gelecek mi? E7b–E7c'nin kapsamını belirler.
+- [ ] **K8** (§5): Ay evresi cihaz saat dilimine bağlı; Türkiye gece yarısına sabitlensin mi? E7'den önce çözülmeli.
+- [ ] Mağaza işleri sıralı listede: `reports/magaza_hazirligi.md`.
 - [ ] Play Console: `kader_rapor_tam` ve `kader_yil_2027` tek seferlik ürünlerini aç.
 - [ ] Emülatör kontrolü: yıl raporu kartı, 5 sekmeli alt menü, paylaşım görseli,
       doğum saati seçici, il otomatik tamamlama.
@@ -59,7 +63,12 @@
    `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 5. **`dart format` yalnızca düzenlenen dosyalara.** Klasöre toplu format
    atma; dokunulmamış dosyalar biçimlenirse `git checkout -- <dosya>` ile geri al.
-6. **Ortam (8 Ekim 2026'dan beri macOS):** Proje exFAT biçimli harici
+6. **Ortam (8 Ekim 2026'dan beri macOS):** *27 Kasım notu: proje artık
+   `/Volumes/TuranSSD` (APFS) diskinde; `flutter test` doğrudan diskte
+   çalıştı (488 test, 35 sn), rsync kopyasına gerek kalmadı. `build/**`
+   analizden çıkarıldı, `flutter analyze` de doğrudan çalışır. Mac'in saat
+   dilimi +07 (Asia/Ho_Chi_Minh): altın kayıt saat dilimine bağlı (K8).
+   Aşağısı eski exFAT notudur.* Proje exFAT biçimli harici
    diskte (`/Volumes/PortableSSD`). macOS her yazılan dosyanın yanına `._*`
    (AppleDouble) dosyası bırakır; bu yüzden `flutter test` diskte
    `FileSystemException: Deletion failed` ile çöker (native assets/ephemeral
@@ -141,8 +150,9 @@ taşınacak (E2):
 
 | Dosya | İçerik |
 |---|---|
-| `yorum_yonu.dart`, `karakter_yonleri.dart`, `kategori_durumlari.dart`, `kisisel_havuzlar.dart` | Günlük okuma (tekrar denetimine tabi) |
-| `fortune_pools.dart`, `category_pools.dart`, `dongu_metinleri.dart`, `neden_metinleri.dart`, `sans_rengi.dart` | Günlük okuma yardımcıları |
+| `gokyuzu_metinleri.dart`, `yorum_yonu.dart`, `karakter_yonleri.dart`, `kisilik_metinleri.dart`, `kimlik_metinleri.dart`, `kisisel_havuzlar.dart` | Günlük okuma ve kategori detayı (tekrar denetimine ve çelişki kapısına tabi; 27 Kas güncel) |
+| `fortune_pools.dart`, `dongu_metinleri.dart`, `neden_metinleri.dart` ("çünkü" satırı dahil), `sans_rengi.dart` | Günlük okuma yardımcıları |
+| ~~`kategori_durumlari.dart`, `category_pools.dart`~~ | 11 Kasım'da silindi (20 Ekim'den beri ölü koddu) |
 | `sayi_metinleri.dart`, `burc_metinleri.dart` | Kader Profili |
 | `rapor_metinleri.dart` | Numeroloji raporu |
 | `yillik_rapor_metinleri.dart` | Kişisel Yıl Raporu |
@@ -179,6 +189,8 @@ taşınacak (E2):
 | K3 | Dil seçimi: cihaz dili `tr` ise Türkçe, değilse İngilizce; Ayarlar'dan elle değiştirilebilir. Seçim `UygulamaDurumu`'na yazılır. | Evet | **Evet** (cihaz dili + Ayarlar'dan elle seçim, `UygulamaDurumu`'nda saklanır). |
 | K4 | İngilizce uygulama adı (mağaza ve launcher). | Kullanıcı karar verir (ör. "Kader: Numerology & Luck") | **Açık** — Turan sonra karar verecek. E11 (mağaza) öncesi gerekli; o zamana kadar launcher adı "Kader" kalır. |
 | K5 | İngilizce yasal metinler (gizlilik, koşullar, sorumluluk reddi) kim tarafından yazılacak/onaylanacak? | Taslağı Claude yazar, hukukçu onaylar | **Taslağı Claude yazar (E9), hukukçu onaylar** (yayın öncesi Turan'ın işi). |
+| K7 | *(27 Kas, yeni)* Tanışma soruları (enerji, karar, ilişki, uğraş) 11 Kasım'da onboarding'den kaldırıldı. Kod hâlâ `OkuyucuTercihleri`'ne göre dallanan havuzlar taşıyor: Aşk'ta bekâr/partnerli sahneleri, uğraş sahneleri, `kisiselYap`, `profilUyarlamalari`, `{ugrasAlani}`. Üretimde bunlara hiç ulaşılmıyor. Seçenekler: (a) sorular kalıcı olarak yok; bu havuzlar Türkçeden silinir (ayrı oturum, altın kayıtta yalnız t1/t2 anahtarları değişir) ve E7'de çevrilmez. (b) Sorular ileride geri gelecek; havuzlar kalır ve E7'de çevrilir (yaklaşık %15 daha çok iş). (c) Araştırma raporunun önerisi: kısa bir öz-tanım sorusu geri gelir, cevap metinde görünür kullanılır. | (a), sorular geri gelmeyecekse. Karar ürünü ilgilendiriyor | **Açık.** E7b'den önce gerekli. |
+| K8 | *(27 Kas, yeni)* `ayEvresiOrani` (`ay_evresi.dart:64`) yerel günü `toUtc()` ile çeviriyor; evre, skor ve metin cihazın saat dilimine göre değişebiliyor. Türkiye'de (+03) sonuç sabit, yurt dışında değil. Altın kayıt da bu yüzden makineye bağlı: tablo +07'de üretildi, Türkiye saatinde 3 test kırılıyor. | Takvim gününü Türkiye gece yarısı (UTC+3) say: Türkiye'deki kullanıcının sonucu değişmez, her yerde deterministik olur. `luck_engine` oturumu + tablo yeniden üretimi | **Açık.** E7a'dan önce önerilir (İngilizce kullanıcılar dünyanın her yerinde). |
 | K6 | Dünya geneli doğum yeri (E10): `timezone` paketi zaten var (tz verisi içerir); şehir veritabanı için GeoNames `cities15000` (CC BY 4.0, ~2 MB asset, atıf gerekir). | İlk yayında yok; sonra | **İlk yayında yok**, E10 sonraya. İngilizce sürümde Yükselen yalnız Türkiye doğumlular için (§4.5). |
 
 ---
@@ -358,21 +370,114 @@ Her satır tek oturumdur. Kutuyu bitince işaretle.
       eskisiyle aynı. **Durum:** `lib/features/**` içinde `*_strings.dart`
       kalmadı; arayüzde elle yazılmış Türkçe metin yok (yasal gövde ve
       `LegalConfig.sonGuncelleme` E9'da).
-- [ ] **E7 — İngilizce günlük okuma (content).** `yorum_yonu_en.dart`,
-      `karakter_yonleri_en.dart`, `kategori_durumlari_en.dart`,
-      `kisisel_havuzlar_en.dart`, `fortune_pools_en.dart`, `dongu_metinleri_en.dart`,
-      `neden_metinleri_en.dart`; D3 indeks hizası testi; İngilizce
-      `tekrar_denetimi_en_test.dart` (eşikler TR ile aynı: benzersiz ≥ %55,
-      aynı cümle ≤ 6, açılış dışı "Today" yok).
+- [ ] **E7 — İngilizce günlük okuma (content).** *27 Kasım'da yeniden
+      yazıldı.* Eski E7 planı 11 Kasım içerik yeniden yazımından önceydi;
+      silinen `kategori_durumlari.dart` ile `category_pools.dart` dosyalarını
+      içeriyordu ve yeni katmanları (gökyüzü, kişilik, kimlik portresi,
+      "çünkü" satırı, çelişki kapısı) hiç saymıyordu. Ayrıntı:
+      `reports/11_kasim_icerik_yeniden_yazimi.md`.
+      **Ön koşul:** Turan 11 Kasım işini onaylamış olmalı (dal
+      `gece/2026-11-27`), K7'yi cevaplamalı ve K8 çözülmüş olmalı (§5).
+
+      **Yeni Türkçe günlük okumanın parçaları (çevrilecek olanlar):**
+
+      | Okuma parçası | Türkçe kaynak | Boyut (yaklaşık) |
+      |---|---|---|
+      | "Çünkü" satırı | `NedenMetinleri.cunku` + `_cunkuAy` (4 şablon); ay adları `YillikRaporMetinleri.ayAdlari` | 5 şablon + 12 ay |
+      | Enerji: günün durumu | `YorumYonu.gunTemalari[k].durum` | `yorum_yonu.dart` (~3,2 bin kelime, tüm dosya) |
+      | Enerji: günün gökyüzü | `GokyuzuMetinleri.gunler` (element ilişkisi × gün tonu) | `gokyuzu_metinleri.dart` (~6,1 bin kelime, tüm dosya) |
+      | Enerji: sayı günü / burç günü | `YorumYonu.bulusmaCumleleri`; burç günü `KimlikMetinleri.portreler` (harita biliniyorsa) ya da `YorumYonu.gunSahneleri` | `kimlik_metinleri.dart` (~340 kelime) |
+      | Enerji: öneri | `KarakterYonu` tavsiyeleri (`YorumYonu.karakterler` = `KarakterYonleri.hepsi`) | `karakter_yonleri.dart` (~4,1 bin kelime) |
+      | Öne çıkan / Dikkat | `GokyuzuMetinleri.gokyuzu` (Ay yarısı `ayOnekisizHali` ile atılır), kişilik `KisilikMetinleri.burc` ya da `KarakterYonu.kategoriTarzi`, gün aşırı `GokyuzuMetinleri.sahneler`, `KisiselHavuzlar.eylemCumleleri`, `GokyuzuMetinleri.yapma` | `kisilik_metinleri.dart` (~2,4 bin), `kisisel_havuzlar.dart` (~600) |
+      | Kapanış, başlık, tavsiye, renk | `DonguMetinleri.kisiselYil`/`gunBasliklari`, `YorumYonu.kapanisHavuzu`, `FortunePools.gununTavsiyeleri`/`sansRenkleri` | ~800 kelime |
+      | "Neden bugün?" çipleri | `NedenMetinleri.*Etiketi/*Aciklamasi` | ~200 kelime |
+      | Kategori detayı | `GokyuzuMetinleri.basliklar/gokyuzu/sahneler/yap/yapma` (+ `kisiselYap`) | yukarıdakilerin içinde |
+
+      Toplam yaklaşık **18 bin Türkçe kelime**. Tek oturuma sığmaz; beş
+      oturuma bölündü.
+
+      **Türkçeye bağlı mantık (E7a'da pakete taşınmalı):**
+      - `ayOnekisizHali`: `ContentConfig.gokyuzuAyraci` (`'; '`),
+        `bugunOneki` (`'bugün '`), `bagimliKuyrukBaslangiclari`,
+        `bagimliKuyrukIfadeleri`. İngilizce gökyüzü cümleleri de "Ay
+        yarısı; alan yarısı" biçiminde ve `'; '` ayracıyla yazılmalı.
+      - Çelişki kapısı: `ContentConfig.celiskiIfadeleri` (Türkçe ifade
+        listeleri) ve `KisilikMetinleri._harf` (Türkçe harf kümesi, kelime
+        başı eşleşmesi). İngilizcenin kendi ifade listesi olmalı.
+      - Büyük/küçük harf: `TurkceEk.kucukHarf`, `KimlikMetinleri._buyukBasla`
+        (i/İ). İngilizcede düz `toUpperCase`.
+      - Kimlik kalıpları `{dis}`/`{ic}`/`{Ic}` yan cümle varsayar
+        ("içinde ise {ic}."). İngilizce kalıplar ifadelerle birlikte yazılır.
+      - "Çünkü" satırında tarih: `"14 Mart doğumlusun"` → İngilizcede
+        `"born on 14 March"` ya da `"born March 14"` (ARB `tarihDeseni` ile
+        aynı sıra seçilmeli).
+
+      **Oturumlar:**
+      - [ ] **E7a: altyapı (kod; İngilizce metin yok).** `IcerikPaketi`'ne
+            günlük okuma havuzlarının getter'ları ve yukarıdaki Türkçe
+            sezgiler (ayraç, önek, bağımlı kuyruk, çelişki ifadeleri, harf
+            kümesi, büyük/küçük harf, ay adları). `TrIcerikPaketi` bugünkü
+            sabitlere yönlendirir. `gunlukOkuma`, `kategoriOkumasi` ve
+            `NedenMetinleri.cunku` `paket` üzerinden okur. **Altın kayıt
+            değişmez (D7).** D3 hizalama testinin iskeleti (EN boşken atlanır).
+      - [ ] **E7b: İngilizce gökyüzü.** `gokyuzu_metinleri_en.dart`
+            (~570 cümle): `gunler`, `gokyuzu`, `basliklar`,
+            `sahneler[genel]`, `yap`, `yapma` (`kisiselYap` ve tercih
+            sahneleri K7'ye göre). Test: her İngilizce gökyüzü cümlesinde
+            `'; '` ayracı Türkçedekiyle aynı yerde mi; `ayOnekisizHali` iki
+            dilde aynı indekste null mı.
+      - [ ] **E7c: İngilizce kişilik, kimlik ve çelişki kapısı.**
+            `kisilik_metinleri_en.dart`, `kimlik_metinleri_en.dart`, İngilizce
+            `celiskiIfadeleri`. **Dil arası kapı testi:** her portre için
+            `celisir(tr[i]) == celisir(en[i])`. Böylece iki dilde aynı kişiye
+            aynı cümleler elenir ve D3 bozulmaz.
+      - [ ] **E7d: İngilizce gün temaları ve karakterler.**
+            `yorum_yonu_en.dart`, `karakter_yonleri_en.dart` (~7,4 bin kelime;
+            gerekirse yarıya bölünür). `{gunIstegi}`/`{doga}` "-ing" öbeği (§4.4).
+      - [ ] **E7e: küçük havuzlar, "çünkü" ve uçtan uca testler.**
+            `kisisel_havuzlar_en`, `dongu_metinleri_en`, `fortune_pools_en`,
+            `neden_metinleri_en` (`cunku` dahil). İngilizce
+            `tekrar_denetimi_en_test.dart` (eşikler TR ile aynı: benzersiz
+            ≥ %55, aynı cümle ≤ 6, açılış dışı "Today" yok). Uçtan uca: 12 burç
+            × 3 harita durumu (tam / yalnız Ay / hiçbiri) × 30 gün İngilizce
+            okumada yer tutucu, Türkçe harf ya da çift boşluk kalmaz; "çünkü"
+            satırı `ContentConfig` sınırını aşmaz.
+
+      **Her E7 oturumunda:** altın kayıt testi yeşil kalır. Türkçe tek
+      harf değişmez. Bir Türkçe cümle hatalı bulunursa ayrı oturumda,
+      bilinçli olarak düzeltilir (bkz. altın kayıt başlığı).
 - [ ] **E8 — İngilizce profil + rapor + yıllık rapor (content).**
       `sayi_metinleri_en`, `burc_metinleri_en`, `rapor_metinleri_en`,
       `yillik_rapor_metinleri_en`.
+      **27 Kas: geçerli, küçük değişiklikle.** Profil okuması artık
+      `profilMetniniUyarla(…, okuyucu.portre)` kullanıyor: İngilizce
+      `profilUyarlamalari` E7c'deki çelişki ifadeleriyle aynı anahtarları
+      kullanmalı (K7 (a) seçilirse bu tablo küçülür). Ay adları
+      (`ayAdlari`) E7a'da pakete taşınır; burada yeniden yapılmaz.
 - [ ] **E9 — İngilizce araç + harita + uyum (content) ve yasal metin taslağı.**
+      **27 Kas: geçerli.** İki not: (1) `harita_metinleri.dart` ile
+      `kimlik_metinleri.dart` aynı portreyi anlatır; İngilizce harita
+      metinleri E7c'deki `kimlik_metinleri_en` ile tutarlı yazılmalı.
+      (2) Yasal metin 11 Kasım'da değişti: tanışma cevapları çıktı, doğum
+      saati ve ili girdi. İngilizce taslak yeni metinden yazılır; önce
+      Türkçe metin hukukçudan geçmeli (`reports/magaza_hazirligi.md`).
 - [ ] **E10 — (Sonraya) Dünya geneli doğum yeri ve saat dilimi (luck_engine + storage + UI; 3 oturum).**
+      **27 Kas: geçerli; önemi arttı.** 11 Kasım'dan beri "çünkü" satırı
+      ve portre doğum haritasına dayanıyor. Türkiye dışında doğan biri
+      ili boş bırakır (onboarding metni böyle diyor); yükselen ve portre
+      gelmez, okuma daha az kişisel olur. Doğum Ay'ı Türkiye saat
+      dilimiyle hesaplanıyor (yalnız "kesin" olduğunda kullanıldığı için
+      hata payı küçük). İlk İngilizce yayından sonra ilk iş bu olmalı.
 - [ ] **E11 — Mağaza:** İngilizce mağaza metni taslağı, ekran görüntüsü listesi,
       Play Console dil ekleme notları (kod yok; md dosyası).
+      **27 Kas: geçerli.** K4'e ve Türkçe mağaza hazırlığına bağlı
+      (`reports/magaza_hazirligi.md`, madde 11 ve 13). Ekran görüntüleri
+      11 Kasım'daki yeni günlük ekrandan alınmalı.
 - [ ] **E12 — Son kontrol:** İngilizce cihazda uçtan uca test listesi, taşma
       kontrolü, eksik çeviri taraması (ARB anahtarları eşit mi testi).
+      **27 Kas: geçerli, listeye ekle:** "çünkü" kutusu ve "Bugünün
+      alanları" satırlarında İngilizce taşma; kilitli satır önizlemesi;
+      gün devri (gece yarısı açıkken dil İngilizce).
 
 ---
 
