@@ -4,6 +4,10 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
+  # build/ derleme çıktısıdır (ör. iOS'un indirdiği paket kaynakları);
+  # analize girerse proje dışı kodun hataları sayılır.
+  exclude:
+    - build/**
   language:
     strict-casts: true
     strict-inference: true
