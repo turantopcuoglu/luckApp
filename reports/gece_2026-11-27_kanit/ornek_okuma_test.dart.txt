@@ -1,0 +1,58 @@
+// Geçici betik (depoya girmez): aynı kişi ve gün için günlük okumayı yazdırır.
+// Eski (3ac2c95) ve yeni (11 Kasım) kodda aynen çalışır.
+// ignore_for_file: avoid_print
+import 'package:flutter_test/flutter_test.dart';
+import 'package:kader/core/content/fortune_composer.dart';
+import 'package:kader/core/content/gunluk_okuma.dart';
+import 'package:kader/core/content/okuyucu.dart';
+import 'package:kader/core/luck_engine/luck_engine.dart';
+import 'package:kader/core/storage/user_profile.dart';
+
+void main() {
+  const LuckEngine motor = LuckEngine();
+  final Map<String, UserProfile> kisiler = <String, UserProfile>{
+    'A (saat+il var)': UserProfile(
+      isim: 'Ayşe',
+      tamAd: 'Ayşe Yılmaz',
+      dogumTarihi: DateTime(1990, 3, 14),
+      dogumSaatiDakika: 8 * 60 + 30,
+      dogumIliPlaka: 35,
+    ),
+    'B (yalnız tarih)': UserProfile(
+      isim: 'Ayşe',
+      tamAd: 'Ayşe Yılmaz',
+      dogumTarihi: DateTime(1990, 3, 14),
+    ),
+  };
+  final List<DateTime> gunler = <DateTime>[
+    DateTime(2026, 11, 27),
+    DateTime(2026, 11, 28),
+  ];
+  test('örnek okuma', () {
+    for (final MapEntry<String, UserProfile> k in kisiler.entries) {
+      final Okuyucu o = k.value.okuyucu;
+      for (final DateTime g in gunler) {
+        final GunlukOkuma r = gunlukOkuma(
+          motor: motor,
+          okuyucu: o,
+          sonuc: motor.hesapla(kullanici: o.seed, gun: g),
+        );
+        print('=== ${k.key} · ${g.toIso8601String().substring(0, 10)}');
+        print('BASLIK: ${r.baslik}');
+        String cunku;
+        try {
+          cunku = (r as dynamic).cunku as String;
+        } on NoSuchMethodError {
+          cunku = '(yok)';
+        }
+        print('CUNKU: $cunku');
+        for (final OkumaBolumu b in r.bolumler) {
+          print('[${b.tur.name}${b.kategori == null ? '' : '/${b.kategori!.name}'}] ${b.metin}');
+        }
+        print('KAPANIS: ${r.kapanis}');
+        print('TAVSIYE: ${r.tavsiye}');
+        print('');
+      }
+    }
+  });
+}

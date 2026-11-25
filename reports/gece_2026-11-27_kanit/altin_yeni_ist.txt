@@ -1,0 +1,15 @@
+'gunluk/yy2/t0: kayıt 02d828d8 ≠ şimdi fbef9a52',
+'gunluk/yy2/t1: kayıt d9bacd82 ≠ şimdi fe2af162',
+'gunluk/yy2/t2: kayıt 8d0cbaa0 ≠ şimdi a0409f88',
+'gunluk/yy33/t0: kayıt ef9e2809 ≠ şimdi fbd2bfac',
+'gunluk/yy33/t1: kayıt 55a46958 ≠ şimdi b4291155',
+'gunluk/yy33/t2: kayıt ac6c43d9 ≠ şimdi 9b4d9dfb'
+'begeni/yy2: kayıt da335d81 ≠ şimdi 04bb1305',
+'begeni/yy33: kayıt e20b63e4 ≠ şimdi a8f529a6'
+'kategori/yy2/t0: kayıt b7542df7 ≠ şimdi 9ff49e23',
+'kategori/yy2/t1: kayıt 8f382a5a ≠ şimdi 479e8069',
+'kategori/yy2/t2: kayıt a954b12a ≠ şimdi 62ba0a8c',
+'kategori/yy33/t0: kayıt 5d29ba3b ≠ şimdi 0e2193a0',
+'kategori/yy33/t1: kayıt 018080b7 ≠ şimdi 88ffc53e',
+'kategori/yy33/t2: kayıt ade828fe ≠ şimdi c1b64814'
+00:02 +8 -3: Some tests failed.
