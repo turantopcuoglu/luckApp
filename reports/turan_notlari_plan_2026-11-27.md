@@ -69,6 +69,8 @@ Yöneticinin özeti doğru. Kaynaklar:
 
 ### 1.7 İş listesi (K8)
 
+*26 Kas notu:* K8-1 bitti. Tablo yeniden üretilmeden geçiyor. İstanbul'daki 3 kırık testin nedeni ay evresi değil, test fikstürünün yaz saati hatasıydı (bkz. `reports/11_kasim_icerik_yeniden_yazimi.md` §5 sonu).
+
 | # | İş | Sistem | Kim |
 |---|---|---|---|
 | 1 | Motor: "günün gökyüzü" açık UTC farkı alsın (Ay evresi yerel gece yarısı, Ay burcu yerel öğlen); `toUtc()` kalksın; birim testleri. Altın tabloyu +03 ile bir kez üret, eski kodun İstanbul çıktısıyla karşılaştır | `luck_engine` | Claude |

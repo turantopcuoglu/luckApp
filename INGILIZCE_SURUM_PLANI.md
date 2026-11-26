@@ -32,7 +32,7 @@
 
 - [ ] **11 Kasım işine bak ve karar ver** (dal `gece/2026-11-27`): emülatör turu, sonra `main`'e birleştirme izni. Belge: `reports/11_kasim_icerik_yeniden_yazimi.md`. E7 buna bağlı.
 - [ ] **K7** (§5): tanışma soruları geri gelecek mi? E7b–E7c'nin kapsamını belirler.
-- [ ] **K8** (§5): Ay evresi cihaz saat dilimine bağlı; Türkiye gece yarısına sabitlensin mi? E7'den önce çözülmeli.
+- [ ] **K8** (§5): saat dilimi ve doğum yeri. 26 Kas kararı: "Önerilerle git". K8-1 (motor açık UTC farkı) kapandı; K8-2…K8-5 açık.
 - [ ] Mağaza işleri sıralı listede: `reports/magaza_hazirligi.md`.
 - [ ] Play Console: `kader_rapor_tam` ve `kader_yil_2027` tek seferlik ürünlerini aç.
 - [ ] Emülatör kontrolü: yıl raporu kartı, 5 sekmeli alt menü, paylaşım görseli,
@@ -67,7 +67,8 @@
    `/Volumes/TuranSSD` (APFS) diskinde; `flutter test` doğrudan diskte
    çalıştı (488 test, 35 sn), rsync kopyasına gerek kalmadı. `build/**`
    analizden çıkarıldı, `flutter analyze` de doğrudan çalışır. Mac'in saat
-   dilimi +07 (Asia/Ho_Chi_Minh): altın kayıt saat dilimine bağlı (K8).
+   dilimi +07 (Asia/Ho_Chi_Minh). Altın kayıt 26 Kas'tan (K8-1) beri
+   makinenin saat diliminden bağımsız.
    Aşağısı eski exFAT notudur.* Proje exFAT biçimli harici
    diskte (`/Volumes/PortableSSD`). macOS her yazılan dosyanın yanına `._*`
    (AppleDouble) dosyası bırakır; bu yüzden `flutter test` diskte
@@ -190,7 +191,7 @@ taşınacak (E2):
 | K4 | İngilizce uygulama adı (mağaza ve launcher). | Kullanıcı karar verir (ör. "Kader: Numerology & Luck") | **Açık** — Turan sonra karar verecek. E11 (mağaza) öncesi gerekli; o zamana kadar launcher adı "Kader" kalır. |
 | K5 | İngilizce yasal metinler (gizlilik, koşullar, sorumluluk reddi) kim tarafından yazılacak/onaylanacak? | Taslağı Claude yazar, hukukçu onaylar | **Taslağı Claude yazar (E9), hukukçu onaylar** (yayın öncesi Turan'ın işi). |
 | K7 | *(27 Kas, yeni)* Tanışma soruları (enerji, karar, ilişki, uğraş) 11 Kasım'da onboarding'den kaldırıldı. Kod hâlâ `OkuyucuTercihleri`'ne göre dallanan havuzlar taşıyor: Aşk'ta bekâr/partnerli sahneleri, uğraş sahneleri, `kisiselYap`, `profilUyarlamalari`, `{ugrasAlani}`. Üretimde bunlara hiç ulaşılmıyor. Seçenekler: (a) sorular kalıcı olarak yok; bu havuzlar Türkçeden silinir (ayrı oturum, altın kayıtta yalnız t1/t2 anahtarları değişir) ve E7'de çevrilmez. (b) Sorular ileride geri gelecek; havuzlar kalır ve E7'de çevrilir (yaklaşık %15 daha çok iş). (c) Araştırma raporunun önerisi: kısa bir öz-tanım sorusu geri gelir, cevap metinde görünür kullanılır. | (a), sorular geri gelmeyecekse. Karar ürünü ilgilendiriyor | **Açık.** E7b'den önce gerekli. |
-| K8 | *(27 Kas, yeni)* `ayEvresiOrani` (`ay_evresi.dart:64`) yerel günü `toUtc()` ile çeviriyor; evre, skor ve metin cihazın saat dilimine göre değişebiliyor. Türkiye'de (+03) sonuç sabit, yurt dışında değil. Altın kayıt da bu yüzden makineye bağlı: tablo +07'de üretildi, Türkiye saatinde 3 test kırılıyor. | Takvim gününü Türkiye gece yarısı (UTC+3) say: Türkiye'deki kullanıcının sonucu değişmez, her yerde deterministik olur. `luck_engine` oturumu + tablo yeniden üretimi | **Açık.** E7a'dan önce önerilir (İngilizce kullanıcılar dünyanın her yerinde). |
+| K8 | *(27 Kas, yeni)* `ayEvresiOrani` (`ay_evresi.dart:64`) yerel günü `toUtc()` ile çeviriyor; evre, skor ve metin cihazın saat dilimine göre değişebiliyor. Türkiye'de (+03) sonuç sabit, yurt dışında değil. Altın kayıt da bu yüzden makineye bağlı: tablo +07'de üretildi, Türkiye saatinde 3 test kırılıyor. | Takvim gününü Türkiye gece yarısı (UTC+3) say: Türkiye'deki kullanıcının sonucu değişmez, her yerde deterministik olur. `luck_engine` oturumu + tablo yeniden üretimi | **K8-1 kapandı (26 Kas).** Motor yerel gün + açık UTC farkı alıyor; tablo değişmedi. İstanbul'daki 3 kırık testin nedeni ayrıca test fikstürünün yaz saati hatasıydı, düzeltildi. K8-2…K8-5 (doğum saat dilimi, şehir verisi, arayüz) açık: `reports/turan_notlari_plan_2026-11-27.md`. |
 | K6 | Dünya geneli doğum yeri (E10): `timezone` paketi zaten var (tz verisi içerir); şehir veritabanı için GeoNames `cities15000` (CC BY 4.0, ~2 MB asset, atıf gerekir). | İlk yayında yok; sonra | **İlk yayında yok**, E10 sonraya. İngilizce sürümde Yükselen yalnız Türkiye doğumlular için (§4.5). |
 
 ---
