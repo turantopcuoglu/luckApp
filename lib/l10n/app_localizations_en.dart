@@ -663,7 +663,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get premiumOzellik2 =>
-      'Full Sky Profile: your shadow side, love, work, life lesson, inner voice';
+      'Full Sky Profile: your shadow side, love, work, life lesson, inner voice';
 
   @override
   String get premiumOzellik3 =>

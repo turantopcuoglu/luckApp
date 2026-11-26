@@ -83,9 +83,9 @@ class StoryCard extends StatelessWidget {
                     ),
                   ),
                 const Spacer(),
-                if (skoruGizle)
+                if (skoruGizle && baslik != null)
                   Text(
-                    baslik ?? metinler.paylasimMetni,
+                    baslik!,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: ShareConfig.gizliBaslikPunto,
@@ -93,6 +93,30 @@ class StoryCard extends StatelessWidget {
                       color: AppColors.goldAcik,
                       height: ShareConfig.aracMetinSatirYuksekligi,
                       shadows: ShareConfig.yaziGolgesi,
+                    ),
+                  )
+                else if (skoruGizle)
+                  // Kişisel başlık yoksa paylaşım metni tek satırda, sütunlar
+                  // arasında ve bulut bandının üstünde kalır.
+                  Transform.translate(
+                    offset: const Offset(0, -ShareConfig.paylasimMetniYukseltme),
+                    child: SizedBox(
+                      width: ShareConfig.paylasimMetniEnGenislik,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          metinler.paylasimMetni,
+                          maxLines: 1,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: ShareConfig.gizliBaslikPunto,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.goldAcik,
+                            height: ShareConfig.aracMetinSatirYuksekligi,
+                            shadows: ShareConfig.yaziGolgesi,
+                          ),
+                        ),
+                      ),
                     ),
                   )
                 else ...<Widget>[

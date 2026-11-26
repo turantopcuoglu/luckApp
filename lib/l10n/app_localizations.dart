@@ -881,7 +881,7 @@ abstract class AppLocalizations {
   /// Paylaşım menüsüne eklenen kısa metin; kişisel başlık yoksa kartta da görünür.
   ///
   /// In tr, this message translates to:
-  /// **'Bugünkü yıldızlarım ✨'**
+  /// **'Yıldızlarım ✨'**
   String get paylasimMetni;
 
   /// Keşfet aracı kartının altındaki davet.
@@ -1265,7 +1265,7 @@ abstract class AppLocalizations {
   /// Paywall özellik listesi, 2/7.
   ///
   /// In tr, this message translates to:
-  /// **'Tam Gök Profili: gölge yanın, aşk, iş, yaşam dersin, iç sesin'**
+  /// **'Tam Gök Profili: gölge yanın, aşk, iş, yaşam dersin, iç sesin'**
   String get premiumOzellik2;
 
   /// Paywall özellik listesi, 3/7.

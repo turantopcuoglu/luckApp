@@ -97,6 +97,38 @@ void main() {
     expect(find.text(trMetinler.paylasimMarka), findsOneWidget);
   });
 
+  testWidgets('skor gizli ve kişisel başlık yokken paylaşım metni tek '
+      'satırda, sütunlar arası genişlikte', (WidgetTester tester) async {
+    tester.view.physicalSize = ShareConfig.kartBoyutu;
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    for (final AppLocalizations m in <AppLocalizations>[
+      trMetinler,
+      AppLocalizationsEn(),
+    ]) {
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: StoryCard(sonuc: sonuc, metinler: m, skoruGizle: true),
+        ),
+      );
+      final Finder metin = find.text(m.paylasimMetni);
+      expect(metin, findsOneWidget);
+      final Text t = tester.widget<Text>(metin);
+      expect(t.maxLines, 1);
+      // Metin sütunlar arasındaki genişliği aşmaz (gerekirse küçülür).
+      expect(
+        tester.getRect(metin).width,
+        lessThanOrEqualTo(ShareConfig.paylasimMetniEnGenislik + 0.5),
+      );
+      expect(
+        find.ancestor(of: metin, matching: find.byType(FittedBox)),
+        findsOneWidget,
+      );
+    }
+  });
+
   testWidgets('her paylaşım teması görseli çözülüp kartla PNG üretilir', (
     WidgetTester tester,
   ) async {

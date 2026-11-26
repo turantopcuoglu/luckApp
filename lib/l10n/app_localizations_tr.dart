@@ -438,7 +438,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paylasimGenelSkor => 'GÜNÜN ŞANS PUANI';
 
   @override
-  String get paylasimMetni => 'Bugünkü yıldızlarım ✨';
+  String get paylasimMetni => 'Yıldızlarım ✨';
 
   @override
   String get paylasimAracDavet => 'Sen de hesapla: Solenia uygulaması';
@@ -656,7 +656,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get premiumOzellik2 =>
-      'Tam Gök Profili: gölge yanın, aşk, iş, yaşam dersin, iç sesin';
+      'Tam Gök Profili: gölge yanın, aşk, iş, yaşam dersin, iç sesin';
 
   @override
   String get premiumOzellik3 => 'Kişisel yıl okuması ve yılın teması';

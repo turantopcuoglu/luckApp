@@ -25,6 +25,18 @@ abstract final class ShareConfig {
   /// Skor gizliyken ortadaki gün başlığının puntosu.
   static const double gizliBaslikPunto = 110;
 
+  /// Skor gizliyken kişisel başlık yoksa gösterilen paylaşım metninin
+  /// ("Yıldızlarım ✨") en geniş hâli. Tema görselindeki sütunlar ~785
+  /// px'lik bir açıklık bırakır; iki yanda ~65 px pay kalsın (gerçek
+  /// emoji test kutusundan geniş olabilir) diye metin bu genişliğe
+  /// sığmazsa küçülür ([gizliBaslikPunto]'dan başlayarak).
+  static const double paylasimMetniEnGenislik = 650;
+
+  /// Paylaşım metninin dikey ortadan yukarı kaydırılması (piksel): ortada
+  /// kaldığında alt kenarı tema görselinin açık renkli bulut bandına
+  /// değiyordu. Bu değerle metin ay ile bulut bandının arasına oturur.
+  static const double paylasimMetniYukseltme = 280;
+
   /// Skor etiketinin harf aralığı.
   static const double skorEtiketHarfAraligi = 8;
 

@@ -15,7 +15,7 @@ Tarama: `lib/` altındaki bütün Dart dizgeleri, iki ARB, yasal metinler, okuma
 | `premiumAltBaslik` | Premium alt başlığı | Kaderinin tamamını gör: … → **Gökyüzünün tamamını gör: …** | See your whole destiny: … → **See your whole sky: …** |
 | `onboardingKaderimiHesapla` | Tanışma butonu | Kaderimi hesapla → **Yıldızlarıma bak** | Calculate my destiny → **Read my stars** |
 | `gunlukYukleniyor` | Günlük okuma yükleniyor | Kaderin hesaplanıyor... → **Gökyüzün okunuyor...** | Calculating your destiny... → **Reading your sky...** |
-| `paylasimMetni` | Paylaşım mesajı ve skor gizli kartın başlığı | Bugünkü kaderim ✨ → **Bugünkü yıldızlarım ✨** | My destiny today ✨ → **My stars today ✨** |
+| `paylasimMetni` | Paylaşım mesajı ve skor gizli kartın başlığı | Bugünkü kaderim ✨ → **Yıldızlarım ✨** (tur 2'de kısaltıldı) | My destiny today ✨ → **My stars today ✨** |
 | `bildirimSabah1` | Sabah bildirimi | Bugünün kaderi hazır ✨ → **Bugünün gökyüzü hazır ✨** | Today's destiny is ready ✨ → **Today's sky is ready ✨** |
 | `bildirimSabah4` | Sabah bildirimi | Kader kartın açılmayı bekliyor 🎴 → **Bugünkü kartın açılmayı bekliyor 🎴** | Your destiny card is waiting… → **Today's card is waiting to be opened 🎴** |
 | `bildirimSabah6` | Sabah bildirimi | …: kaderin hesaplandı ☕ → **…: gökyüzün hazır ☕** | …: your destiny is calculated ☕ → **…: your sky is ready ☕** |
@@ -43,3 +43,19 @@ ARB açıklamaları da güncellendi (`@sekmeBugun`, `@sekmeProfil`, `@profilBasl
 3. **Premium alt başlık:** ilk satır neredeyse tam genişlikte. Inter fontuyla dar ekranda üçüncü satıra taşabilir; denetlenmedi.
 4. **Anlam:** "Gök Profilin" başlığının altında numeroloji sayıları ve Büyük Üçlü birlikte duruyor. Başlık gökyüzünü anıyor, ilk kart ise sayıları anlatıyor. Daha geniş bir ad isteniyorsa alternatifler: "Öz Profilin" / "Your Core Profile".
 5. Metin dışında görsel fark yok (gözle). Kareler Roboto fontuyla çizildi, emoji kutu görünüyor. Inter/Playfair fontuyla ve gerçek cihazda **doğrulanmadı**.
+
+## Tur 2: 5. ölçütün kapatılması (27 Kasım)
+
+**Paylaşım kartı (skor gizli, kişisel başlık yok).** İlk deneme metni korudu ve puntoyu 72'ye indirdi. Başlık tek satıra indi, ama denetçi şunu buldu: başlık marka yazısıyla aynı ağırlıkta kalıyor, sütunlara ve buluta olan payı da çok dar. İki yöntem daha yetmezdi:
+- Önerilen "Bugünün yıldızları ✨" 110 puntoda ~1.000 px tutuyor, sütun açıklığı ~785 px; sığmıyor.
+- Uzun metni sığdırmak için punto küçültmek de başlığı zayıflatıyor.
+
+Seçilen yöntem:
+- TR metin **"Yıldızlarım ✨"** olarak kısaltıldı. Tarih kartın üstünde zaten yazıyor, "bugün" bilgisi kaybolmuyor.
+- Başlık 110 puntoda çiziliyor; 650 px'e (sütunlara ~65 px pay) sığmazsa küçülüyor. EN "My stars today ✨" ~88 puntoya iniyor, TR 110'da kalıyor. TR ve EN başlıkları bu yüzden farklı boyda.
+- Başlık 280 px yukarı alındı; ay ile bulut bandının arasında duruyor.
+- Kişisel gün başlığıyla ("Şefkat Günü" gibi) çizilen kart değişmedi.
+- Kanıt: `ozellik_adi_kanit/tur2_paylasim_karti.png`. Test: `share_test.dart`, tek satır ve genişlik sınırı.
+
+**Premium madde 2.** "yaşam" ile "dersin" (EN "life lesson") arasına bölünmeyen boşluk kondu. Kırılma ilk hâline döndü: "…aşk, iş," / "yaşam dersin, iç sesin". Kanıt: `ozellik_adi_kanit/tur2_premium_tr.png`.
+- Görsel denetim (3 tur) ve asıl çözünürlükte ölçüm: başlık TR ve EN'de tek satır. Koyu gökyüzünde, ay ile bulut bandının arasında. Sütunlara pay TR 95/95 px, EN 78/71 px; başlık kutusu 650 px'e sabit olduğu için gerçek emoji genişliğinde de ≥ ~72 px kalır. Başlığın harf yüksekliği markanın ~2 katı. Cihazda gerçek font ve emoji ile **doğrulanmadı**.
