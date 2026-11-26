@@ -1,3 +1,4 @@
+import 'engine_config.dart';
 import 'luck_category.dart';
 import 'luck_modifier.dart';
 
@@ -12,8 +13,9 @@ class LuckResult {
     required this.genelSkor,
     required Map<LuckCategory, int> kategoriSkorlari,
     required List<LuckModifier> modifiyerler,
-  })  : kategoriSkorlari = Map.unmodifiable(kategoriSkorlari),
-        modifiyerler = List.unmodifiable(modifiyerler);
+    this.utcFarkiDakika = EngineConfig.varsayilanUtcFarkiDakika,
+  }) : kategoriSkorlari = Map.unmodifiable(kategoriSkorlari),
+       modifiyerler = List.unmodifiable(modifiyerler);
 
   /// Sonucun ait olduğu gün (yalnızca tarih kısmı anlamlıdır).
   final DateTime gun;
@@ -26,6 +28,10 @@ class LuckResult {
 
   /// Bugünün skoruna etki eden modifiyerler (açıklama metni için).
   final List<LuckModifier> modifiyerler;
+
+  /// Skorun hesaplandığı yerel günün UTC farkı (dakika). Okumanın Ay burcu
+  /// ve ay evresi çipi aynı farkla bulunur ki skorla çelişmesin.
+  final int utcFarkiDakika;
 
   @override
   String toString() =>

@@ -11,21 +11,23 @@ abstract final class LuckResultMapper {
   static const String _modifiyerlerAnahtari = 'modifiyerler';
   static const String _adAnahtari = 'ad';
   static const String _etkiAnahtari = 'etki';
+  static const String _utcFarkiAnahtari = 'utcFarkiDakika';
 
   /// [sonuc]u Hive'a yazılacak map'e çevirir.
   static Map<String, dynamic> toMap(LuckResult sonuc) => <String, dynamic>{
-        _gunAnahtari: sonuc.gun.toIso8601String(),
-        _genelSkorAnahtari: sonuc.genelSkor,
-        _kategorilerAnahtari: <String, int>{
-          for (final MapEntry<LuckCategory, int> e
-              in sonuc.kategoriSkorlari.entries)
-            e.key.name: e.value,
-        },
-        _modifiyerlerAnahtari: <Map<String, dynamic>>[
-          for (final LuckModifier m in sonuc.modifiyerler)
-            <String, dynamic>{_adAnahtari: m.ad, _etkiAnahtari: m.etki},
-        ],
-      };
+    _gunAnahtari: sonuc.gun.toIso8601String(),
+    _genelSkorAnahtari: sonuc.genelSkor,
+    _kategorilerAnahtari: <String, int>{
+      for (final MapEntry<LuckCategory, int> e
+          in sonuc.kategoriSkorlari.entries)
+        e.key.name: e.value,
+    },
+    _modifiyerlerAnahtari: <Map<String, dynamic>>[
+      for (final LuckModifier m in sonuc.modifiyerler)
+        <String, dynamic>{_adAnahtari: m.ad, _etkiAnahtari: m.etki},
+    ],
+    _utcFarkiAnahtari: sonuc.utcFarkiDakika,
+  };
 
   /// Hive'dan okunan [map]'ten [LuckResult] kurar.
   static LuckResult fromMap(Map<dynamic, dynamic> map) {
@@ -48,6 +50,11 @@ abstract final class LuckResultMapper {
             etki: ham[_etkiAnahtari] as int,
           ),
       ],
+      // Eski kayıtlarda alan yok: o kayıtlar Türkiye saatiyle üretildi
+      // sayılır (uygulamanın tek pazarı oydu).
+      utcFarkiDakika:
+          map[_utcFarkiAnahtari] as int? ??
+          EngineConfig.varsayilanUtcFarkiDakika,
     );
   }
 }

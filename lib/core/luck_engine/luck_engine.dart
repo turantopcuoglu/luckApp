@@ -15,6 +15,7 @@ import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 
+import 'ay_evresi.dart';
 import 'engine_config.dart';
 import 'luck_category.dart';
 import 'luck_modifier.dart';
@@ -46,8 +47,9 @@ export 'uyum.dart';
 
 /// Deterministik günlük şans skoru üreticisi.
 ///
-/// Aynı ([UserSeed], gün) çifti her zaman aynı [LuckResult]'ı üretir;
-/// bunu bozan değişiklik reddedilir (CLAUDE.md kural 8).
+/// Aynı ([UserSeed], yerel gün, UTC farkı) üçlüsü her zaman aynı
+/// [LuckResult]'ı üretir; bunu bozan değişiklik reddedilir (CLAUDE.md
+/// kural 8; 26 Kasım 2026 kararıyla UTC farkı eklendi).
 class LuckEngine {
   /// Motor durumsuzdur; const olarak oluşturulabilir.
   const LuckEngine();
@@ -57,10 +59,15 @@ class LuckEngine {
   /// [sonUcGunSkorlari] verilirse ve ortalaması
   /// [EngineConfig.dusukSeriEsigi]'nin altındaysa güne +5..+10 puanlık
   /// "seri dengesi" bias'ı uygulanır (plan Session 1, madde 6).
+  ///
+  /// [utcFarkiDakika]: kişinin o günkü UTC farkı (cihazın saat dilimi).
+  /// Ay evresi kişinin yerel gece yarısında alınır; motor makinenin saat
+  /// dilimini okumaz. Verilmezse Türkiye (+180).
   LuckResult hesapla({
     required UserSeed kullanici,
     required DateTime gun,
     List<int> sonUcGunSkorlari = const <int>[],
+    int utcFarkiDakika = EngineConfig.varsayilanUtcFarkiDakika,
   }) {
     // Gün saatten arındırılır: hem seed hem modifiyerler yalnızca
     // tarihe bakar, böylece gün içinde her açılış aynı sonucu verir.
@@ -76,7 +83,8 @@ class LuckEngine {
 
     // 2) Güne bağlı modifiyerler (kullanıcıdan bağımsız, deterministik).
     final List<LuckModifier> modifiyerler = <LuckModifier>[
-      ayEvresiModifiyeri(tarih),
+      // Ay evresi kişinin yerel gece yarısında alınır (UTC farkı açık).
+      ayEvresiModifiyeri(yerelGunAni(tarih, utcFarkiDakika: utcFarkiDakika)),
       numerolojiModifiyeri(tarih),
     ];
 
@@ -110,6 +118,7 @@ class LuckEngine {
       genelSkor: agirlikliToplam.round(),
       kategoriSkorlari: skorlar,
       modifiyerler: modifiyerler,
+      utcFarkiDakika: utcFarkiDakika,
     );
   }
 

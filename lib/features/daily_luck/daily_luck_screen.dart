@@ -443,6 +443,7 @@ class _IcerikState extends ConsumerState<_Icerik>
                       NedenCipleri(
                         nedenler: okuma.nedenler,
                         gun: widget.sonuc.gun,
+                        utcFarkiDakika: widget.sonuc.utcFarkiDakika,
                       ),
                       const SizedBox(height: AppSpacing.md),
                       SansOgeleriKarti(icerik: okuma),

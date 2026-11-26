@@ -1,0 +1,7 @@
+yeni motor UTC: 00:01 +11: All tests passed!
+yeni motor Europe/Istanbul: 00:01 +11: All tests passed!
+yeni motor Asia/Ho_Chi_Minh: 00:01 +11: All tests passed!
+yeni motor America/Los_Angeles: 00:01 +11: All tests passed!
+yeni motor Pacific/Kiritimati: 00:02 +11: All tests passed!
+eski motor (stash, aynı düzeltilmiş fikstür) Europe/Istanbul: 00:01 +11: All tests passed!
+eski motor (stash, aynı düzeltilmiş fikstür) Asia/Ho_Chi_Minh: 00:01 +11: All tests passed!

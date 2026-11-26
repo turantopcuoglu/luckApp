@@ -128,10 +128,15 @@ void main() {
   ];
 
   /// [yasamYolu] sayısını veren ilk doğum tarihini [baslangic]tan arar.
+  ///
+  /// Gün takvim alanlarıyla ilerler, `add(Duration(days: 1))` ile DEĞİL:
+  /// süre eklemek yaz saati geçişinde doğumu 01:00'e kaydırır, motor
+  /// tohumu da doğum tarihinin tam ISO dizgisini okur. Öyle olunca tablo
+  /// makinenin saat dilimine bağlanıyordu (İstanbul'da yy2 ve yy33 kırık).
   DateTime dogumBul(int yasamYolu, DateTime baslangic) {
     DateTime d = baslangic;
     while (Numeroloji.yasamYolu(d).deger != yasamYolu) {
-      d = d.add(const Duration(days: 1));
+      d = DateTime(d.year, d.month, d.day + 1);
     }
     return d;
   }

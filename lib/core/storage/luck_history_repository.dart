@@ -36,6 +36,10 @@ class LuckHistoryRepository {
   /// Aynı gün ikinci açılışta motor TEKRAR ÇALIŞTIRILMAZ, kayıt okunur
   /// (plan Session 2, madde 3). İlk üretimde son 3 gün skorları motora
   /// bias parametresi olarak geçilir.
+  ///
+  /// [gun] cihazın yerel saatidir (`bugunProvider`); motor ay evresini
+  /// onun UTC farkıyla kişinin yerel gününe yerleştirir (kural 8: kullanıcı,
+  /// yerel gün, UTC farkı).
   Future<LuckResult> getirVeyaUret({
     required LuckEngine motor,
     required UserSeed kullanici,
@@ -50,6 +54,7 @@ class LuckHistoryRepository {
       kullanici: kullanici,
       gun: gun,
       sonUcGunSkorlari: sonUcGunSkorlari(gun),
+      utcFarkiDakika: gun.timeZoneOffset.inMinutes,
     );
     await kaydet(DailyRecord(sonuc: sonuc));
     return sonuc;
@@ -62,8 +67,9 @@ class LuckHistoryRepository {
   List<int> sonUcGunSkorlari(DateTime gun) {
     final List<int> skorlar = <int>[];
     for (int i = 1; i <= biasGunSayisi; i++) {
-      final DailyRecord? kayit =
-          getir(DateTime(gun.year, gun.month, gun.day - i));
+      final DailyRecord? kayit = getir(
+        DateTime(gun.year, gun.month, gun.day - i),
+      );
       if (kayit != null) {
         skorlar.add(kayit.sonuc.genelSkor);
       }
@@ -88,6 +94,7 @@ class LuckHistoryRepository {
       mevcut.copyWith(feedbackPozitif: pozitif, feedbackEmoji: emoji),
     );
   }
+
   /// [gun] kaydına bir okuma bölümünün "beni anlattı mı?" cevabını işler.
   ///
   /// Aynı bölüme ikinci cevap öncekinin üzerine yazar. Kayıt yoksa
@@ -99,7 +106,9 @@ class LuckHistoryRepository {
   }) {
     final DailyRecord? mevcut = getir(gun);
     if (mevcut == null) {
-      throw StateError('Bölüm geri bildirimi kaydedilemez: $gun için kayıt yok.');
+      throw StateError(
+        'Bölüm geri bildirimi kaydedilemez: $gun için kayıt yok.',
+      );
     }
     return kaydet(
       mevcut.copyWith(
@@ -120,11 +129,12 @@ class LuckHistoryRepository {
   Set<String> begenilmeyenKimlikler({required DateTime once}) {
     final String sinir = gunAnahtari(once);
     // Anahtarlar yyyy-MM-dd olduğundan sözlük sırası takvim sırasıdır.
-    final List<String> anahtarlar = _box.keys
-        .cast<String>()
-        .where((String a) => a.compareTo(sinir) < 0)
-        .toList()
-      ..sort();
+    final List<String> anahtarlar =
+        _box.keys
+            .cast<String>()
+            .where((String a) => a.compareTo(sinir) < 0)
+            .toList()
+          ..sort();
     final Map<String, bool> sonCevap = <String, bool>{};
     for (final String anahtar in anahtarlar) {
       final Map<dynamic, dynamic>? map = _box.get(anahtar);

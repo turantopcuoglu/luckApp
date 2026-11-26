@@ -1,5 +1,6 @@
 import 'ay_evresi.dart';
 import 'burc.dart';
+import 'engine_config.dart';
 import 'numeroloji.dart';
 
 /// Kullanıcının zamanla değişmeyen "kimlik" katmanı.
@@ -77,16 +78,20 @@ class GunDongusu {
   });
 
   /// [dogumTarihi] sahibi için [gun] döngülerini hesaplar.
+  ///
+  /// [utcFarkiDakika]: ay evresinin alındığı yerel gün (bkz.
+  /// [AyEvresi.gunun]).
   factory GunDongusu.hesapla({
     required DateTime dogumTarihi,
     required DateTime gun,
+    int utcFarkiDakika = EngineConfig.varsayilanUtcFarkiDakika,
   }) {
     final DateTime tarih = DateTime(gun.year, gun.month, gun.day);
     return GunDongusu(
       kisiselYil: Numeroloji.kisiselYil(dogumTarihi, tarih.year),
       kisiselAy: Numeroloji.kisiselAy(dogumTarihi, tarih),
       kisiselGun: Numeroloji.kisiselGun(dogumTarihi, tarih),
-      ayEvresi: AyEvresi.bul(tarih),
+      ayEvresi: AyEvresi.gunun(tarih, utcFarkiDakika: utcFarkiDakika),
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/content/gunluk_okuma.dart';
 import '../../../core/luck_engine/ay_evresi.dart';
+import '../../../core/luck_engine/engine_config.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../l10n/app_localizations.dart';
@@ -14,7 +15,12 @@ import '../daily_luck_config.dart';
 /// evresini, gün sayısına dokunan gün sayısını görür).
 class NedenCipleri extends StatelessWidget {
   /// [nedenler] listesiyle çip satırı oluşturur.
-  const NedenCipleri({required this.nedenler, this.gun, super.key});
+  const NedenCipleri({
+    required this.nedenler,
+    this.gun,
+    this.utcFarkiDakika = EngineConfig.varsayilanUtcFarkiDakika,
+    super.key,
+  });
 
   /// Gösterilecek neden öğeleri.
   final List<NedenOgesi> nedenler;
@@ -23,9 +29,15 @@ class NedenCipleri extends StatelessWidget {
   /// ise görselsiz çip).
   final DateTime? gun;
 
+  /// Okumanın yerel gününün UTC farkı: çipteki ay görseli skordaki evreyle
+  /// aynı anı kullanır (bkz. `LuckResult.utcFarkiDakika`).
+  final int utcFarkiDakika;
+
   /// [n] ay evresi çipiyse o günün ay evresi görseli, değilse null.
   String? _ayGorseli(NedenOgesi n) => n.tur == NedenTuru.ayEvresi && gun != null
-      ? AppImages.ayEvresi(AyEvresi.bul(gun!).index)
+      ? AppImages.ayEvresi(
+          AyEvresi.gunun(gun!, utcFarkiDakika: utcFarkiDakika).index,
+        )
       : null;
 
   void _ac(BuildContext context, NedenOgesi neden) {

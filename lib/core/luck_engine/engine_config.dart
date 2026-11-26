@@ -126,11 +126,21 @@ abstract final class EngineConfig {
   /// Bir burcun ekliptik genişliği (derece).
   static const double burcGenisligi = 30;
 
-  /// Günün Ay burcunun okunduğu an (UTC saat): Türkiye'de öğlen (UTC+3).
+  /// Günün Ay burcunun okunduğu YEREL saat: kişinin takvim gününün öğleni.
   ///
   /// Ay gün içinde burç değiştirebilir; günün tek bir Ay burcu olsun diye
   /// konum her gün bu saatte alınır.
-  static const int gununAyBurcuUtcSaati = 9;
+  static const int gununAyBurcuYerelSaati = 12;
+
+  /// Çağıran cihazın UTC farkını vermediğinde kullanılan fark (dakika):
+  /// Türkiye saati, UTC+3 (2016'dan beri yıl boyu sabit).
+  ///
+  /// Günün gökyüzü (Ay evresi, Ay burcu) kişinin YEREL takvim gününe göre
+  /// hesaplanır; motor makinenin saat dilimini okumaz, farkı parametre
+  /// olarak alır. Böylece sonuç (kullanıcı, yerel gün, UTC farkı) üçlüsüne
+  /// bağlıdır ve testler her makinede aynı çıkar. Türkiye'de yerel öğlen
+  /// 09:00 UTC'dir: eski sabit 09:00 UTC kuralıyla birebir aynı sonuç.
+  static const int varsayilanUtcFarkiDakika = 180;
 
   /// Ay burcu bu kadar dereceden sınıra yakınsa "kesin değil" sayılır:
   /// Ay saatte ~0.5° ilerler; ~0.5° ≈ 1 saatlik doğum saati belirsizliği.

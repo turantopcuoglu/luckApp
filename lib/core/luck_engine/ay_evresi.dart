@@ -4,6 +4,21 @@ import 'engine_config.dart';
 /// referans noktası. Paket kullanmadan basit astronomik hesap için yeterli.
 final DateTime yeniayReferansi = DateTime.utc(2000, 1, 6, 18, 14);
 
+/// [gun] takvim gününün (yıl, ay, gün alanları) yerel [saat]inin UTC anı.
+///
+/// [utcFarkiDakika]: kişinin o gündeki UTC farkı (Türkiye +180). Saat ve
+/// saat dilimi [gun]den OKUNMAZ; makinenin saat dilimi sonucu etkilemez.
+DateTime yerelGunAni(
+  DateTime gun, {
+  int saat = 0,
+  int utcFarkiDakika = EngineConfig.varsayilanUtcFarkiDakika,
+}) => DateTime.utc(
+  gun.year,
+  gun.month,
+  gun.day,
+  saat,
+).subtract(Duration(minutes: utcFarkiDakika));
+
 /// Ayın sekiz evresi.
 ///
 /// Sinodik ay sekiz eşit dilime bölünür; her evre kendi merkezinin
@@ -41,7 +56,15 @@ enum AyEvresi {
   /// Ay ışığı artıyor mu? (yeni aydan dolunaya kadar true).
   final bool buyuyor;
 
-  /// [gun] için ay evresini döndürür.
+  /// [gun] takviminin yerel gece yarısındaki ay evresi (günün evresi).
+  ///
+  /// Skor ([LuckEngine.hesapla]) ve "Neden bugün?" çipi aynı anı kullanır.
+  static AyEvresi gunun(
+    DateTime gun, {
+    int utcFarkiDakika = EngineConfig.varsayilanUtcFarkiDakika,
+  }) => bul(yerelGunAni(gun, utcFarkiDakika: utcFarkiDakika));
+
+  /// [gun] anı için ay evresini döndürür.
   static AyEvresi bul(DateTime gun) {
     final double oran = ayEvresiOrani(gun);
     // Oran dilim merkezlerine göre kaydırılır: yeni ay dilimi

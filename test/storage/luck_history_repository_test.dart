@@ -73,6 +73,23 @@ void main() {
       expect(repo.getir(bugun)!.sonuc.genelSkor, sonuc.genelSkor);
     });
 
+    test('cihazın UTC farkı sonuca ve kayda yazılır (K8-1)', () async {
+      final LuckResult sonuc = await repo.getirVeyaUret(
+        motor: motor,
+        kullanici: turan,
+        gun: bugun,
+      );
+      final int cihazFarki = bugun.timeZoneOffset.inMinutes;
+      expect(sonuc.utcFarkiDakika, cihazFarki);
+      expect(repo.getir(bugun)!.sonuc.utcFarkiDakika, cihazFarki);
+      expect(
+        sonuc.modifiyerler,
+        motor
+            .hesapla(kullanici: turan, gun: bugun, utcFarkiDakika: cihazFarki)
+            .modifiyerler,
+      );
+    });
+
     test('ikinci açılışta motor çalıştırılmaz, kayıttan okunur', () async {
       // Kutuya motorun üreteceğinden kasıtlı olarak farklı bir kayıt
       // koyuyoruz: getirVeyaUret bunu döndürüyorsa depodan okumuştur.
@@ -158,8 +175,10 @@ void main() {
       // 1 Temmuz'dan geriye bakınca 28-30 Haziran taranmalı.
       final DateTime ayBasi = DateTime(2026, 7, 1);
       final DateTime haziranSonu = DateTime(2026, 6, 30);
-      final LuckResult temel =
-          motor.hesapla(kullanici: turan, gun: haziranSonu);
+      final LuckResult temel = motor.hesapla(
+        kullanici: turan,
+        gun: haziranSonu,
+      );
       await repo.kaydet(
         DailyRecord(
           sonuc: LuckResult(

@@ -15,6 +15,7 @@ library;
 
 import 'dart:math' as math;
 
+import 'ay_evresi.dart';
 import 'burc.dart';
 import 'engine_config.dart';
 
@@ -186,17 +187,20 @@ abstract final class Astronomi {
   /// [gun] takvim gününde Ay'ın bulunduğu burç (günün gökyüzü).
   ///
   /// Ay bir burçta ~2,5 gün kalır ve gün içinde burç değiştirebilir; günün
-  /// tek bir Ay burcu olsun diye [EngineConfig.gununAyBurcuUtcSaati]
-  /// anındaki konum kullanılır. Yalnızca tarihe bağlıdır: aynı gün herkes
-  /// için aynı burcu verir (saat ve saat dilimi bilgisi yok sayılır).
-  static Burc gununAyBurcu(DateTime gun) => burc(
+  /// tek bir Ay burcu olsun diye kişinin yerel öğlenindeki
+  /// ([EngineConfig.gununAyBurcuYerelSaati]) konum kullanılır.
+  /// [utcFarkiDakika] kişinin UTC farkıdır (varsayılan Türkiye, +180: öğlen
+  /// 09:00 UTC). [gun]ün saat ve saat dilimi yok sayılır.
+  static Burc gununAyBurcu(
+    DateTime gun, {
+    int utcFarkiDakika = EngineConfig.varsayilanUtcFarkiDakika,
+  }) => burc(
     ayBoylami(
       julyenGunu(
-        DateTime.utc(
-          gun.year,
-          gun.month,
-          gun.day,
-          EngineConfig.gununAyBurcuUtcSaati,
+        yerelGunAni(
+          gun,
+          saat: EngineConfig.gununAyBurcuYerelSaati,
+          utcFarkiDakika: utcFarkiDakika,
         ),
       ),
     ),

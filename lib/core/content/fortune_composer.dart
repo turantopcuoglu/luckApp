@@ -272,8 +272,12 @@ _GokyuzuParcalari _gokyuzuParcalari({
   required String Function(String) doldur,
   String? ek,
   List<String> Function(List<String>)? suz,
+  int utcFarkiDakika = EngineConfig.varsayilanUtcFarkiDakika,
 }) {
-  final Burc ayBurcu = Astronomi.gununAyBurcu(gun);
+  final Burc ayBurcu = Astronomi.gununAyBurcu(
+    gun,
+    utcFarkiDakika: utcFarkiDakika,
+  );
   final ElementIliskisi iliski = elementIliskisi(
     ayBurcu.element,
     okuyucu.profil.burc.element,
@@ -522,6 +526,7 @@ GunlukOkuma gunlukOkuma({
   final GunDongusu dongu = GunDongusu.hesapla(
     dogumTarihi: okuyucu.profil.dogumTarihi,
     gun: gun,
+    utcFarkiDakika: sonuc.utcFarkiDakika,
   );
   final int k = dongu.kisiselGun;
   final GunTonu gunTonu = gunTonuBul(sonuc.genelSkor);
@@ -539,7 +544,7 @@ GunlukOkuma gunlukOkuma({
     gun: gun,
     dongu: dongu,
     saat: saat,
-    ayBurcu: Astronomi.gununAyBurcu(gun),
+    ayBurcu: Astronomi.gununAyBurcu(gun, utcFarkiDakika: sonuc.utcFarkiDakika),
     paket: paket,
   );
   String doldur(String s) => slotDoldur(s, slotlar);
@@ -606,7 +611,10 @@ GunlukOkuma gunlukOkuma({
   // Günün gökyüzü cümlesi: Ay'ın günlük burcu × okuyucunun Güneş burcu ×
   // günün tonu. Açılışın hemen ardından gelir ki okuyucu günü önce kendi
   // burcuyla tanısın.
-  final Burc ayBurcu = Astronomi.gununAyBurcu(gun);
+  final Burc ayBurcu = Astronomi.gununAyBurcu(
+    gun,
+    utcFarkiDakika: sonuc.utcFarkiDakika,
+  );
   final ElementIliskisi gunIliskisi = elementIliskisi(
     ayBurcu.element,
     okuyucu.profil.burc.element,
@@ -669,6 +677,7 @@ GunlukOkuma gunlukOkuma({
   // Paragraf günün Ay burcundan kurulur.
   final _GokyuzuParcalari parlayanGokyuzu = _gokyuzuParcalari(
     motor: motor,
+    utcFarkiDakika: sonuc.utcFarkiDakika,
     okuyucu: okuyucu,
     gun: gun,
     kategori: parlayan,
@@ -726,6 +735,7 @@ GunlukOkuma gunlukOkuma({
     // Dikkat paragrafı: günün gökyüzü cümlesi + bir "yapma" önerisi.
     final _GokyuzuParcalari parca = _gokyuzuParcalari(
       motor: motor,
+      utcFarkiDakika: sonuc.utcFarkiDakika,
       okuyucu: okuyucu,
       gun: gun,
       kategori: zayif,
@@ -843,7 +853,10 @@ List<NedenOgesi> nedenOgeleri({
   required BulusmaTuru bulusma,
   required Burc gunesBurcu,
 }) {
-  final Burc ayBurcu = Astronomi.gununAyBurcu(sonuc.gun);
+  final Burc ayBurcu = Astronomi.gununAyBurcu(
+    sonuc.gun,
+    utcFarkiDakika: sonuc.utcFarkiDakika,
+  );
   final List<NedenOgesi> ogeler = <NedenOgesi>[
     NedenOgesi(
       tur: NedenTuru.kisiselGun,
@@ -904,6 +917,7 @@ KategoriOkumasi kategoriOkumasi({
   final GunDongusu dongu = GunDongusu.hesapla(
     dogumTarihi: okuyucu.profil.dogumTarihi,
     gun: gun,
+    utcFarkiDakika: sonuc.utcFarkiDakika,
   );
   final SansliSaat saat = motor.sansliSaat(
     kullanici: okuyucu.seed,
@@ -915,7 +929,7 @@ KategoriOkumasi kategoriOkumasi({
     gun: gun,
     dongu: dongu,
     saat: saat,
-    ayBurcu: Astronomi.gununAyBurcu(gun),
+    ayBurcu: Astronomi.gununAyBurcu(gun, utcFarkiDakika: sonuc.utcFarkiDakika),
     paket: paket,
   );
   String doldur(String s) => slotDoldur(s, slotlar);
@@ -932,6 +946,7 @@ KategoriOkumasi kategoriOkumasi({
 
   final _GokyuzuParcalari parca = _gokyuzuParcalari(
     motor: motor,
+    utcFarkiDakika: sonuc.utcFarkiDakika,
     okuyucu: okuyucu,
     gun: gun,
     kategori: kategori,
