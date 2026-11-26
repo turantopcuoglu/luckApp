@@ -18,6 +18,7 @@ import 'features/feedback/notification_service.dart';
 import 'features/home/ana_kabuk.dart';
 import 'features/legal/legal_config.dart';
 import 'features/legal/uyari_screen.dart';
+import 'features/legal/veri_lisanslari.dart';
 import 'features/onboarding/welcome_screen.dart';
 import 'features/premium/magaza_servisi.dart';
 import 'features/premium/premium_kontrolcu.dart';
@@ -50,6 +51,8 @@ bool get _mobilPlatform =>
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Gömülü şehir ve ülke verisinin lisansları (Ayarlar > Lisanslar).
+  VeriLisanslari.kaydet();
   // Hive kutuları açılır ve provider'lara override ile bağlanır;
   // kutu provider'ları bilerek override'sız çalışmaz (bkz. providers.dart).
   await AppStorage.baslat();

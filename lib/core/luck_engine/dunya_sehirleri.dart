@@ -1,12 +1,15 @@
-/// Türkiye dışındaki doğum şehirleri: veri biçimi ve arama (K8-5).
-/// Saf Dart.
+/// Türkiye dışındaki doğum şehirleri ve ülke adları: veri biçimi ve arama
+/// (K8-5). Saf Dart.
 ///
-/// Kaynak GeoNames `cities15000` (CC BY 4.0). Ham dosya bir hazırlama
-/// betiğiyle [DunyaSehri.geoNamesSatirindan] üzerinden kırpılır ve
-/// [DunyaSehri.kompaktSatir] biçiminde asset olarak yazılır; uygulama
-/// bunu [DunyaSehirleri.kompaktOku] ile okur. Türkiye satırları alınmaz:
-/// Türkiye'de doğum yeri 81 il listesinden gelir (bugünkü haritalar
-/// değişmesin diye).
+/// Kaynak GeoNames `cities15000` (CC BY 4.0). Ham dosya
+/// `tool/sehir_verisi.dart` ile kırpılır: yalnız ad, ASCII ad, ülke,
+/// enlem, boylam ve saat dilimi kalır; satırlar nüfusa göre sıralanır ve
+/// nüfus sütunu atılır (sıra, aramada kalabalık şehri öne alır). Türkiye
+/// satırları alınmaz: Türkiye'de doğum yeri 81 il listesinden gelir
+/// (bugünkü haritalar değişmesin diye).
+///
+/// Ülke adları Unicode CLDR'den (Türkçe ve İngilizce), bkz.
+/// `tool/ulke_adlari.swift`.
 library;
 
 import 'dogum_yeri.dart';
@@ -17,29 +20,26 @@ import 'numeroloji.dart';
 class DunyaSehri {
   /// Tüm alanlarıyla şehir oluşturur.
   const DunyaSehri({
-    required this.kimlik,
     required this.ad,
     required this.asciiAd,
     required this.ulkeKodu,
     required this.enlem,
     required this.boylam,
     required this.saatDilimi,
-    required this.nufus,
+    this.nufus = 0,
+    this.digerAdlar = const <String>[],
   });
 
   // GeoNames ana tablosunun sütunları (geonames.org/export, "geoname").
   static const int _gnSutunSayisi = 19;
-  static const int _gnKimlik = 0;
   static const int _gnAd = 1;
   static const int _gnAsciiAd = 2;
+  static const int _gnDigerAdlar = 3;
   static const int _gnEnlem = 4;
   static const int _gnBoylam = 5;
   static const int _gnUlke = 8;
   static const int _gnNufus = 14;
   static const int _gnSaatDilimi = 17;
-
-  // Kompakt biçimin sütunları.
-  static const int _kSutunSayisi = 8;
 
   /// GeoNames `cities15000.txt` satırından şehir; Türkiye satırı, eksik
   /// saat dilimi ya da bozuk satırda null.
@@ -50,76 +50,81 @@ class DunyaSehri {
     }
     final String ulke = s[_gnUlke];
     final String saatDilimi = s[_gnSaatDilimi];
+    final double? enlem = double.tryParse(s[_gnEnlem]);
+    final double? boylam = double.tryParse(s[_gnBoylam]);
     if (ulke.isEmpty ||
         ulke == EngineConfig.turkiyeUlkeKodu ||
-        saatDilimi.isEmpty) {
+        saatDilimi.isEmpty ||
+        s[_gnAd].isEmpty ||
+        enlem == null ||
+        boylam == null) {
       return null;
     }
-    return _kur(
-      kimlik: s[_gnKimlik],
-      ad: s[_gnAd],
-      asciiAd: s[_gnAsciiAd],
-      ulke: ulke,
-      enlem: s[_gnEnlem],
-      boylam: s[_gnBoylam],
-      saatDilimi: saatDilimi,
-      nufus: s[_gnNufus],
-    );
-  }
-
-  /// [kompaktSatir] biçiminden şehir; bozuk satırda null.
-  static DunyaSehri? kompaktSatirdan(String satir) {
-    final List<String> s = satir.split('\t');
-    if (s.length != _kSutunSayisi) {
-      return null;
-    }
-    return _kur(
-      kimlik: s[0],
-      ad: s[1],
-      asciiAd: s[2],
-      ulke: s[3],
-      enlem: s[4],
-      boylam: s[5],
-      saatDilimi: s[6],
-      nufus: s[7],
-    );
-  }
-
-  static DunyaSehri? _kur({
-    required String kimlik,
-    required String ad,
-    required String asciiAd,
-    required String ulke,
-    required String enlem,
-    required String boylam,
-    required String saatDilimi,
-    required String nufus,
-  }) {
-    final int? k = int.tryParse(kimlik);
-    final double? e = double.tryParse(enlem);
-    final double? b = double.tryParse(boylam);
-    if (k == null || e == null || b == null || ad.isEmpty) {
-      return null;
-    }
+    final String ad = s[_gnAd];
+    final String asciiAd = s[_gnAsciiAd].isEmpty ? ad : s[_gnAsciiAd];
+    final int nufus = int.tryParse(s[_gnNufus]) ?? 0;
     return DunyaSehri(
-      kimlik: k,
       ad: ad,
-      asciiAd: asciiAd.isEmpty ? ad : asciiAd,
+      asciiAd: asciiAd,
       ulkeKodu: ulke,
-      enlem: e,
-      boylam: b,
+      enlem: enlem,
+      boylam: boylam,
       saatDilimi: saatDilimi,
-      nufus: int.tryParse(nufus) ?? 0,
+      nufus: nufus,
+      digerAdlar: nufus >= EngineConfig.sehirDigerAdNufusEsigi
+          ? _digerAdlariSec(s[_gnDigerAdlar].split(','), <String>[ad, asciiAd])
+          : const <String>[],
     );
   }
 
-  /// GeoNames kimliği.
-  final int kimlik;
+  // Havaalanı ve kısaltma kodları ("MUC", "NYC"): aramada gürültü.
+  static final RegExp _kod = RegExp(r'^[A-Z]{2,4}$');
+
+  // Latin harf, boşluk ve ad içinde geçen işaretler.
+  static final RegExp _latinAd = RegExp(r"^[a-z .'’\-()]+$");
+
+  /// GeoNames'in dil etiketsiz diğer adlarından aramaya değer olanlar:
+  /// Latin yazılı, kod olmayan, [EngineConfig.sehirDigerAdEnUzun]
+  /// karakteri aşmayan ve aksansız hâli [bilinen] adlardan ve birbirinden
+  /// farklı olanlar ("München", "Münih", "Wien", "Viyana").
+  static List<String> _digerAdlariSec(
+    List<String> adaylar,
+    List<String> bilinen,
+  ) {
+    final Set<String> bilinenSade = <String>{
+      for (final String b in bilinen) Numeroloji.latinSadelestir(b),
+    };
+    // Aksansız hâli aynı olanlardan aksanlısı tutulur ("München" >
+    // "Munchen"): kullanıcıya gösterilen ad doğru yazılmış olsun.
+    final Map<String, String> secilen = <String, String>{};
+    for (final String a in adaylar) {
+      if (a.isEmpty ||
+          a.length > EngineConfig.sehirDigerAdEnUzun ||
+          _kod.hasMatch(a) ||
+          // Küçük harfle başlayanlar çoğunlukla başka yazıdan
+          // çeviriyazıdır ("wei ye na"); ad değil.
+          a[0] == a[0].toLowerCase()) {
+        continue;
+      }
+      final String sade = Numeroloji.latinSadelestir(a);
+      if (!_latinAd.hasMatch(sade) || bilinenSade.contains(sade)) {
+        continue;
+      }
+      final String? onceki = secilen[sade];
+      if (onceki == null || (_aksanli(a) && !_aksanli(onceki))) {
+        secilen[sade] = a;
+      }
+    }
+    return secilen.values.toList();
+  }
+
+  /// [a]da ASCII dışı harf var mı?
+  static bool _aksanli(String a) => a.runes.any((int r) => r > 0x7F);
 
   /// Yerel ad (ör. "München").
   final String ad;
 
-  /// ASCII ad (ör. "Munchen").
+  /// ASCII ad (ör. "Munich"); aramada yerel adla birlikte bakılır.
   final String asciiAd;
 
   /// ISO 3166-1 iki harfli ülke kodu.
@@ -134,22 +139,13 @@ class DunyaSehri {
   /// IANA saat dilimi kimliği.
   final String saatDilimi;
 
-  /// Nüfus (aramada sıralama için).
+  /// Nüfus; yalnız hazırlama betiğinde sıralama için (asset'te yok, 0).
   final int nufus;
 
-  /// Sekmeyle ayrılmış tek satır: kimlik, ad, ASCII ad, ülke, enlem,
-  /// boylam, saat dilimi, nüfus. Koordinat
-  /// [EngineConfig.sehirKoordinatHanesi] haneye yuvarlanır.
-  String kompaktSatir() => <String>[
-    '$kimlik',
-    ad,
-    asciiAd,
-    ulkeKodu,
-    enlem.toStringAsFixed(EngineConfig.sehirKoordinatHanesi),
-    boylam.toStringAsFixed(EngineConfig.sehirKoordinatHanesi),
-    saatDilimi,
-    '$nufus',
-  ].join('\t');
+  /// Aramada bakılan diğer adlar (yalnız kalabalık şehirlerde; ör.
+  /// "Munich" için "München", "Münih"). GeoNames ana adı bazen İngilizce
+  /// verir; kullanıcı yerel ya da Türkçe adla da bulabilsin diye tutulur.
+  final List<String> digerAdlar;
 
   /// Profile yazılacak doğum yeri.
   DogumYeri dogumYeri() => DogumYeri(
@@ -158,26 +154,143 @@ class DunyaSehri {
     saatDilimi: saatDilimi,
     enlem: enlem,
     boylam: boylam,
-    sehirKimligi: kimlik,
   );
 }
 
-/// Şehir verisini okuma ve arama.
+/// Şehir verisini yazma, okuma ve arama.
+///
+/// Asset biçimi (UTF-8, satır satır):
+/// - `#` ile başlayan satırlar açıklamadır (kaynak ve atıf).
+/// - `@` ile başlayan TEK satır saat dilimi tablosudur: `@` ve ardından
+///   sekmeyle ayrılmış IANA kimlikleri. Şehir satırları bu tablonun
+///   sırasını kullanır (dosya ~%40 küçülür).
+/// - Şehir satırı: ad, ASCII ad (adla aynıysa boş), ülke, enlem, boylam,
+///   saat dilimi sırası, diğer adlar (virgülle; çoğu satırda boş);
+///   sekmeyle ayrılır. Satırlar kalabalıktan tenhaya sıralıdır.
 abstract final class DunyaSehirleri {
-  /// Kompakt metni okur. `#` ile başlayan satırlar (başlık, atıf) ve boş
-  /// ya da bozuk satırlar atlanır.
-  static List<DunyaSehri> kompaktOku(String metin) => <DunyaSehri>[
-    for (final String satir in metin.split('\n'))
-      if (satir.isNotEmpty && !satir.startsWith('#'))
-        ?DunyaSehri.kompaktSatirdan(satir),
-  ];
+  static const String _aciklamaOnEki = '#';
+  static const String _saatDilimiOnEki = '@';
+  static const int _sutunSayisi = 7;
+
+  /// [sehirler]i asset biçiminde yazar; [aciklama] satırları başa `#` ile
+  /// eklenir. Sıra korunur; çağıran önce sıralamalıdır.
+  static String kompaktYaz(
+    List<DunyaSehri> sehirler, {
+    List<String> aciklama = const <String>[],
+  }) {
+    final List<String> dilimler =
+        sehirler.map((DunyaSehri s) => s.saatDilimi).toSet().toList()..sort();
+    final Map<String, int> sira = <String, int>{
+      for (int i = 0; i < dilimler.length; i++) dilimler[i]: i,
+    };
+    final StringBuffer b = StringBuffer();
+    for (final String a in aciklama) {
+      b.writeln('$_aciklamaOnEki $a');
+    }
+    b.writeln('$_saatDilimiOnEki${dilimler.join('\t')}');
+    for (final DunyaSehri s in sehirler) {
+      b.writeln(
+        <String>[
+          s.ad,
+          if (s.asciiAd == s.ad) '' else s.asciiAd,
+          s.ulkeKodu,
+          _koordinat(s.enlem),
+          _koordinat(s.boylam),
+          '${sira[s.saatDilimi]}',
+          s.digerAdlar.join(','),
+        ].join('\t'),
+      );
+    }
+    return b.toString();
+  }
+
+  /// Koordinatı [EngineConfig.sehirKoordinatHanesi] haneye yuvarlar ve
+  /// sondaki sıfırları atar ("48.1370" → "48.137").
+  static String _koordinat(double d) {
+    String m = d.toStringAsFixed(EngineConfig.sehirKoordinatHanesi);
+    while (m.endsWith('0')) {
+      m = m.substring(0, m.length - 1);
+    }
+    return m.endsWith('.') ? m.substring(0, m.length - 1) : m;
+  }
+
+  /// Asset metnini okur. Açıklama, boş ve bozuk satırlar atlanır; saat
+  /// dilimi tablosu yoksa liste boştur.
+  static List<DunyaSehri> kompaktOku(String metin) {
+    List<String> dilimler = const <String>[];
+    final List<DunyaSehri> sehirler = <DunyaSehri>[];
+    for (final String satir in metin.split('\n')) {
+      if (satir.isEmpty || satir.startsWith(_aciklamaOnEki)) {
+        continue;
+      }
+      if (satir.startsWith(_saatDilimiOnEki)) {
+        dilimler = satir.substring(1).split('\t');
+        continue;
+      }
+      final List<String> s = satir.split('\t');
+      if (s.length != _sutunSayisi) {
+        continue;
+      }
+      final double? enlem = double.tryParse(s[3]);
+      final double? boylam = double.tryParse(s[4]);
+      final int? dilim = int.tryParse(s[5]);
+      if (s[0].isEmpty ||
+          enlem == null ||
+          boylam == null ||
+          dilim == null ||
+          dilim < 0 ||
+          dilim >= dilimler.length) {
+        continue;
+      }
+      sehirler.add(
+        DunyaSehri(
+          ad: s[0],
+          asciiAd: s[1].isEmpty ? s[0] : s[1],
+          ulkeKodu: s[2],
+          enlem: enlem,
+          boylam: boylam,
+          saatDilimi: dilimler[dilim],
+          digerAdlar: s[6].isEmpty ? const <String>[] : s[6].split(','),
+        ),
+      );
+    }
+    return sehirler;
+  }
+
+  /// Aynı ülkede birden çok şehrin taşıdığı adlar (`ülke<TAB>ad`).
+  ///
+  /// Bölge adları veride yok; bu adlar listede koordinatla ayırt edilir
+  /// (bkz. [gorunenAd]).
+  static Set<String> ayniAdlar(Iterable<DunyaSehri> sehirler) {
+    final Set<String> gorulen = <String>{};
+    final Set<String> ayni = <String>{};
+    for (final DunyaSehri s in sehirler) {
+      final String k = '${s.ulkeKodu}\t${s.ad}';
+      if (!gorulen.add(k)) {
+        ayni.add(k);
+      }
+    }
+    return ayni;
+  }
+
+  /// Listede gösterilecek ad. Ülkede aynı adlı başka şehir varsa
+  /// koordinat eklenir: "Springfield (39.80°, -89.64°)".
+  static String gorunenAd(DunyaSehri s, Set<String> ayniAdlar) {
+    if (!ayniAdlar.contains('${s.ulkeKodu}\t${s.ad}')) {
+      return s.ad;
+    }
+    const int h = EngineConfig.sehirAyirtKoordinatHanesi;
+    return '${s.ad} (${s.enlem.toStringAsFixed(h)}°, '
+        '${s.boylam.toStringAsFixed(h)}°)';
+  }
 
   /// [ulkeKodu] ülkesindeki şehirlerde [sorgu] araması.
   ///
   /// Ad ya da ASCII ad, aksan ve büyük/küçük harf gözetmeden karşılaştırılır
   /// ("munchen", "MÜNCHEN" ve "München" aynıdır). Adı sorguyla başlayanlar
-  /// önce, içinde geçenler sonra gelir; her grupta kalabalık şehir önce.
-  /// Boş sorguda ülkenin en kalabalık şehirleri döner.
+  /// önce, içinde geçenler sonra gelir; her grupta listedeki sıra korunur
+  /// (asset kalabalıktan tenhaya sıralıdır). Boş sorguda ülkenin ilk
+  /// (en kalabalık) şehirleri döner.
   static List<DunyaSehri> ara(
     Iterable<DunyaSehri> sehirler, {
     required String ulkeKodu,
@@ -193,19 +306,108 @@ abstract final class DunyaSehirleri {
       }
       final String ad = Numeroloji.latinSadelestir(sehir.ad);
       final String ascii = Numeroloji.latinSadelestir(sehir.asciiAd);
-      if (ad.startsWith(s) || ascii.startsWith(s)) {
+      if (ad.startsWith(s) ||
+          ascii.startsWith(s) ||
+          _digerAdla(sehir, s) != null) {
         baslayan.add(sehir);
-      } else if (ad.contains(s) || ascii.contains(s)) {
+        if (baslayan.length >= enFazla) {
+          break; // Başlayanlar zaten listenin başına gelir.
+        }
+      } else if (iceren.length < enFazla &&
+          (ad.contains(s) || ascii.contains(s))) {
         iceren.add(sehir);
       }
     }
-    int sirala(DunyaSehri a, DunyaSehri b) {
-      final int n = b.nufus.compareTo(a.nufus);
-      return n != 0 ? n : a.ad.compareTo(b.ad);
-    }
-
-    baslayan.sort(sirala);
-    iceren.sort(sirala);
     return <DunyaSehri>[...baslayan, ...iceren].take(enFazla).toList();
+  }
+
+  /// [sehir] [sorgu]ya yalnız diğer adlarından biriyle uyuyorsa o ad
+  /// ("münch" → Munich için "München"); ad ya da ASCII adla uyuyorsa ya da
+  /// hiç uymuyorsa null. Listede "Munich (München)" yazmak için.
+  static String? eslesenDigerAd(DunyaSehri sehir, String sorgu) {
+    final String s = Numeroloji.latinSadelestir(sorgu.trim());
+    if (s.isEmpty ||
+        Numeroloji.latinSadelestir(sehir.ad).contains(s) ||
+        Numeroloji.latinSadelestir(sehir.asciiAd).contains(s)) {
+      return null;
+    }
+    return _digerAdla(sehir, s);
+  }
+
+  /// Sadeleşmiş [s] ile başlayan ilk diğer ad.
+  static String? _digerAdla(DunyaSehri sehir, String s) {
+    if (s.isEmpty) {
+      return null;
+    }
+    for (final String a in sehir.digerAdlar) {
+      if (Numeroloji.latinSadelestir(a).startsWith(s)) {
+        return a;
+      }
+    }
+    return null;
+  }
+}
+
+/// Doğum ülkesi seçimi için bir ülke.
+class Ulke {
+  /// Tüm alanlarıyla ülke oluşturur.
+  const Ulke({required this.kod, required this.trAd, required this.enAd});
+
+  /// ISO 3166-1 iki harfli kod.
+  final String kod;
+
+  /// Türkçe ad (CLDR).
+  final String trAd;
+
+  /// İngilizce ad (CLDR).
+  final String enAd;
+
+  /// [dilKodu] dilindeki ad; Türkçe dışında İngilizce.
+  String ad(String dilKodu) => dilKodu == 'tr' ? trAd : enAd;
+}
+
+/// Ülke listesini okuma ve arama.
+abstract final class Ulkeler {
+  static const int _sutunSayisi = 3;
+
+  /// `kod<TAB>Türkçe ad<TAB>İngilizce ad` satırlarını okur; `#` ile
+  /// başlayan, boş ve bozuk satırlar atlanır.
+  static List<Ulke> kompaktOku(String metin) => <Ulke>[
+    for (final String satir in metin.split('\n'))
+      if (satir.isNotEmpty && !satir.startsWith('#'))
+        if (satir.split('\t') case final List<String> s
+            when s.length == _sutunSayisi && s[0].length == 2)
+          Ulke(kod: s[0], trAd: s[1], enAd: s[2]),
+  ];
+
+  /// [dilKodu] dilindeki adla arama: aksan gözetmez, başlayanlar önce,
+  /// her grupta alfabetik. Türkçe ve İngilizce adın ikisine de bakılır
+  /// ("Germany" yazan Türkçe kullanıcı da Almanya'yı bulur). Boş sorguda
+  /// bütün ülkeler alfabetik.
+  static List<Ulke> ara(
+    Iterable<Ulke> ulkeler, {
+    required String sorgu,
+    required String dilKodu,
+  }) {
+    final String s = Numeroloji.latinSadelestir(sorgu.trim());
+    final List<Ulke> baslayan = <Ulke>[];
+    final List<Ulke> iceren = <Ulke>[];
+    for (final Ulke u in ulkeler) {
+      final String yerel = Numeroloji.latinSadelestir(u.ad(dilKodu));
+      final String obur = Numeroloji.latinSadelestir(
+        dilKodu == 'tr' ? u.enAd : u.trAd,
+      );
+      if (yerel.startsWith(s) ||
+          obur.startsWith(s) ||
+          u.kod.toLowerCase() == s) {
+        baslayan.add(u);
+      } else if (yerel.contains(s) || obur.contains(s)) {
+        iceren.add(u);
+      }
+    }
+    int sirala(Ulke a, Ulke b) => Numeroloji.latinSadelestir(
+      a.ad(dilKodu),
+    ).compareTo(Numeroloji.latinSadelestir(b.ad(dilKodu)));
+    return <Ulke>[...baslayan..sort(sirala), ...iceren..sort(sirala)];
   }
 }

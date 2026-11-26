@@ -96,6 +96,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ayarlarUyari => 'Notice: for entertainment only';
 
   @override
+  String get ayarlarLisanslar => 'Licenses';
+
+  @override
   String get ayarlarVerileriSil => 'Delete my data';
 
   @override
@@ -168,7 +171,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingDogumSaatiYeriAciklama =>
-      'Your Moon and rising signs are calculated from these. If you do not know the time, or were born outside Türkiye, leave them empty; you can add them later from your profile.';
+      'Your Moon and rising signs are calculated from these. If you do not know the time, leave it empty; you can add it later from your profile.';
 
   @override
   String get onboardingKaderimiHesapla => 'Read my stars';
@@ -588,10 +591,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilSaatSec => 'Choose time';
 
   @override
-  String get profilDogumIli => 'Where you were born';
+  String get profilDogumIli => 'Province of birth';
 
   @override
   String get profilDogumIliIpucu => 'Type a province (e.g. İzmir)';
+
+  @override
+  String get profilDogumUlkesi => 'Country of birth';
+
+  @override
+  String get profilDogumUlkesiIpucu => 'Type a country';
+
+  @override
+  String get profilDogumSehri => 'City of birth';
+
+  @override
+  String get profilDogumSehriIpucu => 'Type a city (e.g. Berlin)';
+
+  @override
+  String get profilEnYakinSehir =>
+      'If your town isn\'t listed, choose the nearest city.';
+
+  @override
+  String get profilSehirListesiYok =>
+      'The city list couldn\'t be opened. Restart the app and try again.';
 
   @override
   String get profilKaydet => 'Save';

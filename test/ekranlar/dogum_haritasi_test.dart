@@ -40,6 +40,23 @@ void main() {
     );
   }
 
+  /// Asset'ten beslenen [anahtar] alanı açılana (veri gelene) kadar
+  /// gerçek zamanda bekler; en çok 5 saniye.
+  Future<void> acilanaKadarBekle(WidgetTester tester, String anahtar) async {
+    for (int i = 0; i < 50; i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      );
+      await tester.pump();
+      final TextField alan = tester.widget<TextField>(find.byKey(Key(anahtar)));
+      if (alan.enabled ?? true) {
+        await tester.pumpAndSettle();
+        return;
+      }
+    }
+    fail('$anahtar açılmadı');
+  }
+
   Future<void> ac(
     WidgetTester tester,
     Widget ev,
@@ -133,6 +150,66 @@ void main() {
       expect(kayitli.dogumSaatiDakika, isNull);
       // Saat hâlâ bilinmediği için Yükselen yok; düğme duruyor.
       expect(find.text(trMetinler.profilYukseleniniOgren), findsOneWidget);
+    });
+
+    testWidgets('yurt dışı: ülke ve şehir seçilir; yabancı yer kaydedilir, '
+        "Türkiye'ye dönünce il alanı gelir", (WidgetTester tester) async {
+      await ac(tester, const BuyukUcluKarti(), ayse);
+      await tester.tap(find.text(trMetinler.profilYukseleniniOgren));
+      await tester.pumpAndSettle();
+      // Ülke listesi asset'ten okunur (gerçek dosya).
+      await acilanaKadarBekle(tester, 'dogum-ulkesi-alani');
+      expect(find.byKey(const Key('dogum-ili-alani')), findsOneWidget);
+
+      await tester.enterText(
+        find.byKey(const Key('dogum-ulkesi-alani')),
+        'alman',
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Almanya').last);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('dogum-ili-alani')), findsNothing);
+      expect(find.byKey(const Key('dogum-sehri-alani')), findsOneWidget);
+      expect(find.text(trMetinler.profilEnYakinSehir), findsOneWidget);
+
+      // Şehir verisi yalnız şimdi okunur; alan veri gelince açılır.
+      await acilanaKadarBekle(tester, 'dogum-sehri-alani');
+      await tester.enterText(
+        find.byKey(const Key('dogum-sehri-alani')),
+        'munch',
+      );
+      await tester.pumpAndSettle();
+      // GeoNames ana adı "Munich"; aranan diğer ad parantezde gösterilir.
+      await tester.tap(find.text('Munich (München)').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(trMetinler.profilKaydet));
+      await tester.pumpAndSettle();
+
+      final UserProfile kayitli = UserRepository(ortam.profil).profil()!;
+      expect(kayitli.dogumIliPlaka, isNull);
+      final DogumYeri yer = kayitli.dogumYeri!;
+      expect(yer.ulkeKodu, 'DE');
+      expect(yer.ad, 'Munich');
+      expect(yer.saatDilimi, 'Europe/Berlin');
+      expect(yer.enlem, closeTo(48.14, 0.05));
+      expect(yer.boylam, closeTo(11.58, 0.05));
+
+      // Yeniden açılınca ülke Almanya, şehir Munich gelir; Türkiye
+      // seçilince il alanı döner.
+      await tester.tap(find.text(trMetinler.profilYukseleniniOgren));
+      await tester.pumpAndSettle();
+      await acilanaKadarBekle(tester, 'dogum-ulkesi-alani');
+      expect(find.widgetWithText(TextField, 'Almanya'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Munich'), findsOneWidget);
+      await tester.enterText(
+        find.byKey(const Key('dogum-ulkesi-alani')),
+        'türk',
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Türkiye').last);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('dogum-ili-alani')), findsOneWidget);
+      expect(find.byKey(const Key('dogum-sehri-alani')), findsNothing);
     });
 
     testWidgets('saat ve il varsa üç burç ve "Haritanı oku" görünür', (

@@ -85,4 +85,18 @@ abstract final class ProfileConfig {
   /// Büyük Üçlü'de bilinmeyen burcun yerine yazılan işaret (dilden
   /// bağımsız).
   static const String bilinmeyenDeger = '?';
+
+  /// Türkiye dışı doğum şehirleri (GeoNames, kırpılmış; bkz.
+  /// `tool/sehir_verisi.dart`).
+  static const String sehirlerAsset = 'assets/veri/sehirler.tsv';
+
+  /// Ülke adları (CLDR, Türkçe ve İngilizce).
+  static const String ulkelerAsset = 'assets/veri/ulkeler.tsv';
+
+  /// Doğum yeri öneri listesinin en fazla yüksekliği (Flutter varsayılanı).
+  static const double oneriListesiEnFazlaYukseklik = 200;
+
+  /// Öneri listesinde vurgulanan satırın mor zemin opaklığı. Altın,
+  /// lacivert yüzeyin üstünde griye döndüğü için mor kullanılır.
+  static const double oneriVurguOpakligi = 0.18;
 }

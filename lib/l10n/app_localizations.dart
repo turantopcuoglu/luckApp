@@ -266,6 +266,12 @@ abstract class AppLocalizations {
   /// **'Uyarı: eğlence amaçlıdır'**
   String get ayarlarUyari;
 
+  /// Açık kaynak ve veri lisansları sayfası (GeoNames atfı burada).
+  ///
+  /// In tr, this message translates to:
+  /// **'Lisanslar'**
+  String get ayarlarLisanslar;
+
   /// Tüm yerel verileri silme satırı.
   ///
   /// In tr, this message translates to:
@@ -395,7 +401,7 @@ abstract class AppLocalizations {
   /// Profil formu: doğum saati ve yerinin neden istendiği, boş bırakılabileceği.
   ///
   /// In tr, this message translates to:
-  /// **'Ay ve yükselen burcun bunlardan hesaplanır. Saatini bilmiyorsan ya da Türkiye dışında doğduysan boş bırak; sonradan profilinden ekleyebilirsin.'**
+  /// **'Ay ve yükselen burcun bunlardan hesaplanır. Saatini bilmiyorsan boş bırak; sonradan profilinden ekleyebilirsin.'**
   String get onboardingDogumSaatiYeriAciklama;
 
   /// Tanışma ekranı: hesaplamayı başlatan buton.
@@ -1136,7 +1142,7 @@ abstract class AppLocalizations {
   /// **'Saat seç'**
   String get profilSaatSec;
 
-  /// Doğum yeri alanı (il listesi şimdilik Türkiye illeri).
+  /// Doğum yeri: Türkiye seçiliyken il arama alanı.
   ///
   /// In tr, this message translates to:
   /// **'Doğduğun il'**
@@ -1147,6 +1153,42 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'İl adı yaz (ör. İzmir)'**
   String get profilDogumIliIpucu;
+
+  /// Doğum yeri: ülke arama alanı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğduğun ülke'**
+  String get profilDogumUlkesi;
+
+  /// Ülke alanı ipucu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ülke adı yaz'**
+  String get profilDogumUlkesiIpucu;
+
+  /// Doğum yeri: Türkiye dışında şehir arama alanı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğduğun şehir'**
+  String get profilDogumSehri;
+
+  /// Şehir alanı ipucu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şehir adı yaz (ör. Berlin)'**
+  String get profilDogumSehriIpucu;
+
+  /// Şehir alanının altındaki not: küçük yerler listede yok.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğduğun yer listede yoksa en yakın şehri seç.'**
+  String get profilEnYakinSehir;
+
+  /// Şehir verisi yüklenemezse.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şehir listesi açılamadı. Uygulamayı yeniden başlatıp dene.'**
+  String get profilSehirListesiYok;
 
   /// Doğum bilgisi düzenleyici kaydet butonu.
   ///

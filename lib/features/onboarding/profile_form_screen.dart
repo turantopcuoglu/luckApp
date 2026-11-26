@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/luck_engine/luck_engine.dart';
 import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
@@ -34,10 +35,15 @@ final StateProvider<int?> secilenDogumSaatiProvider = StateProvider<int?>(
   (Ref ref) => null,
 );
 
-/// Formda seçili doğum ilinin plaka kodu; seçilmediyse null.
-final StateProvider<int?> secilenDogumIliProvider = StateProvider<int?>(
-  (Ref ref) => null,
+/// Formda seçili doğum ülkesi (ISO kodu); varsayılan Türkiye.
+final StateProvider<String> secilenDogumUlkesiProvider = StateProvider<String>(
+  (Ref ref) => EngineConfig.turkiyeUlkeKodu,
 );
+
+/// Formda seçili doğum yeri (Türkiye ili ya da yabancı şehir); seçilmediyse
+/// null.
+final StateProvider<DogumYeri?> secilenDogumYeriProvider =
+    StateProvider<DogumYeri?>((Ref ref) => null);
 
 /// Onboarding'in TEK veri adımı: doğumdaki tam ad, doğum tarihi, (biliniyorsa)
 /// doğum saati ve doğum yeri.
@@ -102,8 +108,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
               tamAd: tamAd,
               uyariKabulSurumu: LegalConfig.uyariSurumu,
               dogumSaatiDakika: ref.read(secilenDogumSaatiProvider),
-              dogumIliPlaka: ref.read(secilenDogumIliProvider),
-            ),
+            ).copyWith(dogumYeri: ref.read(secilenDogumYeriProvider)),
           ),
     );
     Navigator.of(
@@ -187,13 +192,21 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
                     const SizedBox(height: AppSpacing.sm),
                     DogumSaatiYeriAlanlari(
                       saat: ref.watch(secilenDogumSaatiProvider),
-                      plaka: ref.watch(secilenDogumIliProvider),
+                      ulkeKodu: ref.watch(secilenDogumUlkesiProvider),
+                      yer: ref.watch(secilenDogumYeriProvider),
                       onSaat: (int? dakika) =>
                           ref.read(secilenDogumSaatiProvider.notifier).state =
                               dakika,
-                      onIl: (int plaka) =>
-                          ref.read(secilenDogumIliProvider.notifier).state =
-                              plaka,
+                      onUlke: (String kod) {
+                        ref.read(secilenDogumUlkesiProvider.notifier).state =
+                            kod;
+                        // Ülke değişince eski ülkenin şehri geçersizdir.
+                        ref.read(secilenDogumYeriProvider.notifier).state =
+                            null;
+                      },
+                      onYer: (DogumYeri? yer) =>
+                          ref.read(secilenDogumYeriProvider.notifier).state =
+                              yer,
                     ),
                     const SizedBox(height: AppSpacing.md),
                   ],

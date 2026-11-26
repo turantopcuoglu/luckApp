@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:timezone/data/latest.dart' as tz_veri;
+// Doğum saat dilimi çözücüsüyle aynı veri: hangisi önce yüklerse onunki
+// kullanılır (bkz. DogumSaatDilimi).
+import 'package:timezone/data/latest_all.dart' as tz_veri;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../core/theme/app_colors.dart';

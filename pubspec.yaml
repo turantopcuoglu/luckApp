@@ -53,3 +53,5 @@ flutter:
   assets:
     - assets/svg/
     - assets/images/
+    # Doğum yeri: GeoNames şehirleri ve CLDR ülke adları (K8-5).
+    - assets/veri/

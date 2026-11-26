@@ -219,4 +219,16 @@ abstract final class EngineConfig {
   /// Şehir verisinde koordinatın ondalık hanesi: 4 hane ≈ 11 m, Yükselen
   /// için fazlasıyla yeter ve dosyayı küçültür.
   static const int sehirKoordinatHanesi = 4;
+
+  /// Aynı adlı şehirler listede koordinatla ayrılırken kullanılan hane
+  /// (2 hane ≈ 1 km).
+  static const int sehirAyirtKoordinatHanesi = 2;
+
+  /// Diğer adları (ör. "München", "Münih") tutulan şehirlerin en düşük
+  /// nüfusu. Daha küçük şehirlerde GeoNames ana adı zaten yereldir; bütün
+  /// şehirlerde tutmak dosyayı ~1,8 MB büyütürdü, bu eşikle ~0,6 MB.
+  static const int sehirDigerAdNufusEsigi = 100000;
+
+  /// Tutulan bir diğer adın en fazla uzunluğu (karakter).
+  static const int sehirDigerAdEnUzun = 40;
 }

@@ -46,22 +46,25 @@ void main() {
     await gecis(tester);
   }
 
-  testWidgets('karşılama: slogan ve Başla butonu görünür',
-      (WidgetTester tester) async {
+  testWidgets('karşılama: slogan ve Başla butonu görünür', (
+    WidgetTester tester,
+  ) async {
     await akisiBaslat(tester);
     expect(find.text(trMetinler.onboardingSlogan), findsOneWidget);
     expect(find.text(trMetinler.onboardingBasla), findsOneWidget);
   });
 
-  testWidgets('Başla önce uyarıyı açar; onaysız devam edilemez',
-      (WidgetTester tester) async {
+  testWidgets('Başla önce uyarıyı açar; onaysız devam edilemez', (
+    WidgetTester tester,
+  ) async {
     await akisiBaslat(tester);
     await tester.tap(find.text(trMetinler.onboardingBasla));
     await gecis(tester);
 
     expect(find.byType(UyariScreen), findsOneWidget);
-    final FilledButton devam =
-        tester.widget<FilledButton>(find.byType(FilledButton));
+    final FilledButton devam = tester.widget<FilledButton>(
+      find.byType(FilledButton),
+    );
     expect(devam.onPressed, isNull);
 
     await tester.tap(find.byKey(const Key('uyari-onay')));
@@ -72,8 +75,9 @@ void main() {
     );
   });
 
-  testWidgets('form: boş ad uyarı verir, geçirmez',
-      (WidgetTester tester) async {
+  testWidgets('form: boş ad uyarı verir, geçirmez', (
+    WidgetTester tester,
+  ) async {
     await akisiBaslat(tester);
     await formaKadarIlerle(tester);
     expect(find.byType(ProfileFormScreen), findsOneWidget);
@@ -84,8 +88,9 @@ void main() {
     expect(find.byType(ProfileFormScreen), findsOneWidget);
   });
 
-  testWidgets('form yalnızca doğum verisini sorar: tam ad, tarih, saat, yer',
-      (WidgetTester tester) async {
+  testWidgets('form yalnızca doğum verisini sorar: tam ad, tarih, saat, yer', (
+    WidgetTester tester,
+  ) async {
     await akisiBaslat(tester);
     await formaKadarIlerle(tester);
 
@@ -117,8 +122,70 @@ void main() {
     }
   });
 
-  testWidgets('tam akış: uyarı → tam ad + doğum yeri → hesaplama → ana kabuk',
-      (WidgetTester tester) async {
+  testWidgets(
+    'yurt dışı doğum: ülke ve şehir seçilir, yabancı yer kaydedilir',
+    (WidgetTester tester) async {
+      await akisiBaslat(tester);
+      await formaKadarIlerle(tester);
+      await tester.enterText(
+        find.byKey(const Key('tam-ad-form-alani')),
+        'Ayşe Demir',
+      );
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('dogum-ili-alani')),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+
+      /// Asset'ten beslenen alan açılana kadar gerçek zamanda bekler.
+      Future<void> bekle(String anahtar) async {
+        for (int i = 0; i < 50; i++) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 100)),
+          );
+          await tester.pump();
+          if (tester.widget<TextField>(find.byKey(Key(anahtar))).enabled ??
+              true) {
+            return;
+          }
+        }
+        fail('$anahtar açılmadı');
+      }
+
+      await bekle('dogum-ulkesi-alani');
+      await tester.enterText(
+        find.byKey(const Key('dogum-ulkesi-alani')),
+        'holl',
+      );
+      await tester.pump();
+      await tester.tap(find.text('Hollanda').last);
+      await tester.pump();
+      await bekle('dogum-sehri-alani');
+      await tester.enterText(
+        find.byKey(const Key('dogum-sehri-alani')),
+        'rotter',
+      );
+      await tester.pump();
+      await tester.tap(find.text('Rotterdam').last);
+      await tester.pump();
+      await tester.tap(find.text(trMetinler.onboardingKaderimiHesapla));
+      await gecis(tester);
+
+      final UserProfile kayitli = UserRepository(ortam.profil).profil()!;
+      expect(kayitli.dogumIliPlaka, isNull);
+      expect(kayitli.dogumYeri!.ulkeKodu, 'NL');
+      expect(kayitli.dogumYeri!.ad, 'Rotterdam');
+      expect(kayitli.dogumYeri!.saatDilimi, 'Europe/Amsterdam');
+      expect(find.byType(CalculatingScreen), findsOneWidget);
+      // Hazırlık ekranının zamanlayıcıları kapansın.
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(seconds: 5));
+    },
+  );
+
+  testWidgets('tam akış: uyarı → tam ad + doğum yeri → hesaplama → ana kabuk', (
+    WidgetTester tester,
+  ) async {
     await akisiBaslat(tester);
     await formaKadarIlerle(tester);
 
@@ -160,8 +227,9 @@ void main() {
         kullanici: repo.profil()!.seed,
         gun: sabitGun,
       );
-      await LuckHistoryRepository(ortam.kayit)
-          .kaydet(DailyRecord(sonuc: sonuc));
+      await LuckHistoryRepository(
+        ortam.kayit,
+      ).kaydet(DailyRecord(sonuc: sonuc));
     });
 
     // 2.5 sn ışık dolumu: bayrak true olur, "Kartın hazır" belirir.

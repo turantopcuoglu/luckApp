@@ -9,6 +9,7 @@ import '../../core/storage/providers.dart';
 import '../../core/storage/user_profile.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/dil_config.dart';
 import '../../l10n/dil_providers.dart';
@@ -251,6 +252,17 @@ class AyarlarScreen extends ConsumerWidget {
                     fadeThroughRoute<void>(YasalBelgeScreen(belge: belge)),
                   ),
                 ),
+              ListTile(
+                leading: const Icon(Icons.copyright_outlined),
+                title: Text(l.ayarlarLisanslar),
+                // Flutter paket lisansları + gömülü veri (GeoNames, CLDR;
+                // bkz. VeriLisanslari).
+                onTap: () => showLicensePage(
+                  context: context,
+                  applicationName: AppMarka.ad,
+                  applicationVersion: LegalConfig.uygulamaSurumu,
+                ),
+              ),
               ListTile(
                 leading: const Icon(
                   Icons.delete_forever_outlined,

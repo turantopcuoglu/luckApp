@@ -32,9 +32,9 @@ Karar: `STUDIO/KARARLAR.md`, 2026-11-27. Turan: "LuckApp: önerdiğin gibi olsun
 | 4 | Yabancı doğumda Yükselen şehrin koordinatı ve IANA farkıyla hesaplanır | KARŞILANDI | Berlin testi; K8-2'de 4 AA kaydı |
 | 5 | Cihaz diliminde atlanan saat kaymaz | KARŞILANDI | test İstanbul, UTC ve New York makine saatinde geçti |
 | 6 | Şehir verisi biçimi ve araması saf Dart, testli | KARŞILANDI | `test/luck_engine/dunya_sehirleri_test.dart` |
-| 7 | Ülke seçici + şehir araması (tanışma ve profil) | KARŞILANMADI | Şehir verisi yok, hedef kare yok (sorular 1–3) |
-| 8 | "Türkiye dışında doğduysan boş bırak" metni kalkar | KARŞILANMADI | Arayüzle birlikte; yabancı şehir seçilemeden kalkarsa yanlış olur |
-| 9 | GeoNames atfı (Hakkında + lisans sayfası) | KARŞILANMADI | Veriyle birlikte |
+| 7 | Ülke seçici + şehir araması (tanışma ve profil) | KARŞILANDI (tur 2) | `reports/k8_5_kanit/`, ekran testleri |
+| 8 | "Türkiye dışında doğduysan boş bırak" metni kalkar | KARŞILANDI (tur 2) | TR ve EN metin; `1_tanisma_tr_once_sonra.png` |
+| 9 | GeoNames atfı (Ayarlar > Lisanslar + LicenseRegistry) | KARŞILANDI (tur 2) | `veri_lisanslari.dart`; cihazda açılıp **bakılmadı** |
 | 10 | `flutter analyze` 0, testler yeşil | KARŞILANDI | Sayılar commit mesajlarında |
 | 11 | Cihazda deneme | DOĞRULAMADIM | Emülatör testi Turan'da |
 
@@ -68,3 +68,101 @@ Görsel değişiklik yok, ekran görüntüsü alınmadı. Kullanıcının görec
 6. **Türkiye'de tek davranış farkı.** Saatlerin ileri ya da geri alındığı gece, atlanan ya da iki kez yaşanan saatte doğanlarda Yükselen'in altına geçiş notu düşüyor. Bu, K8-2 kuralının sonucu. Harita ve skor aynı.
 7. **`latest` → `latest_all`.** Plan bildirimlerin de `latest_all`'a geçmesini söylüyor. Bu adımı veri gelince yapacağım: betik GeoNames'teki her saat dilimi kimliğinin `latest`'te olup olmadığını sayacak. Hepsi varsa geçişe gerek yok, uygulama küçük kalır. İki taraf aynı anda geçmeli: veri ilk kim yüklerse onunki kullanılıyor.
 8. **Türkçe şehir adları** ("Münih", "Viyana") için elle yazılmış eş anlamlı listesi plandaydı. Veriyle birlikte yazılacak.
+
+## Tur 2 (27 Kasım gece): veri ve arayüz
+
+Karar: `STUDIO/KARARLAR.md` 2026-11-27, "GeoNames cities15000 indirilir" (Turan: "Evet, indir").
+
+**Veri**
+
+- **GeoNames `cities15000.zip`:** 26 Kasım sürümü, 34 247 satır, SHA-256 `ef92c9b4d801f1da959372f53d2f586517b704239ea0b8756045a3d804438779`. Başka dosya indirilmedi.
+- **Kırpma.** `tool/sehir_verisi.dart` → `assets/veri/sehirler.tsv`:
+  - 33 810 şehir, 243 ülke.
+  - Türkiye'nin 437 satırı atıldı; Türkiye'de 81 il kalıyor.
+  - Kalan alanlar: ad, ASCII ad, ülke, enlem, boylam (4 hane), saat dilimi (356 kimlik tek tabloda).
+  - Satırlar nüfusa göre sıralı; nüfus sütunu atıldı.
+  - Boyut 1,59 MB, gzip 796 KB.
+- **Ülke adları.** İndirme yapılmadı. Türkçe ve İngilizce adlar macOS'un yerleşik Unicode CLDR verisinden üretildi (`tool/ulke_adlari.swift`, macOS 26). Çıktı `assets/veri/ulkeler.tsv`, 244 ülke.
+- **Lisanslar.** Ayarlar > Gizlilik ve yasal > "Lisanslar" satırı `showLicensePage` açıyor. Orada iki kayıt var:
+  - GeoNames: CC BY 4.0 bağlantısı ve yapılan kırpma, TR ve EN.
+  - Unicode CLDR: Unicode License v3 tam metni, Flutter SDK'daki kopyadan alındı.
+- **Saat dilimi verisi `latest_all`'a geçti** (çözücü ve bildirimler birlikte). `latest`, GeoNames'in kullandığı 356 kimliğin 15'ini içermiyor; örnekler: `Asia/Yangon`, `America/Nuuk`, `Europe/Saratov`. Tahmini ek boyut ~120 KB.
+
+**Arayüz**
+
+- Tanışma formunda ve profildeki "Doğum saatin ve yerin" sayfasında yeni bir "Doğduğun ülke" alanı var. Varsayılan Türkiye. Türkçe ya da İngilizce adla aranıyor ("Germany" yazan Türkçe kullanıcı Almanya'yı bulur).
+- Türkiye seçiliyse eskisi gibi il alanı çıkıyor. Başka ülke seçiliyse "Doğduğun şehir" alanı ve "Doğduğun yer listede yoksa en yakın şehri seç." notu çıkıyor.
+- Açıklamadaki "ya da Türkiye dışında doğduysan" kısmı kalktı.
+
+**Bilerek verilen kararlar** (geri alınabilir, Turan'ın onayına sunuluyor)
+
+1. **Diğer adlar.** GeoNames büyük şehirlere İngilizce ad veriyor: Munich, Vienna, Rome. "München" ya da "Wien" yazan kullanıcı hiçbir şey bulamıyordu. Bu yüzden 100 binin üstündeki şehirlerde (6 174 şehir) Latin harfli diğer adlar da tutuluyor; dosyaya ~0,4 MB ekliyor. Listede "Munich (München)" yazıyor; kayda "Munich" gidiyor.
+2. **Aynı adlı şehirler.** Bir ülkede aynı adı taşıyan 811 grup var (ABD'de 10 Springfield). Bölge adları veride yok, bu yüzden listede koordinatla ayrılıyorlar: "Springfield (39.80°, -89.64°)". Daha iyi çözüm, GeoNames `admin1CodesASCII.txt` ile eyalet adı ("Springfield, Illinois"). Bu dosyanın indirilmesi onaylanmadı (soru A).
+3. **"En yakın şehir"** bir not olarak uygulandı. Konum izni ve GPS yok; yeni paket gerekirdi.
+4. **Alanlar veri gelene kadar kapalı.** Ülke ve şehir alanı veri yüklenene kadar devre dışı kalıyor. Öneriler yalnız metin değişince hesaplanıyor; kapalı olmasaydı erken yazan kullanıcı öneri göremezdi. Ülke dosyası küçük, anında açılır. Şehir dosyası yalnız biri Türkiye dışını seçince okunuyor.
+5. **Klasörler.** `tool/` (iki betik) ve `assets/veri/` açıldı (`CLAUDE.md`: klasör yapısı). Görev açıkça "asset olarak koy" diyordu; betik için `tool/` Dart geleneği. İstenmezse betikler `reports/` altına taşınır.
+
+**Ölçümler**
+
+- `flutter analyze` temiz. 565 test yeşil (Europe/Istanbul). Altın tablo İstanbul ve UTC'de aynı.
+- Yeni ekran testleri:
+  - Profil: Almanya → "munch" → Munich kaydedilir, yeniden açılınca gelir; Türkiye'ye dönünce il alanı geri gelir.
+  - Tanışma: Hollanda → Rotterdam.
+- Önce/sonra kareleri: `reports/k8_5_kanit/`. Test ortamında çizildi: Roboto fontu, klavye yok. Cihazda **doğrulanmadı**.
+
+**Sabah soruları**
+
+- A. GeoNames `admin1CodesASCII.txt` (~150 KB, aynı lisans) indirilsin mi? Aynı adlı şehirler eyalet ya da bölge adıyla gösterilir.
+- B. Ülke adlarında CLDR'nin seçimleri aynen kaldı: "Filistin Bölgeleri", "Kongo - Kinşasa", "Myanmar (Burma)". Elle düzeltme istenen var mı?
+- C. Öneri listesi alttaki alanın altına açılıyor. Profil sayfasında ekranın altına yakın kalıyor; cihazda klavye açıkken yer daralır. Liste yukarı açılsın mı? Emülatörde bakılınca karar verilmeli.
+
+## Tur 3 (27 Kasım gece): görsel denetim ve düzeltmeler
+
+`gorsel-denetci` 5 kareye baktı (Roboto ile çizildiler; harf genişliği cihazda farklı olabilir). Bulguları ve yapılanlar:
+
+| # | Bulgu | Ne yapıldı | Kanıt |
+|---|---|---|---|
+| 1 | Dünya ikonu dolu ve iri, altındaki iğne ince çizgili | Çizgili `Icons.language_outlined`'a geçildi. `public_outlined` denendi, dolu çizildiği için bırakıldı | `8_ikon_once_sonra.png` |
+| 2 | "En yakın şehri seç" notu liste açıkken görünmüyor | Not alanın yardım metni oldu (`helperText`). Liste notun altından açılıyor, ikisi de okunuyor | `7_…`, `9_yurt_disi_not.png` |
+| 3 | Öneri listesi siyah çerçeveli, alandan ~6 px taşıyor, satırlar zeminden koyu | Üç alan (ülke, il, şehir) için ortak liste: sayfa yüzeyi rengi, ince altın kenar, gölge yok, nottan 4 dp aşağıda. Vurgulu satır %18 mor (altın lacivertin üstünde griye dönüyordu). Satır metni alandaki metinle aynı sol kenarda | `7_oneri_listesi_once_sonra.png` |
+| 4 | Türkçe arayüzde "Munich", "Vienna"; "Münih", "Viyana" yok | Veri değişmedi; karar gerekiyor (soru D) | `5_6_yurt_disi_arama.png` |
+| 5 | İngilizce il etiketi "Where you were born" → "Province of birth" | Bilerek yapıldı: ülke alanı gelince "doğduğun yer" iki alanı birden anlatıyordu. Onay bekliyor (soru E) | `3_profil_sayfa_en_once_sonra.png` |
+| 6 | ÖNCE karesinde sayfanın üstünde altın şerit var, SONRA'da yok | Sayfa kenarına ve sayfayı açan koda dokunulmadı (git farkı yok). Büyük olasılıkla eski karenin çekildiği andaki açılış animasyonu; DOĞRULAMADIM | `2_…`, `4_…` |
+| 7 | Tanışma karesinde içerik ~95 px yukarıda | Kare düzeneği yeni alanı göstermek için kaydırıyor; ilk açılış etkilenmiyor | `1_tanisma_tr_once_sonra.png` |
+| 8 | Ülke alanında açılır ok yok | Değişmedi: il alanı da aynı biçimde yazarak aranan bir alan. Ok eklenirse "listeden seçilir" beklentisi doğar | — |
+| 9 | "Doğum / saati" iki satıra kırılıyor | Önceden de vardı; bu iş kapsamında değil (izleme notu) | `2_…`, `3_…` |
+
+**İkinci denetim** (`7_…`, `8_…`, `9_…`):
+
+- İkon, not ve liste kapalıyken Kaydet: KARŞILANDI.
+- Liste: siyah çerçeve kalktı, genişlik alanla aynı. Vurgulu satırın gri olması KARŞILANMADI çıktı → mora çevrildi.
+- Aynı turda iki bulgu daha düzeltildi:
+  - Satır metni alanın metninden 18 px soldaydı → aynı kenara alındı.
+  - Seçilen şehir alanda "Munich (München)" kalıyordu → alanda yalnız "Munich", diğer ad yalnız listede.
+- Son kareler bu düzeltmelerden sonra yeniden çekildi.
+
+**Üçüncü denetim:** dört ölçüt de KARŞILANDI.
+
+- Vurgulu satır lacivert-mor, gri değil.
+- Liste metni alan metniyle aynı kenarda (x≈675).
+- Seçilince alanda yalnız "Munich" yazıyor.
+- Not ile liste arasında ~10 px boşluk var.
+
+Bu turdaki kalan bulgular:
+
+- Türkçe arayüzde İngilizce şehir adı (soru D).
+- Liste açıkken Kaydet örtülüyor ve liste ekranın altına dayanıyor (soru C; cihazda klavyeyle bakılmalı).
+- Satırların solunda ikon sütunu kadar boşluk var. Alanla hizalı olsun diye bilerek bırakıldı.
+- Not ile liste arası, alan çizgisi ile not arasından dar.
+- EN arayüzde liste kapalı hâli karede yok: DOĞRULAMADIM.
+- Kalanlar:
+  - Not listenin değil alanın sol kenarından başlıyor (Flutter yardım metninin varsayılanı).
+  - Küre ikonu, iç ızgarası yüzünden iğneden biraz daha ağır duruyor.
+  - Liste açıkken Kaydet örtülüyor (soru C).
+  - Saat satırının ikonu ~18 px solda; bu önceden de vardı.
+
+**Sabah soruları (ek)**
+
+- D. Türkçe arayüzde şehirler GeoNames'in İngilizce adıyla çıkıyor: "Munich", "Vienna". "Münih" yazınca da bulunmuyor, çünkü `cities15000` diğer adların dilini söylemiyor ve "Münih" listede yok. Seçenekler: (1) böyle kalsın; (2) büyük şehirler için elle Türkçe ad listesi (~100 şehir); (3) GeoNames `alternateNamesV2` dosyası (dil etiketli, ~700 MB ham, indirme onayı gerekir) ile Türkçe adlar.
+- E. İngilizce il etiketi "Province of birth" olarak kalsın mı?
+

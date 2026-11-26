@@ -95,6 +95,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ayarlarUyari => 'Uyarı: eğlence amaçlıdır';
 
   @override
+  String get ayarlarLisanslar => 'Lisanslar';
+
+  @override
   String get ayarlarVerileriSil => 'Verilerimi sil';
 
   @override
@@ -167,7 +170,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboardingDogumSaatiYeriAciklama =>
-      'Ay ve yükselen burcun bunlardan hesaplanır. Saatini bilmiyorsan ya da Türkiye dışında doğduysan boş bırak; sonradan profilinden ekleyebilirsin.';
+      'Ay ve yükselen burcun bunlardan hesaplanır. Saatini bilmiyorsan boş bırak; sonradan profilinden ekleyebilirsin.';
 
   @override
   String get onboardingKaderimiHesapla => 'Yıldızlarıma bak';
@@ -585,6 +588,26 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profilDogumIliIpucu => 'İl adı yaz (ör. İzmir)';
+
+  @override
+  String get profilDogumUlkesi => 'Doğduğun ülke';
+
+  @override
+  String get profilDogumUlkesiIpucu => 'Ülke adı yaz';
+
+  @override
+  String get profilDogumSehri => 'Doğduğun şehir';
+
+  @override
+  String get profilDogumSehriIpucu => 'Şehir adı yaz (ör. Berlin)';
+
+  @override
+  String get profilEnYakinSehir =>
+      'Doğduğun yer listede yoksa en yakın şehri seç.';
+
+  @override
+  String get profilSehirListesiYok =>
+      'Şehir listesi açılamadı. Uygulamayı yeniden başlatıp dene.';
 
   @override
   String get profilKaydet => 'Kaydet';

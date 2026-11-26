@@ -8,8 +8,9 @@
 /// Kurallar:
 /// - `Europe/Istanbul`: fark `TurkiyeSaatDilimi`nden gelir. Türkiye'de
 ///   doğanların sonucu bu modülden önceki hâliyle birebir aynıdır.
-/// - Diğer bölgeler: IANA tz veritabanı (`timezone` paketi, `latest`
-///   verisi; bildirimlerle aynı veri, uygulamaya ek boyut getirmez).
+/// - Diğer bölgeler: IANA tz veritabanı (`timezone` paketi, `latest_all`
+///   verisi; bildirimlerle aynı veri). `latest` yetmez: GeoNames şehirlerinin
+///   kullandığı 356 kimliğin 15'i (ör. `Asia/Yangon`) onda yok.
 /// - Yaz saati geçişinde ATLANAN saat (ör. 02:30, saat 02:00'de 03:00'e
 ///   alındıysa) geçişten önceki farkla yorumlanır; İKİ KEZ YAŞANAN saat
 ///   ilk yaşanışıyla (yaz saati) yorumlanır. İkisinde de sonuç "kesin
@@ -18,7 +19,7 @@
 ///   dönemde bölgeye adını veren şehrin dışında tahmindir.
 library;
 
-import 'package:timezone/data/latest.dart' as tz_veri;
+import 'package:timezone/data/latest_all.dart' as tz_veri;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'engine_config.dart';
