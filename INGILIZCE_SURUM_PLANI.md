@@ -31,7 +31,7 @@
 ### Geliştiricinin (Turan) bekleyen işleri
 
 - [ ] **11 Kasım işine bak ve karar ver** (dal `gece/2026-11-27`): emülatör turu, sonra `main`'e birleştirme izni. Belge: `reports/11_kasim_icerik_yeniden_yazimi.md`. E7 buna bağlı.
-- [ ] **K7** (§5): tanışma soruları geri gelecek mi? E7b–E7c'nin kapsamını belirler.
+- [x] **K7** (§5): **kapandı, hayır** (26 Kas, KARARLAR). Tanışma kalıntıları silindi (9436741, 0530549, 177a547, 7e1bbf1); E7b–E7c küçüldü. Kanıt ve içerik açıkları: `reports/k7_kanit/README.md`.
 - [ ] **K8** (§5): saat dilimi ve doğum yeri. 26 Kas kararı: "Önerilerle git". K8-1 (motor açık UTC farkı) kapandı; K8-2…K8-5 açık.
 - [ ] Mağaza işleri sıralı listede: `reports/magaza_hazirligi.md`.
 - [ ] Play Console: `kader_rapor_tam` ve `kader_yil_2027` tek seferlik ürünlerini aç.
@@ -190,7 +190,7 @@ taşınacak (E2):
 | K3 | Dil seçimi: cihaz dili `tr` ise Türkçe, değilse İngilizce; Ayarlar'dan elle değiştirilebilir. Seçim `UygulamaDurumu`'na yazılır. | Evet | **Evet** (cihaz dili + Ayarlar'dan elle seçim, `UygulamaDurumu`'nda saklanır). |
 | K4 | İngilizce uygulama adı (mağaza ve launcher). | Kullanıcı karar verir (ör. "Kader: Numerology & Luck") | **Kapandı (26 Kas):** Solenia. EN başlık "Solenia: Birth Chart & Moon", TR "Solenia: Doğum Haritası ve Ay" (taslak). Paket kimliği `com.turan.kader` yayından önce değişecek (Turan). |
 | K5 | İngilizce yasal metinler (gizlilik, koşullar, sorumluluk reddi) kim tarafından yazılacak/onaylanacak? | Taslağı Claude yazar, hukukçu onaylar | **Taslağı Claude yazar (E9), hukukçu onaylar** (yayın öncesi Turan'ın işi). |
-| K7 | *(27 Kas, yeni)* Tanışma soruları (enerji, karar, ilişki, uğraş) 11 Kasım'da onboarding'den kaldırıldı. Kod hâlâ `OkuyucuTercihleri`'ne göre dallanan havuzlar taşıyor: Aşk'ta bekâr/partnerli sahneleri, uğraş sahneleri, `kisiselYap`, `profilUyarlamalari`, `{ugrasAlani}`. Üretimde bunlara hiç ulaşılmıyor. Seçenekler: (a) sorular kalıcı olarak yok; bu havuzlar Türkçeden silinir (ayrı oturum, altın kayıtta yalnız t1/t2 anahtarları değişir) ve E7'de çevrilmez. (b) Sorular ileride geri gelecek; havuzlar kalır ve E7'de çevrilir (yaklaşık %15 daha çok iş). (c) Araştırma raporunun önerisi: kısa bir öz-tanım sorusu geri gelir, cevap metinde görünür kullanılır. | (a), sorular geri gelmeyecekse. Karar ürünü ilgilendiriyor | **Açık.** E7b'den önce gerekli. |
+| K7 | *(27 Kas, yeni)* Tanışma soruları (enerji, karar, ilişki, uğraş) 11 Kasım'da onboarding'den kaldırıldı. Kod hâlâ `OkuyucuTercihleri`'ne göre dallanan havuzlar taşıyor: Aşk'ta bekâr/partnerli sahneleri, uğraş sahneleri, `kisiselYap`, `profilUyarlamalari`, `{ugrasAlani}`. Üretimde bunlara hiç ulaşılmıyor. Seçenekler: (a) sorular kalıcı olarak yok; bu havuzlar Türkçeden silinir (ayrı oturum, altın kayıtta yalnız t1/t2 anahtarları değişir) ve E7'de çevrilmez. (b) Sorular ileride geri gelecek; havuzlar kalır ve E7'de çevrilir (yaklaşık %15 daha çok iş). (c) Araştırma raporunun önerisi: kısa bir öz-tanım sorusu geri gelir, cevap metinde görünür kullanılır. | (a), sorular geri gelmeyecekse. Karar ürünü ilgilendiriyor | **Kapandı: (a)** (26 Kas, Turan: "Tanışma soruları olmasın bence…"). Havuzlar silindi; t0 çıktısı aynı kaldı (43 680 anahtarlık döküm). Günün tavsiyesi doğum elementine bağlandı (bilinçli değişiklik). `reports/k7_kanit/README.md` |
 | K8 | *(27 Kas, yeni)* `ayEvresiOrani` (`ay_evresi.dart:64`) yerel günü `toUtc()` ile çeviriyor; evre, skor ve metin cihazın saat dilimine göre değişebiliyor. Türkiye'de (+03) sonuç sabit, yurt dışında değil. Altın kayıt da bu yüzden makineye bağlı: tablo +07'de üretildi, Türkiye saatinde 3 test kırılıyor. | Takvim gününü Türkiye gece yarısı (UTC+3) say: Türkiye'deki kullanıcının sonucu değişmez, her yerde deterministik olur. `luck_engine` oturumu + tablo yeniden üretimi | **K8-1 kapandı (26 Kas).** Motor yerel gün + açık UTC farkı alıyor; tablo değişmedi. İstanbul'daki 3 kırık testin nedeni ayrıca test fikstürünün yaz saati hatasıydı, düzeltildi. K8-2…K8-5 (doğum saat dilimi, şehir verisi, arayüz) açık: `reports/turan_notlari_plan_2026-11-27.md`. |
 | K6 | Dünya geneli doğum yeri (E10): `timezone` paketi zaten var (tz verisi içerir); şehir veritabanı için GeoNames `cities15000` (CC BY 4.0, ~2 MB asset, atıf gerekir). | İlk yayında yok; sonra | **İlk yayında yok**, E10 sonraya. İngilizce sürümde Yükselen yalnız Türkiye doğumlular için (§4.5). |
 
@@ -423,13 +423,14 @@ Her satır tek oturumdur. Kutuyu bitince işaretle.
             değişmez (D7).** D3 hizalama testinin iskeleti (EN boşken atlanır).
       - [ ] **E7b: İngilizce gökyüzü.** `gokyuzu_metinleri_en.dart`
             (~570 cümle): `gunler`, `gokyuzu`, `basliklar`,
-            `sahneler[genel]`, `yap`, `yapma` (`kisiselYap` ve tercih
-            sahneleri K7'ye göre). Test: her İngilizce gökyüzü cümlesinde
+            `sahneler`, `yap`, `yapma` (K7 kapandı: `kisiselYap` ve
+            tercih sahneleri silindi, çevrilmez). Test: her İngilizce gökyüzü cümlesinde
             `'; '` ayracı Türkçedekiyle aynı yerde mi; `ayOnekisizHali` iki
             dilde aynı indekste null mı.
       - [ ] **E7c: İngilizce kişilik, kimlik ve çelişki kapısı.**
             `kisilik_metinleri_en.dart`, `kimlik_metinleri_en.dart`, İngilizce
-            `celiskiIfadeleri`. **Dil arası kapı testi:** her portre için
+            `celiskiIfadeleri` (K7: yalnız enerji, karar ve iki ilişki
+            varsayımı anahtarı kaldı). **Dil arası kapı testi:** her portre için
             `celisir(tr[i]) == celisir(en[i])`. Böylece iki dilde aynı kişiye
             aynı cümleler elenir ve D3 bozulmaz.
       - [ ] **E7d: İngilizce gün temaları ve karakterler.**
@@ -453,7 +454,7 @@ Her satır tek oturumdur. Kutuyu bitince işaretle.
       **27 Kas: geçerli, küçük değişiklikle.** Profil okuması artık
       `profilMetniniUyarla(…, okuyucu.portre)` kullanıyor: İngilizce
       `profilUyarlamalari` E7c'deki çelişki ifadeleriyle aynı anahtarları
-      kullanmalı (K7 (a) seçilirse bu tablo küçülür). Ay adları
+      kullanmalı (K7 (a) seçildi: tablo yalnız portre anahtarlarıyla). Ay adları
       (`ayAdlari`) E7a'da pakete taşınır; burada yeniden yapılmaz.
 - [ ] **E9 — İngilizce araç + harita + uyum (content) ve yasal metin taslağı.**
       **27 Kas: geçerli.** İki not: (1) `harita_metinleri.dart` ile

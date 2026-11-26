@@ -125,6 +125,8 @@ Eski kayıtlardaki `enerji`, `karar`, `iliski` ve `ugras` Hive anahtarları okun
 | 3 | `uyariMaddeleri` metni (12) | `features/legal` | Claude (metin), hukukçu (onay) |
 | 4 | `INGILIZCE_SURUM_PLANI.md`: K7 "kapandı: hayır"; E7b ve E7c kapsamı küçülür | belge | Claude |
 
+**Durum (26 Kas gece):** 1–4 yapıldı. 1: `9436741` (t0 çıktısı aynı, 43 680 anahtar). 2: `0530549` (tavsiye kişi-günlerin %97'sinde değişir; altın kayıtta 48 anahtar). Ek: eski cevaplar açılışta silinir `177a547`. 3: `7e1bbf1`, `uyariSurumu` artırılmadı (hukukçu/Turan). İçerik açıkları ve kanıt: `reports/k7_kanit/README.md`.
+
 ---
 
 ## 3. İngilizce tam kapsam
@@ -189,7 +191,7 @@ Her satır bir oturum (`CLAUDE.md` kural 1: tek sistem).
 | Sıra | Oturum | Bağlı olduğu |
 |---|---|---|
 | 1 | K8-1: motor, açık UTC farkı + altın tablo (+03) | Soru 1 |
-| 2 | K7-1/2: tanışma kalıntılarının temizliği (content) | Soru 3 |
+| 2 | K7-1/2: tanışma kalıntılarının temizliği (content) **— bitti** | Soru 3 |
 | 3 | Numeroloji: aksanlı harfler (+ Y kuralı) | Soru 5 |
 | 4 | K8-2: dünya geneli doğum saat dilimi + yabancı yükselen testleri | 1 |
 | 5 | K8-3/4: şehir verisi + kayıt göçü | Soru 2; Turan GeoNames dosyasını indirir |
