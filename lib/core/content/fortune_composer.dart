@@ -70,7 +70,6 @@ Map<String, String> slotSozlugu(
     SlotAnahtarlari.isimIlgi: paket.iyelik(okuyucu.isim),
     SlotAnahtarlari.burc: paket.burcAdi(okuyucu.profil.burc),
     SlotAnahtarlari.yasamYolu: '${okuyucu.profil.yasamYolu.deger}',
-    SlotAnahtarlari.ugrasAlani: paket.ugrasAlani(okuyucu.tercihler.ugras),
     if (karakter != null) SlotAnahtarlari.doga: karakter.doga,
     if (dongu != null) SlotAnahtarlari.kisiselGun: '${dongu.kisiselGun}',
     if (dongu != null) SlotAnahtarlari.kisiselYil: '${dongu.kisiselYil}',
@@ -393,20 +392,15 @@ _GokyuzuParcalari _gokyuzuParcalari({
   }
   final String kisilik = kisilikHavuzu[kisilikIndeksi];
 
-  final Map<String, Map<SahneYonu, List<String>>> sahneler =
-      GokyuzuMetinleri.sahneler[kategori]!;
-  final String sahneAnahtari = GokyuzuMetinleri.sahneAnahtari(
-    kategori,
-    okuyucu.tercihler,
-  );
   final SahneYonu yon = SahneYonu.tondan(ton);
   final List<String> sahneHavuzu = kapi(
-    (sahneler[sahneAnahtari] ?? sahneler[GokyuzuMetinleri.genelAnahtar]!)[yon]!,
+    GokyuzuMetinleri.sahneler[kategori]![yon]!,
   );
   final String sahne = sec(
     sahneHavuzu,
     ContentConfig.amacKategoriSahne,
-    '$sahneAnahtari:${yon.name}',
+    // "genel" ön eki eski tohumla aynı seçimi verir (K7 öncesi anahtar).
+    '${GokyuzuMetinleri.genelAnahtar}:${yon.name}',
   );
 
   final String baslik = sec(
@@ -415,38 +409,17 @@ _GokyuzuParcalari _gokyuzuParcalari({
     ton.name,
   );
 
-  // Yap: kişinin doğasına uygun bir öneri (varsa) + genel öneriler.
-  final String? kisiselAnahtar = GokyuzuMetinleri.kisiselAnahtar(
-    kategori,
-    okuyucu.tercihler,
-  );
-  final List<String>? hamKisiselHavuz = kisiselAnahtar == null
-      ? null
-      : GokyuzuMetinleri.kisiselYap[kategori]?[kisiselAnahtar]?[ton];
-  final List<String>? kisiselHavuz = hamKisiselHavuz == null
-      ? null
-      : kapi(hamKisiselHavuz);
-  final String? kisiselYap = kisiselHavuz == null
-      ? null
-      : sec(
-          kisiselHavuz,
-          ContentConfig.amacKisiselYap,
-          '$kisiselAnahtar:${ton.name}',
-        );
   // Yap / Yapma listeleri sabit sayıda öneri gösterir; kapıdan en az o
   // kadar cümle çıkmalıdır.
   final List<String> genelYap = kapi(
     GokyuzuMetinleri.yap[kategori]![ton]!,
     enAz: ContentConfig.gokyuzuYapSayisi,
   );
-  final List<String> yap = <String>[
-    ?kisiselYap,
-    ...ardisik(
-      genelYap,
-      sec(genelYap, ContentConfig.amacYap, ton.name),
-      ContentConfig.gokyuzuYapSayisi - (kisiselYap == null ? 0 : 1),
-    ),
-  ];
+  final List<String> yap = ardisik(
+    genelYap,
+    sec(genelYap, ContentConfig.amacYap, ton.name),
+    ContentConfig.gokyuzuYapSayisi,
+  );
   final List<String> yapmaHavuzu = kapi(
     GokyuzuMetinleri.yapma[kategori]![ton]!,
     enAz: ContentConfig.gokyuzuYapmaSayisi,
@@ -582,14 +555,12 @@ GunlukOkuma gunlukOkuma({
     '${ContentConfig.amacBulusma}:${bulusma.name}',
     YorumYonu.bulusmaCumleleri[bulusma]!,
   );
-  final Map<String, List<String>> sahneler = YorumYonu.gunSahneleri[k]!;
   final String sahne = _sec(
     motor,
     okuyucu,
     gun,
     '${ContentConfig.amacSahne}:$k',
-    sahneler[okuyucu.tercihler.ugras?.name] ??
-        sahneler[YorumYonu.genelAnahtar]!,
+    YorumYonu.gunSahneleri[k]!,
     adimGun: ContentConfig.kisiselGunAdimi,
   );
   // Öneri: buluşma türü ayın belirli kişisel günlerine denk geldiği için
@@ -760,18 +731,15 @@ GunlukOkuma gunlukOkuma({
     '${ContentConfig.amacYil}:${dongu.kisiselYil}:${dongu.kisiselAy}',
     YorumYonu.kapanisHavuzu(dongu.kisiselYil, dongu.kisiselAy),
   );
-  final EnerjiTarzi? enerjiTarzi = okuyucu.tercihler.enerji;
+  // K7 adım 1: tanışma cevabı yok, herkes genel havuzdan seçer ("-" ön
+  // eki eski tohumla aynı seçimi verir). Adım 2 portreye bağlar.
   final String tavsiye = doldur(
     _sec(
       motor,
       okuyucu,
       gun,
-      '${ContentConfig.amacTavsiye}:${enerjiTarzi?.name ?? '-'}',
-      <String>[
-        ...FortunePools.gununTavsiyeleri,
-        if (enerjiTarzi != null)
-          ...KisiselHavuzlar.enerjiTavsiyeleri[enerjiTarzi]!,
-      ],
+      '${ContentConfig.amacTavsiye}:-',
+      FortunePools.gununTavsiyeleri,
     ),
   );
   final SansRengi renk = _sec(
@@ -987,13 +955,11 @@ List<ProfilBolumu> profilOkumasi({
     paket: paket,
   );
   String doldur(String s) => slotDoldur(s, slotlar);
-  // Yaşam yolu metinlerinde okuyucunun cevabıyla çelişen cümleler
-  // uyarlanır (ör. insanlarla beslenen birine "asıl yenilenmen yalnız
-  // kaldığında olur" denmez).
+  // Yaşam yolu metinlerinde portreyle çelişen cümleler uyarlanır (ör.
+  // insanlarla beslenen birine "asıl yenilenmen yalnız kaldığında olur"
+  // denmez).
   String uyarla(String metin) =>
       KisilikMetinleri.profilMetniniUyarla(metin, okuyucu.portre);
-  final IliskiDurumu? iliski = okuyucu.tercihler.iliski;
-  final Ugras? ugras = okuyucu.tercihler.ugras;
 
   return <ProfilBolumu>[
     ProfilBolumu(
@@ -1028,20 +994,13 @@ List<ProfilBolumu> profilOkumasi({
     ProfilBolumu(
       tur: ProfilBolumTuru.askta,
       baslik: 'Aşkta',
-      metin: <String>[
-        uyarla(karakter.askta),
-        if (iliski != null)
-          KisiselHavuzlar.profilIliskiEki[iliski.partnerliMi]!,
-      ].map(doldur).join(' '),
+      metin: doldur(uyarla(karakter.askta)),
       premium: true,
     ),
     ProfilBolumu(
       tur: ProfilBolumTuru.isteVeParada,
       baslik: 'İşte ve parada',
-      metin: <String>[
-        uyarla(karakter.isteVeParada),
-        if (ugras != null) KisiselHavuzlar.profilUgrasEki[ugras]!,
-      ].map(doldur).join(' '),
+      metin: doldur(uyarla(karakter.isteVeParada)),
       premium: true,
     ),
     ProfilBolumu(

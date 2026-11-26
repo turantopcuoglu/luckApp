@@ -13,7 +13,6 @@
 library;
 
 import '../luck_engine/luck_engine.dart';
-import 'okuyucu.dart';
 
 /// İçeriğin yazıldığı dil.
 ///
@@ -46,23 +45,6 @@ abstract interface class IcerikPaketi {
 
   /// Uyum derecesi adı ("Güçlü uyum").
   String uyumDerecesiAdi(UyumDerecesi derece);
-
-  /// Enerji tercihi seçenek metni.
-  String enerjiTarziAdi(EnerjiTarzi tarz);
-
-  /// Karar tercihi seçenek metni.
-  String kararTarziAdi(KararTarzi tarz);
-
-  /// İlişki durumu seçenek metni.
-  String iliskiDurumuAdi(IliskiDurumu durum);
-
-  /// Uğraş seçenek metni ("Öğrenciyim").
-  String ugrasAdi(Ugras ugras);
-
-  /// Cümle içinde özne olarak kullanılan uğraş öbeği ("derslerin").
-  ///
-  /// [ugras] `null` ise (soru atlandı) genel öbek döner.
-  String ugrasAlani(Ugras? ugras);
 
   /// İsmin iyelik/ilgi biçimi: "Ayşe" → "Ayşe'nin" / "Ayşe's".
   String iyelik(String isim);

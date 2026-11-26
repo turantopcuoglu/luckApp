@@ -33,7 +33,6 @@ import '../luck_engine/luck_engine.dart';
 import 'content_config.dart';
 import 'dongu_metinleri.dart';
 import 'karakter_yonleri.dart';
-import 'okuyucu.dart';
 
 /// Günün teması ile kişinin doğası arasındaki buluşma türü.
 enum BulusmaTuru {
@@ -303,252 +302,51 @@ abstract final class YorumYonu {
     ],
   };
 
-  /// Günün temasının kişinin gündelik hayatında nerede görüneceği
-  /// (tema × uğraş). Anahtar: [Ugras.name] ya da [genelAnahtar].
+  /// Günün temasının gündelik hayatta nerede görüneceği (kişisel gün
+  /// teması → varyantlar).
   ///
-  /// Her temanın iki varyantı farklı cümle kalıpları kullanır; aynı
-  /// uğraştaki okur, tema ve varyant değiştikçe farklı bir yapı okur.
-  /// Varyantlar kişisel gün adımıyla döner (tema ~9 günde bir gelir).
-  static const Map<int, Map<String, List<String>>>
-  gunSahneleri = <int, Map<String, List<String>>>{
-    1: <String, List<String>>{
-      'calisiyor': <String>[
-        'İş tarafında bu, yeni bir görev üstlenmek ya da bir öneri sunmakla başlayabilir.',
-        'Toplantıda ilk söz alan ya da yeni bir fikri masaya koyan sen olabilirsin.',
-      ],
-      'ogrenci': <String>[
-        'Derslerinde bu, yeni bir konuya ya da yeni bir çalışma düzenine geçmekle kendini gösterebilir.',
-        'Uzun süredir ertelediğin bir konuya giriş yapmak sana hız kazandırabilir.',
-      ],
-      'isArayan': <String>[
-        'İş arayışında bu, yeni bir başvuru yapmak ya da daha önce denemediğin bir alana bakmakla başlayabilir.',
-        'Daha önce çekindiğin bir şirkete ya da kişiye ilk mesajı atmak sana cesaret verebilir.',
-      ],
-      'girisimci': <String>[
-        'İşinde bu, aklındaki yeni bir fikri denemek ya da ilk kez bir müşteriyle görüşmekle kendini gösterebilir.',
-        'Kafandaki yeni ürün ya da hizmet fikrinin ilk taslağını çıkarmak için içinde bir istek var.',
-      ],
-      'evde': <String>[
-        'Evde bu, uzun süredir düşündüğün bir değişikliğe ya da kendine ait yeni bir alışkanlığa başlamakla kendini gösterebilir.',
-        'Evde yeni bir düzen ya da yeni bir hobi için ilk malzemeyi almak güzel bir başlangıç olabilir.',
-      ],
-      'genel': <String>[
-        'Pratikte bu, uzun süredir ertelediğin bir işe ilk adımı atmakla başlayabilir.',
-        'Küçük de olsa yeni bir şeyin ilk adımını atmak gününe yön verebilir.',
-      ],
-    },
-    2: <String, List<String>>{
-      'calisiyor': <String>[
-        'İş tarafında bunun karşılığı, bir iş arkadaşınla birlikte çalışmak ya da gergin bir konuyu nazikçe konuşmak olabilir.',
-        'Bir iş arkadaşının fikrini önemsediğini göstermek ekipteki havayı yumuşatabilir.',
-      ],
-      'ogrenci': <String>[
-        'Derslerinde bunun karşılığı, bir arkadaşınla birlikte çalışmak ya da takıldığın bir konuyu birine sormak olabilir.',
-        'Bir grup çalışmasında fikirleri bir araya getiren kişi olmak sana iyi bir rol kazandırabilir.',
-      ],
-      'isArayan': <String>[
-        'İş arayışında bunun karşılığı, tanıdıklarından destek istemek ya da bir referans rica etmek olabilir.',
-        'Bir görüşmede karşındakini dikkatle dinlemek, konuşmaktan daha çok etki bırakabilir.',
-      ],
-      'girisimci': <String>[
-        'İşinde bunun karşılığı, bir ortak, tedarikçi ya da müşteriyle anlaşma zemini aramak olabilir.',
-        'Bir müşterinin ya da ortağın gerçekte ne istediğini sormak yeni bir anlaşmanın kapısını aralayabilir.',
-      ],
-      'evde': <String>[
-        'Evde bunun karşılığı, bir konuyu birlikte konuşup ortak karar almak olabilir.',
-        'Ev halkıyla birlikte yapılacak küçük bir iş aranızdaki uyumu güçlendirebilir.',
-      ],
-      'genel': <String>[
-        'Gündelik hayatta bunun karşılığı, bir konuyu tek başına çözmeye çalışmak yerine birinden destek istemek olabilir.',
-        'Birini dinlemek için ayıracağın birkaç dakika aranızdaki bağı sandığından çok güçlendirebilir.',
-      ],
-    },
-    3: <String, List<String>>{
-      'calisiyor': <String>[
-        'Bunu en çok bir fikrini paylaşırken, sunum yaparken ya da ekiple konuşurken fark edebilirsin.',
-        'Bir e-postada ya da toplantıda fikrini net ve sıcak bir dille anlatman fark yaratabilir.',
-      ],
-      'ogrenci': <String>[
-        'Bunu en çok bir sunumda, grup çalışmasında ya da yaratıcı bir ödevde fark edebilirsin.',
-        'Derste soru sormak ya da bir tartışmaya katılmak düşündüğünden daha çok dikkat çekebilir.',
-      ],
-      'isArayan': <String>[
-        'Bunu en çok özgeçmişini güncellerken ya da çevrene ne aradığını anlatırken fark edebilirsin.',
-        'Kendini anlatan kısa bir tanıtım cümlesi hazırlamak görüşmelerde işine yarayabilir.',
-      ],
-      'girisimci': <String>[
-        'Bunu en çok işini tanıtırken, paylaşım yaparken ya da yeni insanlarla tanışırken fark edebilirsin.',
-        'Müşterilerine işinin hikâyesini anlatmak reklamdan daha çok etki bırakabilir.',
-      ],
-      'evde': <String>[
-        'Bunu en çok arkadaşlarla görüşürken ya da yaratıcı bir uğraşa vakit ayırırken fark edebilirsin.',
-        'Bir arkadaşını arayıp uzun uzun sohbet etmek ya da bir şey üretmek ruhunu canlandırabilir.',
-      ],
-      'genel': <String>[
-        'Bunu en çok bir arkadaşınla konuşurken ya da seni ifade eden bir işe vakit ayırırken fark edebilirsin.',
-        'Bir duygunu ya da fikrini söze dökmek içindeki enerjiyi açığa çıkarabilir.',
-      ],
-    },
-    4: <String, List<String>>{
-      'calisiyor': <String>[
-        'Somut bir başlangıç: biriken e-postaları, dosyaları ya da yarım işleri toparlamak.',
-        'Yapılacaklar listeni sıraya koymak ve bir işi baştan sona bitirmek sana kontrol hissi verebilir.',
-      ],
-      'ogrenci': <String>[
-        'Somut bir başlangıç: notlarını düzenlemek, bir çalışma planı yapmak ya da ertelediğin ödevi bitirmek.',
-        'Haftalık bir ders programı çıkarmak kafandaki dağınıklığı toparlayabilir.',
-      ],
-      'isArayan': <String>[
-        'Somut bir başlangıç: başvurularını bir listeye dökmek ve düzenli bir arama planı yapmak.',
-        'Her gün aynı saatte ilanlara bakmak gibi küçük bir düzen süreci daha az yorucu hâle getirebilir.',
-      ],
-      'girisimci': <String>[
-        'Somut bir başlangıç: hesapları, süreçleri ve yapılacaklar listesini düzene koymak.',
-        'Bir süreci yazıya dökmek ya da bir şablon hazırlamak ileride zaman kazandırabilir.',
-      ],
-      'evde': <String>[
-        'Somut bir başlangıç: evde bir köşeyi düzenlemek ya da haftanın planını çıkarmak.',
-        'Bir dolabı ya da çekmeceyi düzenlemek zihnindeki dağınıklığı da toparlayabilir.',
-      ],
-      'genel': <String>[
-        'Somut bir başlangıç: masandaki, telefonundaki ya da aklındaki birikmiş işleri toparlamak.',
-        'Küçük bir düzen kurmak kafandaki kalabalığı da sadeleştirebilir.',
-      ],
-    },
-    5: <String, List<String>>{
-      'calisiyor': <String>[
-        'İşte bir yöntemi değiştirmek ya da farklı bir görevde yer almak zihnini tazeleyebilir.',
-        'Plan dışı bir görev ya da beklenmedik bir talep sana yeni bir beceri kazandırabilir.',
-      ],
-      'ogrenci': <String>[
-        'Çalışma yerini ya da yöntemini değiştirmek dikkatini tazeleyebilir.',
-        'Farklı bir kaynaktan ya da yöntemle çalışmak zor bir konuyu çözmeni kolaylaştırabilir.',
-      ],
-      'isArayan': <String>[
-        'Daha önce düşünmediğin bir sektöre ya da pozisyona göz atmak arayışına yeni bir yön verebilir.',
-        'Esnek ya da uzaktan çalışma seçeneklerine bakmak sana yeni kapılar gösterebilir.',
-      ],
-      'girisimci': <String>[
-        'Ürününde ya da yaklaşımında küçük bir değişiklik denemek işine taze bir soluk getirebilir.',
-        'Yeni bir satış kanalı ya da iş birliği fikri denemek işine hareket getirebilir.',
-      ],
-      'evde': <String>[
-        'Rutinin dışına çıkmak, kısa bir gezinti yapmak ya da yeni bir tarif denemek evdeki günü tazeleyebilir.',
-        'Eşyaların yerini değiştirmek ya da yakında yeni bir mekân keşfetmek gününe hareket katabilir.',
-      ],
-      'genel': <String>[
-        'Rutinin dışına çıkmak, farklı bir yoldan gitmek ya da yeni bir şey denemek zihnini tazeleyebilir.',
-        'Alışık olmadığın bir şeye evet demek gününe beklenmedik bir renk katabilir.',
-      ],
-    },
-    6: <String, List<String>>{
-      'calisiyor': <String>[
-        'Bir iş arkadaşına yardım etmek ya da ekipte bir sorumluluğu üstlenmek küçük ama anlamlı bir adım olabilir.',
-        'Ekipte yükü ağır olan birine el uzatmak iş ortamındaki güveni büyütebilir.',
-      ],
-      'ogrenci': <String>[
-        'Bir arkadaşına ders konusunda yardım etmek ya da ailene vakit ayırmak küçük ama anlamlı bir adım olabilir.',
-        'Evde ya da yurtta ortak alan için küçük bir sorumluluk almak çevrene iyi hissettirebilir.',
-      ],
-      'isArayan': <String>[
-        'Bu süreçte seni destekleyen insanlarla vakit geçirip moral toplamak küçük ama anlamlı bir adım olabilir.',
-        'Ailenle ya da yakın bir arkadaşınla süreci paylaşmak yükünü hafifletebilir.',
-      ],
-      'girisimci': <String>[
-        'Müşterilerinle ya da ekibinle ilgilenip onların ihtiyaçlarını dinlemek küçük ama anlamlı bir adım olabilir.',
-        'Ekibine ya da müşterine gösterdiğin özen işinin en güçlü reklamı olabilir.',
-      ],
-      'evde': <String>[
-        'Ev ve aile için yapacağın küçük bir güzellik sandığından anlamlı bir adım olabilir.',
-        'Sıcak bir sofra ya da birlikte geçirilen bir akşam evin havasını değiştirebilir.',
-      ],
-      'genel': <String>[
-        'Bir yakınını aramak ya da evde küçük bir düzenleme yapmak küçük ama anlamlı bir adım olabilir.',
-        'Sevdiğin birine küçük bir iyilik yapmak sana da huzur verebilir.',
-      ],
-    },
-    7: <String, List<String>>{
-      'calisiyor': <String>[
-        'Kalabalık toplantılardan çok, odaklanarak tek başına yürüttüğün işler sana daha çok şey kazandırır.',
-        'Bir sorunu çözmek için kalabalıktan uzaklaşıp tek başına düşünmek sana netlik kazandırabilir.',
-      ],
-      'ogrenci': <String>[
-        'Sessiz bir ortamda zor bir konuyu gerçekten anlamaya çalışmak sana beklediğinden fazlasını kazandırır.',
-        'Ezberlemek yerine bir konunun mantığını kavramaya çalışmak sana kalıcı bir kazanç sağlayabilir.',
-      ],
-      'isArayan': <String>[
-        'Hangi işi gerçekten istediğini düşünmek ve bir alanda kendini geliştirmek arayışını netleştirir.',
-        'Güçlü yanlarını bir kâğıda dökmek hangi işe yöneleceğini netleştirebilir.',
-      ],
-      'girisimci': <String>[
-        'Verileri incelemek, araştırma yapmak ve stratejini gözden geçirmek işine yön verir.',
-        'Rakiplerini ya da pazarını sakin kafayla incelemek sana yeni bir bakış açısı kazandırabilir.',
-      ],
-      'evde': <String>[
-        'Kendine sessiz bir saat ayırmak, kitap okumak ya da yürüyüş yapmak seni beklediğinden çok toparlar.',
-        'Telefonsuz geçirilen sakin bir saat zihnini dinlendirebilir.',
-      ],
-      'genel': <String>[
-        'Kendine sessiz bir zaman ayırmak ya da ilgini çeken bir konuyu araştırmak zihnini berraklaştırır.',
-        'Aklını kurcalayan bir soruya yazarak cevap aramak düşüncelerini netleştirebilir.',
-      ],
-    },
-    8: <String, List<String>>{
-      'calisiyor': <String>[
-        'Odaklanabileceğin şey belli: bir talebini dile getirmek, sorumluluk istemek ya da önemli bir görüşmeyi yapmak.',
-        'Hedeflerini yöneticinle ya da ekibinle netleştirmek emeğinin görünür olmasını sağlayabilir.',
-      ],
-      'ogrenci': <String>[
-        'Odaklanabileceğin şey belli: hedeflerini netleştirmek ve sınav ya da proje takvimini ciddi bir plana bağlamak.',
-        'Notlarını ve hedeflerini gözden geçirip gerçekçi bir başarı planı yapmak motivasyonunu artırabilir.',
-      ],
-      'isArayan': <String>[
-        'Odaklanabileceğin şey belli: görüşmelere hazırlanmak ve beklentini netleştirmek.',
-        'Maaş ve çalışma koşulları konusunda beklentini netleştirmek görüşmelerde elini güçlendirebilir.',
-      ],
-      'girisimci': <String>[
-        'Odaklanabileceğin şey belli: fiyatlandırma, tahsilat ya da büyüme kararlarını ele almak.',
-        'Gelir ve giderlerine kısa bir bakış atmak sana daha güçlü kararlar aldırabilir.',
-      ],
-      'evde': <String>[
-        'Odaklanabileceğin şey belli: ev bütçesini gözden geçirmek ve maddi bir kararı netleştirmek.',
-        'Ev için uzun vadeli bir hedef belirleyip ilk adımını planlamak sana güç verebilir.',
-      ],
-      'genel': <String>[
-        'Odaklanabileceğin şey belli: maddi konularını gözden geçirmek ve bir hedefi netleştirmek.',
-        'Bir hedefi yazıya dökmek ve ona bir tarih vermek kararlılığını artırabilir.',
-      ],
-    },
-    9: <String, List<String>>{
-      'calisiyor': <String>[
-        'Yarım kalan bir işi teslim etmek ya da artık işine yaramayan bir yükü bırakmak içini rahatlatabilir.',
-        'Bitmiş bir projeyi gözden geçirip ondan ne öğrendiğini not etmek seni bir sonraki işe hazırlar.',
-      ],
-      'ogrenci': <String>[
-        'Bir konuyu tamamlamak ya da eski notları ayıklamak içini rahatlatabilir.',
-        'Biten bir dönemi ya da sınavı geride bırakıp yeni hedefe odaklanmak sana hafiflik verebilir.',
-      ],
-      'isArayan': <String>[
-        'Olmayan bir başvuruyu geride bırakıp enerjini yeni seçeneklere çevirmek içini rahatlatabilir.',
-        'Sonuçlanmayan bir süreçten ders çıkarıp sayfayı çevirmek yeni fırsatlara yer açabilir.',
-      ],
-      'girisimci': <String>[
-        'Kazandırmayan bir işi ya da süreci sonlandırmayı düşünmek içini rahatlatabilir.',
-        'Artık işine yaramayan bir ürünü ya da hizmeti bırakmak enerjini yeni fırsatlara yönlendirebilir.',
-      ],
-      'evde': <String>[
-        'Kullanmadığın eşyaları ayıklamak ya da bir konuyu kapatmak içini rahatlatabilir.',
-        'Evde uzun zamandır duran bir eşyayı ihtiyacı olan birine vermek seni hafifletebilir.',
-      ],
-      'genel': <String>[
-        'Yarım kalan bir işi bitirmek ya da artık gerekmeyen bir şeyi bırakmak içini rahatlatabilir.',
-        'Sana artık iyi gelmeyen bir alışkanlığa veda etmek yeni bir sayfa açabilir.',
-      ],
-    },
+  /// Her temanın iki varyantı farklı cümle kalıpları kullanır. Varyantlar
+  /// kişisel gün adımıyla döner (tema ~9 günde bir gelir). 26 Kasım
+  /// 2026'ya kadar uğraşa göre ayrı sahneler de vardı; sorular kalkınca
+  /// (K7) silindi.
+  static const Map<int, List<String>> gunSahneleri = <int, List<String>>{
+    1: <String>[
+      'Pratikte bu, uzun süredir ertelediğin bir işe ilk adımı atmakla başlayabilir.',
+      'Küçük de olsa yeni bir şeyin ilk adımını atmak gününe yön verebilir.',
+    ],
+    2: <String>[
+      'Gündelik hayatta bunun karşılığı, bir konuyu tek başına çözmeye çalışmak yerine birinden destek istemek olabilir.',
+      'Birini dinlemek için ayıracağın birkaç dakika aranızdaki bağı sandığından çok güçlendirebilir.',
+    ],
+    3: <String>[
+      'Bunu en çok bir arkadaşınla konuşurken ya da seni ifade eden bir işe vakit ayırırken fark edebilirsin.',
+      'Bir duygunu ya da fikrini söze dökmek içindeki enerjiyi açığa çıkarabilir.',
+    ],
+    4: <String>[
+      'Somut bir başlangıç: masandaki, telefonundaki ya da aklındaki birikmiş işleri toparlamak.',
+      'Küçük bir düzen kurmak kafandaki kalabalığı da sadeleştirebilir.',
+    ],
+    5: <String>[
+      'Rutinin dışına çıkmak, farklı bir yoldan gitmek ya da yeni bir şey denemek zihnini tazeleyebilir.',
+      'Alışık olmadığın bir şeye evet demek gününe beklenmedik bir renk katabilir.',
+    ],
+    6: <String>[
+      'Bir yakınını aramak ya da evde küçük bir düzenleme yapmak küçük ama anlamlı bir adım olabilir.',
+      'Sevdiğin birine küçük bir iyilik yapmak sana da huzur verebilir.',
+    ],
+    7: <String>[
+      'Kendine sessiz bir zaman ayırmak ya da ilgini çeken bir konuyu araştırmak zihnini berraklaştırır.',
+      'Aklını kurcalayan bir soruya yazarak cevap aramak düşüncelerini netleştirebilir.',
+    ],
+    8: <String>[
+      'Odaklanabileceğin şey belli: maddi konularını gözden geçirmek ve bir hedefi netleştirmek.',
+      'Bir hedefi yazıya dökmek ve ona bir tarih vermek kararlılığını artırabilir.',
+    ],
+    9: <String>[
+      'Yarım kalan bir işi bitirmek ya da artık gerekmeyen bir şeyi bırakmak içini rahatlatabilir.',
+      'Sana artık iyi gelmeyen bir alışkanlığa veda etmek yeni bir sayfa açabilir.',
+    ],
   };
-
-  /// Uğraşı bilinmeyen okuyucu için sahne anahtarı.
-  static const String genelAnahtar = 'genel';
 
   /// Yaşam yolu karakterleri (1-9, 11, 22, 33).
   static const Map<int, KarakterYonu> karakterler = KarakterYonleri.hepsi;

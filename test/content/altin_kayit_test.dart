@@ -96,22 +96,10 @@ void main() {
     'Oğuz',
   ];
 
-  /// Tercih setleri: 0 = hiç cevap yok (tam ad da yok), 1 ve 2 dolu.
-  const List<OkuyucuTercihleri> tercihSetleri = <OkuyucuTercihleri>[
-    OkuyucuTercihleri(),
-    OkuyucuTercihleri(
-      enerji: EnerjiTarzi.iceDonuk,
-      karar: KararTarzi.kalp,
-      iliski: IliskiDurumu.bekar,
-      ugras: Ugras.ogrenci,
-    ),
-    OkuyucuTercihleri(
-      enerji: EnerjiTarzi.disaDonuk,
-      karar: KararTarzi.akil,
-      iliski: IliskiDurumu.evli,
-      ugras: Ugras.calisiyor,
-    ),
-  ];
+  /// Okuyucu durumları (K7, 26 Kasım 2026'dan beri tanışma cevabı yok):
+  /// 0 = tam ad yok, doğum haritası yok (eski "cevapsız" set, anahtarları
+  /// değişmedi); 1 = tam ad var; 2 = tam ad, doğum Ay'ı ve yükselen var.
+  const int durumSayisi = 3;
 
   /// Farklı ay, yıl, artık gün ve yıl dönümlerine yayılmış 10 gün.
   final List<DateTime> gunler = <DateTime>[
@@ -145,31 +133,33 @@ void main() {
   DateTime dogum(int i) =>
       dogumBul(yasamYollari[i], DateTime(1960 + i * 4, 1 + i, 1));
 
-  /// Tam ad (tercih seti 0'da yok: isim tabanlı bölümler düşer).
+  /// Tam ad (durum 0'da yok: isim tabanlı bölümler düşer).
   String? tamAd(int i, int t) => t == 0 ? null : '${isimler[i]} Yılmaz';
 
-  /// (yaşam yolu indeksi, tercih seti) için okuyucu.
+  /// (yaşam yolu indeksi, durum) için okuyucu. Durum 2'nin harita burçları
+  /// indeksten türetilir: on iki okuyucu on iki farklı Ay ve yükselen alır.
   Okuyucu okuyucu(int i, int t) {
     final DateTime d = dogum(i);
     return Okuyucu(
       isim: isimler[i],
       seed: UserSeed.fromIsim(isim: isimler[i], dogumTarihi: d),
       profil: KaderProfili.hesapla(dogumTarihi: d, tamAd: tamAd(i, t)),
-      tercihler: tercihSetleri[t],
+      dogumAyi: t == 2 ? Burc.values[(i * 5) % Burc.values.length] : null,
+      yukselen: t == 2 ? Burc.values[(i * 7 + 3) % Burc.values.length] : null,
     );
   }
 
-  /// Okuyucu anahtarı: "yy<yaşam yolu>/t<tercih seti>".
+  /// Okuyucu anahtarı: "yy<yaşam yolu>/t<durum>".
   String okuyucuAnahtari(int i, int t) => 'yy${yasamYollari[i]}/t$t';
 
   // ---------------------------------------------------------------------
   // Testler
   // ---------------------------------------------------------------------
 
-  test('günlük okuma: 12 yaşam yolu × 3 tercih × 10 gün', () {
+  test('günlük okuma: 12 yaşam yolu × 3 durum × 10 gün', () {
     final Map<String, String> ozetler = <String, String>{};
     for (int i = 0; i < yasamYollari.length; i++) {
-      for (int t = 0; t < tercihSetleri.length; t++) {
+      for (int t = 0; t < durumSayisi; t++) {
         final Okuyucu o = okuyucu(i, t);
         final _Doku d = _Doku();
         for (final DateTime g in gunler) {
@@ -215,7 +205,7 @@ void main() {
   test('kategori okuması: 5 kategori × 10 gün', () {
     final Map<String, String> ozetler = <String, String>{};
     for (int i = 0; i < yasamYollari.length; i++) {
-      for (int t = 0; t < tercihSetleri.length; t++) {
+      for (int t = 0; t < durumSayisi; t++) {
         final Okuyucu o = okuyucu(i, t);
         final _Doku d = _Doku();
         for (final DateTime g in gunler) {
@@ -240,7 +230,7 @@ void main() {
   test('Kader Profili: 3 farklı yıl', () {
     final Map<String, String> ozetler = <String, String>{};
     for (int i = 0; i < yasamYollari.length; i++) {
-      for (int t = 0; t < tercihSetleri.length; t++) {
+      for (int t = 0; t < durumSayisi; t++) {
         final Okuyucu o = okuyucu(i, t);
         final _Doku d = _Doku();
         for (final DateTime g in <DateTime>[gunler[0], gunler[4], gunler[9]]) {
@@ -272,8 +262,8 @@ void main() {
         ];
     final Map<String, String> ozetler = <String, String>{};
     for (int i = 0; i < yasamYollari.length; i++) {
-      // Uyum metni tercihlerden etkilenmez, yalnız tam addan: set 0 ve 1
-      // yeterli (set 2'nin özeti set 1'inkiyle aynı çıkar).
+      // Uyum metni yalnız tam addan etkilenir: durum 0 ve 1 yeterli
+      // (durum 2'nin özeti durum 1'inkiyle aynı çıkar).
       for (final int t in <int>[0, 1]) {
         final Okuyucu o = okuyucu(i, t);
         final _Doku d = _Doku();
@@ -633,58 +623,63 @@ class _Doku {
 }
 
 /// Altın kayıt: `ALTIN_KAYIT_YAZDIR=1` ile üretildi (E1, 8 Ekim 2026).
+///
+/// 26 Kasım 2026 (K7): tanışma cevabı setleri üretim durumlarıyla
+/// değiştirildi. t0 anahtarlarıyla birlikte 123 anahtar aynı kaldı;
+/// yalnız gunluk/kategori/profil t1-t2 (eskiden cevaplı okuyucu) ve
+/// begeni (cevaplı okuyucu kullanıyordu) yeniden üretildi.
 const Map<String, String> _altinKayit = <String, String>{
   'bebek/iki': 'de2a8413',
   'bebek/tek': 'ea5b4722',
   'bebek/uc': 'ace1960b',
-  'begeni/yy1': 'b5b27df3',
-  'begeni/yy11': '9b48066d',
-  'begeni/yy2': 'da335d81',
-  'begeni/yy22': 'af0c946a',
-  'begeni/yy3': 'cb56e423',
-  'begeni/yy33': 'e20b63e4',
-  'begeni/yy4': '2c6e2b19',
-  'begeni/yy5': '0aa240dc',
-  'begeni/yy6': 'a2acf956',
-  'begeni/yy7': 'b59421c4',
-  'begeni/yy8': '92b65cc5',
-  'begeni/yy9': 'c187b5f7',
+  'begeni/yy1': 'a3722584',
+  'begeni/yy11': 'ea255c57',
+  'begeni/yy2': '411d7fdf',
+  'begeni/yy22': 'a6812cd3',
+  'begeni/yy3': '0d38a0e7',
+  'begeni/yy33': '52b4dcb9',
+  'begeni/yy4': '35de2763',
+  'begeni/yy5': '014c1f6b',
+  'begeni/yy6': 'c3aa07ee',
+  'begeni/yy7': '5a4610a8',
+  'begeni/yy8': 'b067a13a',
+  'begeni/yy9': 'a8639d4b',
   'gunluk/yy1/t0': '482f4efa',
-  'gunluk/yy1/t1': 'f587dca4',
-  'gunluk/yy1/t2': 'af0b6708',
+  'gunluk/yy1/t1': '482f4efa',
+  'gunluk/yy1/t2': '482f1fce',
   'gunluk/yy11/t0': '9a7f75f8',
-  'gunluk/yy11/t1': '8894e385',
-  'gunluk/yy11/t2': '7c918b73',
+  'gunluk/yy11/t1': '9a7f75f8',
+  'gunluk/yy11/t2': '5eb9c262',
   'gunluk/yy2/t0': '02d828d8',
-  'gunluk/yy2/t1': 'd9bacd82',
-  'gunluk/yy2/t2': '8d0cbaa0',
+  'gunluk/yy2/t1': '02d828d8',
+  'gunluk/yy2/t2': '029098f6',
   'gunluk/yy22/t0': '1d945b0a',
-  'gunluk/yy22/t1': '30a2d641',
-  'gunluk/yy22/t2': 'dbf2c705',
+  'gunluk/yy22/t1': '1d945b0a',
+  'gunluk/yy22/t2': '641e1178',
   'gunluk/yy3/t0': '33061bf6',
-  'gunluk/yy3/t1': '9e838b1a',
-  'gunluk/yy3/t2': '3d815041',
+  'gunluk/yy3/t1': '33061bf6',
+  'gunluk/yy3/t2': 'f2cc0094',
   'gunluk/yy33/t0': 'ef9e2809',
-  'gunluk/yy33/t1': '55a46958',
-  'gunluk/yy33/t2': 'ac6c43d9',
+  'gunluk/yy33/t1': 'ef9e2809',
+  'gunluk/yy33/t2': '3bece1dd',
   'gunluk/yy4/t0': '7fc03e1d',
-  'gunluk/yy4/t1': 'a42cf2c2',
-  'gunluk/yy4/t2': 'a5e5edcb',
+  'gunluk/yy4/t1': '7fc03e1d',
+  'gunluk/yy4/t2': 'ff2d2667',
   'gunluk/yy5/t0': '1d27bde7',
-  'gunluk/yy5/t1': 'cbc50f57',
-  'gunluk/yy5/t2': 'a85ab3e1',
+  'gunluk/yy5/t1': '1d27bde7',
+  'gunluk/yy5/t2': 'b49bfe27',
   'gunluk/yy6/t0': 'a4fb4211',
-  'gunluk/yy6/t1': '115d4fda',
-  'gunluk/yy6/t2': 'd54be79e',
+  'gunluk/yy6/t1': 'a4fb4211',
+  'gunluk/yy6/t2': '3d3fdb2b',
   'gunluk/yy7/t0': '1c0a90a5',
-  'gunluk/yy7/t1': '17345ae0',
-  'gunluk/yy7/t2': '49b2c5f5',
+  'gunluk/yy7/t1': '1c0a90a5',
+  'gunluk/yy7/t2': '6b6be515',
   'gunluk/yy8/t0': '576e2f5b',
-  'gunluk/yy8/t1': '39fffd6c',
-  'gunluk/yy8/t2': '05992d78',
+  'gunluk/yy8/t1': '576e2f5b',
+  'gunluk/yy8/t2': '4ce29ba5',
   'gunluk/yy9/t0': '7c2be420',
-  'gunluk/yy9/t1': 'cc3e834f',
-  'gunluk/yy9/t2': '7f01da73',
+  'gunluk/yy9/t1': '7c2be420',
+  'gunluk/yy9/t2': 'ed3c6500',
   'harita/konumsuz': 'd959da30',
   'harita/saatsiz': '34b70950',
   'harita/tam': '81d7d87b',
@@ -705,82 +700,82 @@ const Map<String, String> _altinKayit = <String, String>{
   'isim/İbrahim Halil Doğan': '715c2e88',
   'isim/Şş': 'db2359f7',
   'kategori/yy1/t0': '2558da60',
-  'kategori/yy1/t1': 'a4337ab2',
-  'kategori/yy1/t2': 'ec100cd3',
+  'kategori/yy1/t1': '2558da60',
+  'kategori/yy1/t2': '2558da60',
   'kategori/yy11/t0': 'b59040bd',
-  'kategori/yy11/t1': '439bd215',
-  'kategori/yy11/t2': 'f03f58c0',
+  'kategori/yy11/t1': 'b59040bd',
+  'kategori/yy11/t2': 'b59040bd',
   'kategori/yy2/t0': 'b7542df7',
-  'kategori/yy2/t1': '8f382a5a',
-  'kategori/yy2/t2': 'a954b12a',
+  'kategori/yy2/t1': 'b7542df7',
+  'kategori/yy2/t2': 'b7542df7',
   'kategori/yy22/t0': '63a6a745',
-  'kategori/yy22/t1': '1c367c93',
-  'kategori/yy22/t2': '0864410a',
+  'kategori/yy22/t1': '63a6a745',
+  'kategori/yy22/t2': '63a6a745',
   'kategori/yy3/t0': 'e62ebb26',
-  'kategori/yy3/t1': '42ee51b5',
-  'kategori/yy3/t2': '2226822e',
+  'kategori/yy3/t1': 'e62ebb26',
+  'kategori/yy3/t2': 'e62ebb26',
   'kategori/yy33/t0': '5d29ba3b',
-  'kategori/yy33/t1': '018080b7',
-  'kategori/yy33/t2': 'ade828fe',
+  'kategori/yy33/t1': '5d29ba3b',
+  'kategori/yy33/t2': '5d29ba3b',
   'kategori/yy4/t0': 'a84c4735',
-  'kategori/yy4/t1': '12ae16ac',
-  'kategori/yy4/t2': 'e9c7ba39',
+  'kategori/yy4/t1': 'a84c4735',
+  'kategori/yy4/t2': 'a84c4735',
   'kategori/yy5/t0': '6173754e',
-  'kategori/yy5/t1': 'acbce72f',
-  'kategori/yy5/t2': '487803bd',
+  'kategori/yy5/t1': '6173754e',
+  'kategori/yy5/t2': '6173754e',
   'kategori/yy6/t0': '2eb6c9d4',
-  'kategori/yy6/t1': 'd8e47009',
-  'kategori/yy6/t2': '36de7075',
+  'kategori/yy6/t1': '2eb6c9d4',
+  'kategori/yy6/t2': '2eb6c9d4',
   'kategori/yy7/t0': '505c45c7',
-  'kategori/yy7/t1': '87af50a9',
-  'kategori/yy7/t2': '97fd47c6',
+  'kategori/yy7/t1': '505c45c7',
+  'kategori/yy7/t2': '505c45c7',
   'kategori/yy8/t0': '6a3ae4e5',
-  'kategori/yy8/t1': 'f6729f9f',
-  'kategori/yy8/t2': '4257c254',
+  'kategori/yy8/t1': '6a3ae4e5',
+  'kategori/yy8/t2': '6a3ae4e5',
   'kategori/yy9/t0': '4d82e6f7',
-  'kategori/yy9/t1': '9179806d',
-  'kategori/yy9/t2': '498da61a',
+  'kategori/yy9/t1': '4d82e6f7',
+  'kategori/yy9/t2': '4d82e6f7',
   'numara/bicimli': '2576a398',
   'numara/tarama0': 'afbd21a0',
   'numara/tarama1': '30c556b1',
   'numara/tarama2': 'd397b701',
   'numara/tarama3': '59f0627e',
   'profil/yy1/t0': 'a1b56f09',
-  'profil/yy1/t1': '09a22123',
-  'profil/yy1/t2': '34bcdcf1',
+  'profil/yy1/t1': '690b115e',
+  'profil/yy1/t2': '690b115e',
   'profil/yy11/t0': 'a8de184d',
-  'profil/yy11/t1': '73294e17',
-  'profil/yy11/t2': 'b860c9a9',
+  'profil/yy11/t1': '2a1822f2',
+  'profil/yy11/t2': '2a1822f2',
   'profil/yy2/t0': 'bd68b922',
-  'profil/yy2/t1': '9f4c0f29',
-  'profil/yy2/t2': 'fd370bb0',
+  'profil/yy2/t1': 'a84e73a0',
+  'profil/yy2/t2': 'a84e73a0',
   'profil/yy22/t0': '0fb35be1',
-  'profil/yy22/t1': '93c727db',
-  'profil/yy22/t2': 'e5747905',
+  'profil/yy22/t1': 'b1e6c7f2',
+  'profil/yy22/t2': 'b1e6c7f2',
   'profil/yy3/t0': 'd0ebc55d',
-  'profil/yy3/t1': 'd81f0935',
-  'profil/yy3/t2': '7f9328dc',
+  'profil/yy3/t1': '6d870878',
+  'profil/yy3/t2': '6d870878',
   'profil/yy33/t0': 'ec8cb955',
-  'profil/yy33/t1': 'f43bf767',
-  'profil/yy33/t2': 'ace143c7',
+  'profil/yy33/t1': '3f3e397c',
+  'profil/yy33/t2': '3f3e397c',
   'profil/yy4/t0': '737c8629',
-  'profil/yy4/t1': '1f4dfb52',
-  'profil/yy4/t2': 'c11c2a5c',
+  'profil/yy4/t1': '51c3d3c9',
+  'profil/yy4/t2': '51c3d3c9',
   'profil/yy5/t0': 'aa173c5a',
-  'profil/yy5/t1': 'f383afb0',
-  'profil/yy5/t2': '7fb5e8cf',
+  'profil/yy5/t1': 'bd7da0df',
+  'profil/yy5/t2': 'bd7da0df',
   'profil/yy6/t0': '9e22d8cd',
-  'profil/yy6/t1': '5c652e93',
-  'profil/yy6/t2': 'f1e6af53',
+  'profil/yy6/t1': 'dea3c332',
+  'profil/yy6/t2': 'dea3c332',
   'profil/yy7/t0': '2865d377',
-  'profil/yy7/t1': 'f58018ff',
-  'profil/yy7/t2': '2c60a1b8',
+  'profil/yy7/t1': 'e15596f4',
+  'profil/yy7/t2': 'e15596f4',
   'profil/yy8/t0': '582b65d8',
-  'profil/yy8/t1': '53616bde',
-  'profil/yy8/t2': '2885f54e',
+  'profil/yy8/t1': '334bce0f',
+  'profil/yy8/t2': '334bce0f',
   'profil/yy9/t0': '04475a01',
-  'profil/yy9/t1': 'fa332245',
-  'profil/yy9/t2': 'e5442ff3',
+  'profil/yy9/t1': '0cf3887a',
+  'profil/yy9/t2': '0cf3887a',
   'rapor/yy1/ad0': 'bb43acd0',
   'rapor/yy1/ad1': '11588388',
   'rapor/yy11/ad0': '3b461e6e',

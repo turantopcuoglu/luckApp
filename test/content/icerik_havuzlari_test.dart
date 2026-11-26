@@ -4,7 +4,6 @@ import 'package:kader/core/content/content_config.dart';
 import 'package:kader/core/content/dongu_metinleri.dart';
 import 'package:kader/core/content/fortune_pools.dart';
 import 'package:kader/core/content/kisisel_havuzlar.dart';
-import 'package:kader/core/content/okuyucu.dart';
 import 'package:kader/core/content/sayi_metinleri.dart';
 import 'package:kader/core/content/slot_doldurucu.dart';
 import 'package:kader/core/content/uyum_metinleri.dart';
@@ -45,8 +44,6 @@ List<String> _tumMetinler() {
   KisiselHavuzlar.eylemCumleleri.values.forEach(ekle);
   ekle(KisiselHavuzlar.golgesizGun);
   KisiselHavuzlar.enerjiTavsiyeleri.values.forEach(ekle);
-  ekle(KisiselHavuzlar.profilIliskiEki.values);
-  ekle(KisiselHavuzlar.profilUgrasEki.values);
   UyumMetinleri.yasamYolu.values.forEach(ekle);
   ekle(UyumMetinleri.element.values);
   ekle(UyumMetinleri.ruh.values);
@@ -56,9 +53,7 @@ List<String> _tumMetinler() {
     t.durum.values.forEach(ekle);
   }
   YorumYonu.bulusmaCumleleri.values.forEach(ekle);
-  for (final Map<String, List<String>> s in YorumYonu.gunSahneleri.values) {
-    s.values.forEach(ekle);
-  }
+  YorumYonu.gunSahneleri.values.forEach(ekle);
   for (final KarakterYonu k in YorumYonu.karakterler.values) {
     ekle(k.gucTavsiyeleri);
     ekle(k.golgeTavsiyeleri);
@@ -152,7 +147,11 @@ void main() {
           expect(tarz, isNotNull, reason: '$sayi $kat');
           expect(
             tarz!.length,
-            greaterThanOrEqualTo(ContentConfig.enAzTarzVaryanti),
+            greaterThanOrEqualTo(
+              kat == LuckCategory.ask
+                  ? ContentConfig.enAzAskTarzVaryanti
+                  : ContentConfig.enAzTarzVaryanti,
+            ),
             reason: '$sayi $kat',
           );
           havuzuDogrula('tarz[$sayi][$kat]', tarz);
@@ -166,8 +165,7 @@ void main() {
       // de "Bugün" ile başlarsa okuma tek kalıptan çıkmış gibi okunur.
       final List<String> ortaCumleler = <String>[
         ...YorumYonu.bulusmaCumleleri.values.expand((List<String> l) => l),
-        for (final Map<String, List<String>> s in YorumYonu.gunSahneleri.values)
-          ...s.values.expand((List<String> l) => l),
+        ...YorumYonu.gunSahneleri.values.expand((List<String> l) => l),
         for (final KarakterYonu k in YorumYonu.karakterler.values) ...<String>[
           ...k.gucTavsiyeleri,
           ...k.golgeTavsiyeleri,
@@ -200,22 +198,15 @@ void main() {
       }
     });
 
-    test('her tema × uğraş sahnesi mevcut (genel dahil) ve varyantlı', () {
+    test('her tema sahnesi mevcut ve varyantlı', () {
       for (int k = 1; k <= 9; k++) {
-        final Map<String, List<String>> s = YorumYonu.gunSahneleri[k]!;
-        expect(s.containsKey(YorumYonu.genelAnahtar), isTrue);
-        for (final String anahtar in <String>[
-          YorumYonu.genelAnahtar,
-          for (final Ugras u in Ugras.values) u.name,
-        ]) {
-          final List<String>? havuz = s[anahtar];
-          expect(havuz, isNotNull, reason: 'sahne $k $anahtar');
-          expect(
-            havuz!.length,
-            greaterThanOrEqualTo(ContentConfig.enAzSahneVaryanti),
-          );
-          havuzuDogrula('sahne[$k][$anahtar]', havuz);
-        }
+        final List<String>? havuz = YorumYonu.gunSahneleri[k];
+        expect(havuz, isNotNull, reason: 'sahne $k');
+        expect(
+          havuz!.length,
+          greaterThanOrEqualTo(ContentConfig.enAzSahneVaryanti),
+        );
+        havuzuDogrula('sahne[$k]', havuz);
       }
     });
 
@@ -275,8 +266,7 @@ void main() {
         for (final GunTemasi t in YorumYonu.gunTemalari.values)
           ...t.durum.values.expand((List<String> l) => l),
         ...YorumYonu.bulusmaCumleleri.values.expand((List<String> l) => l),
-        for (final Map<String, List<String>> s in YorumYonu.gunSahneleri.values)
-          ...s.values.expand((List<String> l) => l),
+        ...YorumYonu.gunSahneleri.values.expand((List<String> l) => l),
         ...YorumYonu.donemCumleleri.values.expand((List<String> l) => l),
         ...YorumYonu.ayCumleleri.values.expand((List<String> l) => l),
         for (final KarakterYonu k in YorumYonu.karakterler.values) ...<String>[

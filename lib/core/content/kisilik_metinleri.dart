@@ -351,28 +351,25 @@ abstract final class KisilikMetinleri {
     },
   };
 
-  /// Okuyucunun cevaplarından çelişki anahtarları: enerji ve karar tarzı
-  /// adı, ilişki durumu için `bekar` / `partnerli`.
+  /// [p] portresinin çelişki anahtarları: enerji ve karar tarzı adı, ve
+  /// her zaman `bekar` ile `partnerli`.
   ///
-  /// İlişki durumu bilinmiyorsa İKİ anahtar birden döner: partneri
-  /// olduğunu varsayan cümleler de ("partnerinin mutluluğunu…"), bekâr
-  /// olduğunu varsayanlar da ("flört senin için bir oyun…") elenir.
-  static Set<String> celiskiAnahtarlari(OkuyucuTercihleri t) => <String>{
-    ?t.enerji?.name,
-    ?t.karar?.name,
-    ...switch (t.iliski) {
-      null => const <String>['bekar', 'partnerli'],
-      final IliskiDurumu d => <String>[d.partnerliMi ? 'partnerli' : 'bekar'],
-    },
+  /// İlişki durumu bilinmez (K7, 26 Kasım 2026: sorulmuyor). Bu yüzden
+  /// partneri olduğunu varsayan cümleler de ("partnerinin mutluluğunu…"),
+  /// bekâr olduğunu varsayanlar da ("flört senin için bir oyun…") elenir.
+  static Set<String> celiskiAnahtarlari(Portre p) => <String>{
+    p.enerji.name,
+    p.karar.name,
+    ...ContentConfig.iliskiVarsayimAnahtarlari,
   };
 
-  /// [metin] okuyucunun cevaplarından biriyle çelişiyor mu?
+  /// [metin] [p] portresiyle ya da bir ilişki varsayımıyla çelişiyor mu?
   ///
   /// İfadeler kelime başından eşleşir: "eşin" ifadesi "peşin" kelimesini,
   /// "ders" ifadesi "hissedersin" kelimesini yakalamaz.
-  static bool celisir(String metin, OkuyucuTercihleri t) {
+  static bool celisir(String metin, Portre p) {
     final String kucuk = TurkceEk.kucukHarf(metin);
-    for (final String anahtar in celiskiAnahtarlari(t)) {
+    for (final String anahtar in celiskiAnahtarlari(p)) {
       for (final String ifade
           in ContentConfig.celiskiIfadeleri[anahtar] ?? const <String>[]) {
         if (_kelimeBasindaGecer(kucuk, ifade)) {
@@ -400,20 +397,16 @@ abstract final class KisilikMetinleri {
   }
 
   /// [havuz]dan okuyucunun portresiyle çelişmeyen cümleler: bütün okuma
-  /// havuzlarının seçimden önce geçtiği kapı. [t] olarak `Okuyucu.portre`
+  /// havuzlarının seçimden önce geçtiği kapı. [p] olarak `Okuyucu.portre`
   /// verilir.
   ///
   /// Geriye [enAz]'dan az cümle kalırsa havuz olduğu gibi döner (okuma
   /// boş ya da eksik kalmasın); havuz bütünlük testleri bunun hiçbir
   /// portrede olmadığını doğrular.
-  static List<String> uyumlular(
-    List<String> havuz,
-    OkuyucuTercihleri t, {
-    int enAz = 1,
-  }) {
+  static List<String> uyumlular(List<String> havuz, Portre p, {int enAz = 1}) {
     final List<String> kalan = <String>[
       for (final String m in havuz)
-        if (!celisir(m, t)) m,
+        if (!celisir(m, p)) m,
     ];
     return kalan.length < enAz ? havuz : kalan;
   }
@@ -494,11 +487,11 @@ abstract final class KisilikMetinleri {
         },
   };
 
-  /// [metin]in cümlelerinden okuyucunun cevabıyla çelişenleri
+  /// [metin]in cümlelerinden [p] portresiyle çelişenleri
   /// [profilUyarlamalari]daki karşılığıyla değiştirir; diğer cümleler
   /// olduğu gibi kalır.
-  static String profilMetniniUyarla(String metin, OkuyucuTercihleri t) {
-    final Set<String> anahtarlar = celiskiAnahtarlari(t);
+  static String profilMetniniUyarla(String metin, Portre p) {
+    final Set<String> anahtarlar = celiskiAnahtarlari(p);
     if (anahtarlar.isEmpty) {
       return metin;
     }

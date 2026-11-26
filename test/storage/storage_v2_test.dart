@@ -77,7 +77,12 @@ void main() {
         'iliski': 'evli',
         'ugras': 'girisimci',
       });
-      expect(p.okuyucu.tercihler, const OkuyucuTercihleri());
+      // Portre yalnız burç elementinden gelir (Balık: su → içe dönük,
+      // kalp); kayıttaki cevaplar okunmaz.
+      expect(
+        p.okuyucu.portre,
+        const Portre(enerji: EnerjiTarzi.iceDonuk, karar: KararTarzi.kalp),
+      );
       expect(p.toMap().keys, isNot(contains('ugras')));
     });
 

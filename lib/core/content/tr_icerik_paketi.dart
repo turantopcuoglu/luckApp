@@ -11,8 +11,6 @@ library;
 
 import '../luck_engine/luck_engine.dart';
 import 'icerik_paketi.dart';
-import 'kisisel_havuzlar.dart';
-import 'okuyucu.dart';
 import 'turkce_ek.dart';
 
 /// Türkçe paketin tek örneği; birleştiricilerin varsayılan paketi ve
@@ -80,44 +78,6 @@ final class TrIcerikPaketi implements IcerikPaketi {
     UyumDerecesi.guclu => 'Güçlü uyum',
     UyumDerecesi.dengeli => 'Dengeli uyum',
     UyumDerecesi.gelistiren => 'Geliştiren uyum',
-  };
-
-  @override
-  String enerjiTarziAdi(EnerjiTarzi tarz) => switch (tarz) {
-    EnerjiTarzi.iceDonuk => 'Yalnız kalınca toplanırım',
-    EnerjiTarzi.disaDonuk => 'İnsanlarla şarj olurum',
-  };
-
-  @override
-  String kararTarziAdi(KararTarzi tarz) => switch (tarz) {
-    KararTarzi.kalp => 'Önce kalbimi dinlerim',
-    KararTarzi.akil => 'Önce aklımı dinlerim',
-  };
-
-  @override
-  String iliskiDurumuAdi(IliskiDurumu durum) => switch (durum) {
-    IliskiDurumu.bekar => 'Bekarım',
-    IliskiDurumu.iliskide => 'İlişkim var',
-    IliskiDurumu.evli => 'Evliyim',
-  };
-
-  @override
-  String ugrasAdi(Ugras ugras) => switch (ugras) {
-    Ugras.calisiyor => 'Çalışıyorum',
-    Ugras.ogrenci => 'Öğrenciyim',
-    Ugras.isArayan => 'İş arıyorum',
-    Ugras.girisimci => 'Kendi işim var',
-    Ugras.evde => 'Ev ve aileyle meşgulüm',
-  };
-
-  @override
-  String ugrasAlani(Ugras? ugras) => switch (ugras) {
-    Ugras.calisiyor => 'işin',
-    Ugras.ogrenci => 'derslerin',
-    Ugras.isArayan => 'iş arayışın',
-    Ugras.girisimci => 'projelerin',
-    Ugras.evde => 'evdeki düzenin',
-    null => KisiselHavuzlar.varsayilanUgrasAlani,
   };
 
   @override

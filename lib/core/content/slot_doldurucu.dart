@@ -35,9 +35,6 @@ abstract final class SlotAnahtarlari {
   /// Şanslı saat aralığı ("14:00 - 16:00").
   static const String saat = 'saat';
 
-  /// Günlük uğraş alanı ("işin", "derslerin", …).
-  static const String ugrasAlani = 'ugrasAlani';
-
   /// Uyum ekranındaki diğer kişinin adı.
   static const String digerIsim = 'digerIsim';
 
@@ -60,7 +57,6 @@ abstract final class SlotAnahtarlari {
     kisiselYil,
     yil,
     saat,
-    ugrasAlani,
     digerIsim,
   };
 }

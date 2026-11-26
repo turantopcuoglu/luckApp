@@ -1,11 +1,11 @@
 import '../luck_engine/luck_engine.dart';
 import 'okuyucu.dart';
 
-/// Okuyucunun tercihlerine ve günün en zayıf kategorisine göre seçilen
-/// ek metin havuzları.
+/// Okuyucunun portresine ve günün en zayıf kategorisine göre seçilen ek
+/// metin havuzları.
 ///
 /// Yazım rehberi için bkz. `sayi_metinleri.dart`. Yer tutucular:
-/// `{saat}`, `{ugrasAlani}`, `{isim}`.
+/// `{saat}`, `{isim}`.
 abstract final class KisiselHavuzlar {
   /// Kategoriye özel somut eylem önerisi (şanslı saatle).
   static const Map<LuckCategory, List<String>>
@@ -20,7 +20,7 @@ abstract final class KisiselHavuzlar {
     ],
     LuckCategory.para: <String>[
       'Ertelediğin hesabı, faturayı ya da teklif cevabını {saat} arasında ele al.',
-      '{saat} arasında {ugrasAlani} için tek bir önceliği netleştir.',
+      '{saat} arasında günlük işlerin için tek bir önceliği netleştir.',
       'Maddi bir konuşma yapacaksan {saat} aralığı sana daha çok netlik veriyor.',
       '{saat} arasında küçük bir bütçe kontrolü yap; sürpriz bir tasarruf çıkabilir.',
       '{saat} arasında beklenen bir ödemeyi ya da tahsilatı takip et.',
@@ -81,49 +81,5 @@ abstract final class KisiselHavuzlar {
       'Bugün birine moral vermek, senin de moralini yükseltir.',
       'Akşam için küçük bir buluşma planla; günün yorgunluğunu alır.',
     ],
-  };
-
-  /// Uğraş bilinmediğinde `{ugrasAlani}` yerine geçen ad öbeği.
-  static const String varsayilanUgrasAlani = 'günlük işlerin';
-
-  /// Profil "Aşkta" bölümüne ilişki durumuna göre eklenen cümle
-  /// (false: bekar, true: partnerli).
-  ///
-  /// Cevabı geri söylemez ("yalnız yürüyorsan", "ilişkinin içindeysen"
-  /// gibi koşullar yok); durum yalnızca hangi cümlenin seçileceğini
-  /// belirler (bkz. `ContentConfig.yankiIfadeleri`).
-  static const Map<bool, String> profilIliskiEki = <bool, String>{
-    false:
-        'Bu dönem aşkta kimi aradığından çok kim olduğunu netleştirmek '
-        'sana kapı açar; doğru bağ, en çok kendine benzediğin anlarda '
-        'kurulur.',
-    true:
-        'Bu özelliklerin en çok sevdiğinle kurduğun günlük ritimde görünür; '
-        'ne zaman alan, ne zaman yakınlık istediğini söylemek bağını '
-        'güçlendirir.',
-  };
-
-  /// Profil "İşte ve parada" bölümüne uğraşa göre eklenen cümle.
-  ///
-  /// Uğraşı adıyla anmaz ("öğrencilik döneminde", "kendi işinde" yok);
-  /// yalnızca hangi sahnenin anlatılacağını belirler.
-  static const Map<Ugras, String> profilUgrasEki = <Ugras, String>{
-    Ugras.calisiyor:
-        'Bu yanını iş hayatında görünür kılmak — bir toplantıda sözü almak '
-        'ya da bir süreci sahiplenmek — değerini daha hızlı fark ettirir.',
-    Ugras.ogrenci:
-        'Hangi konularda zamanın nasıl geçtiğini unuttuğuna bak; bu '
-        'eğilimler sana ileride bir yön fısıldıyor olabilir.',
-    Ugras.isArayan:
-        'Bu güçlü yanlarını özgeçmişinde ve görüşmelerde somut bir örnekle '
-        'anlatmak seni kalabalıktan ayırır.',
-    Ugras.girisimci:
-        'Kendi kurduğun düzende bu yanın hem motorun hem kör noktan '
-        'olabilir; güçlü olduğun alanı büyütürken zayıf kaldığın yeri '
-        'güvendiğin biriyle paylaşmak işini hızlandırır.',
-    Ugras.evde:
-        'Bir evi ve insanlarını ayakta tutmak da gerçek bir emektir; bu '
-        'yeteneklerin orada her gün sessizce çalışıyor ve istersen yeni bir '
-        'üretime de dönüşebilir.',
   };
 }

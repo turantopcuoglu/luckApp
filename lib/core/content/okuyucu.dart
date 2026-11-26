@@ -1,122 +1,45 @@
 import '../luck_engine/luck_engine.dart';
 
-/// Kullanıcının kendini nasıl tanımladığı: enerji tarzı.
+/// Enerji tarzı: kişi enerjisini yalnız kalınca mı, insanlarla mı toplar.
+///
+/// 26 Kasım 2026'dan beri (K7) kullanıcıya sorulmaz; Güneş burcunun
+/// elementinden türetilir (bkz. [Okuyucu.elementEnerjisi]).
 enum EnerjiTarzi {
   /// Enerjisini yalnız kalınca toplar.
-  iceDonuk(etiket: 'Yalnız kalınca toplanırım'),
+  iceDonuk,
 
   /// Enerjisini insanlarla toplar.
-  disaDonuk(etiket: 'İnsanlarla şarj olurum');
-
-  const EnerjiTarzi({required this.etiket});
-
-  /// Seçenek metni.
-  final String etiket;
+  disaDonuk,
 }
 
-/// Karar verirken öne çıkan taraf.
+/// Karar verirken öne çıkan taraf; Güneş burcunun elementinden türetilir
+/// (bkz. [Okuyucu.elementKarari]).
 enum KararTarzi {
   /// Önce kalbini dinler.
-  kalp(etiket: 'Önce kalbimi dinlerim'),
+  kalp,
 
   /// Önce aklını ve hesabı dinler.
-  akil(etiket: 'Önce aklımı dinlerim');
-
-  const KararTarzi({required this.etiket});
-
-  /// Seçenek metni.
-  final String etiket;
+  akil,
 }
 
-/// İlişki durumu (aşk yorumlarının doğru kişiye konuşması için).
-enum IliskiDurumu {
-  /// İlişkisi yok.
-  bekar(etiket: 'Bekarım'),
-
-  /// Bir ilişkisi var.
-  iliskide(etiket: 'İlişkim var'),
-
-  /// Evli.
-  evli(etiket: 'Evliyim');
-
-  const IliskiDurumu({required this.etiket});
-
-  /// Seçenek metni.
-  final String etiket;
-
-  /// Partneri olan bir durum mu?
-  bool get partnerliMi => this != IliskiDurumu.bekar;
-}
-
-/// Günün büyük bölümünü neyin doldurduğu.
-enum Ugras {
-  /// Bir işte çalışıyor.
-  calisiyor(etiket: 'Çalışıyorum', alan: 'işin'),
-
-  /// Öğrenci.
-  ogrenci(etiket: 'Öğrenciyim', alan: 'derslerin'),
-
-  /// İş arıyor.
-  isArayan(etiket: 'İş arıyorum', alan: 'iş arayışın'),
-
-  /// Kendi işini yürütüyor.
-  girisimci(etiket: 'Kendi işim var', alan: 'projelerin'),
-
-  /// Evle ve aileyle meşgul.
-  evde(etiket: 'Ev ve aileyle meşgulüm', alan: 'evdeki düzenin');
-
-  const Ugras({required this.etiket, required this.alan});
-
-  /// Seçenek metni.
-  final String etiket;
-
-  /// Cümle içinde özne olarak kullanılan ad öbeği ("Bugün {alan} …").
-  final String alan;
-}
-
-/// Kullanıcının onboarding'de verdiği tercih cevapları.
-///
-/// Tüm alanlar opsiyoneldir: soru atlanabilir; atlanan soruya bağlı
-/// metinler genel havuzdan seçilir.
-class OkuyucuTercihleri {
-  /// Tüm alanları opsiyonel tercih seti.
-  const OkuyucuTercihleri({this.enerji, this.karar, this.iliski, this.ugras});
+/// Çekirdek portre: okumaların çelişki kapısında kullandığı TEK kişilik
+/// tarifi (bkz. [Okuyucu.portre]).
+class Portre {
+  /// Enerji ve karar tarzıyla portre.
+  const Portre({required this.enerji, required this.karar});
 
   /// Enerji tarzı.
-  final EnerjiTarzi? enerji;
+  final EnerjiTarzi enerji;
 
   /// Karar tarzı.
-  final KararTarzi? karar;
-
-  /// İlişki durumu.
-  final IliskiDurumu? iliski;
-
-  /// Günlük uğraş.
-  final Ugras? ugras;
-
-  /// Seçili alanları değiştirilmiş kopya döndürür.
-  OkuyucuTercihleri copyWith({
-    EnerjiTarzi? enerji,
-    KararTarzi? karar,
-    IliskiDurumu? iliski,
-    Ugras? ugras,
-  }) => OkuyucuTercihleri(
-    enerji: enerji ?? this.enerji,
-    karar: karar ?? this.karar,
-    iliski: iliski ?? this.iliski,
-    ugras: ugras ?? this.ugras,
-  );
+  final KararTarzi karar;
 
   @override
   bool operator ==(Object other) =>
-      other is OkuyucuTercihleri &&
-      other.enerji == enerji &&
-      other.karar == karar &&
-      other.iliski == iliski &&
-      other.ugras == ugras;
+      other is Portre && other.enerji == enerji && other.karar == karar;
 
   @override
-  int get hashCode => Object.hash(enerji, karar, iliski, ugras);
+  int get hashCode => Object.hash(enerji, karar);
 }
 
 /// İçerik birleştiricisinin tek girdisi: yorumu okuyacak kişi.
@@ -126,7 +49,6 @@ class Okuyucu {
     required this.isim,
     required this.seed,
     required this.profil,
-    this.tercihler = const OkuyucuTercihleri(),
     this.dogumAyi,
     this.yukselen,
   });
@@ -140,9 +62,6 @@ class Okuyucu {
   /// Sabit kimlik katmanı (numeroloji + burç).
   final KaderProfili profil;
 
-  /// Onboarding tercih cevapları.
-  final OkuyucuTercihleri tercihler;
-
   /// Doğum anındaki Ay burcu; kesin değilse (doğum saati bilinmiyor ve Ay
   /// o gün burç değiştirmiş, ya da burç sınırına çok yakın) null.
   ///
@@ -154,9 +73,9 @@ class Okuyucu {
   /// burç sınırına çok yakınsa null.
   final Burc? yukselen;
 
-  /// Cevap verilmemişse enerji tarzının türetildiği element eşlemesi:
-  /// ateş ve hava dışa, toprak ve su içe dönük okunur (burçların en yaygın
-  /// bilinen tarifi; kişi kendi burcunu bu tarifle tanır).
+  /// Enerji tarzının türetildiği element eşlemesi: ateş ve hava dışa,
+  /// toprak ve su içe dönük okunur (burçların en yaygın bilinen tarifi;
+  /// kişi kendi burcunu bu tarifle tanır).
   static const Map<BurcElementi, EnerjiTarzi> elementEnerjisi =
       <BurcElementi, EnerjiTarzi>{
         BurcElementi.ates: EnerjiTarzi.disaDonuk,
@@ -165,8 +84,8 @@ class Okuyucu {
         BurcElementi.su: EnerjiTarzi.iceDonuk,
       };
 
-  /// Cevap verilmemişse karar tarzının türetildiği element eşlemesi: ateş
-  /// ve su kalbiyle, toprak ve hava aklıyla karar verir.
+  /// Karar tarzının türetildiği element eşlemesi: ateş ve su kalbiyle,
+  /// toprak ve hava aklıyla karar verir.
   static const Map<BurcElementi, KararTarzi> elementKarari =
       <BurcElementi, KararTarzi>{
         BurcElementi.ates: KararTarzi.kalp,
@@ -176,23 +95,20 @@ class Okuyucu {
       };
 
   /// Çekirdek portre: bütün okumaların çelişki kapısında kullandığı TEK
-  /// kişilik tarifi.
+  /// kişilik tarifi, Güneş burcunun elementinden ([elementEnerjisi],
+  /// [elementKarari]).
   ///
-  /// Enerji ve karar tarzı için okuyucunun kendi cevabı esastır; soru
-  /// atlanmışsa Güneş burcunun elementinden türetilir ([elementEnerjisi],
-  /// [elementKarari]). Böylece burç ve yaşam yolu metinleri aynı kişiyi
-  /// anlatır: Balık burcu bir okura bir gün "kalabalıkta kolay yorulursun"
-  /// (burç), ertesi gün "ortamın merkezindesin" (yaşam yolu 3) denmez.
+  /// Böylece burç ve yaşam yolu metinleri aynı kişiyi anlatır: Balık
+  /// burcu bir okura bir gün "kalabalıkta kolay yorulursun" (burç), ertesi
+  /// gün "ortamın merkezindesin" (yaşam yolu 3) denmez. Portre yalnızca
+  /// cümle DIŞLAMAK ve profil cümlesi uyarlamak için kullanılır (bkz.
+  /// `KisilikMetinleri.uyumlular`). İlişki durumu bilinmez; o konuda
+  /// varsayım yapan cümleler her zaman elenir.
   ///
-  /// Türetilen değerler yalnızca cümle DIŞLAMAK için kullanılır (bkz.
-  /// `KisilikMetinleri.uyumlular`); kişiye özel havuz seçimi (ör. içe
-  /// dönüklere yazılmış öneriler) yalnızca verilen cevaplara
-  /// ([tercihler]) dayanır. İlişki durumu ve uğraş hayatın olgusudur,
-  /// türetilmez; bilinmiyorsa o konuda varsayım yapan cümleler elenir.
-  OkuyucuTercihleri get portre => OkuyucuTercihleri(
-    enerji: tercihler.enerji ?? elementEnerjisi[profil.burc.element],
-    karar: tercihler.karar ?? elementKarari[profil.burc.element],
-    iliski: tercihler.iliski,
-    ugras: tercihler.ugras,
+  /// 11 Kasım 2026'da tanışma soruları kalktı; 26 Kasım kararıyla (K7)
+  /// cevaba göre dallanan yollar da silindi.
+  Portre get portre => Portre(
+    enerji: elementEnerjisi[profil.burc.element]!,
+    karar: elementKarari[profil.burc.element]!,
   );
 }

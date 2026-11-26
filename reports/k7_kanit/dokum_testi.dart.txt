@@ -1,0 +1,93 @@
+// GEÇİCİ (K7 eşdeğerlik dökümü): commit edilmez.
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:kader/core/content/fortune_composer.dart';
+import 'package:kader/core/content/gunluk_okuma.dart';
+import 'package:kader/core/content/okuyucu.dart';
+import 'package:kader/core/luck_engine/luck_engine.dart';
+
+String fnv(String s) {
+  int h = 0x811c9dc5;
+  for (final int b in utf8.encode(s)) {
+    h ^= b;
+    h = (h * 0x01000193) & 0xffffffff;
+  }
+  return h.toRadixString(16).padLeft(8, '0');
+}
+
+String gunlukMetni(GunlukOkuma o) {
+  final StringBuffer b = StringBuffer()
+    ..writeln(o.baslik)
+    ..writeln(o.dongu.kisiselGun);
+  for (final OkumaBolumu x in o.bolumler) {
+    b.writeln('${x.tur.name}|${x.kimlik}|${x.kategori?.name}|${x.metin}');
+  }
+  b
+    ..writeln(o.kapanis)
+    ..writeln(o.kartMetni)
+    ..writeln(o.cunku);
+  for (final NedenOgesi n in o.nedenler) {
+    b.writeln('${n.tur.name}|${n.etiket}|${n.aciklama}');
+  }
+  b.writeln('${o.sansRengi.ad}|${o.sansliSayi}|${o.tavsiye}|'
+      '${o.parlayanKategori.name}|${o.dikkatKategori.name}|${o.sansliSaat.etiket}');
+  return b.toString();
+}
+
+void main() {
+  test('K7 döküm', () {
+    final String hedef = Platform.environment['K7_DOKUM']!;
+    const LuckEngine motor = LuckEngine();
+    final StringBuffer cikti = StringBuffer();
+    final StringBuffer tam = StringBuffer();
+    const List<String> adlar = <String>[
+      'Ayşe', 'Mehmet', 'Işıl', 'Ömer', 'Gül', 'Umut', 'Deniz', 'Çağrı',
+      'Su', 'Ali', 'Ece', 'Oğuz', 'Zeynep', 'Kaan', 'Elif', 'Burak',
+    ];
+    for (int i = 0; i < adlar.length; i++) {
+      // Her doğum ayrı bir burç ve yaşam yolu kümesine düşsün.
+      final DateTime dogum = DateTime(1960 + i * 3, 1 + (i * 5) % 12, 1 + (i * 7) % 28);
+      for (final String? tamAd in <String?>[null, '${adlar[i]} Yılmaz']) {
+        for (int h = 0; h < 3; h++) {
+          final Okuyucu o = Okuyucu(
+            isim: adlar[i],
+            seed: UserSeed.fromIsim(isim: adlar[i], dogumTarihi: dogum),
+            profil: KaderProfili.hesapla(dogumTarihi: dogum, tamAd: tamAd),
+            dogumAyi: h >= 1 ? Burc.values[(i * 5) % 12] : null,
+            yukselen: h >= 2 ? Burc.values[(i * 7 + 3) % 12] : null,
+          );
+          final String anahtar = '${adlar[i]}/${tamAd != null}/h$h';
+          for (int g = 0; g < 75; g++) {
+            final DateTime gun = DateTime(2027, 1, 1 + g * 5);
+            final LuckResult sonuc = motor.hesapla(kullanici: o.seed, gun: gun);
+            final String m = gunlukMetni(
+              gunlukOkuma(motor: motor, okuyucu: o, sonuc: sonuc),
+            );
+            cikti.writeln('$anahtar/g$g/gunluk\t${fnv(m)}');
+            tam.writeln('### $anahtar/g$g/gunluk\n$m');
+            for (final LuckCategory k in LuckCategory.values) {
+              final KategoriOkumasi ko = kategoriOkumasi(
+                motor: motor, okuyucu: o, sonuc: sonuc, kategori: k);
+              final String km = '${ko.skor}|${ko.ton.name}|${ko.paragraf}|'
+                  '${ko.eylem}|${ko.sansliSaat.etiket}';
+              cikti.writeln('$anahtar/g$g/${k.name}\t${fnv(km)}');
+              tam.writeln('### $anahtar/g$g/${k.name}\n$km');
+            }
+            if (g % 15 == 0) {
+              final String pm = <String>[
+                for (final ProfilBolumu b in profilOkumasi(okuyucu: o, gun: gun))
+                  '${b.tur.name}|${b.baslik}|${b.metin}|${b.premium}',
+              ].join('\n');
+              cikti.writeln('$anahtar/g$g/profil\t${fnv(pm)}');
+              tam.writeln('### $anahtar/g$g/profil\n$pm');
+            }
+          }
+        }
+      }
+    }
+    File('$hedef.txt').writeAsStringSync(cikti.toString());
+    File('$hedef.tam.txt').writeAsStringSync(tam.toString());
+  }, timeout: const Timeout(Duration(minutes: 10)));
+}

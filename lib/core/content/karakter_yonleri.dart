@@ -2,7 +2,7 @@
 ///
 /// Her öneri türünde en az [ContentConfig.enAzOneriVaryanti], her
 /// kategori tarzında en az [ContentConfig.enAzTarzVaryanti] varyant
-/// bulunur: aynı kategori bir ayda 15-20 kez öne çıkabildiği için tek
+/// bulunur (aşk tarzı geçici olarak [ContentConfig.enAzAskTarzVaryanti]): aynı kategori bir ayda 15-20 kez öne çıkabildiği için tek
 /// cümlelik tarz metinleri okura kısa sürede ezber gibi gelir.
 ///
 /// Yazım kuralları (bkz. `sayi_metinleri.dart`) ek olarak:
@@ -153,7 +153,6 @@ abstract final class KarakterYonleri {
       kategoriTarzi: <LuckCategory, List<String>>{
         LuckCategory.ask: <String>[
           'Aşkta eğlenceli ve sıcaksın; ilgi görmek ve takdir duymak senin için önemli.',
-          'Flört senin için bir oyun gibi; ama ciddileştiğinde sandığından derin bağlanırsın.',
           'Seni güldüren ve sözlerine değer veren biri kalbine en kısa yoldan ulaşır.',
           'Sıkıldığında bunu saklayamazsın; ilişkide sürpriz ve yenilik seni canlı tutar.',
         ],
@@ -265,7 +264,6 @@ abstract final class KarakterYonleri {
           'Aşkta heyecan ararsın; kısıtlandığını hissettiğinde geri çekilirsin.',
           'Seni en çok, hayatına renk katan ve özgürlüğüne saygı duyan biri etkiler.',
           'İlişkide rutin seni boğabilir; birlikte yeni bir şey denemek bağını tazeler.',
-          'Çabuk ilgilenirsin; kalıcı olanı ise seninle birlikte büyümeye açık biri belirler.',
         ],
         LuckCategory.para: <String>[
           'Kazancın dalgalı olabilir; iyi günlerde bir kenara ayırmak özgürlüğünü korur.',
@@ -320,7 +318,6 @@ abstract final class KarakterYonleri {
           'Aşkta şefkatli ve bağlısın; aynı özeni geri görmediğinde çabuk yorulursun.',
           'Sevgini bakım vererek gösterirsin: bir yemek, bir hatırlatma, sıcak bir mesaj.',
           'İlişkide yuva kurma isteğin güçlüdür; geçici bağlar seni pek tatmin etmez.',
-          'Partnerinin mutluluğunu kendi mutluluğunun önüne koymaya yatkınsın.',
         ],
         LuckCategory.para: <String>[
           'Parayı sevdiklerin için harcamaktan hoşlanırsın; kendine ayırmayı sık unutursun.',
@@ -430,7 +427,6 @@ abstract final class KarakterYonleri {
           'Aşkta koruyucu ve cömertsin; duygularını çoğu zaman sözden çok eylemle gösterirsin.',
           'Güçlü ve kendinden emin insanlar seni etkiler; zayıflığını göstermek ise sana zor gelir.',
           'İlişkide sorumluluk almaktan çekinmezsin; birlikte bir gelecek kurmak seni heyecanlandırır.',
-          'İşin yoğunluğu ilişkine az zaman bırakabilir; küçük ama düzenli bir ilgi bunu dengeler.',
         ],
         LuckCategory.para: <String>[
           'Parayla ilişkin güçlü ve hırslı; büyük düşünürsün, inişli çıkışlı dönemler de yaşayabilirsin.',
@@ -538,7 +534,6 @@ abstract final class KarakterYonleri {
       kategoriTarzi: <LuckCategory, List<String>>{
         LuckCategory.ask: <String>[
           'Aşkta ruhsal bir bağ ararsın; yüzeysel ilişkiler seni çabuk yorar.',
-          'Partnerinin söylemediklerini hissedersin; bu hassasiyet hem güçlü yanın hem yükün.',
           'Seni gerçekten gören biriyle bağın, sıradan ilişkilerden çok daha yoğun yaşanır.',
           'Kırılganlığını göstermekten çekinebilirsin; oysa açıldığında bağın derinleşir.',
         ],
@@ -593,8 +588,6 @@ abstract final class KarakterYonleri {
       kategoriTarzi: <LuckCategory, List<String>>{
         LuckCategory.ask: <String>[
           'Aşkta güvenilir ve ciddisin; birlikte bir gelecek kurabileceğin birini ararsın.',
-          'Sevgini planlarına dahil ederek gösterirsin; partnerin hayatının yapı taşlarından biridir.',
-          'İşine olan bağlılığın ilişkine az alan bırakabilir; ortak zaman planlamak bunu dengeler.',
           'Hayallerini paylaşabileceğin, seninle aynı yöne bakan biri sana güç verir.',
         ],
         LuckCategory.para: <String>[

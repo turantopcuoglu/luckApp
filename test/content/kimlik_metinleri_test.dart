@@ -127,7 +127,7 @@ void main() {
       // okunursa okunsun elenmemeli.
       for (final EnerjiTarzi e in EnerjiTarzi.values) {
         for (final KararTarzi k in KararTarzi.values) {
-          final OkuyucuTercihleri t = OkuyucuTercihleri(enerji: e, karar: k);
+          final Portre t = Portre(enerji: e, karar: k);
           for (final Burc ay in Burc.values) {
             for (final Burc yukselen in Burc.values) {
               for (final String m in KimlikMetinleri.portreler(

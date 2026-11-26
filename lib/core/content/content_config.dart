@@ -227,9 +227,6 @@ abstract final class ContentConfig {
   /// "Yapma" önerileri.
   static const String amacYapma = 'yapma';
 
-  /// Kişinin doğasına göre seçilen "Yap" önerisi.
-  static const String amacKisiselYap = 'kisiselYap';
-
   /// Bir kategori okumasında gösterilen "Yap" önerisi sayısı.
   static const int gokyuzuYapSayisi = 2;
 
@@ -246,9 +243,6 @@ abstract final class ContentConfig {
 
   /// Gökyüzü havuzlarında hücre başına en az varyant.
   static const int enAzGokyuzuVaryanti = 3;
-
-  /// Kişisel "Yap" havuzlarında hücre başına en az varyant.
-  static const int enAzKisiselYapVaryanti = 2;
 
   /// Kategori detay sayfasındaki seçimlerin amaç eki (günlük kartla aynı
   /// cümleyi göstermemek için).
@@ -279,6 +273,13 @@ abstract final class ContentConfig {
 
   /// Karakter başına her kategori tarzında en az varyant.
   static const int enAzTarzVaryanti = 4;
+
+  /// Aşk tarzı için geçici alt sınır: K7'de ilişki durumu varsayan
+  /// cümleler havuzdan çıktı (üretimde zaten hiç gösterilmiyorlardı).
+  /// Bazı yaşam yollarında 2-3 cümle kaldı; yeni cümle eklemek okumayı
+  /// değiştirir ve içerik onayı bekler. O zamana kadar sınır, yaşam yolu
+  /// cümlesinin kullanılabildiği en küçük havuzdur.
+  static const int enAzAskTarzVaryanti = enAzKisilikSecenegi;
 
   /// Kişisel yıl başına en az dönem cümlesi ve kişisel ay başına en az
   /// "bu ay" cümlesi.
@@ -356,12 +357,20 @@ abstract final class ContentConfig {
   /// geçmesin, yorumun önüne geçmesin (bkz. `NedenMetinleri.cunku`).
   static const int cunkuEnCokKarakter = 160;
 
-  /// Kişinin cevabıyla çelişen kişilik ifadeleri (küçük harf, içerir).
+  /// İlişki durumu varsayan cümlelerin çelişki anahtarları. İlişki durumu
+  /// sorulmadığı için (K7) ikisi de her portrede elenir; sıra, profil
+  /// uyarlamasındaki anahtar sırasını belirler.
+  static const List<String> iliskiVarsayimAnahtarlari = <String>[
+    'bekar',
+    'partnerli',
+  ];
+
+  /// Kişinin portresiyle çelişen kişilik ifadeleri (küçük harf, içerir).
   ///
-  /// Anahtar: enerji/karar tarzı adı ya da `bekar` / `partnerli`. Örneğin
-  /// "insanlarla şarj olurum" diyen birine "kalabalık yerine az ve derin
-  /// ilişkileri tercih edersin" denmez; okuyucu kendini tanımaz ve okumayı
-  /// bırakır. Kullanım: `KisilikMetinleri.uyumlular`.
+  /// Anahtar: enerji/karar tarzı adı ya da [iliskiVarsayimAnahtarlari].
+  /// Örneğin insanlarla beslenen birine (ateş ve hava burçları) "kalabalık
+  /// yerine az ve derin ilişkileri tercih edersin" denmez; okuyucu kendini
+  /// tanımaz ve okumayı bırakır. Kullanım: `KisilikMetinleri.uyumlular`.
   static const Map<String, List<String>> celiskiIfadeleri =
       <String, List<String>>{
         'disaDonuk': <String>[

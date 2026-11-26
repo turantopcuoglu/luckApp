@@ -11,18 +11,16 @@
 /// 1. [basliklar]: kısa, çarpıcı başlık.
 /// 2. [gokyuzu]: Ay burcu + kişinin burcu + tonun iç hissi.
 /// 3. Kişilik cümlesi: Güneş burcundan ya da yaşam yolundan, kişinin
-///    cevaplarıyla çelişmeyenler arasından (bkz. `kisilik_metinleri.dart`).
-/// 4. [sahneler]: kişinin gündelik hayatından somut bir an (Aşk'ta ilişki
-///    durumuna, diğerlerinde uğraşa göre).
-/// 5. [yap] / [yapma] ve [kisiselYap]: kısa, uygulanabilir öneriler.
+///    portresiyle çelişmeyenler arasından (bkz. `kisilik_metinleri.dart`).
+/// 4. [sahneler]: gündelik hayattan somut bir an.
+/// 5. [yap] / [yapma]: kısa, uygulanabilir öneriler.
 ///
 /// Yazım kuralları (bkz. `sayi_metinleri.dart`) ek olarak:
-/// - Onboarding cevapları metinde geri söylenmez: "şarj olmak", "kalbini
-///   dinlemek", "öğrencisin", "ilişkin var" gibi seçenek ifadeleri yasak
-///   (bkz. [ContentConfig.yankiIfadeleri]). Cevap yalnızca hangi sahnenin
-///   ve önerinin seçileceğini belirler.
-/// - Aşk metinleri ilişki durumunu varsaymaz; ortak havuzlar hem bekar hem
-///   ilişkisi olan okura uyar.
+/// - Eski tanışma sorusu seçeneklerinin ifadeleri ("şarj olmak", "kalbini
+///   dinlemek", "öğrencisin", "ilişkin var") metinde geçmez (bkz.
+///   [ContentConfig.yankiIfadeleri]).
+/// - Aşk metinleri ilişki durumunu varsaymaz; hem bekar hem ilişkisi olan
+///   okura uyar.
 /// - Yer tutucular: `{ayBurcu}` (günün Ay burcu), `{burc}` (kişinin
 ///   Güneş burcu). Ekleme sorunu olmasın diye burç adları "… burcunda",
 ///   "… burcunun" kalıbıyla kullanılır.
@@ -31,7 +29,6 @@ library;
 import '../luck_engine/luck_engine.dart';
 import 'content_config.dart';
 import 'dongu_metinleri.dart';
-import 'okuyucu.dart';
 
 /// Sahne cümlesinin yönü: günün tonuna göre koruyucu ya da fırsat odaklı.
 enum SahneYonu {
@@ -48,37 +45,9 @@ enum SahneYonu {
 
 /// Gökyüzü tabanlı kategori metin havuzları.
 abstract final class GokyuzuMetinleri {
-  /// Cevap bilinmediğinde kullanılan sahne anahtarı.
+  /// Kategori sahnesinin seçim anahtarındaki sabit ön ek (tohum
+  /// sürekliliği için korunur: eski okumalarla aynı seçim).
   static const String genelAnahtar = 'genel';
-
-  /// İlişkisi olmayan okuyucunun Aşk anahtarı.
-  static const String bekarAnahtari = 'bekar';
-
-  /// İlişkisi olan (sevgili ya da evli) okuyucunun Aşk anahtarı.
-  static const String partnerliAnahtari = 'partnerli';
-
-  /// İlişki durumunun Aşk anahtarı (bilinmiyorsa null).
-  static String? _iliskiAnahtari(OkuyucuTercihleri t) => switch (t.iliski) {
-    null => null,
-    final IliskiDurumu d => d.partnerliMi ? partnerliAnahtari : bekarAnahtari,
-  };
-
-  /// Okuyucunun [kategori]deki sahne anahtarı: Aşk'ta ilişki durumu,
-  /// diğerlerinde uğraş; bilinmiyorsa [genelAnahtar].
-  static String sahneAnahtari(LuckCategory kategori, OkuyucuTercihleri t) =>
-      (kategori == LuckCategory.ask ? _iliskiAnahtari(t) : t.ugras?.name) ??
-      genelAnahtar;
-
-  /// Okuyucunun [kategori]deki kişisel öneri anahtarı (yoksa null).
-  ///
-  /// Aşk: ilişki durumu; Para ve Risk: karar tarzı; Sağlık ve Sosyal:
-  /// enerji tarzı.
-  static String? kisiselAnahtar(LuckCategory kategori, OkuyucuTercihleri t) =>
-      switch (kategori) {
-        LuckCategory.ask => _iliskiAnahtari(t),
-        LuckCategory.para || LuckCategory.risk => t.karar?.name,
-        LuckCategory.saglik || LuckCategory.sosyal => t.enerji?.name,
-      };
 
   /// Element ilişkisi (Ay ↔ kişinin Güneşi) × günün tonu → günlük kartın
   /// açılış paragrafındaki gökyüzü cümlesi (kategoriden bağımsız, günün
@@ -604,347 +573,75 @@ abstract final class GokyuzuMetinleri {
     },
   };
 
-  /// Kategori × sahne anahtarı (uğraş adı ya da [genelAnahtar]) × sahne
-  /// yönü → günün kişinin hayatında nerede hissedileceği.
+  /// Kategori × sahne yönü → günün kişinin hayatında nerede
+  /// hissedileceği.
   ///
   /// Düşük tonlu günlerde [SahneYonu.temkin] (koruyucu), orta ve yüksek
   /// tonlu günlerde [SahneYonu.akis] (fırsat) sahneleri seçilir; böylece
-  /// "enerjin yüksek" diyen bir cümlenin ardından uyarı gelmez.
-  static const Map<LuckCategory, Map<String, Map<SahneYonu, List<String>>>>
-  sahneler = <LuckCategory, Map<String, Map<SahneYonu, List<String>>>>{
-    LuckCategory.ask: <String, Map<SahneYonu, List<String>>>{
-      'bekar': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Eski bir tanıdıktan gelen bir mesaj aklını karıştırabilir; o kapıyı neden kapattığını hatırla.',
-          'Birinin paylaşımını fazla yorumlamak gününü gereksiz yere ağırlaştırabilir.',
-          'Biriyle ilgili beklentini büyütmeden önce onu biraz daha tanımaya zaman ver.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir arkadaş ortamında, bir kahve sırasında ya da beklenmedik bir mesajda yeni bir ilgi doğabilir.',
-          'Tanıdık bir çevrede pek dikkat etmediğin biri seni şaşırtabilir.',
-          'Bir davete evet demek ya da bir sohbeti uzatmak yeni bir hikâyenin ilk sayfası olabilir.',
-        ],
-      },
-      'partnerli': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Günün yorgunluğu eve taşınırsa küçük bir konu kolay büyüyebilir; önce dinle, sonra cevap ver.',
-          'Söylenmeyen bir beklenti aranızda gerginlik yaratabilir; tahmin ettirmek yerine açıkça söyle.',
-          'Telefonun ya da işin aranıza girdiği bir akşam olabilir; birlikte geçirdiğiniz zamanı korumaya çalış.',
-        ],
-        SahneYonu.akis: <String>[
-          'Birlikte yapacağınız basit bir iş, uzun bir konuşmadan daha çok yakınlaştırır.',
-          'Sevdiğinle küçük bir sürpriz ya da ortak bir plan günü güzelleştirir.',
-          'Uzun süredir konuşmak istediğin bir konu beklediğinden yumuşak karşılanabilir.',
-        ],
-      },
-      genelAnahtar: <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Kalbini başkasının onayına bağlamak seni yorabilir; önce kendine iyi davran.',
-          'Bir sözü olduğundan ağır algılamaya yatkın olabilirsin; netleştirmek için sormaktan çekinme.',
-          'Geçmişten bir duygu yeniden gündeme gelebilir; onu bugünün kararlarına karıştırma.',
-        ],
-        SahneYonu.akis: <String>[
-          'Sevdiğin birine ayıracağın içten bir an seni de ısıtır.',
-          'Bir mesaj, bir bakış ya da küçük bir tesadüf günün en güzel anı olabilir.',
-          'Duygularını sakin bir dille ifade etmek ilişkilerini yumuşatır.',
-        ],
-      },
+  /// "enerjin yüksek" diyen bir cümlenin ardından uyarı gelmez. 26 Kasım
+  /// 2026'ya kadar uğraşa ve ilişki durumuna göre ayrı sahneler de vardı;
+  /// sorular kalkınca (K7) silindi.
+  static const Map<LuckCategory, Map<SahneYonu, List<String>>>
+  sahneler = <LuckCategory, Map<SahneYonu, List<String>>>{
+    LuckCategory.ask: <SahneYonu, List<String>>{
+      SahneYonu.temkin: <String>[
+        'Kalbini başkasının onayına bağlamak seni yorabilir; önce kendine iyi davran.',
+        'Bir sözü olduğundan ağır algılamaya yatkın olabilirsin; netleştirmek için sormaktan çekinme.',
+        'Geçmişten bir duygu yeniden gündeme gelebilir; onu bugünün kararlarına karıştırma.',
+      ],
+      SahneYonu.akis: <String>[
+        'Sevdiğin birine ayıracağın içten bir an seni de ısıtır.',
+        'Bir mesaj, bir bakış ya da küçük bir tesadüf günün en güzel anı olabilir.',
+        'Duygularını sakin bir dille ifade etmek ilişkilerini yumuşatır.',
+      ],
     },
-    LuckCategory.para: <String, Map<SahneYonu, List<String>>>{
-      'calisiyor': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Ay sonu yaklaşırken küçük harcamalar bütçende beklediğinden büyük yer kaplayabilir.',
-          'İşte karşılığı konuşulmadan üstlenilen ek bir görev yorgunluk getirir; önce koşulları netleştir.',
-          'Bir maaş, prim ya da ödeme gecikmesi canını sıkabilir; takibini yazılı yap.',
-        ],
-        SahneYonu.akis: <String>[
-          'İşte emeğinin görünür olduğu bir an gelebilir; bir talebini dile getirmek için zaman yerinde.',
-          'Bir yöneticiyle ya da ekiple yapacağın kısa bir konuşma maddi tarafa da dokunabilir.',
-          'Uzun süredir uğraştığın bir iş olumlu bir sonuca yaklaşabilir.',
-        ],
-      },
-      'ogrenci': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Harçlık ya da burs bütçesini zorlayacak küçük harcamalara dikkat: kafe, yemek, abonelik.',
-          'Arkadaş ortamında yapılan plansız harcamalar ay sonunu zorlayabilir.',
-          'İndirim görünce hemen almak yerine bir gün beklemek bütçeni korur.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir burs, staj ya da yarı zamanlı iş fırsatına başvurmak için an yerinde.',
-          'Bir becerini küçük bir kazanca çevirmek düşündüğünden kolay olabilir: ders vermek, tasarım, çeviri.',
-          'Arkadaşlarınla ortak alım ya da paylaşım birlikte tasarruf etmenizi sağlayabilir.',
-        ],
-      },
-      'isArayan': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Bekleme döneminde bütçeyi sıkı tutmak içini rahatlatır; zorunlu olmayan harcamaları ertele.',
-          'Hızlı kazanç vaat eden tekliflerin ayrıntısına iki kez bak.',
-          'Bir ücret teklifini kabul etmeden önce benzer işlerin koşullarını araştır.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir görüşmede ücret konusunu açmak için cesaretin yerinde.',
-          'Geçici ya da serbest bir iş beklediğinden iyi bir kapı açabilir.',
-          'Çevrenden gelecek bir yönlendirme maddi tarafta da karşılık bulabilir.',
-        ],
-      },
-      'girisimci': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Nakit akışını zorlayacak bir gider ya da gecikmiş bir tahsilat canını sıkabilir; önceliklerini sırala.',
-          'Bir müşteriye indirim yapmadan önce maliyetini yeniden hesapla.',
-          'Yeni bir harcama yerine eldeki kaynakları verimli kullanmak kazandırır.',
-        ],
-        SahneYonu.akis: <String>[
-          'Satış, anlaşma ya da yeni bir iş bağlantısı için kapılar açık.',
-          'Bir fiyat güncellemesi ya da yeni bir paket fikri karşılık bulabilir.',
-          'Beklediğin bir ödeme ya da olumlu bir dönüş gelebilir.',
-        ],
-      },
-      'evde': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Ev giderleri arasında gözden kaçan bir fatura ya da abonelik olabilir; kısa bir kontrol yap.',
-          'Ev için yapılacak büyük bir alışverişi bir süre daha beklet.',
-          'Başkalarına harcarken kendi ihtiyacını unutmamaya dikkat et.',
-        ],
-        SahneYonu.akis: <String>[
-          'Ev bütçesinde küçük bir düzenleme beklediğinden fazla tasarruf sağlayabilir.',
-          'Evde değerlendirilebilecek bir beceri ya da eşya küçük bir kazanca dönüşebilir.',
-          'Evdekilerle yapılacak ortak bir bütçe konuşması herkesi rahatlatır.',
-        ],
-      },
-      genelAnahtar: <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Küçük harcamalar gün içinde fark edilmeden birikebilir.',
-          'Bir ödeme ya da fatura tarihini kaçırmamak için takvimine bir not düş.',
-          'İlk bakışta cazip görünen bir alışveriş seni ay sonunda zorlayabilir.',
-        ],
-        SahneYonu.akis: <String>[
-          'Beklenen bir ödeme ya da küçük bir kazanç gündeme gelebilir.',
-          'Bütçeni gözden geçirmek sana sürpriz bir tasarruf alanı gösterebilir.',
-          'Bir hizmet ya da ürün için daha iyi bir fiyat bulmak kolay.',
-        ],
-      },
+    LuckCategory.para: <SahneYonu, List<String>>{
+      SahneYonu.temkin: <String>[
+        'Küçük harcamalar gün içinde fark edilmeden birikebilir.',
+        'Bir ödeme ya da fatura tarihini kaçırmamak için takvimine bir not düş.',
+        'İlk bakışta cazip görünen bir alışveriş seni ay sonunda zorlayabilir.',
+      ],
+      SahneYonu.akis: <String>[
+        'Beklenen bir ödeme ya da küçük bir kazanç gündeme gelebilir.',
+        'Bütçeni gözden geçirmek sana sürpriz bir tasarruf alanı gösterebilir.',
+        'Bir hizmet ya da ürün için daha iyi bir fiyat bulmak kolay.',
+      ],
     },
-    LuckCategory.saglik: <String, Map<SahneYonu, List<String>>>{
-      'calisiyor': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Uzun bir toplantı ya da ekran başında geçen saatler bunu en çok boynunda ve omuzlarında hissettirebilir.',
-          'İş yoğunluğu öğle yemeğini ayakta geçiştirmene yol açabilir; oturup yemek enerjini korur.',
-          'İşten çıktıktan sonraki ilk yarım saat enerjinin nasıl kapanacağını belirliyor; o saati kendine ayır.',
-        ],
-        SahneYonu.akis: <String>[
-          'İş arasında masadan kalkıp birkaç dakika yürümek öğleden sonrayı da canlı tutar.',
-          'Merdiveni seçmek ya da bir görüşmeyi yürüyerek yapmak bu enerjiyi gününe yayar.',
-          'İş çıkışı kısa bir spor ya da yürüyüş günün yorgunluğunu tazeliğe çevirir.',
-        ],
-      },
-      'ogrenci': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Uzun süre aynı sandalyede oturduğun bir ders ya da çalışma saati bunu en çok sırtına yansıtabilir.',
-          'Gece geç saatlere kalan bir çalışma ertesi güne pahalıya patlayabilir; uykunu koru.',
-          'Sınav ya da ödev telaşında öğün atlamak dikkatini dağıtır; yanında küçük bir atıştırmalık olsun.',
-        ],
-        SahneYonu.akis: <String>[
-          'İki ders arasında açık havada geçireceğin birkaç dakika zihnini de bedenini de tazeler.',
-          'Okul yolunu yürüyerek ya da bisikletle gitmek bu enerjiyi iyi kullanır.',
-          'Çalışma aralarına koyacağın kısa hareket molaları öğrendiklerini de daha kalıcı yapar.',
-        ],
-      },
-      'isArayan': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Belirsiz bir bekleyiş bedende fark etmeden gerginlik biriktirir; gününe sabit bir yürüyüş saati koymak sana zemin verir.',
-          'Bir cevap beklerken uykun bölünebilir; akşamları ekranı erken bırakmak zihnini sakinleştirir.',
-          'İlan taramak ya da başvuru yazmak saatlerini yutabilir; araya sık sık kısa bir hareket koy.',
-        ],
-        SahneYonu.akis: <String>[
-          'Güne hareketle başlamak başvurulara da daha net bir kafayla oturmanı sağlar.',
-          'Bir görüşmeye yürüyerek gitmek ya da öncesinde kısa bir yürüyüş yapmak seni daha rahat gösterir.',
-          'Kendine bir spor rutini kurmak bu dönemde günlerine sağlam bir omurga verir.',
-        ],
-      },
-      'girisimci': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Durmadan çalıştığın günlerde beden en son şikâyet eder; bu sinyali erkenden dinle.',
-          'Bir görüşmeden diğerine koşarken öğün atlamak öğleden sonra enerjini düşürebilir.',
-          'İşi eve taşıdığın akşamlarda uykun bölünüyor; işi bir saat erken kapatmayı dene.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir toplantıyı yürüyüşe çevirmek hem fikirlerini hem bedenini açar.',
-          'Gününe koyacağın kısa bir spor arası öğleden sonraki kararlarını da keskinleştirir.',
-          'İşin hızına bedenin de eşlik ediyor; bu tempoyu düzenli öğünlerle destekle.',
-        ],
-      },
-      'evde': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Başkaları için koşturduğun bir günde kendi molanı en sona bırakmak bedenini yorabilir.',
-          'Ev içinde sürekli ayakta olmak da bir yorgunluktur; oturup yalnızca nefes aldığın on dakika ayır.',
-          'Ev işleri bitmek bilmeyebilir; bazılarını yarına bırakmak bedenini korur.',
-        ],
-        SahneYonu.akis: <String>[
-          'Evin düzeniyle uğraşırken bir pencereyi açıp temiz hava almak sandığından çok tazeler.',
-          'Ev içindeki koşturmayı kısa bir yürüyüşle dışarı taşımak enerjini tazeler.',
-          'Evde yapabileceğin küçük bir esneme rutini bu enerjiyi bedenine yayar.',
-        ],
-      },
-      genelAnahtar: <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Günün yoğun saatlerinde bedenin sana küçük sinyaller gönderebilir: susuzluk, gerginlik, dalgınlık.',
-          'Akşam saatleri dinlenmenin kalitesini belirliyor; ekranı erken bırakmak uykunu derinleştirir.',
-          'Gün içinde biriken yorgunluk akşama doğru kendini gösterebilir; programını hafif tut.',
-        ],
-        SahneYonu.akis: <String>[
-          'Gün içinde bir kez telefonu bırakıp yalnızca yürüdüğün bir zaman enerjini yeniden toplar.',
-          'Sabahın ilk saatleri bedenin için en verimli zaman; hareketi oraya koy.',
-          'Açık havada geçireceğin her dakika bu enerjiyi biraz daha yükseltir.',
-        ],
-      },
+    LuckCategory.saglik: <SahneYonu, List<String>>{
+      SahneYonu.temkin: <String>[
+        'Günün yoğun saatlerinde bedenin sana küçük sinyaller gönderebilir: susuzluk, gerginlik, dalgınlık.',
+        'Akşam saatleri dinlenmenin kalitesini belirliyor; ekranı erken bırakmak uykunu derinleştirir.',
+        'Gün içinde biriken yorgunluk akşama doğru kendini gösterebilir; programını hafif tut.',
+      ],
+      SahneYonu.akis: <String>[
+        'Gün içinde bir kez telefonu bırakıp yalnızca yürüdüğün bir zaman enerjini yeniden toplar.',
+        'Sabahın ilk saatleri bedenin için en verimli zaman; hareketi oraya koy.',
+        'Açık havada geçireceğin her dakika bu enerjiyi biraz daha yükseltir.',
+      ],
     },
-    LuckCategory.risk: <String, Map<SahneYonu, List<String>>>{
-      'calisiyor': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'İşte önüne gelen bir öneri ya da yeni bir görev hızlı bir "evet" isteyebilir; önce iş yükünü hesapla.',
-          'Bir e-postaya ya da talebe aceleyle verilecek cevap sonradan geri alınması zor bir söz olabilir.',
-          'İş yerindeki bir tartışmada taraf tutmak için acele etme; tablo yarın daha net görünür.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir yöneticiyle ya da ekiple konuşurken kendi fikrini savunmak risk değil, fırsat olabilir.',
-          'Masada bekleyen bir karar var; onu en azından bir adım ileri taşıyabilirsin.',
-          'Yeni bir sorumluluğa talip olmak beklediğinden iyi karşılanabilir.',
-        ],
-      },
-      'ogrenci': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Bir ders seçimi ya da proje konusu için son karara varmadan önce bir hocaya danış.',
-          'Arkadaşlarının yaptığını yapmak kolay; kendi planına sadık kalmak daha çok kazandırır.',
-          'Sınav öncesi çalışma yöntemini son anda değiştirmek risk taşır; bildiğin düzende kal.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir ders seçimi, proje konusu ya da sınav stratejisi karar istiyor olabilir.',
-          'Bir hocaya soru sormak ya da farklı bir çalışma yöntemi denemek göze alınmaya değer küçük bir risk.',
-          'Bir yarışmaya, kulübe ya da projeye başvurmak için cesaretin yerinde.',
-        ],
-      },
-      'isArayan': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Gelen bir teklifi kabul etmeden önce koşullarını bir kez daha oku.',
-          'Her ilana başvurmak yerine sana gerçekten uyan birkaçına odaklan.',
-          'Bir görüşmede verilen sözleri yazılı teyit almadan kesin sayma.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir başvuru, bir görüşme davetine cevap ya da beklenmedik bir ilan karar anı olabilir.',
-          'Daha önce düşünmediğin bir alana başvurmak göze alınabilecek en iyi risk olabilir.',
-          'Bir maaş ya da koşul konuşmasında sesini yükseltmek sana sandığından az şey kaybettirir.',
-        ],
-      },
-      'girisimci': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Büyük bir harcama ya da yeni bir taahhüt için imza atmadan önce nakit durumuna bak.',
-          'Bir müşterinin ya da ortağın aceleci teklifine hemen evet deme; şartları netleştir.',
-          'Yeni bir işe girişmek yerine yarım kalanı bitirmek daha güvenli.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir fiyat kararı, yeni bir iş birliği ya da bir müşteriye verilecek cevap masada olabilir.',
-          'Küçük bir deneme ya da bir teklif büyük bir hamleden daha çok bilgi getirir.',
-          'Bir ortak ya da müşteriyle yapacağın konuşmada net olmak en kazançlı risk.',
-        ],
-      },
-      'evde': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Ev için düşündüğün büyük bir harcamayı bir süre daha beklet.',
-          'Aileyle ilgili bir planda herkesin fikrini almadan karar vermek sonradan yük olabilir.',
-          'Uzun süredir ertelediğin bir düzenleme için önce artıları ve eksileri tart.',
-        ],
-        SahneYonu.akis: <String>[
-          'Ev için düşündüğün bir değişiklik ya da aileyle ilgili bir plan karar istiyor olabilir.',
-          'Kendine ait yeni bir uğraşa adım atmak göze almaya değer bir risk olabilir.',
-          'Evde uzun süredir konuşulan bir plan için ilk adımı sen atabilirsin.',
-        ],
-      },
-      genelAnahtar: <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'İlk bakışta cazip görünen bir teklif önüne çıkabilir; ayrıntısına bakmadan karar verme.',
-          'Birinin baskısıyla hızlı bir karar vermen istenebilir; zaman istemek hakkın.',
-          'Kaybettiğin bir şeyi hemen telafi etme isteği seni aceleye itebilir.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir teklif, bir davet ya da beklenmedik bir seçenek önüne çıkabilir.',
-          'Uzun süredir aklında olan bir adım yeniden gündeme gelebilir.',
-          'Küçük bir "neden olmasın" anı günün en şanslı kararı olabilir.',
-        ],
-      },
+    LuckCategory.risk: <SahneYonu, List<String>>{
+      SahneYonu.temkin: <String>[
+        'İlk bakışta cazip görünen bir teklif önüne çıkabilir; ayrıntısına bakmadan karar verme.',
+        'Birinin baskısıyla hızlı bir karar vermen istenebilir; zaman istemek hakkın.',
+        'Kaybettiğin bir şeyi hemen telafi etme isteği seni aceleye itebilir.',
+      ],
+      SahneYonu.akis: <String>[
+        'Bir teklif, bir davet ya da beklenmedik bir seçenek önüne çıkabilir.',
+        'Uzun süredir aklında olan bir adım yeniden gündeme gelebilir.',
+        'Küçük bir "neden olmasın" anı günün en şanslı kararı olabilir.',
+      ],
     },
-    LuckCategory.sosyal: <String, Map<SahneYonu, List<String>>>{
-      'calisiyor': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Gergin bir toplantıda sözlerin olduğundan sert anlaşılabilir; yazılı iletişimde tonuna dikkat et.',
-          'Bir iş arkadaşının yorumu sana ağır gelebilir; cevap vermeden önce bir mola ver.',
-          'Ekip içindeki bir dedikodudan uzak durmak seni korur.',
-        ],
-        SahneYonu.akis: <String>[
-          'İş yerinde bir kahve arası ya da kısa bir koridor sohbeti beklenmedik bir yakınlık başlatabilir.',
-          'Ekipte birine destek olmak ilişkilerini güçlendirmenin en kısa yolu.',
-          'Bir iş arkadaşınla aranda kalan küçük bir kırgınlığı kapatmak için an yerinde.',
-        ],
-      },
-      'ogrenci': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Bir grup çalışmasında görev paylaşımı gerginlik yaratabilir; beklentini baştan açıkça söyle.',
-          'Sınıfta söylenen bir söz sana olduğundan ağır gelebilir; hemen cevap vermek zorunda değilsin.',
-          'Kalabalık bir okul ortamı seni yorabilir; teneffüste kısa bir sessizlik seni toparlar.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir grup çalışması ya da kantindeki bir sohbet yeni bir arkadaşlığa kapı açabilir.',
-          'Okulda pek konuşmadığın biriyle bir ortak noktan çıkabilir.',
-          'Ders notlarını ya da bir kaynağı paylaşmak çevrendekilerle bağını güçlendirir.',
-        ],
-      },
-      'isArayan': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Çevrenden gelen iyi niyetli ama yorucu sorular canını sıkabilir; sınır koymak sorun değil.',
-          'Kendini başkalarıyla kıyaslamak moralini düşürebilir; seni destekleyen birkaç kişiye yönel.',
-          'Bir tanıdıktan beklediğin dönüş gecikebilir; bunu kişisel algılama.',
-        ],
-        SahneYonu.akis: <String>[
-          'Eski bir iş arkadaşına ya da tanıdığa atacağın bir mesaj sandığından değerli olabilir.',
-          'Çevrene ne aradığını anlatmak beklenmedik bir yönlendirme getirebilir.',
-          'Bir etkinlik ya da buluşma hem moral hem bağlantı kazandırabilir.',
-        ],
-      },
-      'girisimci': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Bir müşteri ya da iş ortağıyla yanlış anlaşılma çıkabilir; önemli şeyleri yazılı teyit et.',
-          'Herkese aynı anda yetişmeye çalışmak ilişkilerini yıpratabilir; önceliklerini sırala.',
-          'Sosyal medyada ya da bir grupta tartışmaya girmek enerjini boşa harcar.',
-        ],
-        SahneYonu.akis: <String>[
-          'Bir müşteri, iş ortağı ya da takipçiyle yapacağın samimi bir sohbet işine de dokunabilir.',
-          'Çevreni genişletmek için atacağın küçük bir mesaj karşılık bulabilir.',
-          'Bir iş yemeği ya da kahve resmî bir toplantıdan daha çok kapı açar.',
-        ],
-      },
-      'evde': <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Evde biriken küçük bir gerginlik kolay büyüyebilir; önce dinleyip sonra konuşmak işleri yumuşatır.',
-          'Aile içinde herkesin isteğine yetişmeye çalışmak seni yorabilir; kendine de söz hakkı ver.',
-          'Evdeki biriyle hassas bir konuyu açmak için yorgun bir anı değil, sakin bir anı seç.',
-        ],
-        SahneYonu.akis: <String>[
-          'Ailenle ya da komşularınla kısa bir sohbet günün havasını değiştirebilir.',
-          'Ev dışından, uzun süredir görmediğin bir dostla bağ kurmak seni yeniler.',
-          'Evdekilerle ortak bir plan yapmak herkesi biraz daha yakınlaştırır.',
-        ],
-      },
-      genelAnahtar: <SahneYonu, List<String>>{
-        SahneYonu.temkin: <String>[
-          'Bir mesajın gecikmesi ya da kısa bir cevap seni gereğinden fazla düşündürebilir.',
-          'Kalabalık bir ortamda enerjin çabuk düşebilir; erken ayrılmak sorun değil.',
-          'Eski bir kırgınlık gündeme gelebilir; hemen çözmek zorunda değilsin.',
-        ],
-        SahneYonu.akis: <String>[
-          'Uzun süredir görüşmediğin birinden gelen bir mesaj gününü renklendirebilir.',
-          'Bir arkadaş buluşması ya da kısa bir telefon konuşması beklediğinden derin geçebilir.',
-          'Kalabalık bir ortamda bile bir kişiyle kuracağın gerçek bağ en değerli şey.',
-        ],
-      },
+    LuckCategory.sosyal: <SahneYonu, List<String>>{
+      SahneYonu.temkin: <String>[
+        'Bir mesajın gecikmesi ya da kısa bir cevap seni gereğinden fazla düşündürebilir.',
+        'Kalabalık bir ortamda enerjin çabuk düşebilir; erken ayrılmak sorun değil.',
+        'Eski bir kırgınlık gündeme gelebilir; hemen çözmek zorunda değilsin.',
+      ],
+      SahneYonu.akis: <String>[
+        'Uzun süredir görüşmediğin birinden gelen bir mesaj gününü renklendirebilir.',
+        'Bir arkadaş buluşması ya da kısa bir telefon konuşması beklediğinden derin geçebilir.',
+        'Kalabalık bir ortamda bile bir kişiyle kuracağın gerçek bağ en değerli şey.',
+      ],
     },
   };
 
@@ -1127,161 +824,4 @@ abstract final class GokyuzuMetinleri {
           ],
         },
       };
-
-  /// Kategori × kişisel anahtar ([kisiselAnahtar]) × ton → kişiye göre
-  /// seçilen "Yap" önerisi. Cevabı geri söylemez; yalnızca öneriyi
-  /// kişinin doğasına uygun seçer.
-  static const Map<LuckCategory, Map<String, Map<KategoriTonu, List<String>>>>
-  kisiselYap = <LuckCategory, Map<String, Map<KategoriTonu, List<String>>>>{
-    LuckCategory.ask: <String, Map<KategoriTonu, List<String>>>{
-      'bekar': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Kendine iyi bakmaya vakit ayır.',
-          'Seni değerli hissettiren arkadaşlarınla buluş.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Bir davete evet de.',
-          'İlgini çeken biriyle sohbeti uzat.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Beğendiğin birine ilk mesajı sen at.',
-          'Yeni insanlarla tanışabileceğin bir ortama gir.',
-        ],
-      },
-      'partnerli': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Akşamı sakin ve baş başa geçir.',
-          'Bir gerginliği konuşmadan önce birlikte kısa bir yürüyüşe çıkın.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Birlikte küçük bir plan yap.',
-          'Sevdiğine onu neden önemsediğini söyle.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Küçük bir sürpriz hazırla.',
-          'Uzun süredir konuşmak istediğin konuyu aç.',
-        ],
-      },
-    },
-    LuckCategory.para: <String, Map<KategoriTonu, List<String>>>{
-      'kalp': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Bir harcamaya heyecanla karar vermeden önce bir gece uyu.',
-          'Moralini düzeltmek için alışveriş yapma isteğini ertele.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Sevdiğin bir şeye küçük ve planlı bir bütçe ayır.',
-          'Hissini bir kez de rakamlarla kontrol et.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'İçinin güvendiği fırsatı rakamlarla destekleyip değerlendir.',
-          'Değer verdiğin bir işe emek ve zaman ayır.',
-        ],
-      },
-      'akil': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Hesabın tutsa bile büyük ödemeyi bir gün beklet.',
-          'Maddi planını bir kez de dışarıdan birine göster.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Bütçe tablona keyif payı da ekle.',
-          'Hesaplı, küçük bir tasarruf hedefi koy.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Hazırladığın maddi planı uygulamaya koy.',
-          'Hesapladığın pazarlığı ertelemeden yap.',
-        ],
-      },
-    },
-    LuckCategory.saglik: <String, Map<KategoriTonu, List<String>>>{
-      'iceDonuk': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Sessiz bir odada on dakika gözlerini kapat.',
-          'Akşamı kalabalıktan uzak, kendi temponda geçir.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Kulaklıksız, sakin bir yürüyüşe çık.',
-          'Gün içinde kısa bir sessizlik molası ver.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Kendi rotanda uzun bir yürüyüş ya da koşu planla.',
-          'Tek başına yapabileceğin bir sporu dene: yüzme, bisiklet, yoga.',
-        ],
-      },
-      'disaDonuk': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Seni güldüren biriyle kısa bir telefon konuşması yap.',
-          'Akşamı yorucu bir kalabalık yerine bir dostla geçir.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Bir arkadaşınla birlikte yürüyüşe çık.',
-          'Öğle arasını biriyle sohbet ederek değerlendir.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Bir grup sporuna ya da dans dersine katıl.',
-          'Bir arkadaşını ortak bir aktiviteye davet et.',
-        ],
-      },
-    },
-    LuckCategory.risk: <String, Map<KategoriTonu, List<String>>>{
-      'kalp': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Bir duyguyla karar vermeden önce bir gece uyu.',
-          'Kırgınken verilecek kararları ertele.',
-        ],
-        KategoriTonu.orta: <String>[
-          'İçinden geçeni bir kez de rakamlarla kontrol et.',
-          'Hissini güvendiğin birinin fikriyle tart.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'İçinin evet dediği fırsata adım at.',
-          'İlk hissine güvenip harekete geç.',
-        ],
-      },
-      'akil': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Hesabın tutsa bile bir gün beklemekten çekinme.',
-          'Planını bir kez de dışarıdan birine göster.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Hesabına şunu da ekle: bu seçim seni mutlu eder mi?',
-          'Hesaplı riskini küçük bir denemeyle başlat.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Hazırladığın planı uygulamaya koy.',
-          'Hesapladığın adımı ertelemeden at.',
-        ],
-      },
-    },
-    LuckCategory.sosyal: <String, Map<KategoriTonu, List<String>>>{
-      'iceDonuk': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Tek bir yakın dostla yetin.',
-          'Mesajlara kendi temponda cevap ver.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Bir kişiyle uzun, derin bir sohbet planla.',
-          'Küçük ve samimi bir buluşmayı tercih et.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Bir grupta fikrini söylemek için sesini yükselt.',
-          'Tanımadığın biriyle bire bir sohbet başlat.',
-        ],
-      },
-      'disaDonuk': <KategoriTonu, List<String>>{
-        KategoriTonu.dusuk: <String>[
-          'Planlarını azalt, en sevdiğin bir kişiye odaklan.',
-          'Herkese yetişmek yerine tek bir buluşma seç.',
-        ],
-        KategoriTonu.orta: <String>[
-          'Bir grup sohbetini canlandır ya da küçük bir buluşma kur.',
-          'Yeni biriyle tanışmak için bir ortama uğra.',
-        ],
-        KategoriTonu.yuksek: <String>[
-          'Bir etkinlik ya da toplanma organize et.',
-          'Tanıştığın biriyle iletişimi sürdürmek için ilk mesajı sen at.',
-        ],
-      },
-    },
-  };
 }

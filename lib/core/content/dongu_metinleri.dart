@@ -27,7 +27,7 @@ class KisiselYilMetni {
 /// Zaman döngülerinin (kişisel yıl/ay/gün, ay evresi) metin havuzları.
 ///
 /// Yazım rehberi için bkz. `sayi_metinleri.dart`. Yer tutucular:
-/// `{isim}`, `{kisiselGun}`, `{kisiselYil}`, `{yil}`, `{ugrasAlani}`.
+/// `{isim}`, `{kisiselGun}`, `{kisiselYil}`, `{yil}`.
 abstract final class DonguMetinleri {
   /// Kişisel gün sayısına (1-9) göre günün başlık varyantları.
   static const Map<int, List<String>> gunBasliklari = <int, List<String>>{

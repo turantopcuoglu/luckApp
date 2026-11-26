@@ -4,7 +4,6 @@ import 'package:kader/core/content/dongu_metinleri.dart';
 import 'package:kader/core/content/fortune_composer.dart';
 import 'package:kader/core/content/gokyuzu_metinleri.dart';
 import 'package:kader/core/content/gunluk_okuma.dart';
-import 'package:kader/core/content/kisisel_havuzlar.dart';
 import 'package:kader/core/content/neden_metinleri.dart';
 import 'package:kader/core/content/okuyucu.dart';
 import 'package:kader/core/content/tr_icerik_paketi.dart';
@@ -20,14 +19,16 @@ void main() {
     String isim = 'Ayşe',
     String? tamAd = 'Ayşe Yılmaz',
     DateTime? dogumTarihi,
-    OkuyucuTercihleri tercihler = const OkuyucuTercihleri(),
+    Burc? dogumAyi,
+    Burc? yukselen,
   }) {
     final DateTime d = dogumTarihi ?? dogum;
     return Okuyucu(
       isim: isim,
       seed: UserSeed.fromIsim(isim: isim, dogumTarihi: d),
       profil: KaderProfili.hesapla(dogumTarihi: d, tamAd: tamAd),
-      tercihler: tercihler,
+      dogumAyi: dogumAyi,
+      yukselen: yukselen,
     );
   }
 
@@ -110,9 +111,9 @@ void main() {
     });
 
     test('yalnız kalınca toparlanan okura kalabalık önerilmez (120 gün)', () {
-      final Okuyucu o = okuyucu(
-        tercihler: const OkuyucuTercihleri(enerji: EnerjiTarzi.iceDonuk),
-      );
+      // 14 Mart: Balık (su), portresi içe dönük.
+      final Okuyucu o = okuyucu();
+      expect(o.portre.enerji, EnerjiTarzi.iceDonuk);
       for (int i = 0; i < 120; i++) {
         final DateTime g = DateTime(2026, 9, 1 + i);
         final String metin = gunlukOkuma(
@@ -167,9 +168,7 @@ void main() {
 
     test('günün bölümü: tema durumu → günün gökyüzü → buluşma ya da sahne '
         '→ öneri', () {
-      final Okuyucu o = okuyucu(
-        tercihler: const OkuyucuTercihleri(ugras: Ugras.ogrenci),
-      );
+      final Okuyucu o = okuyucu();
       final GunlukOkuma okuma = gunlukOkuma(
         motor: motor,
         okuyucu: o,
@@ -190,9 +189,7 @@ void main() {
       expect(metin, contains(trIcerik.burcAdi(Astronomi.gununAyBurcu(gun))));
       // Buluşma cümlesi ve gündelik sahne gün aşırı dönüşümlüdür: sahne
       // burç günlerinde, buluşma (yaşam yolu) yaşam yolu günlerinde.
-      final bool sahneVar = YorumYonu.gunSahneleri[4]!['ogrenci']!.any(
-        metin.contains,
-      );
+      final bool sahneVar = YorumYonu.gunSahneleri[4]!.any(metin.contains);
       expect(
         sahneVar,
         LuckEngine.gunNumarasi(gun) % ContentConfig.kisilikDonusumu == 0,
@@ -254,56 +251,34 @@ void main() {
       expect(a.bolumler.first.metin, isNot(b.bolumler.first.metin));
     });
 
-    test(
-      'öne çıkan alan kişinin durumuna göre: bekar ve evli farklı havuz',
-      () {
-        final Map<LuckCategory, int> askBaskin = <LuckCategory, int>{
-          LuckCategory.ask: 90,
-          LuckCategory.para: 50,
-          LuckCategory.saglik: 50,
-          LuckCategory.risk: 50,
-          LuckCategory.sosyal: 45,
-        };
-        String parlayan(IliskiDurumu d) => gunlukOkuma(
-          motor: motor,
-          okuyucu: okuyucu(tercihler: OkuyucuTercihleri(iliski: d)),
-          sonuc: sonucKur(genel: 70, skorlar: askBaskin),
-        ).bolumler[1].metin;
-        // Aşk sahnesi ilişki durumuna göre ayrı havuzdan gelir (bkz.
-        // GokyuzuMetinleri.sahneler); metin durumu adıyla anmaz.
-        List<String> havuz(String anahtar) => GokyuzuMetinleri
-            .sahneler[LuckCategory.ask]![anahtar]![SahneYonu.akis]!;
-        expect(
-          havuz(
-            GokyuzuMetinleri.bekarAnahtari,
-          ).any(parlayan(IliskiDurumu.bekar).contains),
-          isTrue,
-        );
-        expect(
-          havuz(
-            GokyuzuMetinleri.partnerliAnahtari,
-          ).any(parlayan(IliskiDurumu.evli).contains),
-          isTrue,
-        );
-      },
-    );
+    test('öne çıkan Aşk bölümü ilişki durumu varsaymaz: genel sahne', () {
+      final Map<LuckCategory, int> askBaskin = <LuckCategory, int>{
+        LuckCategory.ask: 90,
+        LuckCategory.para: 50,
+        LuckCategory.saglik: 50,
+        LuckCategory.risk: 50,
+        LuckCategory.sosyal: 45,
+      };
+      final String parlayan = gunlukOkuma(
+        motor: motor,
+        okuyucu: okuyucu(),
+        sonuc: sonucKur(genel: 70, skorlar: askBaskin),
+      ).bolumler[1].metin;
+      expect(
+        GokyuzuMetinleri.sahneler[LuckCategory.ask]![SahneYonu.akis]!.any(
+          parlayan.contains,
+        ),
+        isTrue,
+      );
+    });
 
-    test('2 yıl × farklı tercihler: yer tutucu, çift boşluk, cümle tekrarı ve '
-        'numeroloji jargonu yok; okuma yeterince uzun', () {
-      final List<OkuyucuTercihleri> setler = <OkuyucuTercihleri>[
-        const OkuyucuTercihleri(),
-        const OkuyucuTercihleri(
-          enerji: EnerjiTarzi.iceDonuk,
-          karar: KararTarzi.kalp,
-          iliski: IliskiDurumu.bekar,
-          ugras: Ugras.ogrenci,
-        ),
-        const OkuyucuTercihleri(
-          enerji: EnerjiTarzi.disaDonuk,
-          karar: KararTarzi.akil,
-          iliski: IliskiDurumu.evli,
-          ugras: Ugras.girisimci,
-        ),
+    test('2 yıl × harita durumları: yer tutucu, çift boşluk, cümle tekrarı '
+        've numeroloji jargonu yok; okuma yeterince uzun', () {
+      // (doğum Ay'ı, yükselen): yok; yalnız Ay; ikisi de.
+      final List<(Burc?, Burc?)> haritalar = <(Burc?, Burc?)>[
+        (null, null),
+        (Burc.yengec, null),
+        (Burc.akrep, Burc.terazi),
       ];
       final List<DateTime> dogumlar = <DateTime>[
         DateTime(1994, 3, 14),
@@ -311,9 +286,13 @@ void main() {
         DateTime(1985, 11, 29),
         DateTime(2000, 11, 9), // usta sayı 22
       ];
-      for (final OkuyucuTercihleri t in setler) {
+      for (final (Burc? ay, Burc? yukselen) in haritalar) {
         for (final DateTime d in dogumlar) {
-          final Okuyucu o = okuyucu(dogumTarihi: d, tercihler: t);
+          final Okuyucu o = okuyucu(
+            dogumTarihi: d,
+            dogumAyi: ay,
+            yukselen: yukselen,
+          );
           for (int i = 0; i < 730; i += 5) {
             final LuckResult s = motor.hesapla(
               kullanici: o.seed,
@@ -705,30 +684,27 @@ void main() {
       expect(turler, isNot(contains(ProfilBolumTuru.yansima)));
     });
 
-    test('tercihler aşk ve iş bölümlerine kişisel cümle ekler', () {
-      final List<ProfilBolumu> bolumler = profilOkumasi(
-        okuyucu: okuyucu(
-          tercihler: const OkuyucuTercihleri(
-            iliski: IliskiDurumu.iliskide,
-            ugras: Ugras.isArayan,
-          ),
-        ),
-        gun: gun,
-      );
-      expect(
-        bolumler
-            .firstWhere((ProfilBolumu b) => b.tur == ProfilBolumTuru.askta)
-            .metin,
-        contains(KisiselHavuzlar.profilIliskiEki[true]),
-      );
-      expect(
-        bolumler
-            .firstWhere(
-              (ProfilBolumu b) => b.tur == ProfilBolumTuru.isteVeParada,
-            )
-            .metin,
-        contains(KisiselHavuzlar.profilUgrasEki[Ugras.isArayan]),
-      );
+    test('aşk bölümü ilişki durumu varsaymaz (bütün yaşam yolları)', () {
+      // İlişki durumu sorulmuyor (K7); profil metni bekâr ya da partnerli
+      // olduğunu varsayan bir ifade taşımamalı.
+      final List<String> ifadeler = <String>[
+        for (final String a in ContentConfig.iliskiVarsayimAnahtarlari)
+          ...ContentConfig.celiskiIfadeleri[a]!,
+      ];
+      for (int i = 0; i < 400; i += 7) {
+        final DateTime d = DateTime(1970, 1, 1 + i * 30);
+        final String askta =
+            profilOkumasi(
+                  okuyucu: okuyucu(dogumTarihi: d),
+                  gun: gun,
+                )
+                .firstWhere((ProfilBolumu b) => b.tur == ProfilBolumTuru.askta)
+                .metin
+                .toLowerCase();
+        for (final String ifade in ifadeler) {
+          expect(askta, isNot(contains(ifade)), reason: '$d: $ifade');
+        }
+      }
     });
   });
 

@@ -5,7 +5,6 @@ import 'package:kader/core/content/fortune_composer.dart';
 import 'package:kader/core/content/gokyuzu_metinleri.dart';
 import 'package:kader/core/content/gunluk_okuma.dart';
 import 'package:kader/core/content/kisilik_metinleri.dart';
-import 'package:kader/core/content/kisisel_havuzlar.dart';
 import 'package:kader/core/content/okuyucu.dart';
 import 'package:kader/core/content/sayi_metinleri.dart';
 import 'package:kader/core/content/slot_doldurucu.dart';
@@ -22,18 +21,12 @@ List<String> _tumMetinler() => <String>[
       in GokyuzuMetinleri.gokyuzu.values)
     for (final Map<KategoriTonu, List<String>> t in i.values)
       ...t.values.expand((List<String> l) => l),
-  for (final Map<String, Map<SahneYonu, List<String>>> s
-      in GokyuzuMetinleri.sahneler.values)
-    for (final Map<SahneYonu, List<String>> y in s.values)
-      ...y.values.expand((List<String> l) => l),
+  for (final Map<SahneYonu, List<String>> y in GokyuzuMetinleri.sahneler.values)
+    ...y.values.expand((List<String> l) => l),
   for (final Map<KategoriTonu, List<String>> t in GokyuzuMetinleri.yap.values)
     ...t.values.expand((List<String> l) => l),
   for (final Map<KategoriTonu, List<String>> t in GokyuzuMetinleri.yapma.values)
     ...t.values.expand((List<String> l) => l),
-  for (final Map<String, Map<KategoriTonu, List<String>>> k
-      in GokyuzuMetinleri.kisiselYap.values)
-    for (final Map<KategoriTonu, List<String>> t in k.values)
-      ...t.values.expand((List<String> l) => l),
   for (final Map<LuckCategory, List<String>> k in KisilikMetinleri.burc.values)
     ...k.values.expand((List<String> l) => l),
   for (final Map<GunTonu, List<String>> t in GokyuzuMetinleri.gunler.values)
@@ -52,17 +45,12 @@ void main() {
   const LuckEngine motor = LuckEngine();
   final DateTime gun = DateTime(2026, 10, 20);
 
-  Okuyucu okuyucu({
-    String isim = 'Ece',
-    DateTime? dogumTarihi,
-    OkuyucuTercihleri tercihler = const OkuyucuTercihleri(),
-  }) {
+  Okuyucu okuyucu({String isim = 'Ece', DateTime? dogumTarihi}) {
     final DateTime d = dogumTarihi ?? DateTime(1999, 10, 14); // Terazi
     return Okuyucu(
       isim: isim,
       seed: UserSeed.fromIsim(isim: isim, dogumTarihi: d),
       profil: KaderProfili.hesapla(dogumTarihi: d, tamAd: '$isim Yılmaz'),
-      tercihler: tercihler,
     );
   }
 
@@ -142,68 +130,19 @@ void main() {
       }
     });
 
-    test('sahneler uğraşı (Aşk: ilişki durumunu) ve genel anahtarı kapsar', () {
-      final Set<String> ugraslar = <String>{
-        for (final Ugras u in Ugras.values) u.name,
-        GokyuzuMetinleri.genelAnahtar,
-      };
-      final Set<String> iliskiler = <String>{
-        GokyuzuMetinleri.bekarAnahtari,
-        GokyuzuMetinleri.partnerliAnahtari,
-        GokyuzuMetinleri.genelAnahtar,
-      };
-      for (final LuckCategory k in LuckCategory.values) {
-        final Map<String, Map<SahneYonu, List<String>>> s =
-            GokyuzuMetinleri.sahneler[k]!;
-        expect(
-          s.keys.toSet(),
-          k == LuckCategory.ask ? iliskiler : ugraslar,
-          reason: '$k',
-        );
-        for (final Map<SahneYonu, List<String>> y in s.values) {
-          expect(y.keys.toSet(), SahneYonu.values.toSet());
-          for (final List<String> h in y.values) {
-            expect(
-              h.length,
-              greaterThanOrEqualTo(ContentConfig.enAzGokyuzuVaryanti),
-            );
-          }
-        }
-      }
-    });
-
-    test('kişisel öneri anahtarları cevap seçenekleriyle eşleşir', () {
-      final Map<LuckCategory, Set<String>> beklenen =
-          <LuckCategory, Set<String>>{
-            LuckCategory.saglik: <String>{
-              for (final EnerjiTarzi e in EnerjiTarzi.values) e.name,
-            },
-            LuckCategory.sosyal: <String>{
-              for (final EnerjiTarzi e in EnerjiTarzi.values) e.name,
-            },
-            LuckCategory.risk: <String>{
-              for (final KararTarzi e in KararTarzi.values) e.name,
-            },
-            LuckCategory.para: <String>{
-              for (final KararTarzi e in KararTarzi.values) e.name,
-            },
-            LuckCategory.ask: <String>{
-              GokyuzuMetinleri.bekarAnahtari,
-              GokyuzuMetinleri.partnerliAnahtari,
-            },
-          };
-      for (final LuckCategory k in LuckCategory.values) {
-        final Map<String, Map<KategoriTonu, List<String>>> h =
-            GokyuzuMetinleri.kisiselYap[k]!;
-        expect(h.keys.toSet(), beklenen[k], reason: '$k');
-        for (final Map<KategoriTonu, List<String>> tonlar in h.values) {
-          expect(tonlar.keys.toSet(), KategoriTonu.values.toSet());
-          for (final List<String> l in tonlar.values) {
-            expect(
-              l.length,
-              greaterThanOrEqualTo(ContentConfig.enAzKisiselYapVaryanti),
-            );
-          }
+    test('sahneler her kategoride iki yönü kapsar ve varyantlı', () {
+      expect(
+        GokyuzuMetinleri.sahneler.keys.toSet(),
+        LuckCategory.values.toSet(),
+      );
+      for (final Map<SahneYonu, List<String>> y
+          in GokyuzuMetinleri.sahneler.values) {
+        expect(y.keys.toSet(), SahneYonu.values.toSet());
+        for (final List<String> h in y.values) {
+          expect(
+            h.length,
+            greaterThanOrEqualTo(ContentConfig.enAzGokyuzuVaryanti),
+          );
         }
       }
     });
@@ -227,9 +166,7 @@ void main() {
     });
 
     test('ikinci cümle günün gökyüzü; buluşma ve sahne gün aşırı', () {
-      final Okuyucu o = okuyucu(
-        tercihler: const OkuyucuTercihleri(ugras: Ugras.ogrenci),
-      );
+      final Okuyucu o = okuyucu();
       final List<String> tumGunCumleleri = <String>[
         for (final Map<GunTonu, List<String>> t
             in GokyuzuMetinleri.gunler.values)
@@ -269,25 +206,20 @@ void main() {
   });
 
   group('kişilik cümleleri', () {
-    // Tüm cevap kombinasyonları (soru atlanabildiği için null dahil).
-    final List<OkuyucuTercihleri> kombinasyonlar = <OkuyucuTercihleri>[
-      for (final EnerjiTarzi? e in <EnerjiTarzi?>[null, ...EnerjiTarzi.values])
-        for (final KararTarzi? k in <KararTarzi?>[null, ...KararTarzi.values])
-          for (final IliskiDurumu? i in <IliskiDurumu?>[
-            null,
-            ...IliskiDurumu.values,
-          ])
-            OkuyucuTercihleri(enerji: e, karar: k, iliski: i),
+    // Olası bütün portreler (enerji × karar; K7'den beri element türetir).
+    final List<Portre> kombinasyonlar = <Portre>[
+      for (final EnerjiTarzi e in EnerjiTarzi.values)
+        for (final KararTarzi k in KararTarzi.values)
+          Portre(enerji: e, karar: k),
     ];
 
-    test('her burç × kategori dolu; her cevap kombinasyonunda uyumlu cümle '
-        'kalır', () {
+    test('her burç × kategori dolu; her portrede uyumlu cümle kalır', () {
       expect(KisilikMetinleri.burc.keys.toSet(), Burc.values.toSet());
       for (final Burc b in Burc.values) {
         for (final LuckCategory k in LuckCategory.values) {
           final List<String> h = KisilikMetinleri.burc[b]![k]!;
           expect(h.length, greaterThanOrEqualTo(3), reason: '$b $k');
-          for (final OkuyucuTercihleri t in kombinasyonlar) {
+          for (final Portre t in kombinasyonlar) {
             // En az iki uyumlu cümle: tek seçenek kalırsa aynı cümle
             // ayda çok kez tekrar eder.
             expect(
@@ -304,7 +236,7 @@ void main() {
       for (final MapEntry<int, KarakterYonu> e
           in YorumYonu.karakterler.entries) {
         for (final LuckCategory k in LuckCategory.values) {
-          for (final OkuyucuTercihleri t in kombinasyonlar) {
+          for (final Portre t in kombinasyonlar) {
             expect(
               e.value.kategoriTarzi[k]!
                   .where((String m) => !KisilikMetinleri.celisir(m, t))
@@ -319,12 +251,11 @@ void main() {
       }
     });
 
-    test('günlük öneriler her cevap kombinasyonunda en az iki seçenek '
-        'bırakır', () {
+    test('günlük öneriler her portrede en az iki seçenek bırakır', () {
       for (final MapEntry<int, KarakterYonu> e
           in YorumYonu.karakterler.entries) {
         for (final BulusmaTuru b in BulusmaTuru.values) {
-          for (final OkuyucuTercihleri t in kombinasyonlar) {
+          for (final Portre t in kombinasyonlar) {
             expect(
               e.value
                   .tavsiyeler(b)
@@ -339,8 +270,9 @@ void main() {
     });
 
     test('çelişki süzgeci bilinen çelişkileri ayıklar', () {
-      const OkuyucuTercihleri disaDonuk = OkuyucuTercihleri(
+      const Portre disaDonuk = Portre(
         enerji: EnerjiTarzi.disaDonuk,
+        karar: KararTarzi.kalp,
       );
       expect(
         KisilikMetinleri.celisir(
@@ -352,24 +284,24 @@ void main() {
       expect(
         KisilikMetinleri.celisir(
           'Kalabalık yerine az ve derin ilişkileri tercih edersin.',
-          const OkuyucuTercihleri(enerji: EnerjiTarzi.iceDonuk),
+          const Portre(enerji: EnerjiTarzi.iceDonuk, karar: KararTarzi.kalp),
         ),
         isFalse,
       );
       expect(
         KisilikMetinleri.celisir(
           'Partnerinin mutluluğunu öne koyarsın.',
-          const OkuyucuTercihleri(iliski: IliskiDurumu.bekar),
+          disaDonuk,
         ),
         isTrue,
       );
     });
 
-    test('profil metinleri hiçbir cevap kombinasyonunda cevapla çelişmez', () {
+    test('profil metinleri hiçbir portrede portreyle çelişmez', () {
       for (final MapEntry<int, SayiKarakteri> e
           in SayiMetinleri.yasamYolu.entries) {
         final SayiKarakteri k = e.value;
-        for (final OkuyucuTercihleri t in kombinasyonlar) {
+        for (final Portre t in kombinasyonlar) {
           for (final String alan in <String>[
             k.oz,
             k.gucluYanlar,
@@ -406,17 +338,6 @@ void main() {
       ].join(' ');
       for (final String cumle in KisilikMetinleri.profilUyarlamalari.keys) {
         expect(hepsi, contains(cumle));
-      }
-    });
-
-    test('profil ekleri cevabı geri söylemez', () {
-      for (final String m in <String>[
-        ...KisiselHavuzlar.profilIliskiEki.values,
-        ...KisiselHavuzlar.profilUgrasEki.values,
-      ]) {
-        for (final String yanki in ContentConfig.yankiIfadeleri) {
-          expect(_kelimeBasindaGecer(m, yanki), isFalse, reason: '$yanki: $m');
-        }
       }
     });
   });
@@ -490,15 +411,10 @@ void main() {
       }
     });
 
-    test('kişilik cümlesi burçtan ya da yaşam yolundan gelir, cevapla '
+    test('kişilik cümlesi burçtan ya da yaşam yolundan gelir, portreyle '
         'çelişmez; günlük kart ve detay farklı kaynağı kullanır', () {
-      const OkuyucuTercihleri t = OkuyucuTercihleri(
-        enerji: EnerjiTarzi.disaDonuk,
-        karar: KararTarzi.kalp,
-        iliski: IliskiDurumu.bekar,
-        ugras: Ugras.ogrenci,
-      );
-      final Okuyucu o = okuyucu(tercihler: t);
+      final Okuyucu o = okuyucu();
+      final Portre t = o.portre;
       final String burcAdi = trIcerik.burcAdi(o.profil.burc);
       final List<String> burcCumleleri = <String>[
         for (final List<String> h
@@ -548,71 +464,24 @@ void main() {
       }
     });
 
-    test('Aşk: sahne ve kişisel öneri ilişki durumuna göre seçilir', () {
-      for (final (IliskiDurumu d, String anahtar) in <(IliskiDurumu, String)>[
-        (IliskiDurumu.bekar, GokyuzuMetinleri.bekarAnahtari),
-        (IliskiDurumu.iliskide, GokyuzuMetinleri.partnerliAnahtari),
-        (IliskiDurumu.evli, GokyuzuMetinleri.partnerliAnahtari),
-      ]) {
+    test('sahne ve Yap önerileri her kategoride genel havuzdan gelir', () {
+      for (final LuckCategory k in LuckCategory.values) {
         final KategoriOkumasi o = kategoriOkumasi(
           motor: motor,
-          okuyucu: okuyucu(tercihler: OkuyucuTercihleri(iliski: d)),
+          okuyucu: okuyucu(),
           sonuc: sonucKur(skorlar),
-          kategori: LuckCategory.ask,
+          kategori: k,
         );
         expect(
-          GokyuzuMetinleri
-              .sahneler[LuckCategory.ask]![anahtar]![SahneYonu.tondan(o.ton)]!
-              .any(o.paragraf.endsWith),
+          GokyuzuMetinleri.sahneler[k]![SahneYonu.tondan(o.ton)]!.any(
+            o.paragraf.endsWith,
+          ),
           isTrue,
-          reason: '$d: ${o.paragraf}',
+          reason: '$k: ${o.paragraf}',
         );
-        expect(
-          GokyuzuMetinleri.kisiselYap[LuckCategory.ask]![anahtar]![o.ton]!,
-          contains(o.yap.first),
-        );
-      }
-    });
-
-    test('sahne uğraşa, kişisel öneri cevaba göre seçilir', () {
-      for (final Ugras u in Ugras.values) {
-        final KategoriOkumasi o = kategoriOkumasi(
-          motor: motor,
-          okuyucu: okuyucu(tercihler: OkuyucuTercihleri(ugras: u)),
-          sonuc: sonucKur(skorlar),
-          kategori: LuckCategory.saglik,
-        );
-        expect(
-          GokyuzuMetinleri
-              .sahneler[LuckCategory.saglik]![u.name]![SahneYonu.tondan(o.ton)]!
-              .any(o.paragraf.endsWith),
-          isTrue,
-          reason: '$u: ${o.paragraf}',
-        );
-      }
-      for (final EnerjiTarzi e in EnerjiTarzi.values) {
-        final KategoriOkumasi o = kategoriOkumasi(
-          motor: motor,
-          okuyucu: okuyucu(tercihler: OkuyucuTercihleri(enerji: e)),
-          sonuc: sonucKur(skorlar),
-          kategori: LuckCategory.sosyal,
-        );
-        expect(
-          GokyuzuMetinleri.kisiselYap[LuckCategory.sosyal]![e.name]![o.ton]!,
-          contains(o.yap.first),
-        );
-      }
-      for (final KararTarzi kt in KararTarzi.values) {
-        final KategoriOkumasi o = kategoriOkumasi(
-          motor: motor,
-          okuyucu: okuyucu(tercihler: OkuyucuTercihleri(karar: kt)),
-          sonuc: sonucKur(skorlar),
-          kategori: LuckCategory.risk,
-        );
-        expect(
-          GokyuzuMetinleri.kisiselYap[LuckCategory.risk]![kt.name]![o.ton]!,
-          contains(o.yap.first),
-        );
+        for (final String y in o.yap) {
+          expect(GokyuzuMetinleri.yap[k]![o.ton]!, contains(y), reason: '$k');
+        }
       }
     });
 
@@ -656,9 +525,7 @@ void main() {
     });
 
     test('düşük günde koruyucu, iyi günde fırsat sahnesi seçilir', () {
-      final Okuyucu o = okuyucu(
-        tercihler: const OkuyucuTercihleri(ugras: Ugras.calisiyor),
-      );
+      final Okuyucu o = okuyucu();
       for (final (int skor, SahneYonu yon) in <(int, SahneYonu)>[
         (20, SahneYonu.temkin),
         (55, SahneYonu.akis),
@@ -674,8 +541,9 @@ void main() {
           kategori: LuckCategory.saglik,
         );
         expect(
-          GokyuzuMetinleri.sahneler[LuckCategory.saglik]!['calisiyor']![yon]!
-              .any(ok.paragraf.endsWith),
+          GokyuzuMetinleri.sahneler[LuckCategory.saglik]![yon]!.any(
+            ok.paragraf.endsWith,
+          ),
           isTrue,
           reason: '$skor: ${ok.paragraf}',
         );
@@ -683,9 +551,7 @@ void main() {
     });
 
     test('detay sayfası aynı gün günlük kartla aynı cümleyi göstermez', () {
-      final Okuyucu o = okuyucu(
-        tercihler: const OkuyucuTercihleri(ugras: Ugras.ogrenci),
-      );
+      final Okuyucu o = okuyucu();
       for (int i = 0; i < 30; i++) {
         final DateTime g = gun.add(Duration(days: i));
         final LuckResult s = motor.hesapla(kullanici: o.seed, gun: g);
@@ -716,13 +582,7 @@ void main() {
     });
 
     test('30 günde aynı paragraf art arda gelmez ve sık tekrarlanmaz', () {
-      final Okuyucu o = okuyucu(
-        tercihler: const OkuyucuTercihleri(
-          enerji: EnerjiTarzi.disaDonuk,
-          karar: KararTarzi.kalp,
-          ugras: Ugras.ogrenci,
-        ),
-      );
+      final Okuyucu o = okuyucu();
       for (final LuckCategory k in LuckCategory.values) {
         final List<String> paragraflar = <String>[
           for (int i = 0; i < 30; i++)

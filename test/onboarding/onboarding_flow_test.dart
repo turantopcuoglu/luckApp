@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kader/core/content/okuyucu.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/luck_history_repository.dart';
@@ -107,12 +106,12 @@ void main() {
     );
     expect(find.text(trMetinler.profilDogumSaati), findsOneWidget);
     expect(find.byKey(const Key('dogum-ili-alani')), findsOneWidget);
-    // Kişiyi tarif ettiren sorular yok.
+    // Kişiyi tarif ettiren sorular yok (11 Kasım'da kalkan seçenekler).
     for (final String secenek in <String>[
-      EnerjiTarzi.iceDonuk.etiket,
-      KararTarzi.kalp.etiket,
-      IliskiDurumu.bekar.etiket,
-      Ugras.ogrenci.etiket,
+      'Yalnız kalınca toplanırım',
+      'Önce kalbimi dinlerim',
+      'Bekarım',
+      'Öğrenciyim',
     ]) {
       expect(find.text(secenek), findsNothing);
     }

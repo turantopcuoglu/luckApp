@@ -4,7 +4,6 @@ import 'package:kader/core/content/fortune_composer.dart';
 import 'package:kader/core/content/gunluk_okuma.dart';
 import 'package:kader/core/content/harita_metinleri.dart';
 import 'package:kader/core/content/icerik_paketi.dart';
-import 'package:kader/core/content/kisisel_havuzlar.dart';
 import 'package:kader/core/content/neden_metinleri.dart';
 import 'package:kader/core/content/okuyucu.dart';
 import 'package:kader/core/content/slot_doldurucu.dart';
@@ -41,24 +40,6 @@ final class _IsaretliPaket implements IcerikPaketi {
       _isaretle(trIcerik.uyumDerecesiAdi(derece));
 
   @override
-  String enerjiTarziAdi(EnerjiTarzi tarz) =>
-      _isaretle(trIcerik.enerjiTarziAdi(tarz));
-
-  @override
-  String kararTarziAdi(KararTarzi tarz) =>
-      _isaretle(trIcerik.kararTarziAdi(tarz));
-
-  @override
-  String iliskiDurumuAdi(IliskiDurumu durum) =>
-      _isaretle(trIcerik.iliskiDurumuAdi(durum));
-
-  @override
-  String ugrasAdi(Ugras ugras) => _isaretle(trIcerik.ugrasAdi(ugras));
-
-  @override
-  String ugrasAlani(Ugras? ugras) => _isaretle(trIcerik.ugrasAlani(ugras));
-
-  @override
   String iyelik(String isim) => '$isim’s';
 }
 
@@ -88,23 +69,6 @@ void main() {
       }
     });
 
-    test('tercih seçenekleri ve uğraş öbekleri enum alanlarıyla aynı', () {
-      for (final EnerjiTarzi t in EnerjiTarzi.values) {
-        expect(trIcerik.enerjiTarziAdi(t), t.etiket, reason: t.name);
-      }
-      for (final KararTarzi t in KararTarzi.values) {
-        expect(trIcerik.kararTarziAdi(t), t.etiket, reason: t.name);
-      }
-      for (final IliskiDurumu d in IliskiDurumu.values) {
-        expect(trIcerik.iliskiDurumuAdi(d), d.etiket, reason: d.name);
-      }
-      for (final Ugras u in Ugras.values) {
-        expect(trIcerik.ugrasAdi(u), u.etiket, reason: u.name);
-        expect(trIcerik.ugrasAlani(u), u.alan, reason: u.name);
-      }
-      expect(trIcerik.ugrasAlani(null), KisiselHavuzlar.varsayilanUgrasAlani);
-    });
-
     test('iyelik Türkçe ek kurallarını kullanır', () {
       for (final String isim in <String>['Ayşe', 'Turan', 'Işıl', 'Ömer']) {
         expect(trIcerik.iyelik(isim), TurkceEk.ilgi(isim));
@@ -131,7 +95,6 @@ void main() {
       isim: 'Ayşe',
       seed: UserSeed.fromIsim(isim: 'Ayşe', dogumTarihi: dogum),
       profil: KaderProfili.hesapla(dogumTarihi: dogum, tamAd: 'Ayşe Yılmaz'),
-      tercihler: const OkuyucuTercihleri(ugras: Ugras.ogrenci),
     );
 
     test('slot sözlüğü adları ve iyeliği paketten alır', () {
@@ -139,10 +102,8 @@ void main() {
       final Map<String, String> s = slotSozlugu(okuyucu, paket: isaretli);
       expect(tr[SlotAnahtarlari.burc], 'Koç');
       expect(tr[SlotAnahtarlari.isimIlgi], "Ayşe'nin");
-      expect(tr[SlotAnahtarlari.ugrasAlani], 'derslerin');
       expect(s[SlotAnahtarlari.burc], '[Koç]');
       expect(s[SlotAnahtarlari.isimIlgi], 'Ayşe’s');
-      expect(s[SlotAnahtarlari.ugrasAlani], '[derslerin]');
     });
 
     test('profil ve uyum başlıkları paketteki adları kullanır', () {

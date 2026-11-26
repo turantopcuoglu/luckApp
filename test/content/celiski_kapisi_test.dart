@@ -11,9 +11,9 @@ import 'package:kader/core/luck_engine/luck_engine.dart';
 
 /// Çelişki kapısı ve çekirdek portre testleri.
 ///
-/// Kapının sözü: okuyucunun portresiyle (cevabı ya da burç elementinden
-/// türetilen tarzı) çelişen hiçbir cümle günlük okumaya ya da kategori
-/// okumasına giremez.
+/// Kapının sözü: okuyucunun portresiyle (burç elementinden türetilen
+/// tarzı) ya da bir ilişki varsayımıyla çelişen hiçbir cümle günlük okumaya
+/// ya da kategori okumasına giremez.
 void main() {
   const LuckEngine motor = LuckEngine();
 
@@ -24,44 +24,24 @@ void main() {
       DateTime(1975 + ay * 2, ay, 5),
   ];
 
-  /// Cevaplanmış ve atlanmış soruların bütün kombinasyonları (enerji ×
-  /// karar × ilişki); uğraş sırayla döner.
-  final List<OkuyucuTercihleri> tercihSetleri = <OkuyucuTercihleri>[
-    for (final EnerjiTarzi? e in <EnerjiTarzi?>[null, ...EnerjiTarzi.values])
-      for (final KararTarzi? k in <KararTarzi?>[null, ...KararTarzi.values])
-        for (final IliskiDurumu? i in <IliskiDurumu?>[
-          null,
-          ...IliskiDurumu.values,
-        ])
-          OkuyucuTercihleri(
-            enerji: e,
-            karar: k,
-            iliski: i,
-            ugras:
-                <Ugras?>[null, ...Ugras.values][((e?.index ?? 2) +
-                        (k?.index ?? 2) * 3 +
-                        (i?.index ?? 3)) %
-                    (Ugras.values.length + 1)],
-          ),
-  ];
+  /// Doğum haritası durumları: yok; yalnız Ay; Ay ve yükselen (K7'den
+  /// beri cevap seti yok, okuyucu yalnız doğum verisiyle değişir).
+  const int haritaDurumu = 3;
 
-  Okuyucu okuyucu(DateTime dogum, OkuyucuTercihleri tercihler) => Okuyucu(
+  Okuyucu okuyucu(DateTime dogum, int h) => Okuyucu(
     isim: 'Deniz',
     seed: UserSeed.fromIsim(isim: 'Deniz', dogumTarihi: dogum),
     profil: KaderProfili.hesapla(dogumTarihi: dogum),
-    tercihler: tercihler,
+    dogumAyi: h >= 1 ? Burc.values[dogum.month % Burc.values.length] : null,
+    yukselen: h >= 2
+        ? Burc.values[(dogum.month + 5) % Burc.values.length]
+        : null,
   );
 
-  /// Kapıdan geçen portreler: enerji ve karar her zaman doludur (cevap ya
-  /// da türetme), ilişki durumu bilinmeyebilir.
-  final List<OkuyucuTercihleri> portreler = <OkuyucuTercihleri>[
+  /// Olası bütün portreler (enerji × karar).
+  final List<Portre> portreler = <Portre>[
     for (final EnerjiTarzi e in EnerjiTarzi.values)
-      for (final KararTarzi k in KararTarzi.values)
-        for (final IliskiDurumu? i in <IliskiDurumu?>[
-          null,
-          ...IliskiDurumu.values,
-        ])
-          OkuyucuTercihleri(enerji: e, karar: k, iliski: i),
+      for (final KararTarzi k in KararTarzi.values) Portre(enerji: e, karar: k),
   ];
 
   group('çekirdek portre', () {
@@ -79,41 +59,30 @@ void main() {
       expect(Okuyucu.elementKarari.keys.toSet(), BurcElementi.values.toSet());
     });
 
-    test('verilen cevap esastır', () {
+    test('portre burcun elementinden türetilir', () {
       for (final DateTime d in dogumlar) {
-        for (final OkuyucuTercihleri t in tercihSetleri) {
-          final OkuyucuTercihleri p = okuyucu(d, t).portre;
-          if (t.enerji != null) {
-            expect(p.enerji, t.enerji);
-          }
-          if (t.karar != null) {
-            expect(p.karar, t.karar);
-          }
-        }
-      }
-    });
-
-    test('atlanan enerji ve karar burcun elementinden türetilir; ilişki ve '
-        'uğraş türetilmez', () {
-      for (final DateTime d in dogumlar) {
-        final Okuyucu o = okuyucu(d, const OkuyucuTercihleri());
+        final Okuyucu o = okuyucu(d, 0);
         final BurcElementi element = o.profil.burc.element;
         expect(o.portre.enerji, Okuyucu.elementEnerjisi[element]);
         expect(o.portre.karar, Okuyucu.elementKarari[element]);
-        expect(o.portre.iliski, isNull);
-        expect(o.portre.ugras, isNull);
+      }
+    });
+
+    test('portre doğum haritasından etkilenmez', () {
+      for (final DateTime d in dogumlar) {
+        expect(okuyucu(d, 2).portre, okuyucu(d, 0).portre);
       }
     });
   });
 
   group('çelişki eşleştirmesi', () {
-    const OkuyucuTercihleri disaDonuk = OkuyucuTercihleri(
+    const Portre disaDonuk = Portre(
       enerji: EnerjiTarzi.disaDonuk,
-      iliski: IliskiDurumu.evli,
+      karar: KararTarzi.kalp,
     );
-    const OkuyucuTercihleri akil = OkuyucuTercihleri(
+    const Portre akil = Portre(
+      enerji: EnerjiTarzi.iceDonuk,
       karar: KararTarzi.akil,
-      iliski: IliskiDurumu.evli,
     );
 
     test('ifade yalnızca kelime başında eşleşir', () {
@@ -132,25 +101,17 @@ void main() {
       );
     });
 
-    test('ilişki durumu bilinmiyorsa iki varsayım da elenir', () {
+    test('ilişki durumu bilinmediği için iki varsayım da her portrede '
+        'elenir', () {
       const String partnerVarsayan =
           'Partnerinin mutluluğunu kendi mutluluğunun önüne koymaya yatkınsın.';
       const String bekarVarsayan =
           'Flört senin için bir oyun gibi; ama ciddileştiğinde sandığından '
           'derin bağlanırsın.';
-      const OkuyucuTercihleri bilinmiyor = OkuyucuTercihleri();
-      const OkuyucuTercihleri bekar = OkuyucuTercihleri(
-        iliski: IliskiDurumu.bekar,
-      );
-      const OkuyucuTercihleri evli = OkuyucuTercihleri(
-        iliski: IliskiDurumu.evli,
-      );
-      expect(KisilikMetinleri.celisir(partnerVarsayan, bilinmiyor), isTrue);
-      expect(KisilikMetinleri.celisir(bekarVarsayan, bilinmiyor), isTrue);
-      expect(KisilikMetinleri.celisir(partnerVarsayan, bekar), isTrue);
-      expect(KisilikMetinleri.celisir(bekarVarsayan, bekar), isFalse);
-      expect(KisilikMetinleri.celisir(partnerVarsayan, evli), isFalse);
-      expect(KisilikMetinleri.celisir(bekarVarsayan, evli), isTrue);
+      for (final Portre p in portreler) {
+        expect(KisilikMetinleri.celisir(partnerVarsayan, p), isTrue);
+        expect(KisilikMetinleri.celisir(bekarVarsayan, p), isTrue);
+      }
     });
 
     test('kapı çelişenleri çıkarır; yeterli cümle kalmazsa havuzu korur', () {
@@ -167,7 +128,7 @@ void main() {
 
   group('genel havuzlar her portrede yeterli cümle bırakır', () {
     /// [havuz]da [p] portresiyle çelişmeyen cümle sayısı.
-    int kalan(List<String> havuz, OkuyucuTercihleri p) =>
+    int kalan(List<String> havuz, Portre p) =>
         havuz.where((String m) => !KisilikMetinleri.celisir(m, p)).length;
 
     /// İç içe haritalardaki bütün metin havuzları.
@@ -183,13 +144,11 @@ void main() {
 
     void yeterli(Object? kaynak, int enAz, String ad) {
       for (final List<String> h in havuzlar(kaynak)) {
-        for (final OkuyucuTercihleri p in portreler) {
+        for (final Portre p in portreler) {
           expect(
             kalan(h, p),
             greaterThanOrEqualTo(enAz),
-            reason:
-                '$ad · ${p.enerji?.name}/${p.karar?.name}/'
-                '${p.iliski?.name}: ${h.first}',
+            reason: '$ad · ${p.enerji.name}/${p.karar.name}: ${h.first}',
           );
         }
       }
@@ -237,13 +196,13 @@ void main() {
     const int gunSayisi = 10;
     const int gunAdimi = 3;
 
-    test('12 burç × 36 cevap kombinasyonu × $gunSayisi gün: günlük okuma ve '
-        'beş kategori okuması', () {
+    test('12 burç × $haritaDurumu harita durumu × $gunSayisi gün: günlük '
+        'okuma ve beş kategori okuması', () {
       final List<String> sizintilar = <String>[];
       for (final DateTime dogum in dogumlar) {
-        for (final OkuyucuTercihleri t in tercihSetleri) {
-          final Okuyucu o = okuyucu(dogum, t);
-          final OkuyucuTercihleri portre = o.portre;
+        for (int h = 0; h < haritaDurumu; h++) {
+          final Okuyucu o = okuyucu(dogum, h);
+          final Portre portre = o.portre;
           for (int g = 0; g < gunSayisi; g++) {
             final DateTime gun = DateTime(2026, 9, 1 + g * gunAdimi);
             final LuckResult sonuc = motor.hesapla(kullanici: o.seed, gun: gun);
@@ -280,8 +239,8 @@ void main() {
               if (KisilikMetinleri.celisir(metin, portre)) {
                 sizintilar.add(
                   '${o.profil.burc.name} '
-                  '${portre.enerji?.name}/${portre.karar?.name}/'
-                  '${portre.iliski?.name} $gun: $metin',
+                  '${portre.enerji.name}/${portre.karar.name} h$h '
+                  '$gun: $metin',
                 );
               }
             }
