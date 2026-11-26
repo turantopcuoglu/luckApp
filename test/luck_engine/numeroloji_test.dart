@@ -37,6 +37,96 @@ void main() {
     });
   });
 
+  group('aksanlı ve yabancı adlar (D6: tablo iki dilde aynı)', () {
+    test('aksanlı Latin harfler karşılığının değerini ve sesli/sessiz '
+        'durumunu alır', () {
+      const Map<String, String> ciftler = <String, String>{
+        'é': 'e', 'È': 'E', 'ë': 'e', 'á': 'a', 'Å': 'A', 'ã': 'a',
+        'ñ': 'n', 'ø': 'o', 'Ø': 'O', 'ł': 'l', 'Ł': 'L', 'č': 'c',
+        'ž': 'z', 'ő': 'o', 'ș': 's', 'ț': 't', 'ý': 'y', 'đ': 'd',
+      };
+      ciftler.forEach((String aksanli, String latin) {
+        expect(
+          Numeroloji.harfDegeri(aksanli),
+          Numeroloji.harfDegeri(latin),
+          reason: aksanli,
+        );
+        expect(
+          Numeroloji.sesliMi(aksanli),
+          Numeroloji.sesliMi(latin),
+          reason: aksanli,
+        );
+      });
+    });
+
+    test('José: isim 4, ruh 11 (usta korunur), kişilik 2; é atlanmaz', () {
+      expect(Numeroloji.isimSayisi('José')!.deger, 4);
+      expect(Numeroloji.ruhSayisi('José')!.deger, 11);
+      expect(Numeroloji.kisilikSayisi('José')!.deger, 2);
+      expect(Numeroloji.isimSayisi('José')!.adimlar.single.kaynak, 'José');
+    });
+
+    test('aksanlı ad, aksansız yazılışıyla aynı sayıları verir', () {
+      const Map<String, String> adlar = <String, String>{
+        'Zoë': 'Zoe',
+        'Renée': 'Renee',
+        'Søren Ørsted': 'Soren Orsted',
+        'Łukasz Wałęsa': 'Lukasz Walesa',
+        'Müller': 'Muller',
+        'Ñandú': 'Nandu',
+        'Ștefan Țurcanu': 'Stefan Turcanu',
+      };
+      adlar.forEach((String aksanli, String duz) {
+        for (final SayiHesabi? Function(String) f
+            in <SayiHesabi? Function(String)>[
+              Numeroloji.isimSayisi,
+              Numeroloji.ruhSayisi,
+              Numeroloji.kisilikSayisi,
+            ]) {
+          expect(f(aksanli)?.deger, f(duz)?.deger, reason: aksanli);
+        }
+      });
+      expect(Numeroloji.isimSayisi('Søren')!.deger, 8);
+    });
+
+    test('ayrık yazılmış aksan (birleşik işaret) da aynı sonucu verir', () {
+      // "e" + U+0301: birleşik işaret harf değildir, atlanır.
+      expect(
+        Numeroloji.isimSayisi('Jose\u0301')!.deger,
+        Numeroloji.isimSayisi('José')!.deger,
+      );
+    });
+
+    test('bitişik harfler her harfi ayrı sayar: Straße = Strasse = 2', () {
+      expect(Numeroloji.isimSayisi('Straße')!.deger, 2);
+      expect(Numeroloji.bitisikHarfleriAc('Straße'), 'Strasse');
+      expect(Numeroloji.bitisikHarfleriAc('Æsa Œuvre'), 'Aesa Oeuvre');
+      expect(
+        Numeroloji.ruhSayisi('Æsa')!.deger,
+        Numeroloji.ruhSayisi('Aesa')!.deger,
+      );
+      expect(
+        Numeroloji.kisilikSayisi('Þóra')!.deger,
+        Numeroloji.kisilikSayisi('Thora')!.deger,
+      );
+      expect(Numeroloji.bitisikHarfleriAc('Ayşe Yılmaz'), 'Ayşe Yılmaz');
+    });
+
+    test('Y iki dilde de sessiz (KARARLAR soru 5): Mary ruh 1, Lynn ruhsuz', () {
+      expect(Numeroloji.ruhSayisi('Mary')!.deger, 1);
+      expect(Numeroloji.kisilikSayisi('Mary')!.deger, 2);
+      expect(Numeroloji.ruhSayisi('Lynn'), isNull);
+      expect(Numeroloji.sesliMi('Y'), isFalse);
+      expect(Numeroloji.sesliMi('ý'), isFalse);
+    });
+
+    test('Latin dışı yazı harf sayılmaz: tamamen Kiril ad null', () {
+      expect(Numeroloji.isimSayisi('Иван'), isNull);
+      expect(Numeroloji.isimSayisi('Иван Smith')!.deger,
+          Numeroloji.isimSayisi('Smith')!.deger);
+    });
+  });
+
   group('indirge', () {
     test('tek haneye indirger', () {
       expect(Numeroloji.indirge(1994), 5);

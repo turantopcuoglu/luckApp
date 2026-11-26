@@ -47,6 +47,19 @@ void main() {
     });
   });
 
+  group('aksanlı metin', () {
+    test('aksanlı ve bitişik harfler numara analizinde sayılır', () {
+      expect(
+        NumaraAnalizcisi.analizEt('Café 12')!.hamToplam,
+        NumaraAnalizcisi.analizEt('Cafe 12')!.hamToplam,
+      );
+      expect(
+        NumaraAnalizcisi.analizEt('Straße 5')!.hamToplam,
+        NumaraAnalizcisi.analizEt('Strasse 5')!.hamToplam,
+      );
+    });
+  });
+
   group('IsimAnalizi', () {
     test('Ayşe Yılmaz: sayılar, ruhtaki karmik 16, harfler', () {
       final IsimAnalizi a = IsimAnalizi.hesapla('  Ayşe Yılmaz ')!;

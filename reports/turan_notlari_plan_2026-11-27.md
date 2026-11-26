@@ -150,6 +150,13 @@ Eski kayıtlardaki `enerji`, `karar`, `iliski` ve `ugras` Hive anahtarları okun
 
 Test eklenecek: aksanlı adlar, tamamen Latin dışı ad, tireli ve kesmeli ad, Türkçe adın İngilizce arayüzde aynı sayıyı vermesi (D6).
 
+**Durum (27 Kas):** aksanlı harfler ve Y kuralı yapıldı.
+- Tek harfli aksanlılar Latin karşılığının değerini ve sesli/sessiz durumunu alıyor. Kapsam: Latin-1 Ek, Latin Genişletilmiş-A ve Rumence ș/ț.
+- Bitişik harfler her harfi ayrı sayıyor: ß→ss, æ→ae, œ→oe, þ→th, ĳ→ij. Bu kural isim, ruh ve kişilik sayısında; sayı dağılımında, karmik derslerde, temel/tepe taşında ve denge sayısında; numara analizinde geçerli.
+- Y iki dilde de sessiz (soru 5, karar (a)); kuralı bir test sabitliyor.
+- Eski hâl: "José" isim 8, "Søren" 2, "Straße" 9 alıyordu. Yeni hâl: 4, 8, 2; aksansız yazılışlarıyla aynı.
+- Türkçe adlar değişmedi; altın kayıt tablosu dokunulmadan geçti (Europe/Istanbul ve UTC).
+
 ### 3.2 Eksik listesi (İngilizce yayın bayrağından önce kapanmalı)
 
 `DilConfig.ingilizceYayinda` şu an `false`. Aşağıdakilerin hepsi kapanmadan açılmaz.
@@ -192,7 +199,7 @@ Her satır bir oturum (`CLAUDE.md` kural 1: tek sistem).
 |---|---|---|
 | 1 | K8-1: motor, açık UTC farkı + altın tablo (+03) | Soru 1 |
 | 2 | K7-1/2: tanışma kalıntılarının temizliği (content) **— bitti** | Soru 3 |
-| 3 | Numeroloji: aksanlı harfler (+ Y kuralı) | Soru 5 |
+| 3 | Numeroloji: aksanlı harfler (+ Y kuralı) **— bitti** | Soru 5 |
 | 4 | K8-2: dünya geneli doğum saat dilimi + yabancı yükselen testleri | 1 |
 | 5 | K8-3/4: şehir verisi + kayıt göçü | Soru 2; Turan GeoNames dosyasını indirir |
 | 6 | K8-5: ülke/şehir arayüzü | 5; görsel kontrol Turan |

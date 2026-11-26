@@ -179,7 +179,7 @@ abstract final class DerinNumeroloji {
       for (int s = 1; s <= EngineConfig.numerolojiTabani; s++) s: 0,
     };
     bool harfVar = false;
-    for (final int kod in tamAd.runes) {
+    for (final int kod in Numeroloji.bitisikHarfleriAc(tamAd).runes) {
       final int? deger = Numeroloji.harfDegeri(String.fromCharCode(kod));
       if (deger == null) {
         continue;
@@ -237,7 +237,7 @@ abstract final class DerinNumeroloji {
   static List<List<String>> _kelimeler(String tamAd) {
     final List<List<String>> kelimeler = <List<String>>[];
     List<String> mevcut = <String>[];
-    for (final int kod in tamAd.runes) {
+    for (final int kod in Numeroloji.bitisikHarfleriAc(tamAd).runes) {
       final String k = String.fromCharCode(kod);
       if (Numeroloji.harfDegeri(k) != null) {
         mevcut.add(k);

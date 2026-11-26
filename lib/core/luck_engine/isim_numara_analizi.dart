@@ -76,7 +76,7 @@ abstract final class NumaraAnalizcisi {
   /// Örnek: "0532 123 45 67" → 38 → 11.
   static NumaraAnalizi? analizEt(String metin) {
     final List<SembolDegeri> semboller = <SembolDegeri>[];
-    for (final int kod in metin.runes) {
+    for (final int kod in Numeroloji.bitisikHarfleriAc(metin).runes) {
       final String k = String.fromCharCode(kod);
       final int? rakam = int.tryParse(k);
       if (rakam != null && k.length == 1) {

@@ -88,23 +88,58 @@ class SayiHesabi {
 abstract final class Numeroloji {
   /// Harf → değer tablosu (küçük harf anahtarlı).
   ///
-  /// Latin a-z sırası 1..9 döngüsüyle değer alır; Türkçe ve şapkalı
-  /// harfler Latin karşılıklarına eşlenir.
+  /// Latin a-z sırası 1..9 döngüsüyle değer alır; Türkçe ve öbür aksanlı
+  /// Latin harfler (é, ñ, ø, ł …) Latin karşılıklarına eşlenir.
   static final Map<String, int> _harfTablosu = _tabloKur();
 
-  /// Sesli harfler (küçük harf). Y bilinçli olarak dışarıdadır.
-  static const Set<String> _sesliler = <String>{
-    'a',
-    'e',
-    'ı',
-    'i',
-    'o',
-    'ö',
-    'u',
-    'ü',
-    'â',
-    'î',
-    'û',
+  /// Latin temel sesliler. Y bilinçli olarak dışarıdadır: iki dilde de
+  /// hep sessiz sayılır (D6; KARARLAR 2026-11-26, soru 5).
+  static const Set<String> _temelSesliler = <String>{'a', 'e', 'i', 'o', 'u'};
+
+  /// Aksanlı ya da Türkçe harf → Latin karşılığı (küçük harf).
+  ///
+  /// Harf, karşılığının değerini ve sesli/sessiz durumunu alır. Kapsam:
+  /// Latin-1 Ek ve Latin Genişletilmiş-A'daki adlarda geçen harfler ile
+  /// Rumence virgüllü ș ve ț. Birden çok harfe açılanlar (ß, æ …) burada
+  /// değil, [_bitisikHarfler]dedir.
+  static const Map<String, String> _latinKarsiliklar = <String, String>{
+    'a': 'àáâãäåāăą',
+    'c': 'çćĉċč',
+    'd': 'ďđð',
+    'e': 'èéêëēĕėęě',
+    'g': 'ĝğġģ',
+    'h': 'ĥħ',
+    'i': 'ìíîïĩīĭįı',
+    'j': 'ĵ',
+    'k': 'ķ',
+    'l': 'ĺļľŀł',
+    'n': 'ñńņňŉ',
+    'o': 'òóôõöøōŏő',
+    'r': 'ŕŗř',
+    's': 'śŝşšș',
+    't': 'ţťŧț',
+    'u': 'ùúûüũūŭůűų',
+    'w': 'ŵ',
+    'y': 'ýÿŷ',
+    'z': 'źżž',
+  };
+
+  /// Birden çok Latin harfe açılan harfler (küçük harf). Her harf ayrı
+  /// değer alır: "Straße" = "Strasse".
+  static const Map<String, String> _bitisikHarfler = <String, String>{
+    'ß': 'ss',
+    'æ': 'ae',
+    'œ': 'oe',
+    'þ': 'th',
+    'ĳ': 'ij',
+  };
+
+  /// Sesli harfler (küçük harf): temel sesliler ve onlara eşlenen bütün
+  /// aksanlı harfler (ı, ö, ü, é, ø …).
+  static final Set<String> _sesliler = <String>{
+    ..._temelSesliler,
+    for (final String temel in _temelSesliler)
+      ..._latinKarsiliklar[temel]!.split(''),
   };
 
   static Map<String, int> _tabloKur() {
@@ -116,22 +151,35 @@ abstract final class Numeroloji {
       tablo[String.fromCharCode(aKodu + i)] =
           i % EngineConfig.numerolojiTabani + 1;
     }
-    // Türkçe ve şapkalı harfler Latin karşılığının değerini alır.
-    const Map<String, String> karsiliklar = <String, String>{
-      'ç': 'c',
-      'ğ': 'g',
-      'ı': 'i',
-      'ö': 'o',
-      'ş': 's',
-      'ü': 'u',
-      'â': 'a',
-      'î': 'i',
-      'û': 'u',
-    };
-    karsiliklar.forEach((String tr, String latin) {
-      tablo[tr] = tablo[latin]!;
+    // Türkçe ve aksanlı harfler Latin karşılığının değerini alır.
+    _latinKarsiliklar.forEach((String latin, String harfler) {
+      for (final String h in harfler.split('')) {
+        tablo[h] = tablo[latin]!;
+      }
     });
     return tablo;
+  }
+
+  /// [metin]deki bitişik harfleri (ß, æ, œ, þ, ĳ; büyükleri dahil) Latin
+  /// harf dizilerine açar; öbür karakterlere dokunmaz.
+  ///
+  /// Harf harf gezen bütün hesaplar metni önce buradan geçirir; böylece
+  /// "Straße" ile "Strasse" aynı sayıları verir.
+  static String bitisikHarfleriAc(String metin) {
+    final StringBuffer b = StringBuffer();
+    for (final int kod in metin.runes) {
+      final String k = String.fromCharCode(kod);
+      final String? acik = _bitisikHarfler[k.toLowerCase()];
+      if (acik == null) {
+        b.write(k);
+      } else if (k == k.toLowerCase()) {
+        b.write(acik);
+      } else {
+        // Büyük bitişik harf: yalnız ilk harf büyük ("Æsa" → "Aesa").
+        b.write(acik[0].toUpperCase() + acik.substring(1));
+      }
+    }
+    return b.toString();
   }
 
   /// Tek karakteri Türkçe kurallarla küçük harfe çevirir.
@@ -263,9 +311,9 @@ abstract final class Numeroloji {
   ) {
     final StringBuffer kaynak = StringBuffer();
     final List<int> terimler = <int>[];
-    // Runes üzerinden gezilir ki çok baytlı Türkçe harfler bölünmesin;
-    // boşluk, tire, kesme ve birleşik noktalar harf olmadığı için atlanır.
-    for (final int kod in tamAd.runes) {
+    // Runes üzerinden gezilir ki çok baytlı harfler bölünmesin; boşluk,
+    // tire, kesme ve birleşik işaretler harf olmadığı için atlanır.
+    for (final int kod in bitisikHarfleriAc(tamAd).runes) {
       final String karakter = String.fromCharCode(kod);
       final int? deger = harfDegeri(karakter);
       if (deger == null || !dahilMi(karakter)) {

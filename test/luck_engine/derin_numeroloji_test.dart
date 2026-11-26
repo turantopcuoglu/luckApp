@@ -52,6 +52,30 @@ void main() {
     });
   });
 
+  group('aksanlı ve bitişik harfler', () {
+    test('dağılım, karmik ders ve taşlar aksansız yazılışla aynı', () {
+      const Map<String, String> adlar = <String, String>{
+        'Élodie Straße': 'Elodie Strasse',
+        'Søren Æsir': 'Soren Aesir',
+      };
+      adlar.forEach((String a, String d) {
+        expect(DerinNumeroloji.sayiDagilimi(a), DerinNumeroloji.sayiDagilimi(d));
+        expect(DerinNumeroloji.karmikDersler(a), DerinNumeroloji.karmikDersler(d));
+        expect(DerinNumeroloji.dengeSayisi(a), DerinNumeroloji.dengeSayisi(d));
+        expect(
+          DerinNumeroloji.temelTasi(a)!.deger,
+          DerinNumeroloji.temelTasi(d)!.deger,
+        );
+        expect(
+          DerinNumeroloji.tepeTasi(a)!.deger,
+          DerinNumeroloji.tepeTasi(d)!.deger,
+        );
+      });
+      // Temel taşı harfi aksanıyla gösterilir.
+      expect(DerinNumeroloji.temelTasi('Élodie')!.harf, 'É');
+    });
+  });
+
   group('isim dağılımı', () {
     test('Ayşe Yılmaz: sayı dağılımı, karmik dersler, gizli tutku', () {
       // A1 Y7 Ş1 E5 Y7 I9 L3 M4 A1 Z8.
