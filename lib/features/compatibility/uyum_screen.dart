@@ -166,7 +166,7 @@ class UyumScreen extends ConsumerWidget {
                     title: Text(kisi.ad),
                     subtitle: Text(
                       l.uyumKisiOzeti(
-                        kisi.rol.etiket,
+                        rolEtiketi(l, kisi.rol),
                         kisi.profil.burc.etiket,
                         kisi.profil.yasamYolu.deger,
                       ),
@@ -196,6 +196,15 @@ final AutoDisposeStateProvider<DateTime> kisiDogumProvider =
     StateProvider.autoDispose<DateTime>(
       (Ref ref) => OnboardingConfig.varsayilanDogumTarihi,
     );
+
+/// [rol]ün kullanıcıya gösterilen adı ([l] dilinde). Kayıtta rolün
+/// `name`'i tutulur; etiket yalnız ekranda çözülür.
+String rolEtiketi(AppLocalizations l, KisiRolu rol) => switch (rol) {
+  KisiRolu.partner => l.uyumRolPartner,
+  KisiRolu.aday => l.uyumRolAday,
+  KisiRolu.arkadas => l.uyumRolArkadas,
+  KisiRolu.aile => l.uyumRolAile,
+};
 
 /// Form durumu: seçili rol.
 final AutoDisposeStateProvider<KisiRolu> kisiRolProvider =
@@ -288,7 +297,7 @@ class _KisiEkleScreenState extends ConsumerState<KisiEkleScreen> {
                     children: <Widget>[
                       for (final KisiRolu r in KisiRolu.values)
                         ChoiceChip(
-                          label: Text(r.etiket),
+                          label: Text(rolEtiketi(l, r)),
                           selected: r == rol,
                           onSelected: (_) =>
                               ref.read(kisiRolProvider.notifier).state = r,

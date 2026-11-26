@@ -487,6 +487,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilYasamYolu => 'Life Path';
 
   @override
+  String profilYasamYoluAnlami(String lakap, String doga) {
+    return '$lakap: your nature holds $doga.';
+  }
+
+  @override
   String get profilIsimSayisi => 'Name';
 
   @override
@@ -1001,6 +1006,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uyumRolEtiketi => 'Who are they to you?';
+
+  @override
+  String get uyumRolPartner => 'My partner';
+
+  @override
+  String get uyumRolAday => 'Someone I like';
+
+  @override
+  String get uyumRolArkadas => 'My friend';
+
+  @override
+  String get uyumRolAile => 'Family';
 
   @override
   String get uyumKaydet => 'Check compatibility';

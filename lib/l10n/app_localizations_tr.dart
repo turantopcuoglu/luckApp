@@ -480,6 +480,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profilYasamYolu => 'Yaşam Yolu';
 
   @override
+  String profilYasamYoluAnlami(String lakap, String doga) {
+    return '$lakap: doğanda $doga var.';
+  }
+
+  @override
   String get profilIsimSayisi => 'İsim';
 
   @override
@@ -991,6 +996,18 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get uyumRolEtiketi => 'Senin için kim?';
+
+  @override
+  String get uyumRolPartner => 'Partnerim';
+
+  @override
+  String get uyumRolAday => 'Hoşlandığım biri';
+
+  @override
+  String get uyumRolArkadas => 'Arkadaşım';
+
+  @override
+  String get uyumRolAile => 'Ailemden';
 
   @override
   String get uyumKaydet => 'Uyumu hesapla';

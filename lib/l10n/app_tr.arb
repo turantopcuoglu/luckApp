@@ -333,6 +333,14 @@
   "@profilAciklama": {"description": "Profil başlığının altındaki açıklama."},
   "profilYasamYolu": "Yaşam Yolu",
   "@profilYasamYolu": {"description": "Sayı karosu etiketi."},
+  "profilYasamYoluAnlami": "{lakap}: doğanda {doga} var.",
+  "@profilYasamYoluAnlami": {
+    "description": "Yaşam yolu karosuna dokununca açılan anlam: sayının lakabı ve doğası.",
+    "placeholders": {
+      "lakap": {"type": "String", "example": "Öncü"},
+      "doga": {"type": "String", "example": "başlatma gücü"}
+    }
+  },
   "profilIsimSayisi": "İsim",
   "@profilIsimSayisi": {"description": "Sayı karosu etiketi: isim sayısı."},
   "profilRuhSayisi": "Ruh",
@@ -708,6 +716,14 @@
   "@uyumDogumEtiketi": {"description": "Kişi formu doğum tarihi etiketi."},
   "uyumRolEtiketi": "Senin için kim?",
   "@uyumRolEtiketi": {"description": "Kişi formu rol etiketi."},
+  "uyumRolPartner": "Partnerim",
+  "@uyumRolPartner": {"description": "Kişi rolü: sevgili ya da eş."},
+  "uyumRolAday": "Hoşlandığım biri",
+  "@uyumRolAday": {"description": "Kişi rolü: hoşlanılan ya da yeni tanışılan kişi."},
+  "uyumRolArkadas": "Arkadaşım",
+  "@uyumRolArkadas": {"description": "Kişi rolü: arkadaş."},
+  "uyumRolAile": "Ailemden",
+  "@uyumRolAile": {"description": "Kişi rolü: aile üyesi."},
   "uyumKaydet": "Uyumu hesapla",
   "@uyumKaydet": {"description": "Kişi formu kaydet butonu."},
   "uyumAdBos": "Devam etmek için adı yazmalısın.",

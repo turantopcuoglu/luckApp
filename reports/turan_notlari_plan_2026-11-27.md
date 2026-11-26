@@ -171,7 +171,7 @@ Test eklenecek: aksanlı adlar, tamamen Latin dışı ad, tireli ve kesmeli ad, 
 | 4 | Araçlar (isim, numara, bebek ismi), doğum haritası, uyum | Yok | E9 |
 | 5 | Birleştiricilerdeki satır içi Türkçe (`'Özün · …'`, `'… burcu · …'`, `'Birlikte'`, `'Tavsiye'`) | Türkçe | E8 (E2 notu) |
 | 6 | Ekranlarda motor `etiket` okumaları | 28 yer (`.etiket`/`.alan`); ör. `uyum_screen.dart:169` | E8–E9 sırasında paket üzerinden |
-| 7 | Ekranda elle yazılmış Türkçe | `kader_profili_screen.dart:349` ("doğanda … var"), `kayitli_kisi.dart` rol etiketleri ("Hoşlandığım biri", "Arkadaşım") | Yeni küçük ARB işi (E6c) |
+| 7 | Ekranda elle yazılmış Türkçe | **Tamam (E6c)**: rol etiketleri `uyumRol*`, kalıp `profilYasamYoluAnlami`. Lakap ve doğa içeriği hâlâ Türkçe (E8) | E6c |
 | 8 | Yasal metin gövdeleri, `LegalConfig.sonGuncelleme` ("11 Kasım 2026" düz metin) | Türkçe | E9 + hukukçu (K5) |
 | 9 | Paylaşım görselleri | Çerçeve ARB'den geliyor; görseldeki okuma metni içerik katmanından, Türkçe | E7–E9 bitince kendiliğinden; E12'de görsel kontrol |
 | 10 | Bildirimler | ARB'de tamam. Dil değişince yeniden planlanmıyor (E5 notu) | E12 |
@@ -205,7 +205,7 @@ Her satır bir oturum (`CLAUDE.md` kural 1: tek sistem).
 | 4 | K8-2: dünya geneli doğum saat dilimi + yabancı yükselen testleri **— bitti** | 1 |
 | 5 | K8-3/4: şehir verisi + kayıt göçü **— bitti** (K8-4 `10ac847`; GeoNames verisi K8-5 commit'inde) | Soru 2 |
 | 6 | K8-5: ülke/şehir arayüzü **— bitti, görsel onay Turan'da** (`reports/k8_4_5_rapor.md`, sorular A–E) | 5; görsel kontrol Turan |
-| 7 | E6c, E6d: kalan Türkçe arayüz ve fiyat biçimi | — |
+| 7 | E6c, E6d: kalan Türkçe arayüz ve fiyat biçimi **— E6c bitti** (rol etiketleri ve yaşam yolu kalıbı ARB'de; Türkçe metin aynı) | — |
 | 8 | E7a–E7e: İngilizce günlük okuma | 1, 2 |
 | 9 | E8, E9: profil, rapor, araçlar, harita, uyum, yasal taslak | 8; K5 |
 | 10 | E11, E12: mağaza ve son kontrol; ardından `ingilizceYayinda = true` | K4; tüm eksikler |

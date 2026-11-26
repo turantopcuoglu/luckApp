@@ -302,7 +302,11 @@ class _SayiKarolari extends ConsumerWidget {
     // Her sayının dokununca açılan anlamı (hesap adımları gösterilmez).
     final List<(String, SayiHesabi?, String Function(int))> karolar =
         <(String, SayiHesabi?, String Function(int))>[
-          (l.profilYasamYolu, kader.yasamYolu, _yasamYoluAnlami),
+          (
+            l.profilYasamYolu,
+            kader.yasamYolu,
+            (int deger) => _yasamYoluAnlami(l, deger),
+          ),
           (
             l.profilIsimSayisi,
             kader.isimSayisi,
@@ -343,10 +347,10 @@ class _SayiKarolari extends ConsumerWidget {
   }
 
   /// Yaşam yolu sayısının anlamı: lakap ve doğa.
-  static String _yasamYoluAnlami(int deger) {
+  static String _yasamYoluAnlami(AppLocalizations l, int deger) {
     final String lakap = SayiMetinleri.yasamYolu[deger]?.lakap ?? '';
     final String? doga = YorumYonu.karakterler[deger]?.doga;
-    return doga == null ? lakap : '$lakap: doğanda $doga var.';
+    return doga == null ? lakap : l.profilYasamYoluAnlami(lakap, doga);
   }
 
   /// [metinler] haritasından sayının anlamını bulan fonksiyon.

@@ -956,6 +956,12 @@ abstract class AppLocalizations {
   /// **'Yaşam Yolu'**
   String get profilYasamYolu;
 
+  /// Yaşam yolu karosuna dokununca açılan anlam: sayının lakabı ve doğası.
+  ///
+  /// In tr, this message translates to:
+  /// **'{lakap}: doğanda {doga} var.'**
+  String profilYasamYoluAnlami(String lakap, String doga);
+
   /// Sayı karosu etiketi: isim sayısı.
   ///
   /// In tr, this message translates to:
@@ -1849,6 +1855,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Senin için kim?'**
   String get uyumRolEtiketi;
+
+  /// Kişi rolü: sevgili ya da eş.
+  ///
+  /// In tr, this message translates to:
+  /// **'Partnerim'**
+  String get uyumRolPartner;
+
+  /// Kişi rolü: hoşlanılan ya da yeni tanışılan kişi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hoşlandığım biri'**
+  String get uyumRolAday;
+
+  /// Kişi rolü: arkadaş.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arkadaşım'**
+  String get uyumRolArkadas;
+
+  /// Kişi rolü: aile üyesi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ailemden'**
+  String get uyumRolAile;
 
   /// Kişi formu kaydet butonu.
   ///

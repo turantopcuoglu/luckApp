@@ -3,23 +3,21 @@ import 'package:hive/hive.dart';
 import '../luck_engine/luck_engine.dart';
 
 /// Uyum ekranında kayıtlı kişinin kullanıcıya göre rolü.
+///
+/// Kayıtta `name` tutulur. Görünen ad dile göre ARB'den gelir
+/// (`uyum_screen.dart` içindeki `rolEtiketi`).
 enum KisiRolu {
   /// Sevgili / eş.
-  partner(etiket: 'Partnerim'),
+  partner,
 
   /// Hoşlanılan / tanışılan kişi.
-  aday(etiket: 'Hoşlandığım biri'),
+  aday,
 
   /// Arkadaş.
-  arkadas(etiket: 'Arkadaşım'),
+  arkadas,
 
   /// Aile üyesi.
-  aile(etiket: 'Ailemden');
-
-  const KisiRolu({required this.etiket});
-
-  /// Kullanıcıya gösterilecek Türkçe etiket.
-  final String etiket;
+  aile,
 }
 
 /// Uyum hesabı için kaydedilmiş kişi.
@@ -37,14 +35,14 @@ class KayitliKisi {
 
   /// Hive map'inden kişi kurar.
   factory KayitliKisi.fromMap(Map<dynamic, dynamic> map) => KayitliKisi(
-        id: map[_id] as String,
-        ad: map[_ad] as String,
-        dogumTarihi: DateTime.parse(map[_dogum] as String),
-        rol: KisiRolu.values.firstWhere(
-          (KisiRolu r) => r.name == map[_rol],
-          orElse: () => KisiRolu.arkadas,
-        ),
-      );
+    id: map[_id] as String,
+    ad: map[_ad] as String,
+    dogumTarihi: DateTime.parse(map[_dogum] as String),
+    rol: KisiRolu.values.firstWhere(
+      (KisiRolu r) => r.name == map[_rol],
+      orElse: () => KisiRolu.arkadas,
+    ),
+  );
 
   static const String _id = 'id';
   static const String _ad = 'ad';
@@ -72,11 +70,11 @@ class KayitliKisi {
 
   /// Hive'a yazılacak map.
   Map<String, dynamic> toMap() => <String, dynamic>{
-        _id: id,
-        _ad: ad,
-        _dogum: dogumTarihi.toIso8601String(),
-        _rol: rol.name,
-      };
+    _id: id,
+    _ad: ad,
+    _dogum: dogumTarihi.toIso8601String(),
+    _rol: rol.name,
+  };
 }
 
 /// kisiler kutusu üzerinde okuma/yazma.
@@ -88,10 +86,9 @@ class KisiRepository {
 
   /// Tüm kişiler, kimlik (ekleme zamanı) sırasıyla.
   List<KayitliKisi> tumu() {
-    final List<KayitliKisi> kisiler = _box.values
-        .map(KayitliKisi.fromMap)
-        .toList()
-      ..sort((KayitliKisi a, KayitliKisi b) => a.id.compareTo(b.id));
+    final List<KayitliKisi> kisiler =
+        _box.values.map(KayitliKisi.fromMap).toList()
+          ..sort((KayitliKisi a, KayitliKisi b) => a.id.compareTo(b.id));
     return kisiler;
   }
 
