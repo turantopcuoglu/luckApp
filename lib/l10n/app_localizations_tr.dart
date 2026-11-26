@@ -71,7 +71,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get ayarlarBildirimAciklama =>
-      'Bildirimleri kapatmak için telefonunun Ayarlar > Uygulamalar > Kader > Bildirimler bölümünü kullanabilirsin.';
+      'Bildirimleri kapatmak için telefonunun Ayarlar > Uygulamalar > Solenia > Bildirimler bölümünü kullanabilirsin.';
 
   @override
   String get ayarlarBildirimleriTazele => 'Bildirimleri yeniden kur';
@@ -128,11 +128,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String ayarlarSurum(String surum) {
-    return 'Kader $surum';
+    return 'Solenia $surum';
   }
 
   @override
-  String get onboardingUygulamaAdi => 'Kader';
+  String get onboardingUygulamaAdi => 'Solenia';
 
   @override
   String get onboardingSlogan => 'Şansın her sabah yeniden yazılır.';
@@ -298,7 +298,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get gunlukAksamAciklama =>
-      'Bugün gerçekten şanslı mıydın? Cevabın Kader\'in sana olan isabetini takip etmesine yardım eder.';
+      'Bugün gerçekten şanslı mıydın? Cevabın Solenia\'nın sana olan isabetini takip etmesine yardım eder.';
 
   @override
   String get gunlukAksamButon => 'Cevapla';
@@ -432,7 +432,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paylasimPaylas => 'Paylaş';
 
   @override
-  String get paylasimMarka => 'Kader ✨';
+  String get paylasimMarka => 'Solenia ✨';
 
   @override
   String get paylasimGenelSkor => 'GÜNÜN ŞANS PUANI';
@@ -441,7 +441,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paylasimMetni => 'Bugünkü kaderim ✨';
 
   @override
-  String get paylasimAracDavet => 'Sen de hesapla: Kader uygulaması';
+  String get paylasimAracDavet => 'Sen de hesapla: Solenia uygulaması';
 
   @override
   String get paylasimKartiniPaylas => 'Kartını paylaş';
@@ -645,7 +645,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get tamAdVazgec => 'Vazgeç';
 
   @override
-  String get premiumBaslik => 'Kader Premium';
+  String get premiumBaslik => 'Solenia Premium';
 
   @override
   String get premiumAltBaslik =>

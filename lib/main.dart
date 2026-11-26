@@ -164,7 +164,7 @@ class KaderApp extends ConsumerWidget {
     // yeni günün kartı gösterilir.
     return GunDevriGozcusu(
       child: MaterialApp(
-        title: 'Kader',
+        title: AppMarka.ad,
         debugShowCheckedModeBanner: false,
         locale: dilLocale(ref.watch(uygulamaDiliProvider)),
         localizationsDelegates: AppLocalizations.localizationsDelegates,

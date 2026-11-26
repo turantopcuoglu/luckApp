@@ -20,7 +20,7 @@ class YasalBolum {
 abstract final class YasalMetinler {
   /// Onboarding uyarısının maddeleri.
   static const List<String> uyariMaddeleri = <String>[
-    'Kader bir eğlence ve kendini keşfetme uygulamasıdır. Yorumlar '
+    'Solenia bir eğlence ve kendini keşfetme uygulamasıdır. Yorumlar '
         'numeroloji ve astroloji geleneğinden esinlenen hesaplarla '
         've önceden yazılmış metinlerle üretilir; bilimsel bir öngörü '
         'değildir ve geleceği bildiği iddiasında bulunmaz.',
@@ -28,7 +28,7 @@ abstract final class YasalMetinler {
         'kararlarını yalnızca bu yorumlara dayanarak verme. Böyle '
         'konularda bir uzmana danış.',
     'Adın, doğum tarihin ve verdiğin cevaplar yalnızca bu cihazda '
-        'saklanır; Kader bunları bir sunucuya göndermez.',
+        'saklanır; Solenia bunları bir sunucuya göndermez.',
     'Uygulama ücretsiz sürümde reklam gösterir. Reklam ortağımız Google '
         'AdMob, reklam kimliğin gibi bazı cihaz verilerini işleyebilir; '
         'bölgene göre senden ayrıca izin istenir.',
@@ -44,14 +44,14 @@ abstract final class YasalMetinler {
 
   /// Uygulama içinde her yerde kullanılabilecek tek satırlık not.
   static const String kisaNot =
-      'Kader eğlence amaçlıdır; yorumlar bilimsel öngörü değildir.';
+      'Solenia eğlence amaçlıdır; yorumlar bilimsel öngörü değildir.';
 
   /// Gizlilik Politikası.
   static const List<YasalBolum> gizlilikPolitikasi = <YasalBolum>[
     YasalBolum(
       baslik: 'Kapsam',
       metin: 'Bu Gizlilik Politikası, ${LegalConfig.gelistiriciAdi} '
-          '("biz") tarafından geliştirilen Kader mobil uygulamasının '
+          '("biz") tarafından geliştirilen Solenia mobil uygulamasının '
           '("Uygulama") hangi kişisel verileri nasıl işlediğini açıklar. '
           '6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve '
           'uygulanabildiği ölçüde Avrupa Birliği Genel Veri Koruma Tüzüğü '
@@ -114,7 +114,7 @@ abstract final class YasalMetinler {
     ),
     YasalBolum(
       baslik: 'Çocukların gizliliği',
-      metin: 'Kader 13 yaşın altındaki çocuklara yönelik değildir ve '
+      metin: 'Solenia 13 yaşın altındaki çocuklara yönelik değildir ve '
           'bilerek 13 yaşından küçüklerden veri toplamaz.',
     ),
     YasalBolum(
@@ -140,13 +140,13 @@ abstract final class YasalMetinler {
   static const List<YasalBolum> kullanimKosullari = <YasalBolum>[
     YasalBolum(
       baslik: 'Kabul',
-      metin: 'Kader\'i kullanarak bu Kullanım Koşulları\'nı kabul etmiş '
+      metin: 'Solenia\'yı kullanarak bu Kullanım Koşulları\'nı kabul etmiş '
           'olursun. Kabul etmiyorsan uygulamayı kullanmamalısın. Son '
           'güncelleme: ${LegalConfig.sonGuncelleme}.',
     ),
     YasalBolum(
       baslik: 'Hizmetin niteliği: yalnızca eğlence',
-      metin: 'Kader\'deki skorlar, yorumlar, uyum sonuçları, şanslı saat, '
+      metin: 'Solenia\'daki skorlar, yorumlar, uyum sonuçları, şanslı saat, '
           'renk ve sayılar; numeroloji ve astroloji geleneklerinden '
           'esinlenen, deterministik bir algoritma ve önceden yazılmış '
           'metinlerle üretilen EĞLENCE içerikleridir. Bilimsel bir '
@@ -156,7 +156,7 @@ abstract final class YasalMetinler {
       baslik: 'Tavsiye değildir',
       metin: 'Uygulamadaki hiçbir içerik tıbbi, psikolojik, finansal, '
           'yatırım, hukuki veya profesyonel tavsiye değildir. Bu alanlardaki '
-          'kararlarını Kader\'e dayanarak verme; gerektiğinde yetkili bir '
+          'kararlarını Solenia\'ya dayanarak verme; gerektiğinde yetkili bir '
           'uzmana başvur. İçeriklere dayanarak alınan kararlardan doğan '
           'sonuçlardan ${LegalConfig.gelistiriciAdi} sorumlu tutulamaz.',
     ),

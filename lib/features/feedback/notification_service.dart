@@ -7,6 +7,7 @@ import 'package:timezone/data/latest.dart' as tz_veri;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import 'feedback_config.dart';
 
@@ -143,7 +144,7 @@ class NotificationService {
       );
       await _eklenti.zonedSchedule(
         FeedbackConfig.aksamBildirimId,
-        'Kader',
+        AppMarka.ad,
         metinler.geriBildirimAksamSorusu,
         aksam,
         detaylar,
@@ -163,7 +164,7 @@ class NotificationService {
         ).add(Duration(days: i));
         await _eklenti.zonedSchedule(
           FeedbackConfig.sabahBildirimBaslangicId + i,
-          'Kader',
+          AppMarka.ad,
           sabahMetni(hedef, metinler),
           tz.TZDateTime.from(hedef, tz.local),
           detaylar,

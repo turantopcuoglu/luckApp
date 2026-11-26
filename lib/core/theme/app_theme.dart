@@ -4,6 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 import 'app_dimens.dart';
 
+/// Uygulamanın görünen markası.
+///
+/// 26 Kasım 2026 kararı (STUDIO/KARARLAR.md): ad **Solenia**. Kod içindeki
+/// `kader` adlı paket, sınıf ve klasörler bilerek değiştirilmedi; paket
+/// kimliği `com.turan.kader` yayından önce Turan'ın kararıyla değişecek.
+abstract final class AppMarka {
+  /// Bildirim başlığı ve görev değiştiricide görünen uygulama adı.
+  static const String ad = 'Solenia';
+}
+
 /// Uygulamanın tek (dark) temasını üreten sınıf.
 ///
 /// Tema `MaterialApp.theme`'e [AppTheme.dark] ile bağlanır; renkler

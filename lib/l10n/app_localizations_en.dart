@@ -71,7 +71,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ayarlarBildirimAciklama =>
-      'To turn notifications off, go to Settings > Apps > Kader > Notifications on your phone.';
+      'To turn notifications off, go to Settings > Apps > Solenia > Notifications on your phone.';
 
   @override
   String get ayarlarBildirimleriTazele => 'Set up notifications again';
@@ -129,11 +129,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String ayarlarSurum(String surum) {
-    return 'Kader $surum';
+    return 'Solenia $surum';
   }
 
   @override
-  String get onboardingUygulamaAdi => 'Kader';
+  String get onboardingUygulamaAdi => 'Solenia';
 
   @override
   String get onboardingSlogan => 'Your luck is rewritten every morning.';
@@ -298,7 +298,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gunlukAksamAciklama =>
-      'Were you really lucky today? Your answer helps Kader keep track of how accurate it is for you.';
+      'Were you really lucky today? Your answer helps Solenia keep track of how accurate it is for you.';
 
   @override
   String get gunlukAksamButon => 'Answer';
@@ -439,7 +439,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paylasimPaylas => 'Share';
 
   @override
-  String get paylasimMarka => 'Kader ✨';
+  String get paylasimMarka => 'Solenia ✨';
 
   @override
   String get paylasimGenelSkor => 'TODAY\'S LUCK SCORE';
@@ -448,7 +448,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paylasimMetni => 'My destiny today ✨';
 
   @override
-  String get paylasimAracDavet => 'Calculate yours: the Kader app';
+  String get paylasimAracDavet => 'Calculate yours: the Solenia app';
 
   @override
   String get paylasimKartiniPaylas => 'Share your card';
@@ -652,7 +652,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tamAdVazgec => 'Cancel';
 
   @override
-  String get premiumBaslik => 'Kader Premium';
+  String get premiumBaslik => 'Solenia Premium';
 
   @override
   String get premiumAltBaslik =>

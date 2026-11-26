@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// Bildirimlerin nasıl kapatılacağı.
   ///
   /// In tr, this message translates to:
-  /// **'Bildirimleri kapatmak için telefonunun Ayarlar > Uygulamalar > Kader > Bildirimler bölümünü kullanabilirsin.'**
+  /// **'Bildirimleri kapatmak için telefonunun Ayarlar > Uygulamalar > Solenia > Bildirimler bölümünü kullanabilirsin.'**
   String get ayarlarBildirimAciklama;
 
   /// Bildirim planlarını yeniden kurma satırı.
@@ -329,13 +329,13 @@ abstract class AppLocalizations {
   /// Ekranın altındaki sürüm satırı.
   ///
   /// In tr, this message translates to:
-  /// **'Kader {surum}'**
+  /// **'Solenia {surum}'**
   String ayarlarSurum(String surum);
 
   /// Karşılama ekranı başlığı: uygulama adı (çevrilmez).
   ///
   /// In tr, this message translates to:
-  /// **'Kader'**
+  /// **'Solenia'**
   String get onboardingUygulamaAdi;
 
   /// Karşılama sloganı.
@@ -635,7 +635,7 @@ abstract class AppLocalizations {
   /// Akşam geri bildirim kartının açıklaması.
   ///
   /// In tr, this message translates to:
-  /// **'Bugün gerçekten şanslı mıydın? Cevabın Kader\'in sana olan isabetini takip etmesine yardım eder.'**
+  /// **'Bugün gerçekten şanslı mıydın? Cevabın Solenia\'nın sana olan isabetini takip etmesine yardım eder.'**
   String get gunlukAksamAciklama;
 
   /// Akşam kartından geri bildirim ekranını açan buton.
@@ -869,7 +869,7 @@ abstract class AppLocalizations {
   /// Story kartının köşesindeki uygulama imzası (çevrilmez).
   ///
   /// In tr, this message translates to:
-  /// **'Kader ✨'**
+  /// **'Solenia ✨'**
   String get paylasimMarka;
 
   /// Story kartındaki skor etiketi (büyük harf).
@@ -887,7 +887,7 @@ abstract class AppLocalizations {
   /// Keşfet aracı kartının altındaki davet.
   ///
   /// In tr, this message translates to:
-  /// **'Sen de hesapla: Kader uygulaması'**
+  /// **'Sen de hesapla: Solenia uygulaması'**
   String get paylasimAracDavet;
 
   /// Paylaşım ekranının başlığı.
@@ -1247,7 +1247,7 @@ abstract class AppLocalizations {
   /// Paywall başlığı.
   ///
   /// In tr, this message translates to:
-  /// **'Kader Premium'**
+  /// **'Solenia Premium'**
   String get premiumBaslik;
 
   /// Paywall alt başlığı.
