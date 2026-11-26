@@ -176,7 +176,7 @@ Test eklenecek: aksanlı adlar, tamamen Latin dışı ad, tireli ve kesmeli ad, 
 | 9 | Paylaşım görselleri | Çerçeve ARB'den geliyor; görseldeki okuma metni içerik katmanından, Türkçe | E7–E9 bitince kendiliğinden; E12'de görsel kontrol |
 | 10 | Bildirimler | ARB'de tamam. Dil değişince yeniden planlanmıyor (E5 notu) | E12 |
 | 11 | Tarih biçimi | ARB desenleri tamam (`tarihMetni`). İçerikteki tarih ("14 Mart doğumlusun") Türkçe ay adıyla | E7a (ay adları pakete) |
-| 12 | **Fiyat biçimi** | `paywall_screen.dart:411–418` aylık karşılığı elle biçimliyor: metinde virgül varsa ondalığı virgül sayıyor. "$1,299.99" gibi binlik ayırıcılı fiyatta yanlış sonuç verir | Mağazanın para birimi koduyla `NumberFormat.simpleCurrency(locale)`. Küçük `features/premium` işi |
+| 12 | **Fiyat biçimi** | **Tamam (E6d)**: aylık karşılık mağazanın para birimi koduyla `NumberFormat.currency` (dil: uygulama dili, sembol: mağaza metninden). "$1,299.99" artık "$108.33" verir | E6d |
 | 13 | Doğum yeri | Yalnız Türkiye illeri | Başlık 1 (E10 öne alındı) |
 | 14 | Numeroloji: aksanlı adlar, Y kuralı | 3.1 | Küçük `luck_engine` işi + Soru 5 |
 | 15 | Uygulama adı ve mağaza metni | "Kader"; K4 açık; İngilizce mağaza metni yok | K4 + E11 |
@@ -205,7 +205,7 @@ Her satır bir oturum (`CLAUDE.md` kural 1: tek sistem).
 | 4 | K8-2: dünya geneli doğum saat dilimi + yabancı yükselen testleri **— bitti** | 1 |
 | 5 | K8-3/4: şehir verisi + kayıt göçü **— bitti** (K8-4 `10ac847`; GeoNames verisi K8-5 commit'inde) | Soru 2 |
 | 6 | K8-5: ülke/şehir arayüzü **— bitti, görsel onay Turan'da** (`reports/k8_4_5_rapor.md`, sorular A–E) | 5; görsel kontrol Turan |
-| 7 | E6c, E6d: kalan Türkçe arayüz ve fiyat biçimi **— E6c bitti** (rol etiketleri ve yaşam yolu kalıbı ARB'de; Türkçe metin aynı) | — |
+| 7 | E6c, E6d: kalan Türkçe arayüz ve fiyat biçimi **— bitti** (E6c: rol etiketleri ve yaşam yolu kalıbı ARB'de; E6d: fiyat biçimi `FiyatBicimi`) | — |
 | 8 | E7a–E7e: İngilizce günlük okuma | 1, 2 |
 | 9 | E8, E9: profil, rapor, araçlar, harita, uyum, yasal taslak | 8; K5 |
 | 10 | E11, E12: mağaza ve son kontrol; ardından `ingilizceYayinda = true` | K4; tüm eksikler |

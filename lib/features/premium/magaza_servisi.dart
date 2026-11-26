@@ -17,6 +17,7 @@ class AbonelikPlani {
     required this.hamFiyat,
     required this.yillikMi,
     this.denemeGunu,
+    this.paraBirimiKodu,
     this.ham,
   });
 
@@ -34,6 +35,9 @@ class AbonelikPlani {
 
   /// Varsa ücretsiz deneme süresi (gün).
   final int? denemeGunu;
+
+  /// Fiyatın ISO 4217 para birimi kodu ("TRY"); bilinmiyorsa null.
+  final String? paraBirimiKodu;
 
   /// Mağazaya özgü ham ürün nesnesi (satın alma için).
   final Object? ham;
@@ -237,6 +241,7 @@ class PlayMagazaServisi implements MagazaServisi {
     int? denemeGunu;
     String fiyat = secilen.price;
     double hamFiyat = secilen.rawPrice;
+    String paraBirimi = secilen.currencyCode;
 
     for (final ProductDetails d in teklifler) {
       if (d is! GooglePlayProductDetails || d.subscriptionIndex == null) {
@@ -247,6 +252,7 @@ class PlayMagazaServisi implements MagazaServisi {
       final PricingPhaseWrapper yinelenen = teklif.pricingPhases.last;
       fiyat = yinelenen.formattedPrice;
       hamFiyat = yinelenen.priceAmountMicros / 1000000;
+      paraBirimi = yinelenen.priceCurrencyCode;
       final PricingPhaseWrapper ilk = teklif.pricingPhases.first;
       if (ilk.priceAmountMicros == 0 && teklif.pricingPhases.length > 1) {
         secilen = d;
@@ -259,6 +265,7 @@ class PlayMagazaServisi implements MagazaServisi {
       hamFiyat: hamFiyat,
       yillikMi: urunId == PremiumConfig.yillikUrunId,
       denemeGunu: denemeGunu,
+      paraBirimiKodu: paraBirimi,
       ham: secilen,
     );
   }

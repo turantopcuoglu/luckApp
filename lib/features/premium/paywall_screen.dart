@@ -13,6 +13,7 @@ import '../../shared/widgets/cam_panel.dart';
 import '../../shared/widgets/sahne_arka_plani.dart';
 import '../../shared/widgets/sahne_config.dart';
 import '../legal/yasal_belge_screen.dart';
+import 'fiyat_bicimi.dart';
 import 'magaza_servisi.dart';
 import 'premium_kontrolcu.dart';
 
@@ -309,7 +310,7 @@ class _PlanKarti extends StatelessWidget {
     final List<String> altSatirlar = <String>[
       if (plan.denemeGunu != null) l.premiumDeneme(plan.denemeGunu!),
       if (plan.yillikMi && aylikPlan != null)
-        l.premiumAyliginaDusen(_aylikKarsilik()),
+        l.premiumAyliginaDusen(_aylikKarsilik(context)),
     ];
     final BorderRadius kose = BorderRadius.circular(AppRadius.md);
     return Semantics(
@@ -404,20 +405,14 @@ class _PlanKarti extends StatelessWidget {
     );
   }
 
-  /// Yıllık fiyatın aylık karşılığını, aylık planın para biçimini
-  /// koruyarak yazar (sembol/ondalık ayırıcı mağazanın metninden alınır).
-  String _aylikKarsilik() {
-    final double aylik = plan.hamFiyat / PaywallConfig.yildakiAy;
-    final String sayi = aylik.toStringAsFixed(2);
-    final String ornek = plan.fiyatMetni;
-    // Mağaza metni virgüllü ondalık kullanıyorsa aynısını uygula.
-    final bool virgul = ornek.contains(',');
-    final String bicimli = virgul ? sayi.replaceAll('.', ',') : sayi;
-    final String sembol = ornek.replaceAll(RegExp(r'[\d.,\s]'), '');
-    return ornek.trim().startsWith(RegExp(r'\d'))
-        ? '$bicimli $sembol'.trim()
-        : '$sembol$bicimli';
-  }
+  /// Yıllık fiyatın aylık karşılığı: sayı biçimi uygulama dilinden,
+  /// sembol ve hane sayısı mağazadan ([FiyatBicimi]).
+  String _aylikKarsilik(BuildContext context) => FiyatBicimi.bicimle(
+        tutar: plan.hamFiyat / PaywallConfig.yildakiAy,
+        ornekMetin: plan.fiyatMetni,
+        paraBirimiKodu: plan.paraBirimiKodu,
+        dilKodu: Localizations.localeOf(context).toString(),
+      );
 }
 
 /// Planlar yüklenemediğinde gösterilen durum.
