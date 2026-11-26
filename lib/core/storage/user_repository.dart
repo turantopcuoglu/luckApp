@@ -22,6 +22,28 @@ class UserRepository {
   Future<void> kaydet(UserProfile profil) =>
       _box.put(StorageKeys.profilKaydi, profil.toMap());
 
+  /// Eski sürümlerin profil kaydına yazdığı tanışma cevaplarını siler
+  /// (K7; KARARLAR 2026-11-26, soru 4).
+  ///
+  /// Yalnız [StorageKeys.eskiTanismaCevaplari] anahtarları çıkarılır;
+  /// kayıttaki diğer alanlara dokunulmaz. Kayıtta bu anahtarlar yoksa hiç
+  /// yazmaz, bu yüzden açılışta her seferinde çağrılabilir: silme işi
+  /// fiilen bir kez olur. Bir şey sildiyse `true` döner.
+  Future<bool> eskiTanismaCevaplariniSil() async {
+    final Map<dynamic, dynamic>? map = _box.get(StorageKeys.profilKaydi);
+    if (map == null ||
+        !StorageKeys.eskiTanismaCevaplari.any(map.containsKey)) {
+      return false;
+    }
+    final Map<dynamic, dynamic> temiz = Map<dynamic, dynamic>.of(map)
+      ..removeWhere(
+        (dynamic anahtar, dynamic _) =>
+            StorageKeys.eskiTanismaCevaplari.contains(anahtar),
+      );
+    await _box.put(StorageKeys.profilKaydi, temiz);
+    return true;
+  }
+
   /// Onboarding akışı tamamlanmış mı?
   bool get onboardingTamamlandiMi => profil()?.onboardingTamam ?? false;
 

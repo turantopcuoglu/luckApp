@@ -7,6 +7,7 @@ import 'package:kader/core/luck_engine/luck_engine.dart';
 import 'package:kader/core/storage/daily_record.dart';
 import 'package:kader/core/storage/kayitli_kisi.dart';
 import 'package:kader/core/storage/luck_history_repository.dart';
+import 'package:kader/core/storage/storage_keys.dart';
 import 'package:kader/core/storage/user_profile.dart';
 import 'package:kader/core/storage/user_repository.dart';
 import 'package:kader/core/storage/uygulama_durumu.dart';
@@ -84,6 +85,42 @@ void main() {
         const Portre(enerji: EnerjiTarzi.iceDonuk, karar: KararTarzi.kalp),
       );
       expect(p.toMap().keys, isNot(contains('ugras')));
+    });
+
+    test('eski tanışma cevapları kayıttan bir kez silinir, diğer alanlar '
+        'kalır', () async {
+      final UserRepository repo = UserRepository(profilKutusu);
+      await profilKutusu.put(StorageKeys.profilKaydi, <String, dynamic>{
+        'isim': 'Ayşe',
+        'dogumTarihi': DateTime(1994, 3, 14).toIso8601String(),
+        'onboardingTamam': true,
+        'tamAd': 'Ayşe Yılmaz',
+        'enerji': 'iceDonuk',
+        'karar': 'kalp',
+        'iliski': 'evli',
+        'ugras': 'girisimci',
+      });
+      expect(await repo.eskiTanismaCevaplariniSil(), isTrue);
+      final Map<dynamic, dynamic> kayit = profilKutusu.get(
+        StorageKeys.profilKaydi,
+      )!;
+      for (final String a in StorageKeys.eskiTanismaCevaplari) {
+        expect(kayit.containsKey(a), isFalse, reason: a);
+      }
+      expect(kayit['tamAd'], 'Ayşe Yılmaz');
+      expect(repo.profil()!.onboardingTamam, isTrue);
+      // İkinci çağrı yazma yapmaz.
+      expect(await repo.eskiTanismaCevaplariniSil(), isFalse);
+    });
+
+    test('profil yoksa ya da eski cevap yoksa silme yazmaz', () async {
+      final UserRepository repo = UserRepository(profilKutusu);
+      expect(await repo.eskiTanismaCevaplariniSil(), isFalse);
+      expect(profilKutusu.isEmpty, isTrue);
+      await repo.kaydet(
+        UserProfile(isim: 'Ayşe', dogumTarihi: DateTime(1994, 3, 14)),
+      );
+      expect(await repo.eskiTanismaCevaplariniSil(), isFalse);
     });
 
     test('okuyucu profili tam adla hesaplar; seed isimden değişmez', () {

@@ -56,6 +56,11 @@ Future<void> main() async {
   final UygulamaDurumuRepository durum =
       UygulamaDurumuRepository(AppStorage.appStateBox);
   await durum.ilkAcilisiIsaretle(DateTime.now());
+  final UserRepository kullanicilar =
+      UserRepository(AppStorage.userProfileBox);
+  // Eski sürümün sakladığı tanışma cevapları artık okunmuyor; kayıttan
+  // silinir (anahtar yoksa yazma yapılmaz).
+  await kullanicilar.eskiTanismaCevaplariniSil();
 
   // Bildirim altyapısı: uygulama bir akşam bildirimiyle mi açıldı?
   final NotificationService bildirimler = NotificationService();
@@ -84,8 +89,6 @@ Future<void> main() async {
   // Onboarding bitmişse bildirim penceresi her açılışta tazelenir
   // (sabah metin varyasyonları 14 gün ileriye planlanır). Metinler
   // uygulama dilindedir; dil değiştiyse bu açılışta yeni dile geçer.
-  final UserRepository kullanicilar =
-      UserRepository(AppStorage.userProfileBox);
   if (kullanicilar.onboardingTamamlandiMi) {
     unawaited(
       bildirimler.gunlukBildirimleriPlanla(

@@ -24,6 +24,16 @@ abstract final class StorageKeys {
   /// app_state kutusunda koleksiyon map'inin saklandığı anahtar
   /// (kart kimliği → kazanılma bilgisi).
   static const String koleksiyonKaydi = 'koleksiyon';
+
+  /// Eski sürümlerin profil kaydına yazdığı tanışma cevabı anahtarları
+  /// (enerji, karar tarzı, ilişki durumu, uğraş). K7'den beri okunmaz;
+  /// açılışta bir kez silinir (bkz. `UserRepository`).
+  static const List<String> eskiTanismaCevaplari = <String>[
+    'enerji',
+    'karar',
+    'iliski',
+    'ugras',
+  ];
 }
 
 /// [gun] tarihini saatten bağımsız `yyyy-MM-dd` kutu anahtarına çevirir.
