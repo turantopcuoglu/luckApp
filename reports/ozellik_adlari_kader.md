@@ -41,7 +41,7 @@ ARB açıklamaları da güncellendi (`@sekmeBugun`, `@sekmeProfil`, `@profilBasl
 1. **Paylaşım kartı (skor gizli):** "Bugünkü kaderim ✨" önce "Bugünkü kaderim" / "✨" diye kırılıyordu. "Bugünkü yıldızlarım ✨" şimdi "Bugünkü" / "yıldızlarım ✨" diye kırılıyor. "yıldızlarım" kelimesinin sol ucu açık renk bulut bandına düşüyor ve orada kontrast azalıyor. Satır sayısı aynı. Kare gerçek fontla çizilmedi; cihazda bakılmalı. Seçenekler: kısa metin ("Bugün yıldızlarım ✨") ya da daha güçlü yazı gölgesi.
 2. **Premium madde 2:** "Tam Gök Profili: gölge yanın, aşk, iş, yaşam" / "dersin, iç sesin": "yaşam dersin" iki satıra bölünüyor. Kırılma cihaz genişliğine bağlı. Gerekirse iki kelime arasına bölünmeyen boşluk konur.
 3. **Premium alt başlık:** ilk satır neredeyse tam genişlikte. Inter fontuyla dar ekranda üçüncü satıra taşabilir; denetlenmedi.
-4. **Anlam:** "Gök Profilin" başlığının altında numeroloji sayıları ve Büyük Üçlü birlikte duruyor. Başlık gökyüzünü anıyor, ilk kart ise sayıları anlatıyor. Daha geniş bir ad isteniyorsa alternatifler: "Öz Profilin" / "Your Core Profile".
+4. **Anlam: kapandı.** "Gök Profilin" başlığının altında numeroloji sayıları ve Büyük Üçlü birlikte duruyor; alternatif olarak "Öz Profilin" soruldu. Turan, 27 Kasım: "Gök Profilin kalsın." Başlık kesinleşti: TR "Gök Profilin", EN "Your Sky Profile".
 5. Metin dışında görsel fark yok (gözle). Kareler Roboto fontuyla çizildi, emoji kutu görünüyor. Inter/Playfair fontuyla ve gerçek cihazda **doğrulanmadı**.
 
 ## Tur 2: 5. ölçütün kapatılması (27 Kasım)
