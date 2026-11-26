@@ -98,7 +98,9 @@ Burc komsuBurc(double boylam) {
 /// [harita] için okuma.
 ///
 /// [saatBiliniyor] ve [konumBiliniyor] eksik bilgi notunu, [saatDilimiKesin]
-/// (bkz. `TurkiyeSaatDilimi`) Yükselen güvenilirlik notunu belirler.
+/// (bkz. `DogumSaatDilimi`) Yükselen güvenilirlik notunu belirler. Notun
+/// metni nedene göre seçilir: [saatDurumu] geçiş gecesini, [yurtDisi]
+/// Türkiye dışındaki doğumu söyler.
 ///
 /// [paket]: içerik dili. Bu okumanın metinleri henüz yalnız Türkçe;
 /// İngilizce havuzlar E9 oturumunda pakete bağlanır.
@@ -107,6 +109,8 @@ HaritaOkumasi haritaOkumasi({
   required bool saatBiliniyor,
   required bool konumBiliniyor,
   bool saatDilimiKesin = true,
+  YerelSaatDurumu saatDurumu = YerelSaatDurumu.normal,
+  bool yurtDisi = false,
   IcerikPaketi paket = trIcerik,
 }) {
   final List<HaritaBolumu> bolumler = <HaritaBolumu>[];
@@ -162,7 +166,13 @@ HaritaOkumasi haritaOkumasi({
       ),
     );
     if (!saatDilimiKesin) {
-      notlar.add(HaritaMetinleri.saatDilimiBelirsiz);
+      notlar.add(
+        saatDurumu != YerelSaatDurumu.normal
+            ? HaritaMetinleri.saatDilimiGecisGecesi
+            : yurtDisi
+            ? HaritaMetinleri.saatDilimiBelirsizYurtDisi
+            : HaritaMetinleri.saatDilimiBelirsiz,
+      );
     }
     if (harita.yukselenSinirda) {
       final Burc komsu = komsuBurc(harita.yukselenBoylami!);

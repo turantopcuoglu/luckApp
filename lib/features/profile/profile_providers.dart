@@ -40,15 +40,18 @@ final ProviderFamily<YillikRaporOkumasi, int> yillikRaporProvider =
 /// Aktif kullanıcının doğum haritası okuması (Güneş, Ay, Yükselen).
 ///
 /// Doğum saati yoksa Ay öğlen için hesaplanır ve Yükselen hesaplanmaz;
-/// saat dilimi Türkiye'nin o tarihteki kuralından bulunur.
-final Provider<HaritaOkumasi> haritaOkumasiProvider = Provider<HaritaOkumasi>(
-  (Ref ref) {
-    final UserProfile p = ref.watch(aktifProfilProvider);
-    return haritaOkumasi(
-      harita: p.dogumHaritasi,
-      saatBiliniyor: p.dogumSaatiBiliniyor,
-      konumBiliniyor: p.dogumIli != null,
-      saatDilimiKesin: TurkiyeSaatDilimi.utcFarki(p.yerelDogumAni).kesin,
-    );
-  },
-);
+/// saat dilimi doğum yerinin o tarihteki kuralından bulunur (yer yoksa
+/// Türkiye kuralı).
+final Provider<HaritaOkumasi> haritaOkumasiProvider = Provider<HaritaOkumasi>((
+  Ref ref,
+) {
+  final UserProfile p = ref.watch(aktifProfilProvider);
+  return haritaOkumasi(
+    harita: p.dogumHaritasi,
+    saatBiliniyor: p.dogumSaatiBiliniyor,
+    konumBiliniyor: p.dogumYeri != null,
+    saatDilimiKesin: p.dogumSaatDilimi.kesin,
+    saatDurumu: p.dogumSaatDilimi.durum,
+    yurtDisi: !(p.dogumYeri?.turkiyeMi ?? true),
+  );
+});

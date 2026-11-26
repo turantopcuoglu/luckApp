@@ -206,6 +206,18 @@ abstract final class HaritaMetinleri {
       'Doğduğun tarihte Türkiye\'de uygulanan saate dair kayıtlar kesin '
       'değil; Yükselenin bir burç kayabilir. Yorumu bir eğilim olarak oku.';
 
+  /// Doğum saati, saatlerin ileri ya da geri alındığı geceye düşüyor
+  /// (atlanan ya da iki kez yaşanan saat).
+  static const String saatDilimiGecisGecesi =
+      'Doğduğun saat, saatlerin ileri ya da geri alındığı geceye denk '
+      'geliyor; bu saatin hangi saat dilimine göre yazıldığı kesin değil. '
+      'Yükselenin bir burç kayabilir. Yorumu bir eğilim olarak oku.';
+
+  /// Türkiye dışında, 1970 öncesi saat uygulaması kayıtları kesin değil.
+  static const String saatDilimiBelirsizYurtDisi =
+      'Doğduğun tarihte o bölgede uygulanan saate dair kayıtlar kesin '
+      'değil; Yükselenin bir burç kayabilir. Yorumu bir eğilim olarak oku.';
+
   /// Yükselen için doğum saati ya da ili eksik.
   static const String yukselenIcinBilgiEksik =
       'Yükselen burcun doğum saatine ve doğduğun yere göre değişir. Doğum '

@@ -199,4 +199,15 @@ abstract final class EngineConfig {
   /// pencere (saat): bu pencerede iki ayrı fark varsa saat atlanmış ya da
   /// iki kez yaşanmış olabilir.
   static const int saatDilimiGecisPenceresiSaat = 24;
+
+  // ---- Doğum yeri (K8-4) ----
+
+  /// Türkiye'nin ISO 3166-1 ülke kodu. Bu ülkede doğum yeri 81 il
+  /// listesinden (`TurkiyeIlleri`) gelir.
+  static const String turkiyeUlkeKodu = 'TR';
+
+  /// Yerel ortalama güneş zamanı: boylamın her derecesi 4 dakika. Doğum
+  /// yerinin saat dilimi kimliği veritabanında bulunamazsa son çare
+  /// olarak bu fark kullanılır ve sonuç "kesin değil" sayılır.
+  static const int boylamDerecesiBasinaDakika = 4;
 }
