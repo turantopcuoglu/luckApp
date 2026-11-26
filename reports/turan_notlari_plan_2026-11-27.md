@@ -69,6 +69,8 @@ Yöneticinin özeti doğru. Kaynaklar:
 
 ### 1.7 İş listesi (K8)
 
+*27 Kas notu:* K8-2 bitti, henüz bağlanmadı. `DogumSaatDilimi.cozumle(ianaKimligi, yerel)` farkı dakika olarak verir (+05:30, +05:45 dahil). `Europe/Istanbul` için fark `TurkiyeSaatDilimi`'nden gelir; 1940–2030 arası her 11 günde bir IANA ile karşılaştırıldı, fark yok. Atlanan ve iki kez yaşanan saat "kesin değil" işaretlenir. Atlanan saat geçiş öncesi farkla, iki kez yaşanan saat ilk yaşanışıyla (yaz saati) okunur. Türkiye dışında 1970 öncesi doğum da "kesin değil" sayılır. Yabancı Yükselen: 4 AA kaydı (Astro-Databank) aynı burç, fark ≤ 0,3 yay dakikası. **K8-4/5 için not:** duvar saati `DateTime.utc` ile taşınmalı. Yerel `DateTime` kurucusu, cihazın kendi diliminde atlanan saati bir saat ileri kaydırıyor. Bugünkü kayıt doğum saatini Z'siz ISO dizgesi olarak saklıyor (`UserProfile`, `toIso8601String` / `DateTime.parse`); bu dizge yerel `DateTime` olarak geri kuruluyor. Göçte ve arayüzde bu ele alınmalı.
+
 *26 Kas notu:* K8-1 bitti. Tablo yeniden üretilmeden geçiyor. İstanbul'daki 3 kırık testin nedeni ay evresi değil, test fikstürünün yaz saati hatasıydı (bkz. `reports/11_kasim_icerik_yeniden_yazimi.md` §5 sonu).
 
 | # | İş | Sistem | Kim |
@@ -200,7 +202,7 @@ Her satır bir oturum (`CLAUDE.md` kural 1: tek sistem).
 | 1 | K8-1: motor, açık UTC farkı + altın tablo (+03) | Soru 1 |
 | 2 | K7-1/2: tanışma kalıntılarının temizliği (content) **— bitti** | Soru 3 |
 | 3 | Numeroloji: aksanlı harfler (+ Y kuralı) **— bitti** | Soru 5 |
-| 4 | K8-2: dünya geneli doğum saat dilimi + yabancı yükselen testleri | 1 |
+| 4 | K8-2: dünya geneli doğum saat dilimi + yabancı yükselen testleri **— bitti** | 1 |
 | 5 | K8-3/4: şehir verisi + kayıt göçü | Soru 2; Turan GeoNames dosyasını indirir |
 | 6 | K8-5: ülke/şehir arayüzü | 5; görsel kontrol Turan |
 | 7 | E6c, E6d: kalan Türkçe arayüz ve fiyat biçimi | — |

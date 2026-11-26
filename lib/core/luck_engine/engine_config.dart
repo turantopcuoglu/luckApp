@@ -183,4 +183,20 @@ abstract final class EngineConfig {
 
   /// Nadir çekilişin paydası: ortalama her N günde bir kart nadir gelir.
   static const int nadirKartPaydasi = 8;
+
+  // ---- Doğum saat dilimi (K8-2) ----
+
+  /// Türkiye doğumlarının IANA kimliği. Bu kimlikte UTC farkı IANA'dan
+  /// değil `TurkiyeSaatDilimi`nden okunur (Türkiye sonuçları değişmez).
+  static const String turkiyeSaatDilimiKimligi = 'Europe/Istanbul';
+
+  /// Türkiye dışında IANA verisinin güvenilir sayıldığı ilk yıl. Daha
+  /// önceki kayıtlar bölgeye adını veren şehrin dışında tahmindir
+  /// (Astrodienst atlas notu); sonuç "kesin değil" işaretlenir.
+  static const int ianaGuvenilirBaslangicYili = 1970;
+
+  /// Yaz saati geçişlerini aramak için yerel saatin iki yanına bakılan
+  /// pencere (saat): bu pencerede iki ayrı fark varsa saat atlanmış ya da
+  /// iki kez yaşanmış olabilir.
+  static const int saatDilimiGecisPenceresiSaat = 24;
 }
