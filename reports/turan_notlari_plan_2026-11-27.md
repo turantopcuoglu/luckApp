@@ -203,8 +203,8 @@ Her satır bir oturum (`CLAUDE.md` kural 1: tek sistem).
 | 2 | K7-1/2: tanışma kalıntılarının temizliği (content) **— bitti** | Soru 3 |
 | 3 | Numeroloji: aksanlı harfler (+ Y kuralı) **— bitti** | Soru 5 |
 | 4 | K8-2: dünya geneli doğum saat dilimi + yabancı yükselen testleri **— bitti** | 1 |
-| 5 | K8-3/4: şehir verisi + kayıt göçü | Soru 2; Turan GeoNames dosyasını indirir |
-| 6 | K8-5: ülke/şehir arayüzü | 5; görsel kontrol Turan |
+| 5 | K8-3/4: şehir verisi + kayıt göçü **— K8-4 bitti (`10ac847`); K8-3 veri bekliyor** | Soru 2; Turan GeoNames dosyasını indirir |
+| 6 | K8-5: ülke/şehir arayüzü **— veri ve arama katmanı bitti; arayüz veri ve hedef kare bekliyor** (`reports/k8_4_5_rapor.md`) | 5; görsel kontrol Turan |
 | 7 | E6c, E6d: kalan Türkçe arayüz ve fiyat biçimi | — |
 | 8 | E7a–E7e: İngilizce günlük okuma | 1, 2 |
 | 9 | E8, E9: profil, rapor, araçlar, harita, uyum, yasal taslak | 8; K5 |

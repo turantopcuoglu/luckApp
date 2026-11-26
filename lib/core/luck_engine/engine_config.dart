@@ -210,4 +210,13 @@ abstract final class EngineConfig {
   /// yerinin saat dilimi kimliği veritabanında bulunamazsa son çare
   /// olarak bu fark kullanılır ve sonuç "kesin değil" sayılır.
   static const int boylamDerecesiBasinaDakika = 4;
+
+  // ---- Dünya şehirleri (K8-5) ----
+
+  /// Şehir aramasında gösterilen en fazla sonuç.
+  static const int sehirAramaEnFazla = 20;
+
+  /// Şehir verisinde koordinatın ondalık hanesi: 4 hane ≈ 11 m, Yükselen
+  /// için fazlasıyla yeter ve dosyayı küçültür.
+  static const int sehirKoordinatHanesi = 4;
 }

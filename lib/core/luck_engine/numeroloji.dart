@@ -182,6 +182,29 @@ abstract final class Numeroloji {
     return b.toString();
   }
 
+  /// [metin]i aramaya uygun hâle getirir: bitişik harfler açılır, harfler
+  /// küçülür ve aksanlı/Türkçe harfler Latin temel harfe iner
+  /// ("München" → "munchen", "Łódź" → "lodz", "İzmir" → "izmir").
+  ///
+  /// Sayı hesabıyla aynı harf tablosunu kullanır: bir harf numerolojide
+  /// hangi Latin harf sayılıyorsa aramada da o harftir.
+  static String latinSadelestir(String metin) {
+    final StringBuffer b = StringBuffer();
+    for (final int kod in bitisikHarfleriAc(metin).runes) {
+      final String k = String.fromCharCode(kod);
+      // Türkçe büyük I/İ: Dart'ın toLowerCase'i "İ"yi iki karaktere açar.
+      final String kucuk = (k == 'I' || k == 'İ') ? 'i' : k.toLowerCase();
+      b.write(_temelHarf[kucuk] ?? kucuk);
+    }
+    return b.toString();
+  }
+
+  /// Aksanlı harf → Latin temel harf ([_latinKarsiliklar]ın tersi).
+  static final Map<String, String> _temelHarf = <String, String>{
+    for (final MapEntry<String, String> e in _latinKarsiliklar.entries)
+      for (final String h in e.value.split('')) h: e.key,
+  };
+
   /// Tek karakteri Türkçe kurallarla küçük harfe çevirir.
   ///
   /// Dart'ın `toLowerCase`'i 'I' → 'i' ve 'İ' → 'i̇' (birleşik nokta)

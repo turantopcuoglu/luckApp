@@ -31,6 +31,7 @@ export 'burc.dart';
 export 'derin_numeroloji.dart';
 export 'dogum_saat_dilimi.dart';
 export 'dogum_yeri.dart';
+export 'dunya_sehirleri.dart';
 export 'engine_config.dart';
 export 'isim_numara_analizi.dart';
 export 'kader_profili.dart';
