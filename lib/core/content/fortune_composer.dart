@@ -731,15 +731,21 @@ GunlukOkuma gunlukOkuma({
     '${ContentConfig.amacYil}:${dongu.kisiselYil}:${dongu.kisiselAy}',
     YorumYonu.kapanisHavuzu(dongu.kisiselYil, dongu.kisiselAy),
   );
-  // K7 adım 1: tanışma cevabı yok, herkes genel havuzdan seçer ("-" ön
-  // eki eski tohumla aynı seçimi verir). Adım 2 portreye bağlar.
+  // Günün tavsiyesi doğum verisinden gelir (KARARLAR 2026-11-26, soru 3):
+  // genel havuza burç elementinin enerjisine (içe / dışa dönük) özgü
+  // öneriler eklenir. Anahtardaki enerji adı iki portrenin seçimini
+  // birbirinden ayırır.
+  final EnerjiTarzi enerji = okuyucu.portre.enerji;
   final String tavsiye = doldur(
     _sec(
       motor,
       okuyucu,
       gun,
-      '${ContentConfig.amacTavsiye}:-',
-      FortunePools.gununTavsiyeleri,
+      '${ContentConfig.amacTavsiye}:${enerji.name}',
+      <String>[
+        ...FortunePools.gununTavsiyeleri,
+        ...KisiselHavuzlar.enerjiTavsiyeleri[enerji]!,
+      ],
     ),
   );
   final SansRengi renk = _sec(

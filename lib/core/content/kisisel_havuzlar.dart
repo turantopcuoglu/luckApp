@@ -62,7 +62,8 @@ abstract final class KisiselHavuzlar {
     'Dikkat edilecek tek şey: fırsatların çokluğunda seçici kalmak.',
   ];
 
-  /// Enerji tarzına göre günün tavsiyesine karışan kişisel tavsiyeler.
+  /// Burç elementinin enerji tarzına (bkz. `Okuyucu.portre`) göre günün
+  /// tavsiyesine karışan öneriler.
   static const Map<EnerjiTarzi, List<String>>
   enerjiTavsiyeleri = <EnerjiTarzi, List<String>>{
     EnerjiTarzi.iceDonuk: <String>[

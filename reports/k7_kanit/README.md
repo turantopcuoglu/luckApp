@@ -17,3 +17,13 @@ Karar: `STUDIO/KARARLAR.md`, 2026-11-26 satırı (2): "tanışma soruları kalka
 
 1. **Aşk tarzı havuzları küçüldü.** İlişki durumu varsayan 7 cümle `karakter_yonleri.dart`'tan silindi. Üretimde zaten hiç gösterilmiyorlardı: çelişki kapısı ikisini de her zaman eliyordu, döküm bu yüzden aynı çıktı. Yaşam yolu başına kalan aşk cümlesi: 1:4, 2:4, 3:3, 4:4, 5:3, 6:3, 7:4, 8:3, 9:4, 11:3, 22:2, 33:4. Diğer kategorilerin sınırı 4. Aşk için sınır geçici olarak `ContentConfig.enAzAskTarzVaryanti` (= 2). Bu sayının altına düşen havuzda o gün burç cümlesi kullanılır; bu davranış eskiden de vardı. Öneri: her yaşam yoluna ilişki varsaymayan 1-2 aşk cümlesi eklemek.
 2. **Tekrar aşımı (eskiden de vardı).** Yaşam yolu 9 için 2026-10-01'den başlayan 30 günde şu cümle 7 kez geliyor (sınır 6): "Oğlak burcu olarak ilk izlenimde mesafeli görünebilirsin; seni tanıyanlar ise sıcaklığını bilir." Aynı test eski `lib` koduyla çalıştırıldı ve aynı aşımı verdi. Eski test okuyucusu cevap setiyle bu cümleyi gizliyordu. `tekrar_denetimi_test.dart` içinde açık bir "bilinen aşım" kaydı olarak duruyor; yeni bir aşım kabul etmez.
+
+## Adım 2: günün tavsiyesi doğum elementine bağlandı (bilinçli çıktı değişikliği)
+
+Karar: `STUDIO/KARARLAR.md`, 2026-11-26 satırı, soru (3): "günün tavsiyesi doğum elementine bağlanır". Turan'ın sözü: "Önerilerle git".
+
+- Tavsiye havuzu = genel havuz + `KisiselHavuzlar.enerjiTavsiyeleri[portre.enerji]`. Tohum anahtarı `tavsiye:<enerji>`.
+- Altın kayıt: 207 anahtarın 48'i değişti, hepsi bu satırın görüldüğü yerler: `gunluk` t0-t2 (36) ve `begeni` (12). Kategori, profil, uyum ve kimlik anahtarları aynı. Liste: `adim2_degisen_anahtarlar.txt`, yeni tablo: `altin_adim2.txt`.
+- Türkiye kullanıcısına etkisi: 24 kişi × 90 günlük ölçümde tavsiye cümlesi 2 160 kişi-günün 2 096'sında (%97) değişiyor. Tohum anahtarı ve havuz boyu değiştiği için seçim baştan dağılıyor. Okumanın geri kalanı aynı.
+- Yeni test: tavsiye ya genel havuzdan ya da kişinin kendi enerji havuzundan gelir, öbür enerjinin önerisi hiç gelmez, iki enerjinin özel önerileri de görülür (`fortune_composer_test.dart`).
+- `flutter analyze` temiz; `flutter test` (Europe/Istanbul) 499 test geçti; altın kayıt UTC'de de geçti.

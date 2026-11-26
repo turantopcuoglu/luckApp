@@ -2,8 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kader/core/content/content_config.dart';
 import 'package:kader/core/content/dongu_metinleri.dart';
 import 'package:kader/core/content/fortune_composer.dart';
+import 'package:kader/core/content/fortune_pools.dart';
 import 'package:kader/core/content/gokyuzu_metinleri.dart';
 import 'package:kader/core/content/gunluk_okuma.dart';
+import 'package:kader/core/content/kisisel_havuzlar.dart';
 import 'package:kader/core/content/neden_metinleri.dart';
 import 'package:kader/core/content/okuyucu.dart';
 import 'package:kader/core/content/tr_icerik_paketi.dart';
@@ -444,6 +446,40 @@ void main() {
           }
         }
       }
+    });
+
+    test('günün tavsiyesi doğum elementinin enerjisine göre seçilir', () {
+      // Her burçtan bir okuyucu; tavsiye genel havuzdan ya da kendi
+      // enerjisinin havuzundan gelir, öbür enerjinin önerisi hiç gelmez.
+      final Set<EnerjiTarzi> ozelGorulen = <EnerjiTarzi>{};
+      for (int ay = 1; ay <= DateTime.monthsPerYear; ay++) {
+        final Okuyucu o = okuyucu(dogumTarihi: DateTime(1990, ay, 5));
+        final EnerjiTarzi enerji = o.portre.enerji;
+        final List<String> kendi = KisiselHavuzlar.enerjiTavsiyeleri[enerji]!;
+        final List<String> obur = KisiselHavuzlar.enerjiTavsiyeleri.entries
+            .where((MapEntry<EnerjiTarzi, List<String>> e) => e.key != enerji)
+            .expand((MapEntry<EnerjiTarzi, List<String>> e) => e.value)
+            .toList();
+        for (int g = 0; g < 60; g++) {
+          final String t = gunlukOkuma(
+            motor: motor,
+            okuyucu: o,
+            sonuc: motor.hesapla(
+              kullanici: o.seed,
+              gun: DateTime(2026, 12, 1 + g),
+            ),
+          ).tavsiye;
+          expect(
+            <String>[...FortunePools.gununTavsiyeleri, ...kendi],
+            contains(t),
+          );
+          expect(obur, isNot(contains(t)), reason: '${o.profil.burc} $t');
+          if (kendi.contains(t)) {
+            ozelGorulen.add(enerji);
+          }
+        }
+      }
+      expect(ozelGorulen, EnerjiTarzi.values.toSet());
     });
   });
 
