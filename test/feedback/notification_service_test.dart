@@ -80,7 +80,7 @@ void main() {
         trMetinler,
       );
       expect(tr.length, 12);
-      expect(tr.first, 'Bugünün kaderi hazır ✨');
+      expect(tr.first, 'Bugünün gökyüzü hazır ✨');
       expect(tr[7], 'Skorun hazır. Cesaret edebilecek misin? 😏');
       expect(tr.last, 'Şans perileri mesaini tamamladı, rapor hazır 🧚');
     });

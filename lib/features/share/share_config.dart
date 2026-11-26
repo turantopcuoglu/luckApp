@@ -14,7 +14,7 @@ abstract final class ShareConfig {
   static const double kenarBoslugu = 96;
 
   /// Paylaşılan dosyanın adı.
-  static const String dosyaAdi = 'kader_gunun_sansi.png';
+  static const String dosyaAdi = 'solenia_gunun_sansi.png';
 
   /// Tarih metni puntosu.
   static const double tarihPunto = 44;
@@ -117,7 +117,7 @@ abstract final class ShareConfig {
   static const double aracKarartma = 0.5;
 
   /// Araç kartı dosya adı.
-  static const String aracDosyaAdi = 'kader_kesfet.png';
+  static const String aracDosyaAdi = 'solenia_kesfet.png';
 
   /// Dev sayının altındaki etiket puntosu ("Usta İlham").
   static const double aracEtiketPunto = 64;

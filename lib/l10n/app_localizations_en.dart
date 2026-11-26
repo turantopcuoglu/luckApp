@@ -171,7 +171,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your Moon and rising signs are calculated from these. If you do not know the time, or were born outside Türkiye, leave them empty; you can add them later from your profile.';
 
   @override
-  String get onboardingKaderimiHesapla => 'Calculate my destiny';
+  String get onboardingKaderimiHesapla => 'Read my stars';
 
   @override
   String get onboardingIsimBosUyarisi => 'Enter your name to continue.';
@@ -229,7 +229,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gunlukGenelSkor => 'OVERALL SCORE';
 
   @override
-  String get gunlukYukleniyor => 'Calculating your destiny...';
+  String get gunlukYukleniyor => 'Reading your sky...';
 
   @override
   String get gunlukKartHazir => 'Today\'s card is ready';
@@ -389,10 +389,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bildirimKanalAciklama =>
-      'Morning destiny-ready and evening feedback reminders';
+      'Morning reading-ready and evening feedback reminders';
 
   @override
-  String get bildirimSabah1 => 'Today\'s destiny is ready ✨';
+  String get bildirimSabah1 => 'Today\'s sky is ready ✨';
 
   @override
   String get bildirimSabah2 => 'The stars lined up for you, come and see 🌟';
@@ -402,7 +402,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'A new day, a new chance. Your score is waiting 🍀';
 
   @override
-  String get bildirimSabah4 => 'Your destiny card is waiting to be opened 🎴';
+  String get bildirimSabah4 => 'Today\'s card is waiting to be opened 🎴';
 
   @override
   String get bildirimSabah5 =>
@@ -410,7 +410,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bildirimSabah6 =>
-      'Don\'t head out without a look: your destiny is calculated ☕';
+      'Don\'t head out without a look: your sky is ready ☕';
 
   @override
   String get bildirimSabah7 =>
@@ -429,7 +429,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bildirimSabah11 =>
-      'Your destiny is at the door. Open it to find out 🚪';
+      'Your stars are at the door. Open it to find out 🚪';
 
   @override
   String get bildirimSabah12 =>
@@ -445,7 +445,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paylasimGenelSkor => 'TODAY\'S LUCK SCORE';
 
   @override
-  String get paylasimMetni => 'My destiny today ✨';
+  String get paylasimMetni => 'My stars today ✨';
 
   @override
   String get paylasimAracDavet => 'Calculate yours: the Solenia app';
@@ -474,7 +474,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paylasimTemaMor => 'Purple';
 
   @override
-  String get profilBaslik => 'Your Destiny Profile';
+  String get profilBaslik => 'Your Sky Profile';
 
   @override
   String get profilAciklama =>
@@ -656,14 +656,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get premiumAltBaslik =>
-      'See your whole destiny: every day, every category, ad-free.';
+      'See your whole sky: every day, every category, ad-free.';
 
   @override
   String get premiumOzellik1 => 'Love and Money categories open every day';
 
   @override
   String get premiumOzellik2 =>
-      'Full Destiny Profile: your shadow side, love, work, life lesson, inner voice';
+      'Full Sky Profile: your shadow side, love, work, life lesson, inner voice';
 
   @override
   String get premiumOzellik3 =>

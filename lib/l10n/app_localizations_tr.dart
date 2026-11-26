@@ -170,7 +170,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ay ve yükselen burcun bunlardan hesaplanır. Saatini bilmiyorsan ya da Türkiye dışında doğduysan boş bırak; sonradan profilinden ekleyebilirsin.';
 
   @override
-  String get onboardingKaderimiHesapla => 'Kaderimi hesapla';
+  String get onboardingKaderimiHesapla => 'Yıldızlarıma bak';
 
   @override
   String get onboardingIsimBosUyarisi => 'Devam etmek için adını yazmalısın.';
@@ -228,7 +228,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get gunlukGenelSkor => 'GENEL SKOR';
 
   @override
-  String get gunlukYukleniyor => 'Kaderin hesaplanıyor...';
+  String get gunlukYukleniyor => 'Gökyüzün okunuyor...';
 
   @override
   String get gunlukKartHazir => 'Bugünün kartı hazır';
@@ -388,10 +388,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get bildirimKanalAciklama =>
-      'Sabah kader hazır ve akşam geri bildirim hatırlatmaları';
+      'Sabah okuma hazır ve akşam geri bildirim hatırlatmaları';
 
   @override
-  String get bildirimSabah1 => 'Bugünün kaderi hazır ✨';
+  String get bildirimSabah1 => 'Bugünün gökyüzü hazır ✨';
 
   @override
   String get bildirimSabah2 => 'Yıldızlar senin için dizildi, gel bak 🌟';
@@ -401,13 +401,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Yeni bir gün, yeni bir şans. Skorun seni bekliyor 🍀';
 
   @override
-  String get bildirimSabah4 => 'Kader kartın açılmayı bekliyor 🎴';
+  String get bildirimSabah4 => 'Bugünkü kartın açılmayı bekliyor 🎴';
 
   @override
   String get bildirimSabah5 => 'Bugün şanslı mısın? Öğrenmenin tek yolu var 👀';
 
   @override
-  String get bildirimSabah6 => 'Güne bakmadan çıkma: kaderin hesaplandı ☕';
+  String get bildirimSabah6 => 'Güne bakmadan çıkma: gökyüzün hazır ☕';
 
   @override
   String get bildirimSabah7 => 'Evren bugün ne fısıldıyor? Kartına dokun 🔮';
@@ -422,7 +422,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get bildirimSabah10 => 'Bugünün enerjisi ölçüldü. Sonuç içeride ⚡';
 
   @override
-  String get bildirimSabah11 => 'Kaderin kapıda, açmayan bilemez 🚪';
+  String get bildirimSabah11 => 'Yıldızların kapıda, açmayan bilemez 🚪';
 
   @override
   String get bildirimSabah12 =>
@@ -438,7 +438,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paylasimGenelSkor => 'GÜNÜN ŞANS PUANI';
 
   @override
-  String get paylasimMetni => 'Bugünkü kaderim ✨';
+  String get paylasimMetni => 'Bugünkü yıldızlarım ✨';
 
   @override
   String get paylasimAracDavet => 'Sen de hesapla: Solenia uygulaması';
@@ -467,7 +467,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paylasimTemaMor => 'Mor';
 
   @override
-  String get profilBaslik => 'Kader Profilin';
+  String get profilBaslik => 'Gök Profilin';
 
   @override
   String get profilAciklama =>
@@ -649,14 +649,14 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get premiumAltBaslik =>
-      'Kaderinin tamamını gör: her gün, her kategori, reklamsız.';
+      'Gökyüzünün tamamını gör: her gün, her kategori, reklamsız.';
 
   @override
   String get premiumOzellik1 => 'Aşk ve Para kategorileri her gün açık';
 
   @override
   String get premiumOzellik2 =>
-      'Tam Kader Profili: gölge yanın, aşk, iş, yaşam dersin, iç sesin';
+      'Tam Gök Profili: gölge yanın, aşk, iş, yaşam dersin, iç sesin';
 
   @override
   String get premiumOzellik3 => 'Kişisel yıl okuması ve yılın teması';

@@ -98,13 +98,13 @@ abstract class AppLocalizations {
     Locale('tr'),
   ];
 
-  /// Alt gezinme: günlük kader sekmesi.
+  /// Alt gezinme: günlük okuma sekmesi.
   ///
   /// In tr, this message translates to:
   /// **'Bugün'**
   String get sekmeBugun;
 
-  /// Alt gezinme: Kader Profili sekmesi.
+  /// Alt gezinme: Gök Profili sekmesi.
   ///
   /// In tr, this message translates to:
   /// **'Profilim'**
@@ -401,7 +401,7 @@ abstract class AppLocalizations {
   /// Tanışma ekranı: hesaplamayı başlatan buton.
   ///
   /// In tr, this message translates to:
-  /// **'Kaderimi hesapla'**
+  /// **'Yıldızlarıma bak'**
   String get onboardingKaderimiHesapla;
 
   /// İsim boşken gösterilen SnackBar.
@@ -515,7 +515,7 @@ abstract class AppLocalizations {
   /// Skor yüklenirken gösterilen metin.
   ///
   /// In tr, this message translates to:
-  /// **'Kaderin hesaplanıyor...'**
+  /// **'Gökyüzün okunuyor...'**
   String get gunlukYukleniyor;
 
   /// Kapalı kartın altındaki başlık.
@@ -785,13 +785,13 @@ abstract class AppLocalizations {
   /// Android bildirim kanalı açıklaması.
   ///
   /// In tr, this message translates to:
-  /// **'Sabah kader hazır ve akşam geri bildirim hatırlatmaları'**
+  /// **'Sabah okuma hazır ve akşam geri bildirim hatırlatmaları'**
   String get bildirimKanalAciklama;
 
   /// Sabah bildirimi varyasyonu 1/12. Sıra iki dilde aynı kalmalı (gün → indeks).
   ///
   /// In tr, this message translates to:
-  /// **'Bugünün kaderi hazır ✨'**
+  /// **'Bugünün gökyüzü hazır ✨'**
   String get bildirimSabah1;
 
   /// Sabah bildirimi varyasyonu 2/12.
@@ -809,7 +809,7 @@ abstract class AppLocalizations {
   /// Sabah bildirimi varyasyonu 4/12.
   ///
   /// In tr, this message translates to:
-  /// **'Kader kartın açılmayı bekliyor 🎴'**
+  /// **'Bugünkü kartın açılmayı bekliyor 🎴'**
   String get bildirimSabah4;
 
   /// Sabah bildirimi varyasyonu 5/12.
@@ -821,7 +821,7 @@ abstract class AppLocalizations {
   /// Sabah bildirimi varyasyonu 6/12.
   ///
   /// In tr, this message translates to:
-  /// **'Güne bakmadan çıkma: kaderin hesaplandı ☕'**
+  /// **'Güne bakmadan çıkma: gökyüzün hazır ☕'**
   String get bildirimSabah6;
 
   /// Sabah bildirimi varyasyonu 7/12.
@@ -851,7 +851,7 @@ abstract class AppLocalizations {
   /// Sabah bildirimi varyasyonu 11/12.
   ///
   /// In tr, this message translates to:
-  /// **'Kaderin kapıda, açmayan bilemez 🚪'**
+  /// **'Yıldızların kapıda, açmayan bilemez 🚪'**
   String get bildirimSabah11;
 
   /// Sabah bildirimi varyasyonu 12/12.
@@ -881,7 +881,7 @@ abstract class AppLocalizations {
   /// Paylaşım menüsüne eklenen kısa metin; kişisel başlık yoksa kartta da görünür.
   ///
   /// In tr, this message translates to:
-  /// **'Bugünkü kaderim ✨'**
+  /// **'Bugünkü yıldızlarım ✨'**
   String get paylasimMetni;
 
   /// Keşfet aracı kartının altındaki davet.
@@ -932,10 +932,10 @@ abstract class AppLocalizations {
   /// **'Mor'**
   String get paylasimTemaMor;
 
-  /// Kader Profili ekran başlığı.
+  /// Gök Profili ekran başlığı (eski adı Kader Profili; kod adı KaderProfiliScreen).
   ///
   /// In tr, this message translates to:
-  /// **'Kader Profilin'**
+  /// **'Gök Profilin'**
   String get profilBaslik;
 
   /// Profil başlığının altındaki açıklama.
@@ -1253,7 +1253,7 @@ abstract class AppLocalizations {
   /// Paywall alt başlığı.
   ///
   /// In tr, this message translates to:
-  /// **'Kaderinin tamamını gör: her gün, her kategori, reklamsız.'**
+  /// **'Gökyüzünün tamamını gör: her gün, her kategori, reklamsız.'**
   String get premiumAltBaslik;
 
   /// Paywall özellik listesi, 1/7.
@@ -1265,7 +1265,7 @@ abstract class AppLocalizations {
   /// Paywall özellik listesi, 2/7.
   ///
   /// In tr, this message translates to:
-  /// **'Tam Kader Profili: gölge yanın, aşk, iş, yaşam dersin, iç sesin'**
+  /// **'Tam Gök Profili: gölge yanın, aşk, iş, yaşam dersin, iç sesin'**
   String get premiumOzellik2;
 
   /// Paywall özellik listesi, 3/7.
