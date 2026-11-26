@@ -27,8 +27,9 @@ abstract final class YasalMetinler {
     'Sağlık, para, hukuk, eğitim ya da ilişkilerinle ilgili önemli '
         'kararlarını yalnızca bu yorumlara dayanarak verme. Böyle '
         'konularda bir uzmana danış.',
-    'Adın, doğum tarihin ve verdiğin cevaplar yalnızca bu cihazda '
-        'saklanır; Solenia bunları bir sunucuya göndermez.',
+    'Adın, doğum bilgilerin, okumalara verdiğin geri bildirimler ve '
+        'uyum için eklediğin kişiler yalnızca bu cihazda saklanır; Solenia '
+        'bunları bir sunucuya göndermez.',
     'Uygulama ücretsiz sürümde reklam gösterir. Reklam ortağımız Google '
         'AdMob, reklam kimliğin gibi bazı cihaz verilerini işleyebilir; '
         'bölgene göre senden ayrıca izin istenir.',
