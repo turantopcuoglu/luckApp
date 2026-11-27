@@ -596,7 +596,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilSaatSec => 'Choose time';
 
   @override
-  String get profilDogumIli => 'Province of birth';
+  String get profilDogumIli => 'Where you were born';
 
   @override
   String get profilDogumIliIpucu => 'Type a province (e.g. İzmir)';

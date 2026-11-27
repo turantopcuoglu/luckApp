@@ -186,7 +186,7 @@
   "profilDogumSaati": "Birth time",
   "profilSaatBilinmiyor": "I don't know",
   "profilSaatSec": "Choose time",
-  "profilDogumIli": "Province of birth",
+  "profilDogumIli": "Where you were born",
   "profilDogumIliIpucu": "Type a province (e.g. İzmir)",
   "profilDogumUlkesi": "Country of birth",
   "profilDogumUlkesiIpucu": "Type a country",
