@@ -166,3 +166,16 @@ Bu turdaki kalan bulgular:
 - D. Türkçe arayüzde şehirler GeoNames'in İngilizce adıyla çıkıyor: "Munich", "Vienna". "Münih" yazınca da bulunmuyor, çünkü `cities15000` diğer adların dilini söylemiyor ve "Münih" listede yok. Seçenekler: (1) böyle kalsın; (2) büyük şehirler için elle Türkçe ad listesi (~100 şehir); (3) GeoNames `alternateNamesV2` dosyası (dil etiketli, ~700 MB ham, indirme onayı gerekir) ile Türkçe adlar.
 - E. İngilizce il etiketi "Province of birth" olarak kalsın mı?
 
+
+## Turan'ın sabah kararları (27 Kasım, yönetici iletti)
+
+| Soru | Karar | Uygulama |
+|---|---|---|
+| A | GeoNames `admin1CodesASCII.txt` indirilir (CC BY 4.0, ~150 KB). Aynı adlı şehirler eyalet adıyla ayrılır, atıf lisans sayfasına eklenir | Ayrı commit |
+| B | CLDR ülke adları aynen kalır | Değişiklik yok |
+| C | Öneri listesi yukarı açılır, Kaydet görünür kalır | Ayrı commit |
+| D | Şehir adları İngilizce kalır; `alternateNamesV2` indirilmez | Değişiklik yok |
+| E | "Province of birth" seçilmedi; İngilizce il etiketi eski hâline ("Where you were born") döner | Ayrı commit |
+| F | Konumdan otomatik en yakın şehir yok, konum izni istenmez | Değişiklik yok; not kalır |
+| G | `tool/` ve `assets/veri/` klasörleri kalır | Değişiklik yok |
+| H | 11 Kasım işi onaylanırsa E7a beklemeden başlar. Onay henüz gelmedi | Bekliyor |

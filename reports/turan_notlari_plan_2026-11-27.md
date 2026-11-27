@@ -206,7 +206,7 @@ Her satır bir oturum (`CLAUDE.md` kural 1: tek sistem).
 | 5 | K8-3/4: şehir verisi + kayıt göçü **— bitti** (K8-4 `10ac847`; GeoNames verisi K8-5 commit'inde) | Soru 2 |
 | 6 | K8-5: ülke/şehir arayüzü **— bitti, görsel onay Turan'da** (`reports/k8_4_5_rapor.md`, sorular A–E) | 5; görsel kontrol Turan |
 | 7 | E6c, E6d: kalan Türkçe arayüz ve fiyat biçimi **— bitti** (E6c: rol etiketleri ve yaşam yolu kalıbı ARB'de; E6d: fiyat biçimi `FiyatBicimi`) | — |
-| 8 | E7a–E7e: İngilizce günlük okuma | 1, 2 |
+| 8 | E7a–E7e: İngilizce günlük okuma | 1, 2; **11 Kasım onayı** (onay gelince E7a beklemeden başlar, Turan 27 Kas) |
 | 9 | E8, E9: profil, rapor, araçlar, harita, uyum, yasal taslak | 8; K5 |
 | 10 | E11, E12: mağaza ve son kontrol; ardından `ingilizceYayinda = true` | K4; tüm eksikler |
 
