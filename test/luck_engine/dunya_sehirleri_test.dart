@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kader/core/luck_engine/luck_engine.dart';
 
@@ -82,6 +84,29 @@ void main() {
       expect(m.boylam, 11.57549);
       expect(m.saatDilimi, 'Europe/Berlin');
       expect(m.nufus, 1260391);
+      // Bölge tablosu verilmezse bölge boş.
+      expect(m.bolge, '');
+    });
+
+    test('bölge admin1 tablosundan gelir (ülke.kod)', () {
+      final Map<String, String> bolgeler = DunyaSehri.bolgeTablosu(
+        'DE.01\tBaden-Wurttemberg\tBaden-Wurttemberg\t2953481\n'
+        'US.IL\tIllinois\tIllinois\t4896861\n'
+        'bozuk\tsatir\n',
+      );
+      expect(bolgeler, <String, String>{
+        'DE.01': 'Baden-Wurttemberg',
+        'US.IL': 'Illinois',
+      });
+      // Örnek satırların admin1 kodu '01'.
+      expect(
+        DunyaSehri.geoNamesSatirindan(ham[0], bolgeler: bolgeler)!.bolge,
+        'Baden-Wurttemberg',
+      );
+      expect(
+        DunyaSehri.geoNamesSatirindan(ham[3], bolgeler: bolgeler)!.bolge,
+        '',
+      );
     });
 
     test('Türkiye, saat dilimsiz ve bozuk satır alınmaz', () {
@@ -119,16 +144,21 @@ void main() {
     });
 
     test('saat dilimi tablosu yoksa ya da sırası taşarsa satır atlanır', () {
-      expect(DunyaSehirleri.kompaktOku('A\t\tDE\t1\t2\t0\t'), isEmpty);
+      expect(DunyaSehirleri.kompaktOku('A\t\tDE\t1\t2\t0\t\t'), isEmpty);
       expect(
-        DunyaSehirleri.kompaktOku('@Europe/Berlin\nA\t\tDE\t1\t2\t1\t'),
+        DunyaSehirleri.kompaktOku('@Europe/Berlin\nA\t\tDE\t1\t2\t1\t\t'),
         isEmpty,
       );
       expect(
         DunyaSehirleri.kompaktOku(
-          '@Europe/Berlin\nA\t\tDE\t1\t2\t0\t',
+          '@Europe/Berlin\nA\t\tDE\t1\t2\t0\t\t',
         ).single.ad,
         'A',
+      );
+      // Bölge sütunu olmayan (eski, 7 sütunlu) satır okunmaz.
+      expect(
+        DunyaSehirleri.kompaktOku('@Europe/Berlin\nA\t\tDE\t1\t2\t0\t'),
+        isEmpty,
       );
     });
 
@@ -245,6 +275,7 @@ void main() {
       enlem: 39.80172,
       boylam: -89.64371,
       saatDilimi: 'America/Chicago',
+      bolge: 'Illinois',
     );
     const DunyaSehri b = DunyaSehri(
       ad: 'Springfield',
@@ -253,6 +284,35 @@ void main() {
       enlem: 42.10148,
       boylam: -72.58981,
       saatDilimi: 'America/New_York',
+      bolge: 'Massachusetts',
+    );
+    // Aynı eyalette ikinci ve üçüncü Springfield.
+    const DunyaSehri p1 = DunyaSehri(
+      ad: 'Springfield',
+      asciiAd: 'Springfield',
+      ulkeKodu: 'US',
+      enlem: 39.93034,
+      boylam: -75.32019,
+      saatDilimi: 'America/New_York',
+      bolge: 'Pennsylvania',
+    );
+    const DunyaSehri p2 = DunyaSehri(
+      ad: 'Springfield',
+      asciiAd: 'Springfield',
+      ulkeKodu: 'US',
+      enlem: 40.09767,
+      boylam: -75.2018,
+      saatDilimi: 'America/New_York',
+      bolge: 'Pennsylvania',
+    );
+    // Bölgesi bilinmeyen.
+    const DunyaSehri d = DunyaSehri(
+      ad: 'Springfield',
+      asciiAd: 'Springfield',
+      ulkeKodu: 'US',
+      enlem: 37.21533,
+      boylam: -93.29824,
+      saatDilimi: 'America/Chicago',
     );
     const DunyaSehri c = DunyaSehri(
       ad: 'Springfield',
@@ -263,17 +323,76 @@ void main() {
       saatDilimi: 'Australia/Brisbane',
     );
 
-    test('aynı ülkede aynı ad koordinatla ayrılır; başka ülkede ayrılmaz', () {
+    test('aynı ülkede aynı ad bölgeyle ayrılır; başka ülkede ayrılmaz', () {
       final Set<String> ayni = DunyaSehirleri.ayniAdlar(<DunyaSehri>[a, b, c]);
-      expect(
-        DunyaSehirleri.gorunenAd(a, ayni),
-        'Springfield (39.80°, -89.64°)',
-      );
-      expect(
-        DunyaSehirleri.gorunenAd(b, ayni),
-        'Springfield (42.10°, -72.59°)',
-      );
+      expect(DunyaSehirleri.gorunenAd(a, ayni), 'Springfield, Illinois');
+      expect(DunyaSehirleri.gorunenAd(b, ayni), 'Springfield, Massachusetts');
       expect(DunyaSehirleri.gorunenAd(c, ayni), 'Springfield');
+    });
+
+    test('aynı bölgede de tekrar eden ya da bölgesiz olan koordinat alır', () {
+      final Set<String> ayni = DunyaSehirleri.ayniAdlar(<DunyaSehri>[
+        a,
+        p1,
+        p2,
+        d,
+      ]);
+      expect(DunyaSehirleri.gorunenAd(a, ayni), 'Springfield, Illinois');
+      expect(
+        DunyaSehirleri.gorunenAd(p1, ayni),
+        'Springfield, Pennsylvania (39.93°, -75.32°)',
+      );
+      expect(
+        DunyaSehirleri.gorunenAd(p2, ayni),
+        'Springfield, Pennsylvania (40.10°, -75.20°)',
+      );
+      expect(
+        DunyaSehirleri.gorunenAd(d, ayni),
+        'Springfield (37.22°, -93.30°)',
+      );
+    });
+
+    test('asset bölgeyi yalnız aynı adlı şehirlerde yazar', () {
+      const DunyaSehri tek = DunyaSehri(
+        ad: 'Chicago',
+        asciiAd: 'Chicago',
+        ulkeKodu: 'US',
+        enlem: 41.85003,
+        boylam: -87.65005,
+        saatDilimi: 'America/Chicago',
+        bolge: 'Illinois',
+      );
+      final String metin = DunyaSehirleri.kompaktYaz(<DunyaSehri>[tek, a, b]);
+      final List<DunyaSehri> okunan = DunyaSehirleri.kompaktOku(metin);
+      expect(okunan.map((DunyaSehri s) => s.bolge), <String>[
+        '',
+        'Illinois',
+        'Massachusetts',
+      ]);
+    });
+  });
+
+  group('gerçek asset (assets/veri/sehirler.tsv)', () {
+    final List<DunyaSehri> sehirler = DunyaSehirleri.kompaktOku(
+      File('assets/veri/sehirler.tsv').readAsStringSync(),
+    );
+    final Set<String> ayni = DunyaSehirleri.ayniAdlar(sehirler);
+
+    test('aynı adlı her şehrin bölgesi var; tek adlılarda bölge yazılmaz', () {
+      for (final DunyaSehri s in sehirler) {
+        final bool tekrar = ayni.contains('${s.ulkeKodu}\t${s.ad}');
+        expect(s.bolge.isNotEmpty, tekrar, reason: '${s.ulkeKodu} ${s.ad}');
+      }
+    });
+
+    test('Springfield, Illinois listede eyaletle görünür', () {
+      final List<String> adlar = DunyaSehirleri.ara(
+        sehirler,
+        ulkeKodu: 'US',
+        sorgu: 'springfield',
+      ).map((DunyaSehri s) => DunyaSehirleri.gorunenAd(s, ayni)).toList();
+      expect(adlar, contains('Springfield, Illinois'));
+      expect(adlar, contains('Springfield, Missouri'));
     });
   });
 

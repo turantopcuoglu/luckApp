@@ -179,3 +179,34 @@ Bu turdaki kalan bulgular:
 | F | Konumdan otomatik en yakın şehir yok, konum izni istenmez | Değişiklik yok; not kalır |
 | G | `tool/` ve `assets/veri/` klasörleri kalır | Değişiklik yok |
 | H | 11 Kasım işi onaylanırsa E7a beklemeden başlar. Onay henüz gelmedi | Bekliyor |
+
+## Kararların uygulanması (27 Kasım öğlen)
+
+| Karar | Commit | Ne değişti | Kanıt |
+|---|---|---|---|
+| Kayıt | `cf590a5` | Kararlar bu rapora ve plan belgesine yazıldı | — |
+| E | `a08d07c` | İngilizce il etiketi yeniden "Where you were born" | `k8_5_kanit/10_en_etiket_once_sonra.png` |
+| C | `f387b67` | Ülke, il ve şehir öneri listeleri alanın üstüne açılıyor; not ve Kaydet görünür kalıyor | `k8_5_kanit/11_liste_yukari_once_sonra.png` |
+| A | (bu commit) | GeoNames `admin1CodesASCII.txt` indirildi: 3 865 bölge, SHA-256 `2e4867f5397acb056ea26377601b57af37cb4c81399770225018e9e439e91ad3`. Asset'e 8. sütun eklendi: bölge adı, yalnız ülkesinde adı tekrar eden şehirlerde (1 855 şehir). Listede "Springfield, Illinois" yazıyor. Aynı eyalette de aynı adı taşıyan 238 şehre koordinat da ekleniyor: "Springfield, Pennsylvania (39.93°, -75.32°)". Dosya 1,65 → 1,70 MB (gzip 811 KB). Lisans metni ve asset başlığı admin1 dosyasını ve diğer adları da söylüyor | `k8_5_kanit/12_ayni_ad_eyalet_once_sonra.png` |
+
+`gorsel-denetci` (10, 11, 12): dört ölçüt KARŞILANDI. Yukarı açılan listede üç yeni kusur buldu:
+
+- Liste, üstteki paragrafı ve saat satırını yarıdan kesiyor.
+- Liste zemini sayfa zemininden ayrışmıyor.
+- Köşelerden alttaki çizgi görünüyor.
+
+Ayrı bir commit'te listeye ayrı bir yüzey veriliyor (aşağıda).
+
+B, D, F, G kodda değişiklik gerektirmedi. H: 11 Kasım onayı gelince E7a başlar.
+
+### Turan için emülatör adımları (~10 dk)
+
+```bash
+cd /Volumes/TuranSSD/Trisenix_Development/APP/luckApp && git switch gece/2026-11-27 && /Users/gamzesenocak/development/flutter/bin/flutter run
+```
+
+1. Profil > "Yükselenini öğren". Ülke Türkiye; il alanına "izm" yaz. Liste alanın **üstünde** açılmalı, Kaydet görünür kalmalı.
+2. Ülke alanına "amerika b" yaz → "Amerika Birleşik Devletleri". Şehre "springf" yaz. Liste "Springfield, Missouri", "Springfield, Illinois"… göstermeli. Birini seç → Kaydet → sayfayı yeniden aç: ülke ve "Springfield" gelmeli.
+3. Ülke "alman" → Almanya, şehir "münch" → "Munich (München)". Klavye açıkken liste ekrandan taşmamalı.
+4. Ayarlar > Dil > English → aynı sayfa: Türkiye seçiliyken il etiketi "Where you were born" olmalı.
+5. Ayarlar > Lisanslar > GeoNames: metinde "cities15000 ve/and admin1CodesASCII" ve değişiklik listesi görünmeli.

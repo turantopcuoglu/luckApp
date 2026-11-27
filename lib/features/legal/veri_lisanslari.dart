@@ -9,13 +9,13 @@ import 'package:flutter/foundation.dart';
 abstract final class VeriLisanslari {
   /// GeoNames şehir verisinin atfı.
   static const String geoNames = '''
-Şehir verisi / City data: GeoNames (https://www.geonames.org), cities15000.
+Şehir verisi / City data: GeoNames (https://www.geonames.org), cities15000 ve/and admin1CodesASCII.
 
 Lisans / License: Creative Commons Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/
 
-Değişiklikler: Türkiye satırları çıkarıldı; yalnız ad, ASCII ad, ülke, enlem, boylam ve saat dilimi alanları bırakıldı; koordinatlar 4 haneye yuvarlandı; satırlar nüfusa göre sıralandı.
+Değişiklikler: Türkiye satırları çıkarıldı; yalnız ad, ASCII ad, ülke, enlem, boylam ve saat dilimi alanları, 100 binden kalabalık şehirlerin Latin harfli diğer adları ve aynı adı taşıyan şehirlerin bölge (admin1) adı bırakıldı; koordinatlar 4 haneye yuvarlandı; satırlar nüfusa göre sıralandı.
 
-Changes: rows for Türkiye were removed; only name, ASCII name, country, latitude, longitude and time zone were kept; coordinates were rounded to 4 decimals; rows were sorted by population.''';
+Changes: rows for Türkiye were removed; only name, ASCII name, country, latitude, longitude and time zone were kept, plus Latin-script alternate names for cities above 100,000 people and the region (admin1) name for cities that share a name; coordinates were rounded to 4 decimals; rows were sorted by population.''';
 
   /// Unicode CLDR ülke adlarının telif ve izin metni (Unicode License v3).
   static const String cldr = '''

@@ -1,10 +1,11 @@
 /// Türkiye dışındaki doğum şehirleri ve ülke adları: veri biçimi ve arama
 /// (K8-5). Saf Dart.
 ///
-/// Kaynak GeoNames `cities15000` (CC BY 4.0). Ham dosya
-/// `tool/sehir_verisi.dart` ile kırpılır: yalnız ad, ASCII ad, ülke,
-/// enlem, boylam ve saat dilimi kalır; satırlar nüfusa göre sıralanır ve
-/// nüfus sütunu atılır (sıra, aramada kalabalık şehri öne alır). Türkiye
+/// Kaynak GeoNames `cities15000` ve `admin1CodesASCII` (CC BY 4.0). Ham
+/// dosya `tool/sehir_verisi.dart` ile kırpılır: ad, ASCII ad, ülke, enlem,
+/// boylam, saat dilimi, büyük şehirlerin diğer adları ve (yalnız aynı adlı
+/// şehirlerde) bölge adı kalır; satırlar nüfusa göre sıralanır ve nüfus
+/// sütunu atılır (sıra, aramada kalabalık şehri öne alır). Türkiye
 /// satırları alınmaz: Türkiye'de doğum yeri 81 il listesinden gelir
 /// (bugünkü haritalar değişmesin diye).
 ///
@@ -28,6 +29,7 @@ class DunyaSehri {
     required this.saatDilimi,
     this.nufus = 0,
     this.digerAdlar = const <String>[],
+    this.bolge = '',
   });
 
   // GeoNames ana tablosunun sütunları (geonames.org/export, "geoname").
@@ -38,12 +40,19 @@ class DunyaSehri {
   static const int _gnEnlem = 4;
   static const int _gnBoylam = 5;
   static const int _gnUlke = 8;
+  static const int _gnBolge = 10;
   static const int _gnNufus = 14;
   static const int _gnSaatDilimi = 17;
 
   /// GeoNames `cities15000.txt` satırından şehir; Türkiye satırı, eksik
   /// saat dilimi ya da bozuk satırda null.
-  static DunyaSehri? geoNamesSatirindan(String satir) {
+  ///
+  /// [bolgeler] `admin1CodesASCII.txt`'ten okunan "ülke.kod" → bölge adı
+  /// tablosudur (bkz. [bolgeTablosu]); kodu tabloda yoksa bölge boş kalır.
+  static DunyaSehri? geoNamesSatirindan(
+    String satir, {
+    Map<String, String> bolgeler = const <String, String>{},
+  }) {
     final List<String> s = satir.split('\t');
     if (s.length != _gnSutunSayisi) {
       return null;
@@ -74,8 +83,22 @@ class DunyaSehri {
       digerAdlar: nufus >= EngineConfig.sehirDigerAdNufusEsigi
           ? _digerAdlariSec(s[_gnDigerAdlar].split(','), <String>[ad, asciiAd])
           : const <String>[],
+      bolge: bolgeler['$ulke.${s[_gnBolge]}'] ?? '',
     );
   }
+
+  // GeoNames `admin1CodesASCII.txt` sütunları: "ülke.kod", ad, ASCII ad,
+  // geonameid.
+  static const int _bolgeSutunSayisi = 4;
+
+  /// `admin1CodesASCII.txt` metninden "ülke.kod" → bölge adı tablosu
+  /// ("US.IL" → "Illinois"). Bozuk satırlar atlanır.
+  static Map<String, String> bolgeTablosu(String metin) => <String, String>{
+    for (final List<String> s
+        in metin.split('\n').map((String l) => l.split('\t')))
+      if (s.length == _bolgeSutunSayisi && s[0].isNotEmpty && s[1].isNotEmpty)
+        s[0]: s[1],
+  };
 
   // Havaalanı ve kısaltma kodları ("MUC", "NYC"): aramada gürültü.
   static final RegExp _kod = RegExp(r'^[A-Z]{2,4}$');
@@ -147,6 +170,11 @@ class DunyaSehri {
   /// verir; kullanıcı yerel ya da Türkçe adla da bulabilsin diye tutulur.
   final List<String> digerAdlar;
 
+  /// Birinci düzey idari bölge adı ("Illinois", "Bavaria"); bilinmiyorsa
+  /// boş. Asset'te yalnız ülkesinde adı tekrar eden şehirlerde tutulur:
+  /// listede "Springfield, Illinois" diye ayırmaya yeter.
+  final String bolge;
+
   /// Profile yazılacak doğum yeri.
   DogumYeri dogumYeri() => DogumYeri(
     ulkeKodu: ulkeKodu,
@@ -165,12 +193,14 @@ class DunyaSehri {
 ///   sekmeyle ayrılmış IANA kimlikleri. Şehir satırları bu tablonun
 ///   sırasını kullanır (dosya ~%40 küçülür).
 /// - Şehir satırı: ad, ASCII ad (adla aynıysa boş), ülke, enlem, boylam,
-///   saat dilimi sırası, diğer adlar (virgülle; çoğu satırda boş);
+///   saat dilimi sırası, diğer adlar (virgülle; çoğu satırda boş), bölge
+///   (yalnız ülkesinde adı tekrar eden şehirlerde; boyut için);
 ///   sekmeyle ayrılır. Satırlar kalabalıktan tenhaya sıralıdır.
 abstract final class DunyaSehirleri {
   static const String _aciklamaOnEki = '#';
   static const String _saatDilimiOnEki = '@';
-  static const int _sutunSayisi = 7;
+  static const int _sutunSayisi = 8;
+  static const String _bolgeAyraci = ', ';
 
   /// [sehirler]i asset biçiminde yazar; [aciklama] satırları başa `#` ile
   /// eklenir. Sıra korunur; çağıran önce sıralamalıdır.
@@ -183,6 +213,7 @@ abstract final class DunyaSehirleri {
     final Map<String, int> sira = <String, int>{
       for (int i = 0; i < dilimler.length; i++) dilimler[i]: i,
     };
+    final Set<String> ayni = ayniAdlar(sehirler);
     final StringBuffer b = StringBuffer();
     for (final String a in aciklama) {
       b.writeln('$_aciklamaOnEki $a');
@@ -198,6 +229,7 @@ abstract final class DunyaSehirleri {
           _koordinat(s.boylam),
           '${sira[s.saatDilimi]}',
           s.digerAdlar.join(','),
+          if (ayni.contains(_adAnahtari(s))) s.bolge else '',
         ].join('\t'),
       );
     }
@@ -251,36 +283,51 @@ abstract final class DunyaSehirleri {
           boylam: boylam,
           saatDilimi: dilimler[dilim],
           digerAdlar: s[6].isEmpty ? const <String>[] : s[6].split(','),
+          bolge: s[7],
         ),
       );
     }
     return sehirler;
   }
 
-  /// Aynı ülkede birden çok şehrin taşıdığı adlar (`ülke<TAB>ad`).
-  ///
-  /// Bölge adları veride yok; bu adlar listede koordinatla ayırt edilir
-  /// (bkz. [gorunenAd]).
+  /// `ülke<TAB>ad` anahtarı.
+  static String _adAnahtari(DunyaSehri s) => '${s.ulkeKodu}\t${s.ad}';
+
+  /// `ülke<TAB>ad<TAB>bölge` anahtarı.
+  static String _bolgeAnahtari(DunyaSehri s) => '${_adAnahtari(s)}\t${s.bolge}';
+
+  /// Ayırt edilmesi gereken adlar: aynı ülkede birden çok şehrin taşıdığı
+  /// adlar (`ülke<TAB>ad`) ve bölgesi de aynı olanlar
+  /// (`ülke<TAB>ad<TAB>bölge`). [gorunenAd] ile kullanılır.
   static Set<String> ayniAdlar(Iterable<DunyaSehri> sehirler) {
     final Set<String> gorulen = <String>{};
     final Set<String> ayni = <String>{};
     for (final DunyaSehri s in sehirler) {
-      final String k = '${s.ulkeKodu}\t${s.ad}';
-      if (!gorulen.add(k)) {
-        ayni.add(k);
+      for (final String k in <String>[_adAnahtari(s), _bolgeAnahtari(s)]) {
+        if (!gorulen.add(k)) {
+          ayni.add(k);
+        }
       }
     }
     return ayni;
   }
 
-  /// Listede gösterilecek ad. Ülkede aynı adlı başka şehir varsa
-  /// koordinat eklenir: "Springfield (39.80°, -89.64°)".
+  /// Listede gösterilecek ad.
+  ///
+  /// Ülkede aynı adlı başka şehir varsa bölge eklenir: "Springfield,
+  /// Illinois". Bölge bilinmiyorsa ya da aynı bölgede de aynı adlı şehir
+  /// varsa koordinat da eklenir: "San Pedro, Coahuila (25.76°, -102.98°)",
+  /// "Springfield (39.80°, -89.64°)".
   static String gorunenAd(DunyaSehri s, Set<String> ayniAdlar) {
-    if (!ayniAdlar.contains('${s.ulkeKodu}\t${s.ad}')) {
+    if (!ayniAdlar.contains(_adAnahtari(s))) {
       return s.ad;
     }
+    final String ad = s.bolge.isEmpty ? s.ad : '${s.ad}$_bolgeAyraci${s.bolge}';
+    if (s.bolge.isNotEmpty && !ayniAdlar.contains(_bolgeAnahtari(s))) {
+      return ad;
+    }
     const int h = EngineConfig.sehirAyirtKoordinatHanesi;
-    return '${s.ad} (${s.enlem.toStringAsFixed(h)}°, '
+    return '$ad (${s.enlem.toStringAsFixed(h)}°, '
         '${s.boylam.toStringAsFixed(h)}°)';
   }
 
