@@ -99,4 +99,14 @@ abstract final class ProfileConfig {
   /// Öneri listesinde vurgulanan satırın mor zemin opaklığı. Altın,
   /// lacivert yüzeyin üstünde griye döndüğü için mor kullanılır.
   static const double oneriVurguOpakligi = 0.18;
+
+  /// Öneri listesi zemininin sayfa yüzeyinden açıklığı (metin rengine
+  /// doğru karışım oranı). Liste yukarı açılıp sayfanın üstüne bindiğinde
+  /// ayrı bir katman gibi okunsun diye.
+  static const double oneriZeminAcikligi = 0.07;
+
+  /// Öneri listesi kenarının altın opaklığı. Gölge kullanılmaz: test
+  /// karelerinde sert siyah çerçeve olarak çiziliyor ve cihazda
+  /// doğrulanamadı.
+  static const double oneriKenarOpakligi = 0.45;
 }

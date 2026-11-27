@@ -461,10 +461,21 @@ class _OneriListesi<T extends Object> extends StatelessWidget {
         // Alanın etiketinden küçük bir boşlukla ayrılır.
         padding: const EdgeInsets.only(bottom: AppSpacing.xs),
         child: Material(
-          color: AppColors.surface,
+          // Sayfadan bir ton açık zemin ve belirgin kenar: liste, kapattığı
+          // içeriğin üstünde ayrı bir katman olarak okunur.
+          color: Color.lerp(
+            AppColors.surface,
+            AppColors.textPrimary,
+            ProfileConfig.oneriZeminAcikligi,
+          ),
+          surfaceTintColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.sm),
-            side: const BorderSide(color: AppColors.camKenar),
+            side: BorderSide(
+              color: AppColors.gold.withValues(
+                alpha: ProfileConfig.oneriKenarOpakligi,
+              ),
+            ),
           ),
           clipBehavior: Clip.antiAlias,
           child: ConstrainedBox(
