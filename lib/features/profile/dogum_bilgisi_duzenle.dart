@@ -257,6 +257,8 @@ class _UlkeAlani extends ConsumerWidget {
           ? const Iterable<Ulke>.empty()
           : Ulkeler.ara(ulkeler, sorgu: v.text, dilKodu: dil),
       displayStringForOption: (Ulke u) => u.ad(dil),
+      // Liste alanın üstüne açılır; not ve Kaydet görünür kalır.
+      optionsViewOpenDirection: OptionsViewOpenDirection.up,
       optionsViewBuilder: (_, onSecim, secenekler) => _OneriListesi<Ulke>(
         secenekler: secenekler,
         onSecim: onSecim,
@@ -306,6 +308,8 @@ class _IlAlani extends StatelessWidget {
           ? const Iterable<Il>.empty()
           : TurkiyeIlleri.ara(v.text),
       displayStringForOption: (Il il) => il.ad,
+      // Liste alanın üstüne açılır; not ve Kaydet görünür kalır.
+      optionsViewOpenDirection: OptionsViewOpenDirection.up,
       optionsViewBuilder: (_, onSecim, secenekler) => _OneriListesi<Il>(
         secenekler: secenekler,
         onSecim: onSecim,
@@ -370,6 +374,8 @@ class _SehirAlani extends ConsumerWidget {
                 ).map((DunyaSehri s) => _SehirSecenegi.kur(s, v, t.text)),
           // Alanda yalnız şehrin adı kalır; diğer ad yalnız listede.
           displayStringForOption: (_SehirSecenegi s) => s.ad,
+          // Liste alanın üstüne açılır; not ve Kaydet görünür kalır.
+          optionsViewOpenDirection: OptionsViewOpenDirection.up,
           optionsViewBuilder: (_, onSecim, secenekler) =>
               _OneriListesi<_SehirSecenegi>(
                 secenekler: secenekler,
@@ -429,9 +435,10 @@ class _SehirSecenegi {
   final String gorunen;
 }
 
-/// Doğum yeri alanlarının öneri listesi: sayfa yüzeyiyle aynı zemin, ince
-/// altın kenar, gölgesiz. Flutter'ın varsayılan listesi koyu temada
-/// gölgesiyle siyah bir çerçeve ve zeminden koyu satırlar çiziyordu.
+/// Doğum yeri alanlarının öneri listesi (alanın üstüne açılır): sayfa
+/// yüzeyiyle aynı zemin, ince altın kenar, gölgesiz. Flutter'ın varsayılan
+/// listesi koyu temada gölgesiyle siyah bir çerçeve ve zeminden koyu
+/// satırlar çiziyordu.
 class _OneriListesi<T extends Object> extends StatelessWidget {
   const _OneriListesi({
     required this.secenekler,
@@ -448,10 +455,11 @@ class _OneriListesi<T extends Object> extends StatelessWidget {
     final int vurgu = AutocompleteHighlightedOption.of(context);
     final List<T> liste = secenekler.toList();
     return Align(
-      alignment: AlignmentDirectional.topStart,
+      // Liste yukarı açılır: alanın üst kenarına dayanır.
+      alignment: AlignmentDirectional.bottomStart,
       child: Padding(
-        // Alanın altındaki nottan küçük bir boşlukla ayrılır.
-        padding: const EdgeInsets.only(top: AppSpacing.xs),
+        // Alanın etiketinden küçük bir boşlukla ayrılır.
+        padding: const EdgeInsets.only(bottom: AppSpacing.xs),
         child: Material(
           color: AppColors.surface,
           shape: RoundedRectangleBorder(
